@@ -23,8 +23,8 @@ A global education and empowerment platform for discovering, publishing, and sha
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/1001-stories.git
-cd 1001-stories
+git clone https://github.com/JihunKong/1001project.git
+cd 1001project
 ```
 
 2. Install dependencies:
@@ -76,7 +76,7 @@ ssh -i your-key.pem ubuntu@43.202.3.58
 
 2. Run setup script:
 ```bash
-curl -o setup-server.sh https://raw.githubusercontent.com/your-username/1001-stories/main/scripts/setup-server.sh
+curl -o setup-server.sh https://raw.githubusercontent.com/JihunKong/1001project/main/scripts/setup-server.sh
 chmod +x setup-server.sh
 ./setup-server.sh
 ```
