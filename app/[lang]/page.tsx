@@ -7,7 +7,7 @@ export default function LanguageRedirect({
   params: { lang: string }
 }) {
   // Set cookie and redirect to home
-  if (supportedLocales.includes(params.lang as any)) {
+  if (supportedLocales.includes(params.lang as typeof supportedLocales[number])) {
     // Note: In server components, we can't directly set cookies
     // The middleware should handle this, but as a fallback we redirect
     redirect('/');
