@@ -5,8 +5,6 @@ import {
   BookOpen, 
   Users, 
   Target,
-  Lightbulb,
-  Award,
   ArrowRight 
 } from 'lucide-react';
 import Link from 'next/link';
@@ -181,7 +179,7 @@ export default function About() {
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               From a simple idea to a global movement, here are the key milestones 
-              that have shaped our impact on children's education and empowerment.
+              that have shaped our impact on children&apos;s education and empowerment.
             </p>
           </div>
           
@@ -221,8 +219,8 @@ export default function About() {
               Join Our Mission
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Whether you're a teacher, volunteer, institution, or simply someone who believes 
-              in the power of children's voices, there's a place for you in our community.
+              Whether you&apos;re a teacher, volunteer, institution, or simply someone who believes 
+              in the power of children&apos;s voices, there&apos;s a place for you in our community.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

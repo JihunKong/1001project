@@ -11,7 +11,7 @@ import {
   EyeOff,
   BookOpen,
   ArrowRight,
-  Google,
+  Chrome,
   Facebook,
   Apple
 } from 'lucide-react';
@@ -38,7 +38,7 @@ export default function Login() {
   };
 
   const socialLogins = [
-    { name: 'Google', icon: Google, color: 'bg-red-500 hover:bg-red-600' },
+    { name: 'Google', icon: Chrome, color: 'bg-red-500 hover:bg-red-600' },
     { name: 'Facebook', icon: Facebook, color: 'bg-blue-600 hover:bg-blue-700' },
     { name: 'Apple', icon: Apple, color: 'bg-gray-900 hover:bg-black' }
   ];
@@ -188,7 +188,7 @@ export default function Login() {
           {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
                 Sign up for free
               </Link>

@@ -64,7 +64,7 @@ export default function Team() {
       name: 'David Kim',
       title: 'Creative Director',
       location: 'Seoul, South Korea',
-      bio: 'Award-winning children\'s book illustrator and designer. Specializes in culturally inclusive visual storytelling and has illustrated over 50 children\'s books.',
+      bio: 'Award-winning children&apos;s book illustrator and designer. Specializes in culturally inclusive visual storytelling and has illustrated over 50 children&apos;s books.',
       image: '/images/team/david-kim.jpg',
       linkedin: 'https://linkedin.com/in/davidkim',
       email: 'david@1001stories.org',
@@ -139,7 +139,7 @@ export default function Team() {
     {
       name: 'Dr. Lisa Chen',
       title: 'Child Psychology Advisor',
-      organization: 'Stanford Children\'s Hospital',
+      organization: 'Stanford Children&apos;s Hospital',
       expertise: 'Child Development & Trauma-Informed Care'
     }
   ];
@@ -180,9 +180,6 @@ export default function Team() {
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
             <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-blue-100 rounded-full">
@@ -192,7 +189,7 @@ export default function Team() {
               <span className="gradient-text">Meet Our Team</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              We're a diverse group of educators, technologists, artists, and storytellers united by our mission 
+              We&apos;re a diverse group of educators, technologists, artists, and storytellers united by our mission 
               to empower young voices and create global connections through education.
             </p>
           </div>
@@ -206,10 +203,6 @@ export default function Team() {
             {teamStats.map((stat, index) => (
               <div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center"
               >
                 <div className="text-4xl font-bold text-blue-600 mb-2">{stat.number}</div>
@@ -224,10 +217,6 @@ export default function Team() {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -242,10 +231,6 @@ export default function Team() {
             {leadership.map((leader, index) => (
               <div
                 key={leader.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow"
               >
                 <div className="flex flex-col sm:flex-row gap-6">
@@ -296,10 +281,6 @@ export default function Team() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -314,10 +295,6 @@ export default function Team() {
             {coreTeam.map((member, index) => (
               <div
                 key={member.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow"
               >
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -350,10 +327,6 @@ export default function Team() {
       <section className="py-20 bg-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -368,10 +341,6 @@ export default function Team() {
             {advisors.map((advisor, index) => (
               <div
                 key={advisor.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="bg-white p-8 rounded-xl shadow-lg"
               >
                 <div className="flex items-start gap-4">
@@ -399,10 +368,6 @@ export default function Team() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -417,10 +382,6 @@ export default function Team() {
             {values.map((value, index) => (
               <div
                 key={value.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-blue-100 rounded-full">
@@ -442,10 +403,6 @@ export default function Team() {
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto"
           >
             <Heart className="w-16 h-16 text-white mx-auto mb-6" />
@@ -453,8 +410,8 @@ export default function Team() {
               Join Our Mission
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              We're always looking for passionate individuals who want to make a difference in children's lives. 
-              If you share our vision of empowering young voices through education, we'd love to hear from you.
+              We&apos;re always looking for passionate individuals who want to make a difference in children&apos;s lives. 
+              If you share our vision of empowering young voices through education, we&apos;d love to hear from you.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

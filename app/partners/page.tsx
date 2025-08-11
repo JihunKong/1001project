@@ -55,7 +55,7 @@ const partners = {
       name: 'Room to Read',
       type: 'Non-Profit Organization',
       location: 'San Francisco, USA',
-      description: 'Joint initiatives in literacy and girls\' education programs across Asia and Africa.',
+      description: 'Joint initiatives in literacy and girls&apos; education programs across Asia and Africa.',
       partnership: 'Since 2024',
       impact: '10+ countries, 5,000+ students',
       logo: '/images/partners/room-to-read.png'
@@ -88,7 +88,7 @@ const partners = {
   local: [
     {
       id: '6',
-      name: 'Kailash Satyarthi Children\'s Foundation',
+      name: 'Kailash Satyarthi Children&apos;s Foundation',
       type: 'Child Rights NGO',
       location: 'New Delhi, India',
       description: 'Implementing storytelling programs in rural schools and child-friendly spaces.',
@@ -111,7 +111,7 @@ const partners = {
       name: 'Camfed',
       type: 'Education Non-Profit',
       location: 'Cambridge, UK',
-      description: 'Supporting girls\' education through storytelling and mentorship programs in Africa.',
+      description: 'Supporting girls&apos; education through storytelling and mentorship programs in Africa.',
       partnership: 'Since 2024',
       impact: '50+ schools, 2,000+ girls',
       logo: '/images/partners/camfed.png'
@@ -174,14 +174,9 @@ const benefits = [
 ];
 
 export default function Partners() {
-  const { t } = useTranslation('common');
 
   const PartnerCard = ({ partner }: { partner: typeof partners.educational[0] }) => (
     <div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      viewport={{ once: true }}
       className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow"
     >
       <div className="flex items-start gap-4 mb-6">
@@ -229,9 +224,6 @@ export default function Partners() {
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
             <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-blue-100 rounded-full">
@@ -241,7 +233,7 @@ export default function Partners() {
               <span className="gradient-text">Our Global Partners</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              Together with amazing organizations worldwide, we're creating educational opportunities 
+              Together with amazing organizations worldwide, we&apos;re creating educational opportunities 
               and empowering children to share their stories with the world.
             </p>
           </div>
@@ -252,17 +244,13 @@ export default function Partners() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
               Partnership Network
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We collaborate with diverse organizations to create a comprehensive support system for children's education.
+              We collaborate with diverse organizations to create a comprehensive support system for children&apos;s education.
             </p>
           </div>
           
@@ -270,10 +258,6 @@ export default function Partners() {
             {partnershipTypes.map((type, index) => (
               <div
                 key={type.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center bg-gray-50 p-8 rounded-xl hover:bg-white hover:shadow-lg transition-all"
               >
                 <div className={`inline-flex items-center justify-center w-16 h-16 mb-6 bg-${type.color}-100 rounded-full`}>
@@ -298,10 +282,6 @@ export default function Partners() {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -324,10 +304,6 @@ export default function Partners() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -350,10 +326,6 @@ export default function Partners() {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-12"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -376,10 +348,6 @@ export default function Partners() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -394,10 +362,6 @@ export default function Partners() {
             {benefits.map((benefit, index) => (
               <div
                 key={benefit.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-blue-100 rounded-full">
@@ -419,10 +383,6 @@ export default function Partners() {
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto"
           >
             <Handshake className="w-16 h-16 text-white mx-auto mb-6" />

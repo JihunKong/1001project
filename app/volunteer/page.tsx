@@ -9,7 +9,7 @@ import {
   Users, 
   BookOpen,
   Palette,
-  Translate,
+  Languages,
   GraduationCap,
   Code,
   Camera,
@@ -30,19 +30,19 @@ const opportunities = [
     id: '1',
     title: 'Story Translator',
     category: 'Translation',
-    icon: Translate,
+    icon: Languages,
     location: 'Remote',
     timeCommitment: '3-5 hours/week',
     urgency: 'high',
     volunteers: 12,
     maxVolunteers: 15,
     skills: ['Spanish', 'English', 'Cultural sensitivity'],
-    description: 'Help translate children\'s stories from Spanish to English, making them accessible to a global audience.',
+    description: 'Help translate children&apos;s stories from Spanish to English, making them accessible to a global audience.',
     impact: '50+ stories translated monthly'
   },
   {
     id: '2',
-    title: 'Children\'s Book Illustrator',
+    title: 'Children&apos;s Book Illustrator',
     category: 'Art & Design',
     icon: Palette,
     location: 'Remote',
@@ -50,8 +50,8 @@ const opportunities = [
     urgency: 'medium',
     volunteers: 8,
     maxVolunteers: 12,
-    skills: ['Digital illustration', 'Children\'s art', 'Adobe Creative Suite'],
-    description: 'Create beautiful illustrations for children\'s stories from around the world.',
+    skills: ['Digital illustration', 'Children&apos;s art', 'Adobe Creative Suite'],
+    description: 'Create beautiful illustrations for children&apos;s stories from around the world.',
     impact: '20+ stories illustrated monthly'
   },
   {
@@ -114,7 +114,7 @@ const opportunities = [
 
 const skillAreas = [
   {
-    icon: Translate,
+    icon: Languages,
     title: 'Translation & Language',
     description: 'Bridge language barriers to share stories globally',
     skills: ['Translation', 'Interpretation', 'Proofreading', 'Cultural adaptation']
@@ -222,7 +222,7 @@ export default function Volunteer() {
               Together We Make Impact
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join thousands of volunteers who are making a real difference in children's education worldwide.
+              Join thousands of volunteers who are making a real difference in children&apos;s education worldwide.
             </p>
           </motion.div>
           

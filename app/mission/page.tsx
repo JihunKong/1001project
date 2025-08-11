@@ -28,7 +28,6 @@ export const metadata: Metadata = {
 };
 
 export default function Mission() {
-  const { t } = useTranslation('common');
 
   const coreBeliefs = [
     {
@@ -100,13 +99,13 @@ export default function Mission() {
     {
       step: '03',
       title: 'Create',
-      description: 'Together, we develop stories, educational content, and programs tailored to each community\'s culture and language.',
+      description: 'Together, we develop stories, educational content, and programs tailored to each community&apos;s culture and language.',
       icon: Sparkles
     },
     {
       step: '04',
       title: 'Share',
-      description: 'We publish and distribute content globally, allowing children\'s voices to inspire and educate audiences worldwide.',
+      description: 'We publish and distribute content globally, allowing children&apos;s voices to inspire and educate audiences worldwide.',
       icon: Globe
     },
     {
@@ -129,12 +128,7 @@ export default function Mission() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-4xl mx-auto"
-          >
+          <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-blue-100 rounded-full">
               <Target className="w-10 h-10 text-blue-600" />
             </div>
@@ -143,7 +137,7 @@ export default function Mission() {
             </h1>
             <p className="text-xl text-gray-600 mb-8">
               To empower young voices through storytelling, bridge educational gaps with compassionate technology, 
-              and create a global community where every child's story contributes to a more understanding world.
+              and create a global community where every child&apos;s story contributes to a more understanding world.
             </p>
           </div>
         </div>
@@ -153,10 +147,6 @@ export default function Mission() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -171,10 +161,6 @@ export default function Mission() {
             {coreBeliefs.map((belief, index) => (
               <div
                 key={belief.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-xl"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-white rounded-full shadow-md">
@@ -200,10 +186,6 @@ export default function Mission() {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -218,10 +200,6 @@ export default function Mission() {
             {goals.map((goal, index) => (
               <div
                 key={goal.title}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="bg-white p-8 rounded-xl shadow-lg"
               >
                 <div className="flex items-center gap-4 mb-6">
@@ -254,10 +232,6 @@ export default function Mission() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -276,10 +250,6 @@ export default function Mission() {
               {approach.map((step, index) => (
                 <div
                   key={step.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
                   className="text-center relative"
                 >
                   <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-blue-600 rounded-full text-white font-bold text-lg relative z-10">
@@ -304,10 +274,6 @@ export default function Mission() {
       <section className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center max-w-4xl mx-auto mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
@@ -323,10 +289,6 @@ export default function Mission() {
             {impact2030.map((stat, index) => (
               <div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center"
               >
                 <div className="text-4xl lg:text-5xl font-bold text-white mb-2">{stat.number}</div>
@@ -336,10 +298,6 @@ export default function Mission() {
           </div>
           
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
             className="text-center"
           >
             <Link
@@ -358,19 +316,15 @@ export default function Mission() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
               Be Part of Our Story
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Every great mission needs passionate people to make it reality. Whether you're an educator, 
-              volunteer, donor, or simply someone who believes in the power of children's voices, 
-              there's a place for you in our community.
+              Every great mission needs passionate people to make it reality. Whether you&apos;re an educator, 
+              volunteer, donor, or simply someone who believes in the power of children&apos;s voices, 
+              there&apos;s a place for you in our community.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

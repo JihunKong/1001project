@@ -134,7 +134,7 @@ export default function Privacy() {
     },
     {
       id: 'children-privacy',
-      title: 'Children\'s Privacy Protection',
+      title: 'Children&apos;s Privacy Protection',
       icon: Shield,
       content: [
         {
@@ -265,9 +265,6 @@ export default function Privacy() {
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
             <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-green-100 rounded-full">
@@ -292,10 +289,6 @@ export default function Privacy() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-12"
           >
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -310,10 +303,6 @@ export default function Privacy() {
             {principles.map((principle, index) => (
               <div
                 key={principle.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-blue-100 rounded-full">
@@ -338,10 +327,6 @@ export default function Privacy() {
             {sections.map((section, sectionIndex) => (
               <div
                 key={section.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: sectionIndex * 0.1 }}
-                viewport={{ once: true }}
                 className="bg-white rounded-xl shadow-lg p-8"
               >
                 <div className="flex items-center gap-4 mb-8">
@@ -380,10 +365,6 @@ export default function Privacy() {
       <section className="py-16 bg-yellow-50 border-y border-yellow-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="flex items-start gap-4 p-6 bg-white rounded-lg border border-yellow-300"
           >
             <AlertCircle className="w-8 h-8 text-yellow-600 flex-shrink-0 mt-1" />
@@ -407,10 +388,6 @@ export default function Privacy() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto"
           >
             <h2 className="text-3xl font-bold text-gray-900 mb-6">
@@ -418,7 +395,7 @@ export default function Privacy() {
             </h2>
             <p className="text-xl text-gray-600 mb-8">
               Our privacy team is here to help. If you have questions about this policy or how we handle your information, 
-              please don't hesitate to reach out.
+              please don&apos;t hesitate to reach out.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -443,10 +420,6 @@ export default function Privacy() {
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center"
           >
             <h3 className="text-xl font-semibold text-gray-900 mb-6">

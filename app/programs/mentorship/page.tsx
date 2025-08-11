@@ -73,7 +73,7 @@ export default function MentorshipProgram() {
     {
       icon: Heart,
       title: 'Make Real Impact',
-      description: 'Directly influence a young person\'s creative development and confidence'
+      description: 'Directly influence a young person&apos;s creative development and confidence'
     },
     {
       icon: Globe,
@@ -175,9 +175,6 @@ export default function MentorshipProgram() {
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="text-center max-w-4xl mx-auto"
           >
             <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-blue-100 rounded-full">
@@ -213,10 +210,6 @@ export default function MentorshipProgram() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -231,10 +224,6 @@ export default function MentorshipProgram() {
             {programTypes.map((program, index) => (
               <div
                 key={program.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-start gap-6">
@@ -279,10 +268,6 @@ export default function MentorshipProgram() {
       <section className="py-20 bg-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -297,10 +282,6 @@ export default function MentorshipProgram() {
             {mentorBenefits.map((benefit, index) => (
               <div
                 key={benefit.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center bg-white p-6 rounded-xl shadow-md"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-blue-100 rounded-full">
@@ -322,10 +303,6 @@ export default function MentorshipProgram() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -340,10 +317,6 @@ export default function MentorshipProgram() {
             {menteeBenefits.map((benefit, index) => (
               <div
                 key={benefit.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="text-center"
               >
                 <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-green-100 rounded-full">
@@ -365,10 +338,6 @@ export default function MentorshipProgram() {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -384,10 +353,6 @@ export default function MentorshipProgram() {
               {process.map((step, index) => (
                 <div
                   key={step.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
                   className="text-center relative"
                 >
                   <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-blue-600 rounded-full text-white font-bold text-xl">
@@ -413,10 +378,6 @@ export default function MentorshipProgram() {
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -431,10 +392,6 @@ export default function MentorshipProgram() {
             {successStories.map((story, index) => (
               <div
                 key={story.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
                 className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-xl"
               >
                 <div className="flex items-center gap-1 mb-4">
@@ -443,7 +400,7 @@ export default function MentorshipProgram() {
                   ))}
                 </div>
                 <blockquote className="text-gray-700 mb-6 italic">
-                  "{story.quote}"
+                  &quot;{story.quote}&quot;
                 </blockquote>
                 <div className="border-t border-gray-200 pt-4">
                   <div className="font-semibold text-gray-900">{story.name}, {story.age}</div>
@@ -461,17 +418,13 @@ export default function MentorshipProgram() {
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
               Ready to Start Your Mentorship Journey?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Whether you're looking to guide young writers or seeking creative guidance yourself, 
+              Whether you&apos;re looking to guide young writers or seeking creative guidance yourself, 
               our mentorship program connects passionate storytellers across the globe.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

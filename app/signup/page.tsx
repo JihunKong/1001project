@@ -11,7 +11,7 @@ import {
   EyeOff,
   BookOpen,
   ArrowRight,
-  Google,
+  Chrome,
   Facebook,
   Apple,
   User,
@@ -77,7 +77,7 @@ export default function SignUp() {
   ];
 
   const socialLogins = [
-    { name: 'Google', icon: Google, color: 'bg-red-500 hover:bg-red-600' },
+    { name: 'Google', icon: Chrome, color: 'bg-red-500 hover:bg-red-600' },
     { name: 'Facebook', icon: Facebook, color: 'bg-blue-600 hover:bg-blue-700' },
     { name: 'Apple', icon: Apple, color: 'bg-gray-900 hover:bg-black' }
   ];
@@ -130,7 +130,7 @@ export default function SignUp() {
               <span className="text-2xl font-bold gradient-text">1001 Stories</span>
             </Link>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Role</h1>
-            <p className="text-xl text-gray-600">Select how you'd like to engage with our platform</p>
+            <p className="text-xl text-gray-600">Select how you&apos;d like to engage with our platform</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

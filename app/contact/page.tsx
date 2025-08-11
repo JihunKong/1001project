@@ -10,7 +10,6 @@ import {
   Send,
   MessageCircle,
   Clock,
-  Globe,
   Users,
   BookOpen,
   Heart,
@@ -44,7 +43,7 @@ export default function Contact() {
     {
       icon: Mail,
       title: 'Email Us',
-      description: 'Send us an email and we\'ll get back to you within 24 hours',
+      description: 'Send us an email and we&apos;ll get back to you within 24 hours',
       contact: 'hello@1001stories.org',
       action: 'Send Email'
     },
@@ -143,7 +142,7 @@ export default function Contact() {
             Message Sent Successfully!
           </h2>
           <p className="text-gray-600 mb-6">
-            Thank you for reaching out. We'll get back to you within 24 hours.
+            Thank you for reaching out. We&apos;ll get back to you within 24 hours.
           </p>
           <button
             onClick={() => {
@@ -183,7 +182,7 @@ export default function Contact() {
               <span className="gradient-text">Get in Touch</span>
             </h1>
             <p className="text-xl text-gray-600">
-              We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+              We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
             </p>
           </motion.div>
         </div>

@@ -11,7 +11,6 @@ import {
   GraduationCap,
   Globe,
   Target,
-  Award,
   CreditCard,
   DollarSign,
   CheckCircle,
@@ -474,7 +473,7 @@ export default function Donate() {
               What Our Donors Say
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Hear from supporters who are making a difference in children's lives worldwide.
+              Hear from supporters who are making a difference in children&apos;s lives worldwide.
             </p>
           </motion.div>
           
@@ -494,7 +493,7 @@ export default function Donate() {
                   ))}
                 </div>
                 <blockquote className="text-gray-700 mb-6 italic">
-                  "{testimonial.quote}"
+                  &quot;{testimonial.quote}&quot;
                 </blockquote>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-green-100 rounded-full flex items-center justify-center">
@@ -525,7 +524,7 @@ export default function Donate() {
               Other Ways to Support Our Mission
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Can't donate right now? There are many other ways to help us create impact for children worldwide.
+              Can&apos;t donate right now? There are many other ways to help us create impact for children worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
