@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# docker
+docker-compose.override.yml
+
+# nginx
+nginx/ssl/
+nginx/logs/
+
+# uploads
+uploads/

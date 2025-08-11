@@ -1,0 +1,109 @@
+{
+  "hero": {
+    "title": "어린 목소리에 힘을 실어, 세상을 영감으로",
+    "subtitle": "소외된 지역 아이들의 이야기를 발견하고, 출판하고, 공유합니다",
+    "cta": "시작하기"
+  },
+  "navigation": {
+    "home": "홈",
+    "library": "도서관",
+    "volunteer": "봉사",
+    "about": "소개",
+    "contact": "연락처",
+    "login": "로그인",
+    "signup": "회원가입",
+    "dashboard": "대시보드",
+    "logout": "로그아웃"
+  },
+  "roles": {
+    "title": "역할을 선택하세요",
+    "subtitle": "플랫폼과 상호작용할 방식을 선택하세요",
+    "learner": {
+      "title": "학습자",
+      "description": "스토리에 접근하고, 영어를 향상시키며, 커뮤니티 활동에 참여합니다"
+    },
+    "teacher": {
+      "title": "교사",
+      "description": "학급을 관리하고, 콘텐츠를 할당하며, 학생 진도를 추적합니다"
+    },
+    "institution": {
+      "title": "학교/기관",
+      "description": "프로그램 파트너십, 봉사자 연결, 리소스 접근"
+    },
+    "volunteer": {
+      "title": "봉사자",
+      "description": "번역, 일러스트, 교육 분야에서 재능을 나눕니다"
+    }
+  },
+  "dashboard": {
+    "learner": {
+      "title": "나의 학습 여정",
+      "progress": "학습 진도",
+      "dailyGoals": "오늘의 목표",
+      "courses": "내 코스",
+      "achievements": "성취",
+      "storiesRead": "읽은 이야기",
+      "wordsLearned": "학습한 단어",
+      "timeSpent": "학습 시간"
+    },
+    "admin": {
+      "title": "관리자 대시보드",
+      "workflow": "스토리 출판 워크플로우",
+      "submitted": "접수",
+      "reviewing": "검수",
+      "translating": "번역",
+      "illustrating": "일러스트",
+      "editing": "편집",
+      "published": "출판"
+    }
+  },
+  "library": {
+    "title": "디지털 도서관",
+    "subtitle": "전 세계 어린이들의 이야기를 탐험하세요",
+    "search": "스토리 검색...",
+    "filter": "필터",
+    "category": "카테고리",
+    "language": "언어",
+    "ageGroup": "연령대",
+    "readNow": "지금 읽기",
+    "preview": "미리보기"
+  },
+  "volunteer": {
+    "title": "봉사자 허브",
+    "subtitle": "글로벌 체인지메이커 네트워크에 참여하세요",
+    "projects": "진행 가능한 프로젝트",
+    "myActivity": "나의 활동",
+    "hours": "봉사 시간",
+    "impact": "나의 영향력",
+    "skills": "기술",
+    "apply": "프로젝트 신청"
+  },
+  "seeds": {
+    "title": "당신의 지원이 세상을 바꾸는 방법",
+    "subtitle": "모든 기여는 임파워먼트의 씨앗을 심습니다",
+    "reinvest": {
+      "title": "프로젝트 재투자",
+      "description": "더 많은 어린이 이야기를 발견하고 출판합니다"
+    },
+    "scholarship": {
+      "title": "학생 장학금",
+      "description": "젊은 작가들에게 교육 기회를 제공합니다"
+    },
+    "operations": {
+      "title": "플랫폼 운영",
+      "description": "우리의 미션을 지속 가능하게 유지합니다"
+    },
+    "subscribe": "프리미엄 구독",
+    "donate": "기부하기"
+  },
+  "footer": {
+    "about": "소개",
+    "mission": "우리의 미션",
+    "team": "우리 팀",
+    "partners": "파트너",
+    "contact": "연락처",
+    "privacy": "개인정보 처리방침",
+    "terms": "이용약관",
+    "copyright": "© 2024 1001 Stories. All rights reserved."
+  }
+}

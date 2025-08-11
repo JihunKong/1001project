@@ -1,0 +1,109 @@
+{
+  "hero": {
+    "title": "Empower Young Voices, Inspire the World",
+    "subtitle": "Discover, publish, and share stories from children in underserved communities",
+    "cta": "Get Started"
+  },
+  "navigation": {
+    "home": "Home",
+    "library": "Library",
+    "volunteer": "Volunteer",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Login",
+    "signup": "Sign Up",
+    "dashboard": "Dashboard",
+    "logout": "Logout"
+  },
+  "roles": {
+    "title": "Choose Your Role",
+    "subtitle": "Select how you'd like to engage with our platform",
+    "learner": {
+      "title": "Learner",
+      "description": "Access stories, improve your English, and participate in community activities"
+    },
+    "teacher": {
+      "title": "Teacher",
+      "description": "Manage classrooms, assign content, and track student progress"
+    },
+    "institution": {
+      "title": "School/Institution",
+      "description": "Partner with us for programs, connect with volunteers, and access resources"
+    },
+    "volunteer": {
+      "title": "Volunteer",
+      "description": "Share your talents in translation, illustration, or teaching"
+    }
+  },
+  "dashboard": {
+    "learner": {
+      "title": "My Learning Journey",
+      "progress": "Learning Progress",
+      "dailyGoals": "Today's Goals",
+      "courses": "My Courses",
+      "achievements": "Achievements",
+      "storiesRead": "Stories Read",
+      "wordsLearned": "Words Learned",
+      "timeSpent": "Time Spent"
+    },
+    "admin": {
+      "title": "Admin Dashboard",
+      "workflow": "Story Publishing Workflow",
+      "submitted": "Submitted",
+      "reviewing": "Reviewing",
+      "translating": "Translating",
+      "illustrating": "Illustrating",
+      "editing": "Editing",
+      "published": "Published"
+    }
+  },
+  "library": {
+    "title": "Digital Library",
+    "subtitle": "Explore stories from children around the world",
+    "search": "Search stories...",
+    "filter": "Filter by",
+    "category": "Category",
+    "language": "Language",
+    "ageGroup": "Age Group",
+    "readNow": "Read Now",
+    "preview": "Preview"
+  },
+  "volunteer": {
+    "title": "Volunteer Hub",
+    "subtitle": "Join our global network of changemakers",
+    "projects": "Available Projects",
+    "myActivity": "My Activity",
+    "hours": "Volunteer Hours",
+    "impact": "Your Impact",
+    "skills": "Skills",
+    "apply": "Apply to Project"
+  },
+  "seeds": {
+    "title": "How Your Support Changes the World",
+    "subtitle": "Every contribution plants seeds of empowerment",
+    "reinvest": {
+      "title": "Project Reinvestment",
+      "description": "Discover and publish more children's stories"
+    },
+    "scholarship": {
+      "title": "Student Scholarships",
+      "description": "Provide educational opportunities for young authors"
+    },
+    "operations": {
+      "title": "Platform Operations",
+      "description": "Keep our mission sustainable and growing"
+    },
+    "subscribe": "Premium Subscription",
+    "donate": "Make a Donation"
+  },
+  "footer": {
+    "about": "About Us",
+    "mission": "Our Mission",
+    "team": "Our Team",
+    "partners": "Partners",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2024 1001 Stories. All rights reserved."
+  }
+}
