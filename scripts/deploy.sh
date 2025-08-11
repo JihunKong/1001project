@@ -8,7 +8,7 @@
 SERVER_IP="43.202.3.58"
 SERVER_USER="ubuntu"
 PEM_FILE="../1001project.pem"
-REPO_URL="https://github.com/your-username/1001-stories.git"
+REPO_URL="https://github.com/JihunKong/1001project.git"
 DEPLOY_PATH="/var/www/1001-stories"
 
 # Color codes for output
@@ -65,7 +65,7 @@ deploy_to_server() {
         # Check if git repo exists
         if [ ! -d ".git" ]; then
             echo "Cloning repository..."
-            git clone https://github.com/your-username/1001-stories.git .
+            git clone https://github.com/JihunKong/1001project.git .
         else
             echo "Pulling latest changes..."
             git pull origin main
