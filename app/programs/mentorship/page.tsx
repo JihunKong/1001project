@@ -1,7 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Metadata } from 'next';
 import { 
   Users, 
   Heart, 
@@ -18,7 +15,6 @@ import {
   Star
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Mentorship Program - 1001 Stories',
@@ -33,7 +29,6 @@ export const metadata: Metadata = {
 };
 
 export default function MentorshipProgram() {
-  const { t } = useTranslation('common');
 
   const programTypes = [
     {
@@ -179,7 +174,7 @@ export default function MentorshipProgram() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -210,14 +205,14 @@ export default function MentorshipProgram() {
                 Find a Mentor
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Program Types */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -230,11 +225,11 @@ export default function MentorshipProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Choose from our specialized mentorship tracks designed to support different aspects of storytelling and creative development.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {programTypes.map((program, index) => (
-              <motion.div
+              <div
                 key={program.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -274,7 +269,7 @@ export default function MentorshipProgram() {
                     Learn More
                   </button>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -283,7 +278,7 @@ export default function MentorshipProgram() {
       {/* Benefits for Mentors */}
       <section className="py-20 bg-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -296,11 +291,11 @@ export default function MentorshipProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Join our community of dedicated mentors and experience the rewards of guiding young creative minds.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {mentorBenefits.map((benefit, index) => (
-              <motion.div
+              <div
                 key={benefit.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -317,7 +312,7 @@ export default function MentorshipProgram() {
                 <p className="text-gray-600">
                   {benefit.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -326,7 +321,7 @@ export default function MentorshipProgram() {
       {/* Benefits for Mentees */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -339,11 +334,11 @@ export default function MentorshipProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Discover how our mentorship program can accelerate your creative growth and storytelling journey.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {menteeBenefits.map((benefit, index) => (
-              <motion.div
+              <div
                 key={benefit.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -360,7 +355,7 @@ export default function MentorshipProgram() {
                 <p className="text-gray-600">
                   {benefit.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -369,7 +364,7 @@ export default function MentorshipProgram() {
       {/* How It Works */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -382,12 +377,12 @@ export default function MentorshipProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Getting started with our mentorship program is simple and straightforward.
             </p>
-          </motion.div>
+          </div>
           
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {process.map((step, index) => (
-                <motion.div
+                <div
                   key={step.step}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -407,7 +402,7 @@ export default function MentorshipProgram() {
                   {index < process.length - 1 && (
                     <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gray-200 transform -translate-x-1/2"></div>
                   )}
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -417,7 +412,7 @@ export default function MentorshipProgram() {
       {/* Success Stories */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -430,11 +425,11 @@ export default function MentorshipProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               See how our mentorship program has helped young writers achieve their creative goals.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {successStories.map((story, index) => (
-              <motion.div
+              <div
                 key={story.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -456,7 +451,7 @@ export default function MentorshipProgram() {
                   <div className="text-sm text-blue-600 font-medium mb-2">Achievement: {story.story}</div>
                   <div className="text-xs text-gray-500">Mentored by: {story.mentor}</div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -465,7 +460,7 @@ export default function MentorshipProgram() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -495,7 +490,7 @@ export default function MentorshipProgram() {
                 Find a Mentor
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

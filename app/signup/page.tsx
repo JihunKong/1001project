@@ -22,19 +22,6 @@ import {
   Check
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Sign Up - 1001 Stories',
-  description: 'Join 1001 Stories to access personalized learning experiences, contribute to global education, and be part of our community.',
-  keywords: 'sign up, register, join, account, learning, community',
-  openGraph: {
-    title: 'Join 1001 Stories',
-    description: 'Start your journey with global stories and become part of our educational community.',
-    url: 'https://1001stories.org/signup',
-    type: 'website',
-  },
-};
 
 export default function SignUp() {
   const { t } = useTranslation('common');

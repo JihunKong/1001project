@@ -1,7 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Metadata } from 'next';
 import { 
   BookOpen, 
   Users, 
@@ -19,7 +16,6 @@ import {
   Headphones
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'ESL Program - 1001 Stories',
@@ -34,7 +30,6 @@ export const metadata: Metadata = {
 };
 
 export default function ESLProgram() {
-  const { t } = useTranslation('common');
 
   const features = [
     {
@@ -166,7 +161,7 @@ export default function ESLProgram() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -195,14 +190,14 @@ export default function ESLProgram() {
                 Watch Demo
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Key Features */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -215,11 +210,11 @@ export default function ESLProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our unique approach combines the power of storytelling with proven language learning methodologies.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -239,7 +234,7 @@ export default function ESLProgram() {
                 <div className="text-2xl font-bold text-blue-600">
                   {feature.highlight}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -248,7 +243,7 @@ export default function ESLProgram() {
       {/* Learning Levels */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -261,11 +256,11 @@ export default function ESLProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Progress through six structured levels, each designed to build your English skills systematically.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {levels.map((level, index) => (
-              <motion.div
+              <div
                 key={level.level}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -301,7 +296,7 @@ export default function ESLProgram() {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -310,7 +305,7 @@ export default function ESLProgram() {
       {/* Curriculum Overview */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -323,11 +318,11 @@ export default function ESLProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Each level follows a proven 8-week cycle that balances structured learning with creative expression.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {curriculum.map((phase, index) => (
-              <motion.div
+              <div
                 key={phase.week}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -349,7 +344,7 @@ export default function ESLProgram() {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -358,7 +353,7 @@ export default function ESLProgram() {
       {/* Student Testimonials */}
       <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -371,11 +366,11 @@ export default function ESLProgram() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Hear from our students who have transformed their English skills through our program.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <motion.div
+              <div
                 key={testimonial.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -400,7 +395,7 @@ export default function ESLProgram() {
                     Level {testimonial.level}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -409,7 +404,7 @@ export default function ESLProgram() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -439,7 +434,7 @@ export default function ESLProgram() {
                 Get More Info
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

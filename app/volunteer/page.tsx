@@ -23,19 +23,6 @@ import {
   Lightbulb
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Volunteer Hub - 1001 Stories',
-  description: 'Join our global network of volunteers. Share your skills in translation, illustration, teaching, and more to empower children worldwide.',
-  keywords: 'volunteer, global, education, translation, illustration, teaching, community',
-  openGraph: {
-    title: 'Volunteer Hub - 1001 Stories',
-    description: 'Make a difference in children\'s lives through volunteering. Find your perfect project match.',
-    url: 'https://1001stories.org/volunteer',
-    type: 'website',
-  },
-};
 
 // Mock volunteer opportunities
 const opportunities = [

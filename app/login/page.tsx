@@ -16,19 +16,6 @@ import {
   Apple
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Login - 1001 Stories',
-  description: 'Sign in to your 1001 Stories account to access your personalized learning dashboard and continue your journey.',
-  keywords: 'login, sign in, account, dashboard, learning',
-  openGraph: {
-    title: 'Login - 1001 Stories',
-    description: 'Access your personalized learning experience and continue your journey with global stories.',
-    url: 'https://1001stories.org/login',
-    type: 'website',
-  },
-};
 
 export default function Login() {
   const { t } = useTranslation('common');

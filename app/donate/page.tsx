@@ -20,19 +20,6 @@ import {
   Gift
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Donate - Seeds of Empowerment | 1001 Stories',
-  description: 'Support our mission to empower children through education. Your donation directly funds scholarships, programs, and global impact.',
-  keywords: 'donate, support, seeds of empowerment, scholarships, education, children, global impact',
-  openGraph: {
-    title: 'Seeds of Empowerment - Support Our Mission',
-    description: 'Every donation plants seeds of hope and opportunity for children worldwide.',
-    url: 'https://1001stories.org/donate',
-    type: 'website',
-  },
-};
 
 export default function Donate() {
   const { t } = useTranslation('common');

@@ -1,7 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Metadata } from 'next';
 import { 
   Handshake, 
   Globe, 
@@ -17,7 +14,6 @@ import {
   Target
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Our Partners - 1001 Stories',
@@ -181,7 +177,7 @@ export default function Partners() {
   const { t } = useTranslation('common');
 
   const PartnerCard = ({ partner }: { partner: typeof partners.educational[0] }) => (
-    <motion.div
+    <div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -224,7 +220,7 @@ export default function Partners() {
       <button className="w-full px-4 py-3 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors">
         Learn More About Partnership
       </button>
-    </motion.div>
+    </div>
   );
 
   return (
@@ -232,7 +228,7 @@ export default function Partners() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -248,14 +244,14 @@ export default function Partners() {
               Together with amazing organizations worldwide, we're creating educational opportunities 
               and empowering children to share their stories with the world.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Partnership Types */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -268,11 +264,11 @@ export default function Partners() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               We collaborate with diverse organizations to create a comprehensive support system for children's education.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {partnershipTypes.map((type, index) => (
-              <motion.div
+              <div
                 key={type.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -292,7 +288,7 @@ export default function Partners() {
                 <div className="text-2xl font-bold text-blue-600">
                   {type.count}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -301,7 +297,7 @@ export default function Partners() {
       {/* Educational Partners */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -314,7 +310,7 @@ export default function Partners() {
             <p className="text-xl text-gray-600">
               International organizations and institutions leading educational innovation.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {partners.educational.map(partner => (
@@ -327,7 +323,7 @@ export default function Partners() {
       {/* Technology Partners */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -340,7 +336,7 @@ export default function Partners() {
             <p className="text-xl text-gray-600">
               Leading technology companies providing infrastructure and innovation.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {partners.technology.map(partner => (
@@ -353,7 +349,7 @@ export default function Partners() {
       {/* Local Partners */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -366,7 +362,7 @@ export default function Partners() {
             <p className="text-xl text-gray-600">
               Community organizations working directly with children and families.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {partners.local.map(partner => (
@@ -379,7 +375,7 @@ export default function Partners() {
       {/* Partnership Benefits */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -392,11 +388,11 @@ export default function Partners() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               When you partner with 1001 Stories, you gain access to resources, expertise, and a global network committed to educational excellence.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
-              <motion.div
+              <div
                 key={benefit.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -413,7 +409,7 @@ export default function Partners() {
                 <p className="text-gray-600">
                   {benefit.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -422,7 +418,7 @@ export default function Partners() {
       {/* Become a Partner CTA */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -453,7 +449,7 @@ export default function Partners() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

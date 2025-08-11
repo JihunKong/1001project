@@ -1,7 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Metadata } from 'next';
 import { 
   Users, 
   Heart, 
@@ -17,7 +14,6 @@ import {
   ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Our Team - 1001 Stories',
@@ -32,7 +28,6 @@ export const metadata: Metadata = {
 };
 
 export default function Team() {
-  const { t } = useTranslation('common');
 
   const leadership = [
     {
@@ -184,7 +179,7 @@ export default function Team() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -200,7 +195,7 @@ export default function Team() {
               We're a diverse group of educators, technologists, artists, and storytellers united by our mission 
               to empower young voices and create global connections through education.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -209,7 +204,7 @@ export default function Team() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {teamStats.map((stat, index) => (
-              <motion.div
+              <div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -219,7 +214,7 @@ export default function Team() {
               >
                 <div className="text-4xl font-bold text-blue-600 mb-2">{stat.number}</div>
                 <div className="text-gray-600">{stat.label}</div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -228,7 +223,7 @@ export default function Team() {
       {/* Leadership Team */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -241,11 +236,11 @@ export default function Team() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Meet the visionary leaders guiding our mission to transform education through storytelling.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {leadership.map((leader, index) => (
-              <motion.div
+              <div
                 key={leader.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -291,7 +286,7 @@ export default function Team() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -300,7 +295,7 @@ export default function Team() {
       {/* Core Team */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -313,11 +308,11 @@ export default function Team() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               The dedicated professionals who make our daily operations possible and our mission a reality.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {coreTeam.map((member, index) => (
-              <motion.div
+              <div
                 key={member.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -345,7 +340,7 @@ export default function Team() {
                   <Calendar className="w-4 h-4" />
                   With us for {member.yearsWithUs}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -354,7 +349,7 @@ export default function Team() {
       {/* Advisory Board */}
       <section className="py-20 bg-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -367,11 +362,11 @@ export default function Team() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Distinguished experts who guide our strategic direction and ensure we maintain the highest standards in education and child development.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {advisors.map((advisor, index) => (
-              <motion.div
+              <div
                 key={advisor.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -394,7 +389,7 @@ export default function Team() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -403,7 +398,7 @@ export default function Team() {
       {/* Our Values */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -416,11 +411,11 @@ export default function Team() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               These core values unite our global team and guide everything we do.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
-              <motion.div
+              <div
                 key={value.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -437,7 +432,7 @@ export default function Team() {
                 <p className="text-gray-600">
                   {value.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -446,7 +441,7 @@ export default function Team() {
       {/* Join Our Team CTA */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -478,7 +473,7 @@ export default function Team() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

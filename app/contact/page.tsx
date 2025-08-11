@@ -18,19 +18,6 @@ import {
   ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Contact Us - 1001 Stories',
-  description: 'Get in touch with our team. We\'d love to hear from you and answer any questions about our programs and mission.',
-  keywords: 'contact, support, help, questions, partnerships, volunteer',
-  openGraph: {
-    title: 'Contact 1001 Stories',
-    description: 'Reach out to our team for questions, partnerships, or to get involved in our mission.',
-    url: 'https://1001stories.org/contact',
-    type: 'website',
-  },
-};
 
 export default function Contact() {
   const { t } = useTranslation('common');

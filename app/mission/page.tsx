@@ -1,7 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Metadata } from 'next';
 import { 
   Target, 
   Heart, 
@@ -17,7 +14,6 @@ import {
   Zap
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Our Mission - 1001 Stories',
@@ -133,7 +129,7 @@ export default function Mission() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -149,14 +145,14 @@ export default function Mission() {
               To empower young voices through storytelling, bridge educational gaps with compassionate technology, 
               and create a global community where every child's story contributes to a more understanding world.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Core Beliefs */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -169,11 +165,11 @@ export default function Mission() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our core beliefs guide every decision we make and every program we develop.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {coreBeliefs.map((belief, index) => (
-              <motion.div
+              <div
                 key={belief.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -194,7 +190,7 @@ export default function Mission() {
                   <Award className="w-4 h-4" />
                   {belief.impact}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -203,7 +199,7 @@ export default function Mission() {
       {/* Strategic Goals */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -216,11 +212,11 @@ export default function Mission() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Clear objectives that drive our work and measure our success in creating meaningful change.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {goals.map((goal, index) => (
-              <motion.div
+              <div
                 key={goal.title}
                 initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -248,7 +244,7 @@ export default function Mission() {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -257,7 +253,7 @@ export default function Mission() {
       {/* Our Approach */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -270,7 +266,7 @@ export default function Mission() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our five-step approach ensures sustainable, community-driven impact that empowers local voices and creates global connections.
             </p>
-          </motion.div>
+          </div>
           
           <div className="relative">
             {/* Connection Line */}
@@ -278,7 +274,7 @@ export default function Mission() {
             
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
               {approach.map((step, index) => (
-                <motion.div
+                <div
                   key={step.step}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -297,7 +293,7 @@ export default function Mission() {
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {step.description}
                   </p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -307,7 +303,7 @@ export default function Mission() {
       {/* Vision 2030 */}
       <section className="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -321,11 +317,11 @@ export default function Mission() {
               By 2030, we envision a world where every child has access to quality education and the 
               opportunity to share their story with a global audience that celebrates their unique perspective.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             {impact2030.map((stat, index) => (
-              <motion.div
+              <div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -335,11 +331,11 @@ export default function Mission() {
               >
                 <div className="text-4xl lg:text-5xl font-bold text-white mb-2">{stat.number}</div>
                 <div className="text-blue-100">{stat.label}</div>
-              </motion.div>
+              </div>
             ))}
           </div>
           
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -354,14 +350,14 @@ export default function Mission() {
               Help Us Achieve This Vision
               <ArrowRight className="w-5 h-5" />
             </Link>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Call to Action */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -392,7 +388,7 @@ export default function Mission() {
                 Support Our Mission
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

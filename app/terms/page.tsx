@@ -1,7 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Metadata } from 'next';
 import { 
   FileText, 
   Scale, 
@@ -15,7 +12,6 @@ import {
   Gavel
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms of Service - 1001 Stories',
@@ -30,7 +26,6 @@ export const metadata: Metadata = {
 };
 
 export default function Terms() {
-  const { t } = useTranslation('common');
 
   const lastUpdated = 'December 1, 2024';
   const effectiveDate = 'December 1, 2024';
@@ -276,7 +271,7 @@ export default function Terms() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -303,14 +298,14 @@ export default function Terms() {
                 <span>Last updated: {lastUpdated}</span>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Key Points */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -323,11 +318,11 @@ export default function Terms() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               These core principles guide our terms and your experience on our platform.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {keyPoints.map((point, index) => (
-              <motion.div
+              <div
                 key={point.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -344,7 +339,7 @@ export default function Terms() {
                 <p className="text-gray-600">
                   {point.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -355,7 +350,7 @@ export default function Terms() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
           <div className="space-y-12">
             {sections.map((section, sectionIndex) => (
-              <motion.div
+              <div
                 key={section.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -397,7 +392,7 @@ export default function Terms() {
                     ))}
                   </div>
                 )}
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -406,7 +401,7 @@ export default function Terms() {
       {/* Important Notice */}
       <section className="py-16 bg-yellow-50 border-y border-yellow-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -426,14 +421,14 @@ export default function Terms() {
                 If you do not agree with any part of these terms, please discontinue use of our platform.
               </p>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Contact Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -462,14 +457,14 @@ export default function Terms() {
                 General Support
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Related Links */}
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -505,7 +500,7 @@ export default function Terms() {
                 Community Guidelines
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

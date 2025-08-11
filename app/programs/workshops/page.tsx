@@ -1,7 +1,4 @@
-'use client';
-
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Metadata } from 'next';
 import { 
   Calendar, 
   Users, 
@@ -19,7 +16,6 @@ import {
   PlayCircle
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Workshops - 1001 Stories',
@@ -34,7 +30,6 @@ export const metadata: Metadata = {
 };
 
 export default function Workshops() {
-  const { t } = useTranslation('common');
 
   const workshopCategories = [
     {
@@ -189,7 +184,7 @@ export default function Workshops() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -218,14 +213,14 @@ export default function Workshops() {
                 Watch Preview
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Workshop Categories */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -238,11 +233,11 @@ export default function Workshops() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Explore our diverse range of workshops designed to develop every aspect of creative storytelling.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {workshopCategories.map((category, index) => (
-              <motion.div
+              <div
                 key={category.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -267,7 +262,7 @@ export default function Workshops() {
                   Explore Workshops
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -276,7 +271,7 @@ export default function Workshops() {
       {/* Upcoming Workshops */}
       <section id="upcoming" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -289,11 +284,11 @@ export default function Workshops() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Register now for our upcoming workshops and start developing your creative skills with expert guidance.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {upcomingWorkshops.map((workshop, index) => (
-              <motion.div
+              <div
                 key={workshop.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -367,7 +362,7 @@ export default function Workshops() {
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -376,7 +371,7 @@ export default function Workshops() {
       {/* Workshop Formats */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -389,11 +384,11 @@ export default function Workshops() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Choose the learning format that works best for your schedule and learning preferences.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {workshopFormats.map((format, index) => (
-              <motion.div
+              <div
                 key={format.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -418,7 +413,7 @@ export default function Workshops() {
                     </div>
                   ))}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -427,7 +422,7 @@ export default function Workshops() {
       {/* Benefits */}
       <section className="py-20 bg-blue-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -440,11 +435,11 @@ export default function Workshops() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our workshops provide more than just learning - they offer community, certification, and real-world application.
             </p>
-          </motion.div>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
-              <motion.div
+              <div
                 key={benefit.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -461,7 +456,7 @@ export default function Workshops() {
                 <p className="text-gray-600">
                   {benefit.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -470,7 +465,7 @@ export default function Workshops() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -500,7 +495,7 @@ export default function Workshops() {
                 Custom Workshop Request
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>

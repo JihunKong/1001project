@@ -18,19 +18,6 @@ import {
   Clock
 } from 'lucide-react';
 import Link from 'next/link';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Digital Library - 1001 Stories',
-  description: 'Explore our collection of inspiring stories from children around the world. Free samples and premium content available.',
-  keywords: 'digital library, children stories, global, education, reading, ebooks',
-  openGraph: {
-    title: 'Digital Library - 1001 Stories',
-    description: 'Discover inspiring stories from children in underserved communities worldwide.',
-    url: 'https://1001stories.org/library',
-    type: 'website',
-  },
-};
 
 // Mock data for stories
 const stories = [
