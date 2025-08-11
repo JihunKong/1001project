@@ -4,6 +4,7 @@ import "./globals.css";
 import I18nProvider from "@/components/providers/I18nProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { getServerLocale } from "@/lib/language-server";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,13 +33,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getServerLocale();
+  
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <I18nProvider>
           <div className="flex flex-col min-h-screen">

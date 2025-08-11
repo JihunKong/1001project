@@ -31,9 +31,19 @@ export default function LanguageSwitcher() {
   }, []);
   
   const changeLanguage = (langCode: string) => {
+    // Set cookie for middleware and i18n
+    document.cookie = `NEXT_LOCALE=${langCode}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    
+    // Update i18n instance
     i18n.changeLanguage(langCode);
+    
+    // Also store in localStorage as fallback
     localStorage.setItem('i18nextLng', langCode);
+    
     setIsOpen(false);
+    
+    // Reload the page to apply the language change immediately
+    window.location.reload();
   };
   
   return (

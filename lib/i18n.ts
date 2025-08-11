@@ -24,7 +24,35 @@ const resources = {
   },
 };
 
+// Custom cookie detection plugin for Next.js App Router
+const cookiePlugin = {
+  type: 'languageDetector' as const,
+  async: false,
+  init: () => {},
+  detect: () => {
+    if (typeof document !== 'undefined') {
+      // Check for the NEXT_LOCALE cookie set by middleware
+      const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('NEXT_LOCALE='))
+        ?.split('=')[1];
+      
+      if (cookieValue) {
+        return cookieValue;
+      }
+    }
+    return undefined;
+  },
+  cacheUserLanguage: (lng: string) => {
+    if (typeof document !== 'undefined') {
+      document.cookie = `NEXT_LOCALE=${lng}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    }
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+} as any;
+
 i18n
+  .use(cookiePlugin)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -39,7 +67,7 @@ i18n
     },
     
     detection: {
-      order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
+      order: ['cookie', 'localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage', 'cookie'],
     },
     
