@@ -51,16 +51,12 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Match all paths except those starting with api, _next, or containing a dot
+  // Match language routes and all other paths
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - files with extensions
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.).*))',
+    // Specifically match language routes
+    '/(ko|es|fr|zh)/:path*',
+    '/(ko|es|fr|zh)',
+    // Match all other paths except API and static files
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.).*)',
   ],
 };
