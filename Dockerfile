@@ -19,7 +19,7 @@ COPY . .
 
 # Environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
+# Don't set NODE_ENV=production during build to allow Tailwind to scan files properly
 
 # Build application
 RUN npm run build
