@@ -11,7 +11,13 @@ import {
   Heart,
   Globe,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Star,
+  ChevronRight,
+  Zap,
+  Award,
+  Target,
+  Rocket
 } from 'lucide-react';
 
 export default function Home() {
@@ -23,32 +29,40 @@ export default function Home() {
       title: t('roles.learner.title'),
       description: t('roles.learner.description'),
       icon: GraduationCap,
-      color: 'bg-blue-500',
-      href: '/dashboard/learner'
+      gradient: 'from-blue-500 to-cyan-500',
+      shadowColor: 'rgba(59, 130, 246, 0.5)',
+      href: '/dashboard/learner',
+      features: ['Interactive Stories', 'Progress Tracking', 'Achievements']
     },
     {
       id: 'teacher',
       title: t('roles.teacher.title'),
       description: t('roles.teacher.description'),
       icon: BookOpen,
-      color: 'bg-green-500',
-      href: '/dashboard/teacher'
+      gradient: 'from-emerald-500 to-teal-500',
+      shadowColor: 'rgba(16, 185, 129, 0.5)',
+      href: '/dashboard/teacher',
+      features: ['Classroom Tools', 'Student Analytics', 'Content Library']
     },
     {
       id: 'institution',
       title: t('roles.institution.title'),
       description: t('roles.institution.description'),
       icon: School,
-      color: 'bg-purple-500',
-      href: '/dashboard/institution'
+      gradient: 'from-purple-500 to-pink-500',
+      shadowColor: 'rgba(168, 85, 247, 0.5)',
+      href: '/dashboard/institution',
+      features: ['Program Management', 'Impact Reports', 'Global Network']
     },
     {
       id: 'volunteer',
       title: t('roles.volunteer.title'),
       description: t('roles.volunteer.description'),
       icon: Heart,
-      color: 'bg-red-500',
-      href: '/volunteer'
+      gradient: 'from-rose-500 to-orange-500',
+      shadowColor: 'rgba(244, 63, 94, 0.5)',
+      href: '/volunteer',
+      features: ['Translation', 'Illustration', 'Mentorship']
     }
   ];
   
@@ -56,71 +70,108 @@ export default function Home() {
     {
       title: 'Global Stories',
       description: 'Access stories from children around the world',
-      icon: Globe
+      icon: Globe,
+      gradient: 'from-indigo-500 to-purple-500'
     },
     {
       title: 'Interactive Learning',
       description: 'Engage with content through interactive features',
-      icon: Sparkles
+      icon: Sparkles,
+      gradient: 'from-purple-500 to-pink-500'
     },
     {
       title: 'Community Impact',
       description: 'Make a real difference in children\'s lives',
-      icon: Users
+      icon: Users,
+      gradient: 'from-pink-500 to-rose-500'
     }
+  ];
+
+  const stats = [
+    { value: '500+', label: 'Stories Published', icon: BookOpen },
+    { value: '10K+', label: 'Children Reached', icon: Users },
+    { value: '50+', label: 'Countries', icon: Globe },
+    { value: '100+', label: 'Volunteers', icon: Heart }
   ];
   
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20 sm:py-32">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-              <span className="gradient-text">{t('hero.title')}</span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              {t('hero.subtitle')}
-            </p>
-            <Link
-              href="#roles"
-              className="inline-flex items-center gap-2 px-8 py-4 text-lg font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-all transform hover:scale-105"
-            >
-              {t('hero.cta')}
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </motion.div>
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-900/50 dark:to-gray-900">
+      {/* Hero Section with animated background */}
+      <section className="relative overflow-hidden py-24 sm:py-32 lg:py-40">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 hero-gradient-light" />
+          <div className="blob blob-pink w-96 h-96 top-0 left-0 animate-delay-100" />
+          <div className="blob blob-purple w-96 h-96 bottom-0 right-0 animate-delay-300" />
+          <div className="blob blob-indigo w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-delay-500" />
         </div>
         
-        {/* Decorative elements */}
-        <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-20 blur-xl"></div>
-        <div className="absolute bottom-10 right-10 w-32 h-32 bg-blue-300 rounded-full opacity-20 blur-xl"></div>
+        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-center max-w-5xl mx-auto"
+          >
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="inline-flex items-center gap-2 px-4 py-2 mb-8 text-sm font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 rounded-full border border-indigo-200 dark:border-indigo-800"
+            >
+              <Zap className="w-4 h-4" />
+              Global Education Platform for Peace
+              <ChevronRight className="w-4 h-4" />
+            </motion.div>
+            
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8">
+              <span className="block text-gray-900 dark:text-white mb-2">
+                Empower Young Voices
+              </span>
+              <span className="gradient-text text-6xl sm:text-7xl lg:text-8xl">
+                Inspire the World
+              </span>
+            </h1>
+            
+            <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+              {t('hero.subtitle')}
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="#roles" className="btn-primary group">
+                {t('hero.cta')}
+                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link href="/library" className="btn-secondary text-gray-700 dark:text-gray-200">
+                <BookOpen className="w-5 h-5 mr-2" />
+                Explore Library
+              </Link>
+            </div>
+          </motion.div>
+        </div>
       </section>
       
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-20 relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+                viewport={{ once: true }}
+                className="text-center group"
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-blue-100 rounded-full">
-                  <feature.icon className="w-8 h-8 text-blue-600" />
+                <div className={`inline-flex items-center justify-center w-20 h-20 mb-6 rounded-3xl bg-gradient-to-br ${feature.gradient} shadow-lg shadow-${feature.gradient.split('-')[1]}-500/25 group-hover:scale-110 transition-transform duration-300`}>
+                  <feature.icon className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400 text-lg">
                   {feature.description}
                 </p>
               </motion.div>
@@ -129,49 +180,100 @@ export default function Home() {
         </div>
       </section>
       
+      {/* Stats Section */}
+      <section className="py-16 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="glass-card rounded-3xl p-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="text-center"
+                >
+                  <stat.icon className="w-8 h-8 mx-auto mb-3 text-indigo-500" />
+                  <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {stat.label}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+      
       {/* Role Selection Section */}
-      <section id="roles" className="py-20 bg-gray-50">
+      <section id="roles" className="py-24 relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/30 rounded-full">
+              <Target className="w-4 h-4" />
+              Choose Your Path
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-6">
               {t('roles.title')}
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               {t('roles.subtitle')}
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {roles.map((role, index) => (
               <motion.div
                 key={role.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-                className="group"
+                className="group relative"
               >
                 <Link href={role.href}>
-                  <div className="bg-white rounded-xl shadow-lg p-6 h-full cursor-pointer transition-all group-hover:shadow-xl">
-                    <div className={`inline-flex items-center justify-center w-12 h-12 mb-4 ${role.color} rounded-lg text-white`}>
-                      <role.icon className="w-6 h-6" />
+                  <div className="glass-card glass-card-hover rounded-2xl p-8 h-full relative overflow-hidden">
+                    {/* Gradient overlay */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${role.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
+                    
+                    {/* Icon */}
+                    <div className={`relative inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br ${role.gradient} shadow-lg`}
+                      style={{ boxShadow: `0 10px 30px -10px ${role.shadowColor}` }}
+                    >
+                      <role.icon className="w-8 h-8 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    
+                    {/* Content */}
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                       {role.title}
                     </h3>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
                       {role.description}
                     </p>
-                    <div className="flex items-center text-blue-600 font-medium group-hover:text-blue-700">
+                    
+                    {/* Features */}
+                    <ul className="space-y-2 mb-6">
+                      {role.features.map((feature) => (
+                        <li key={feature} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                          <Star className="w-4 h-4 text-yellow-500" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    {/* CTA */}
+                    <div className={`flex items-center font-semibold bg-gradient-to-r ${role.gradient} bg-clip-text text-transparent group-hover:gap-3 transition-all duration-300`}>
                       Get Started
-                      <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                      <ArrowRight className="w-5 h-5 ml-2 text-gray-600 dark:text-gray-400 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>
@@ -181,43 +283,46 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Impact Section */}
-      <section className="py-20 bg-white">
+      {/* Impact/CTA Section */}
+      <section className="py-24 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/30 dark:via-purple-950/30 dark:to-pink-950/30" />
+        </div>
+        
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center max-w-3xl mx-auto"
+            className="glass-card rounded-3xl p-12 sm:p-16 text-center max-w-4xl mx-auto"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 text-sm font-medium text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/30 rounded-full">
+              <Award className="w-4 h-4" />
               Seeds of Empowerment
-            </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              Every contribution plants seeds of hope and opportunity for children worldwide.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">500+</div>
-                <div className="text-gray-600">Stories Published</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">10,000+</div>
-                <div className="text-gray-600">Children Reached</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 mb-2">50+</div>
-                <div className="text-gray-600">Countries</div>
-              </div>
             </div>
-            <Link
-              href="/donate"
-              className="inline-flex items-center gap-2 px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-full hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
-            >
-              <Heart className="w-5 h-5" />
-              Support Our Mission
-            </Link>
+            
+            <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+              <span className="gradient-text">Plant Seeds of Hope</span>
+            </h2>
+            
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
+              Every contribution plants seeds of hope and opportunity for children worldwide.
+              Join us in creating a world where every child&apos;s voice is heard.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Link href="/donate" className="btn-primary group">
+                <Heart className="w-5 h-5 mr-2" />
+                Support Our Mission
+                <Rocket className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              </Link>
+              <Link href="/volunteer" className="btn-secondary text-gray-700 dark:text-gray-200">
+                <Users className="w-5 h-5 mr-2" />
+                Become a Volunteer
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
