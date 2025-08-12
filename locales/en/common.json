@@ -7,13 +7,15 @@
   "navigation": {
     "home": "Home",
     "library": "Library",
+    "shop": "Shop",
     "volunteer": "Volunteer",
     "about": "About",
     "contact": "Contact",
     "login": "Login",
     "signup": "Sign Up",
     "dashboard": "Dashboard",
-    "logout": "Logout"
+    "logout": "Logout",
+    "cart": "Cart"
   },
   "roles": {
     "title": "Choose Your Role",
@@ -105,5 +107,55 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "copyright": "© 2024 1001 Stories. All rights reserved."
+  },
+  "shop": {
+    "title": "Shop with Purpose",
+    "subtitle": "Every purchase supports children's education and community development",
+    "categories": {
+      "all": "All Products",
+      "books": "Books",
+      "goods": "Handmade Goods"
+    },
+    "filters": {
+      "category": "Category",
+      "price": "Price Range",
+      "sort": "Sort By",
+      "sortOptions": {
+        "newest": "Newest",
+        "priceLow": "Price: Low to High",
+        "priceHigh": "Price: High to Low",
+        "popular": "Most Popular"
+      }
+    },
+    "product": {
+      "addToCart": "Add to Cart",
+      "outOfStock": "Out of Stock",
+      "by": "By",
+      "from": "From",
+      "age": "Age",
+      "impact": "Your Impact",
+      "story": "The Story Behind",
+      "details": "Product Details",
+      "shipping": "Shipping Information",
+      "relatedProducts": "You May Also Like"
+    },
+    "cart": {
+      "title": "Shopping Cart",
+      "empty": "Your cart is empty",
+      "continueShopping": "Continue Shopping",
+      "quantity": "Quantity",
+      "remove": "Remove",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "total": "Total",
+      "checkout": "Proceed to Checkout",
+      "impact": "Your purchase will fund"
+    },
+    "impact": {
+      "education": "days of education",
+      "meals": "nutritious meals",
+      "supplies": "school supplies",
+      "stories": "new stories published"
+    }
   }
 }

@@ -1,19 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, BookOpen, Heart, Users, Home } from 'lucide-react';
+import { Menu, X, BookOpen, Heart, Users, Home, ShoppingBag, ShoppingCart } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
 import { cn } from '@/lib/utils';
+import useCartStore from '@/lib/cart-store';
 
 export default function Header() {
   const { t } = useTranslation('common');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const cartItems = useCartStore((state) => state.getTotalItems());
+  
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const navigation = [
     { name: t('navigation.home'), href: '/', icon: Home },
     { name: t('navigation.library'), href: '/library', icon: BookOpen },
+    { name: t('navigation.shop'), href: '/shop', icon: ShoppingBag },
     { name: t('navigation.volunteer'), href: '/volunteer', icon: Users },
     { name: t('navigation.about'), href: '/about', icon: Heart },
   ];
@@ -45,6 +54,16 @@ export default function Header() {
           {/* Right side buttons */}
           <div className="flex items-center gap-4">
             <LanguageSwitcher />
+            
+            {/* Shopping Cart */}
+            <Link href="/shop/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
+              <ShoppingCart className="w-6 h-6" />
+              {mounted && cartItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItems}
+                </span>
+              )}
+            </Link>
             
             <div className="hidden md:flex items-center gap-2">
               <Link

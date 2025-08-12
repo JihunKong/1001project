@@ -7,13 +7,15 @@
   "navigation": {
     "home": "홈",
     "library": "도서관",
+    "shop": "상점",
     "volunteer": "봉사",
     "about": "소개",
     "contact": "연락처",
     "login": "로그인",
     "signup": "회원가입",
     "dashboard": "대시보드",
-    "logout": "로그아웃"
+    "logout": "로그아웃",
+    "cart": "장바구니"
   },
   "roles": {
     "title": "역할을 선택하세요",
@@ -105,5 +107,55 @@
     "privacy": "개인정보 처리방침",
     "terms": "이용약관",
     "copyright": "© 2024 1001 Stories. All rights reserved."
+  },
+  "shop": {
+    "title": "의미있는 쇼핑",
+    "subtitle": "모든 구매가 어린이 교육과 지역사회 발전을 지원합니다",
+    "categories": {
+      "all": "전체 상품",
+      "books": "도서",
+      "goods": "수공예품"
+    },
+    "filters": {
+      "category": "카테고리",
+      "price": "가격대",
+      "sort": "정렬",
+      "sortOptions": {
+        "newest": "최신순",
+        "priceLow": "가격: 낮은순",
+        "priceHigh": "가격: 높은순",
+        "popular": "인기순"
+      }
+    },
+    "product": {
+      "addToCart": "장바구니에 담기",
+      "outOfStock": "품절",
+      "by": "저자",
+      "from": "지역",
+      "age": "나이",
+      "impact": "당신의 기여",
+      "story": "제품 스토리",
+      "details": "상품 상세정보",
+      "shipping": "배송 정보",
+      "relatedProducts": "추천 상품"
+    },
+    "cart": {
+      "title": "장바구니",
+      "empty": "장바구니가 비어있습니다",
+      "continueShopping": "쇼핑 계속하기",
+      "quantity": "수량",
+      "remove": "삭제",
+      "subtotal": "소계",
+      "shipping": "배송비",
+      "total": "총액",
+      "checkout": "결제하기",
+      "impact": "당신의 구매가 지원하는 것"
+    },
+    "impact": {
+      "education": "일간 교육",
+      "meals": "영양 식사",
+      "supplies": "학용품",
+      "stories": "개의 새로운 이야기 출판"
+    }
   }
 }
