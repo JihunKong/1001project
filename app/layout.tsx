@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import I18nProvider from "@/components/providers/I18nProvider";
+import AuthProvider from "@/components/auth/AuthProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getServerLocale } from "@/lib/language-server";
@@ -43,15 +44,17 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <I18nProvider>
-          <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-grow">
-              {children}
+        <AuthProvider>
+          <I18nProvider>
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-grow">
+                {children}
             </main>
             <Footer />
           </div>
         </I18nProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   LogIn, 
   Mail, 
@@ -13,34 +15,95 @@ import {
   ArrowRight,
   Chrome,
   Facebook,
-  Apple
+  Apple,
+  AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function Login() {
   const { t } = useTranslation('common');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [useEmailSignIn, setUseEmailSignIn] = useState(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate login process
-    setTimeout(() => {
+    setError('');
+
+    try {
+      const result = await signIn('email', {
+        email,
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (result?.error) {
+        setError('Failed to send verification email. Please try again.');
+        toast.error('Failed to send verification email');
+      } else {
+        toast.success('Check your email for the verification link!');
+        router.push('/verify-email');
+      }
+    } catch (error) {
+      console.error('Sign in error:', error);
+      setError('An unexpected error occurred. Please try again.');
+      toast.error('An unexpected error occurred');
+    } finally {
       setIsLoading(false);
-      // Redirect would happen here
-      console.log('Login attempted with:', { email, password, rememberMe });
-    }, 1500);
+    }
+  };
+
+  const handleOAuthSignIn = async (provider: string) => {
+    setIsLoading(true);
+    try {
+      await signIn(provider, { callbackUrl });
+    } catch (error) {
+      console.error(`${provider} sign in error:`, error);
+      toast.error(`Failed to sign in with ${provider}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Demo account sign in
+  const handleDemoSignIn = async (demoEmail: string) => {
+    setIsLoading(true);
+    try {
+      // For demo accounts, we'll create them if they don't exist
+      const result = await signIn('email', {
+        email: demoEmail,
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (result?.error) {
+        toast.error('Demo account not available');
+      } else {
+        toast.success('Demo account access granted!');
+        router.push(callbackUrl);
+      }
+    } catch (error) {
+      console.error('Demo sign in error:', error);
+      toast.error('Failed to access demo account');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const socialLogins = [
-    { name: 'Google', icon: Chrome, color: 'bg-red-500 hover:bg-red-600' },
-    { name: 'Facebook', icon: Facebook, color: 'bg-blue-600 hover:bg-blue-700' },
-    { name: 'Apple', icon: Apple, color: 'bg-gray-900 hover:bg-black' }
+    { name: 'Google', icon: Chrome, color: 'bg-red-500 hover:bg-red-600', provider: 'google' },
+    { name: 'Facebook', icon: Facebook, color: 'bg-blue-600 hover:bg-blue-700', provider: 'facebook' },
+    { name: 'Apple', icon: Apple, color: 'bg-gray-900 hover:bg-black', provider: 'apple' }
   ];
 
   return (
@@ -63,12 +126,28 @@ export default function Login() {
           </p>
         </div>
 
+        {/* Error Alert */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3"
+          >
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Social Login */}
         <div className="space-y-3">
           {socialLogins.map((social) => (
             <button
               key={social.name}
-              className={`w-full flex items-center justify-center gap-3 px-4 py-3 text-white font-medium rounded-lg transition-colors ${social.color}`}
+              onClick={() => handleOAuthSignIn(social.provider)}
+              disabled={isLoading}
+              className={`w-full flex items-center justify-center gap-3 px-4 py-3 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${social.color}`}
             >
               <social.icon className="w-5 h-5" />
               Continue with {social.name}
@@ -86,8 +165,8 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Login Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {/* Email Sign In Form */}
+        <form className="mt-8 space-y-6" onSubmit={handleEmailSignIn}>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -110,85 +189,36 @@ export default function Login() {
                 />
               </div>
             </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-                  placeholder="Enter your password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Remember Me & Forgot Password */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <Link href="/forgot-password" className="text-blue-600 hover:text-blue-500 font-medium">
-                Forgot your password?
-              </Link>
-            </div>
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !email}
             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? (
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
             ) : (
               <>
-                <LogIn className="h-5 w-5 mr-2" />
-                {t('navigation.login')}
+                <Mail className="h-5 w-5 mr-2" />
+                Send Magic Link
                 <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </>
             )}
           </button>
 
+          {/* Info Message */}
+          <div className="bg-blue-50 rounded-lg p-4">
+            <p className="text-sm text-blue-700">
+              We'll send you a magic link to sign in without a password. Check your email after clicking the button above.
+            </p>
+          </div>
+
           {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{' '}
+              Don't have an account?{' '}
               <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
                 Sign up for free
               </Link>
@@ -199,10 +229,28 @@ export default function Login() {
         {/* Demo Accounts */}
         <div className="mt-8 p-4 bg-blue-50 rounded-lg">
           <h4 className="text-sm font-medium text-blue-900 mb-2">Try Demo Accounts:</h4>
-          <div className="space-y-1 text-xs text-blue-700">
-            <div>Learner: learner@demo.com / demo123</div>
-            <div>Teacher: teacher@demo.com / demo123</div>
-            <div>Volunteer: volunteer@demo.com / demo123</div>
+          <div className="space-y-2">
+            <button
+              onClick={() => handleDemoSignIn('learner@demo.com')}
+              disabled={isLoading}
+              className="w-full text-left text-xs text-blue-700 hover:text-blue-900 disabled:opacity-50"
+            >
+              <span className="font-semibold">Learner:</span> learner@demo.com
+            </button>
+            <button
+              onClick={() => handleDemoSignIn('teacher@demo.com')}
+              disabled={isLoading}
+              className="w-full text-left text-xs text-blue-700 hover:text-blue-900 disabled:opacity-50"
+            >
+              <span className="font-semibold">Teacher:</span> teacher@demo.com
+            </button>
+            <button
+              onClick={() => handleDemoSignIn('volunteer@demo.com')}
+              disabled={isLoading}
+              className="w-full text-left text-xs text-blue-700 hover:text-blue-900 disabled:opacity-50"
+            >
+              <span className="font-semibold">Volunteer:</span> volunteer@demo.com
+            </button>
           </div>
         </div>
       </motion.div>

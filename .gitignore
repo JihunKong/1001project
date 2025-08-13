@@ -48,4 +48,4 @@ nginx/ssl/
 nginx/logs/
 
 # uploads
-uploads/
+uploads/.env.local

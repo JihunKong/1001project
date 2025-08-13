@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { 
   UserPlus, 
   Mail, 
@@ -77,10 +80,24 @@ export default function SignUp() {
   ];
 
   const socialLogins = [
-    { name: 'Google', icon: Chrome, color: 'bg-red-500 hover:bg-red-600' },
-    { name: 'Facebook', icon: Facebook, color: 'bg-blue-600 hover:bg-blue-700' },
-    { name: 'Apple', icon: Apple, color: 'bg-gray-900 hover:bg-black' }
+    { name: 'Google', icon: Chrome, color: 'bg-red-500 hover:bg-red-600', provider: 'google' },
+    { name: 'Facebook', icon: Facebook, color: 'bg-blue-600 hover:bg-blue-700', provider: 'facebook' },
+    { name: 'Apple', icon: Apple, color: 'bg-gray-900 hover:bg-black', provider: 'apple' }
   ];
+
+  const handleOAuthSignUp = async (provider: string) => {
+    setIsLoading(true);
+    try {
+      // Store the selected role in localStorage to use after OAuth callback
+      localStorage.setItem('pendingUserRole', selectedRole);
+      await signIn(provider, { callbackUrl: '/dashboard' });
+    } catch (error) {
+      console.error(`${provider} sign up error:`, error);
+      toast.error(`Failed to sign up with ${provider}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleRoleSelect = (roleId: string) => {
     setSelectedRole(roleId);
@@ -95,24 +112,55 @@ export default function SignUp() {
     }));
   };
 
+  const router = useRouter();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
     if (!formData.agreeToTerms) {
-      alert('Please agree to the terms and conditions');
+      toast.error('Please agree to the terms and conditions');
       return;
     }
 
     setIsLoading(true);
     
-    // Simulate registration process
-    setTimeout(() => {
+    try {
+      // First, create the user account via API
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          name: `${formData.firstName} ${formData.lastName}`,
+          role: selectedRole,
+          organization: formData.organization,
+          subscribeNewsletter: formData.subscribeNewsletter,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create account');
+      }
+
+      // Send magic link for email verification
+      const result = await signIn('email', {
+        email: formData.email,
+        redirect: false,
+        callbackUrl: '/dashboard',
+      });
+
+      if (result?.error) {
+        throw new Error('Failed to send verification email');
+      }
+
+      toast.success('Account created! Check your email to verify.');
+      router.push('/verify-email');
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      toast.error(error.message || 'Failed to create account');
+    } finally {
       setIsLoading(false);
-      console.log('Registration attempted with:', { ...formData, role: selectedRole });
-    }, 1500);
+    }
   };
 
   if (step === 1) {
@@ -205,7 +253,9 @@ export default function SignUp() {
           {socialLogins.map((social) => (
             <button
               key={social.name}
-              className={`w-full flex items-center justify-center gap-3 px-4 py-3 text-white font-medium rounded-lg transition-colors ${social.color}`}
+              onClick={() => handleOAuthSignUp(social.provider)}
+              disabled={isLoading}
+              className={`w-full flex items-center justify-center gap-3 px-4 py-3 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${social.color}`}
             >
               <social.icon className="w-5 h-5" />
               Continue with {social.name}
@@ -298,69 +348,6 @@ export default function SignUp() {
               </div>
             )}
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Create a strong password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Confirm your password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
-                  )}
-                </button>
-              </div>
-            </div>
           </div>
 
           {/* Checkboxes */}
