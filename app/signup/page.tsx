@@ -155,9 +155,9 @@ export default function SignUp() {
 
       toast.success('Account created! Check your email to verify.');
       router.push('/verify-email');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Registration error:', error);
-      toast.error(error.message || 'Failed to create account');
+      toast.error(error instanceof Error ? error.message : 'Failed to create account');
     } finally {
       setIsLoading(false);
     }

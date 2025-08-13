@@ -289,7 +289,7 @@ model Product {
   inventory       Inventory[]
   cartItems       CartItem[]
   orderItems      OrderItem[]
-  reviews         Review[]
+  reviews         Review[]         @relation("ProductReviews")
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -563,7 +563,7 @@ model Story {
   chapters        Chapter[]
   readingProgress ReadingProgress[]
   bookmarks       Bookmark[]
-  reviews         Review[]
+  reviews         Review[]         @relation("StoryReviews")
   translations    Translation[]
   
   createdAt       DateTime         @default(now())
@@ -1286,7 +1286,7 @@ model StorySubmission {
   language        String
   category        String
   ageGroup        String
-  status          SubmissionStatus @default(DRAFT)
+  status          StorySubmissionStatus @default(DRAFT)
   reviewerId      String?
   reviewNotes     String?          @db.Text
   editorialNotes  String?          @db.Text
@@ -1302,7 +1302,7 @@ model StorySubmission {
   @@map("story_submissions")
 }
 
-enum SubmissionStatus {
+enum StorySubmissionStatus {
   DRAFT
   SUBMITTED
   IN_REVIEW
@@ -1387,8 +1387,8 @@ model Review {
   verified        Boolean          @default(false)
   
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product         Product?         @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  story           Story?           @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  product         Product?         @relation("ProductReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_product_contentId_fkey")
+  story           Story?           @relation("StoryReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_story_contentId_fkey")
   
   createdAt       DateTime         @default(now())
   

@@ -44,7 +44,7 @@ export default function VerifyEmailPage() {
             className="space-y-3 mb-8"
           >
             <p className="text-gray-600">
-              We've sent a verification link to your email address.
+              We&apos;ve sent a verification link to your email address.
             </p>
             <p className="text-sm text-gray-500">
               Click the link in the email to verify your account and get started with 1001 Stories.
@@ -59,7 +59,7 @@ export default function VerifyEmailPage() {
             className="bg-blue-50 rounded-lg p-4 mb-6"
           >
             <h3 className="font-semibold text-blue-900 mb-2">
-              Didn't receive the email?
+              Didn&apos;t receive the email?
             </h3>
             <ul className="text-sm text-blue-700 space-y-1 text-left">
               <li>• Check your spam or junk folder</li>

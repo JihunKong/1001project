@@ -211,14 +211,14 @@ export default function Login() {
           {/* Info Message */}
           <div className="bg-blue-50 rounded-lg p-4">
             <p className="text-sm text-blue-700">
-              We'll send you a magic link to sign in without a password. Check your email after clicking the button above.
+              We&apos;ll send you a magic link to sign in without a password. Check your email after clicking the button above.
             </p>
           </div>
 
           {/* Sign Up Link */}
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
                 Sign up for free
               </Link>

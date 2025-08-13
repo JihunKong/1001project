@@ -18,6 +18,7 @@
     "@tanstack/react-query": "^5.84.2",
     "@types/nodemailer": "^6.4.17",
     "axios": "^1.11.0",
+    "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.12",
@@ -28,6 +29,7 @@
     "next-auth": "^4.24.11",
     "next-i18next": "^15.4.2",
     "nodemailer": "^6.10.1",
+    "pg": "^8.16.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
@@ -38,9 +40,13 @@
     "zod": "^4.0.17",
     "zustand": "^5.0.7"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.54.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.19.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -51,6 +57,7 @@
     "postcss": "^8.5.6",
     "prisma": "^6.13.0",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.4",
     "typescript": "^5"
   }
 }

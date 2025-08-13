@@ -54,7 +54,7 @@ export const authOptions: NextAuthOptions = {
       if (session?.user) {
         // Add user ID and role to session
         session.user.id = user.id
-        session.user.role = (user as any).role || UserRole.LEARNER
+        session.user.role = (user as { role?: UserRole }).role || UserRole.LEARNER
         session.user.emailVerified = user.emailVerified
       }
       return session
@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id
-        token.role = (user as any).role || UserRole.LEARNER
+        token.role = (user as { role?: UserRole }).role || UserRole.LEARNER
       }
       return token
     },
