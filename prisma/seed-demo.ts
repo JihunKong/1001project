@@ -87,39 +87,8 @@ async function seedDemoAccounts() {
 
       console.log(`✅ Created demo account: ${account.email} (${account.role})`);
 
-      // Create sample data based on role
-      if (account.role === UserRole.TEACHER) {
-        // Create a sample classroom
-        await prisma.classroom.create({
-          data: {
-            name: 'Demo Classroom',
-            description: 'A sample classroom for demonstration',
-            teacherId: user.id,
-            gradeLevel: '5th Grade',
-            subject: 'English Literature',
-            accessCode: 'DEMO123',
-            isActive: true,
-          },
-        });
-        console.log(`  📚 Created demo classroom for teacher`);
-      }
-
-      if (account.role === UserRole.VOLUNTEER) {
-        // Create volunteer profile
-        await prisma.volunteerProfile.create({
-          data: {
-            userId: user.id,
-            skills: ['Translation', 'Illustration', 'Teaching'],
-            languages: ['English', 'Korean', 'Spanish'],
-            availability: 'Weekends',
-            experience: '3 years of teaching experience',
-            motivation: 'Passionate about education and helping children',
-            hoursPerWeek: 10,
-            isActive: true,
-          },
-        });
-        console.log(`  💝 Created volunteer profile`);
-      }
+      // Note: Additional sample data (classroom, volunteer profile) can be added
+      // when those models are defined in the schema
 
     } catch (error) {
       console.error(`❌ Error creating demo account ${account.email}:`, error);
