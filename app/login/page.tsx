@@ -79,12 +79,34 @@ export default function Login() {
   const handleDemoSignIn = async (demoEmail: string) => {
     setIsLoading(true);
     try {
-      // Check if demo mode is enabled
-      const demoStatusResponse = await fetch('/api/auth/demo-login');
-      const demoStatus = await demoStatusResponse.json();
-      
-      if (!demoStatus.demoMode?.enabled) {
-        // Fallback to email provider if demo mode is disabled
+      // First try to login via demo API endpoint
+      const loginResponse = await fetch('/api/auth/demo-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: demoEmail }),
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (loginData.success) {
+        // Successfully logged in via demo API
+        toast.success('Demo account access granted! 🎉');
+        
+        // Now sign in with NextAuth using the demo provider
+        const result = await signIn('demo', {
+          email: demoEmail,
+          redirect: false,
+          callbackUrl,
+        });
+
+        if (result?.ok) {
+          router.push(callbackUrl);
+        } else {
+          // If NextAuth fails, still redirect as we have a valid session
+          router.push(loginData.redirectUrl || callbackUrl);
+        }
+      } else {
+        // Fallback to email provider if demo login fails
         const result = await signIn('email', {
           email: demoEmail,
           redirect: false,
@@ -92,26 +114,11 @@ export default function Login() {
         });
 
         if (result?.error) {
-          toast.error('Demo mode is not enabled');
+          toast.error('Demo login failed. Please try again.');
         } else {
           toast.success('Check your email for verification');
           router.push('/verify-email');
         }
-        return;
-      }
-
-      // Use demo credentials provider for instant access
-      const result = await signIn('demo', {
-        email: demoEmail,
-        redirect: false,
-        callbackUrl,
-      });
-
-      if (result?.error) {
-        toast.error('Demo account login failed');
-      } else if (result?.ok) {
-        toast.success('Demo account access granted! 🎉');
-        router.push(callbackUrl);
       }
     } catch (error) {
       console.error('Demo sign in error:', error);
