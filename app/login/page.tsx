@@ -2,15 +2,10 @@
 
 import { useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
-  LogIn, 
   Mail, 
-  Lock, 
-  Eye, 
-  EyeOff,
   BookOpen,
   ArrowRight,
   Chrome,
@@ -22,18 +17,13 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 function LoginContent() {
-  const { t } = useTranslation('common');
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
   
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [useEmailSignIn, setUseEmailSignIn] = useState(true);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

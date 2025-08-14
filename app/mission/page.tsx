@@ -158,7 +158,7 @@ export default function Mission() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {coreBeliefs.map((belief, index) => (
+            {coreBeliefs.map((belief) => (
               <div
                 key={belief.title}
                 className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-xl"
@@ -197,7 +197,7 @@ export default function Mission() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {goals.map((goal, index) => (
+            {goals.map((goal) => (
               <div
                 key={goal.title}
                 className="bg-white p-8 rounded-xl shadow-lg"
@@ -247,7 +247,7 @@ export default function Mission() {
             <div className="hidden lg:block absolute top-24 left-20 right-20 h-0.5 bg-gray-200"></div>
             
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-              {approach.map((step, index) => (
+              {approach.map((step) => (
                 <div
                   key={step.step}
                   className="text-center relative"
@@ -286,7 +286,7 @@ export default function Mission() {
           </div>
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-            {impact2030.map((stat, index) => (
+            {impact2030.map((stat) => (
               <div
                 key={stat.label}
                 className="text-center"

@@ -229,7 +229,7 @@ export default function Workshops() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {workshopCategories.map((category, index) => (
+            {workshopCategories.map((category) => (
               <div
                 key={category.title}
                 className={`bg-gradient-to-br from-${category.color}-50 to-${category.color}-100 p-8 rounded-xl hover:shadow-lg transition-all cursor-pointer group`}
@@ -272,7 +272,7 @@ export default function Workshops() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-            {upcomingWorkshops.map((workshop, index) => (
+            {upcomingWorkshops.map((workshop) => (
               <div
                 key={workshop.id}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
@@ -364,7 +364,7 @@ export default function Workshops() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {workshopFormats.map((format, index) => (
+            {workshopFormats.map((format) => (
               <div
                 key={format.title}
                 className="text-center bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-gray-200"
@@ -407,7 +407,7 @@ export default function Workshops() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit, index) => (
+            {benefits.map((benefit) => (
               <div
                 key={benefit.title}
                 className="text-center bg-white p-6 rounded-xl shadow-md"

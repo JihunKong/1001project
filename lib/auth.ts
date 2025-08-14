@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
       },
       from: process.env.EMAIL_FROM || "noreply@1001stories.org",
       // Custom email verification with demo bypass
-      sendVerificationRequest: async ({ identifier: email, url, provider }) => {
+      sendVerificationRequest: async ({ identifier: email, url }) => {
         // Check if it's a demo email
         if (isDemoEmail(email)) {
           console.log(`Demo account detected: ${email} - bypassing email verification`);
@@ -95,7 +95,7 @@ export const authOptions: NextAuthOptions = {
   },
   
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn({ user, account, email }) {
       // For demo accounts, create/update user if needed
       if (account?.provider === 'demo' || (email && typeof email === 'string' && isDemoEmail(email))) {
         const demoUser = await getOrCreateDemoUser(user.email!);
@@ -119,7 +119,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id
         token.role = (user as { role?: UserRole }).role || UserRole.LEARNER
@@ -161,7 +161,7 @@ export const authOptions: NextAuthOptions = {
       })
     },
     
-    async signIn({ user, account, profile, isNewUser }) {
+    async signIn({ user }) {
       // Log sign in event (for analytics)
       console.log(`User ${user.email} signed in`)
     },

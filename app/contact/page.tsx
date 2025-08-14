@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { 
   Mail, 
   Phone, 
@@ -19,7 +18,6 @@ import {
 import Link from 'next/link';
 
 export default function Contact() {
-  const { t } = useTranslation('common');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -359,7 +357,7 @@ export default function Contact() {
                   Our Offices
                 </h2>
                 <div className="space-y-6">
-                  {offices.map((office, index) => (
+                  {offices.map((office) => (
                     <div key={office.city} className="bg-white p-6 rounded-xl shadow-md">
                       <div className="flex items-start gap-4">
                         <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg flex-shrink-0">

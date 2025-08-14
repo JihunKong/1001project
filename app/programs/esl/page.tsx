@@ -200,7 +200,7 @@ export default function ESLProgram() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
+            {features.map((feature) => (
               <div
                 key={feature.title}
                 className="text-center bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-xl hover:shadow-lg transition-shadow"
@@ -238,7 +238,7 @@ export default function ESLProgram() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {levels.map((level, index) => (
+            {levels.map((level) => (
               <div
                 key={level.level}
                 className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow"
@@ -332,7 +332,7 @@ export default function ESLProgram() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial) => (
               <div
                 key={testimonial.name}
                 className="bg-white p-8 rounded-xl shadow-lg"

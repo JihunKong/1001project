@@ -7,10 +7,7 @@ import {
   BookOpen,
   Globe,
   Award,
-  Clock,
-  CheckCircle,
   ArrowRight,
-  Calendar,
   Lightbulb,
   Star
 } from 'lucide-react';
@@ -221,7 +218,7 @@ export default function MentorshipProgram() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {programTypes.map((program, index) => (
+            {programTypes.map((program) => (
               <div
                 key={program.title}
                 className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow"
@@ -279,7 +276,7 @@ export default function MentorshipProgram() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {mentorBenefits.map((benefit, index) => (
+            {mentorBenefits.map((benefit) => (
               <div
                 key={benefit.title}
                 className="text-center bg-white p-6 rounded-xl shadow-md"
@@ -314,7 +311,7 @@ export default function MentorshipProgram() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {menteeBenefits.map((benefit, index) => (
+            {menteeBenefits.map((benefit) => (
               <div
                 key={benefit.title}
                 className="text-center"
@@ -389,7 +386,7 @@ export default function MentorshipProgram() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {successStories.map((story, index) => (
+            {successStories.map((story) => (
               <div
                 key={story.name}
                 className="bg-gradient-to-br from-blue-50 to-purple-50 p-8 rounded-xl"

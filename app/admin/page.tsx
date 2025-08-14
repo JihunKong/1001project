@@ -11,16 +11,13 @@ import {
   Shield,
   DollarSign,
   Globe,
-  Calendar,
   CheckCircle,
   Clock,
   AlertCircle,
   Edit,
-  Trash2,
   ChevronRight,
   Plus,
   Search,
-  Filter,
   Download
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -87,11 +84,6 @@ export default function AdminDashboard() {
     return stories.filter(story => story.status === status);
   };
 
-  const moveStory = (storyId: string, newStatus: StoryStatus) => {
-    setStories(prev => prev.map(story => 
-      story.id === storyId ? { ...story, status: newStatus } : story
-    ));
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -194,7 +186,7 @@ export default function AdminDashboard() {
                       animate={{ opacity: 1 }}
                       className="bg-gray-50 rounded-lg p-3 cursor-move hover:shadow-md transition-shadow"
                       draggable
-                      onDragEnd={(e) => {
+                      onDragEnd={() => {
                         // Simple drag logic - in production, use a proper DnD library
                         console.log('Drag ended');
                       }}

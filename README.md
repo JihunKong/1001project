@@ -1,44 +1,60 @@
 # 1001 Stories Platform
 
-A global education and empowerment platform for discovering, publishing, and sharing stories from children in underserved communities.
+A non-profit global education platform for discovering, publishing, and sharing stories from children in underserved communities. All revenue is reinvested through the Seeds of Empowerment program.
 
-## 🌍 Features
+## 🌍 Mission
 
-- **Multi-language Support**: English (default), Korean, Spanish, French, Chinese
-- **Role-based Dashboards**: Learner, Teacher, Institution, Volunteer, Admin
-- **Digital Library**: E-book reader with annotations and bookmarks
-- **Volunteer Hub**: Project matching and certificate generation
-- **Story Publishing Workflow**: Kanban board for content management
-- **Seeds of Empowerment**: Donation and sponsorship system
+Empower young voices and inspire the world through stories that bridge cultures, build empathy, and create educational opportunities for underserved communities.
+
+## ✨ Core Features
+
+- **Story Library**: Digital stories with free samples and premium subscriptions
+- **Authentication**: Secure email-based magic link authentication
+- **Role-Based Access**: Learner and Admin dashboards (Teacher/Institution/Volunteer planned)
+- **Donation System**: Seeds of Empowerment value proposition
+- **Demo Mode**: Try the platform with sample data before signing up
+- **Multi-language**: Support for English and Korean (more languages planned)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 20+
-- Docker & Docker Compose
-- Git
+- PostgreSQL 14+
+- Docker & Docker Compose (for production)
 
 ### Local Development
 
-1. Clone the repository:
+1. **Clone the repository**
 ```bash
 git clone https://github.com/JihunKong/1001project.git
-cd 1001project
+cd 1001-stories
 ```
 
-2. Install dependencies:
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Create environment file:
+3. **Set up environment variables**
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+cp .env.local.example .env.local
+# Edit .env.local with your configuration
 ```
 
-4. Run development server:
+4. **Set up database**
+```bash
+# Run PostgreSQL locally or use Docker
+docker run -d --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:14
+
+# Run migrations
+npx prisma migrate dev
+
+# Seed demo data
+npx tsx prisma/seed-demo.ts
+```
+
+5. **Start development server**
 ```bash
 npm run dev
 ```
@@ -47,50 +63,26 @@ Visit http://localhost:3000
 
 ## 🐳 Docker Deployment
 
-### Build and Run with Docker
+### Local Testing with Docker
 
-1. Build the Docker image:
 ```bash
-docker build -t 1001-stories:latest .
-```
+# Test complete Docker setup locally
+./scripts/test-docker-local.sh
 
-2. Run with Docker Compose:
-```bash
+# Or manually:
 docker-compose up -d
 ```
 
-### Test Docker Setup
+### Production Deployment
 
 ```bash
-./scripts/test-docker-local.sh all
-```
+# Deploy to AWS Lightsail (13.209.14.175)
+./scripts/deploy.sh deploy
 
-## 🚀 Production Deployment
+# View logs
+./scripts/deploy.sh logs
 
-### Server Setup (First Time)
-
-1. SSH to your server:
-```bash
-ssh -i your-key.pem ubuntu@43.202.3.58
-```
-
-2. Run setup script:
-```bash
-curl -o setup-server.sh https://raw.githubusercontent.com/JihunKong/1001project/main/scripts/setup-server.sh
-chmod +x setup-server.sh
-./setup-server.sh
-```
-
-### Deploy Updates
-
-From your local machine:
-```bash
-./scripts/deploy.sh
-```
-
-### Rollback if Needed
-
-```bash
+# Rollback if needed
 ./scripts/deploy.sh rollback
 ```
 
@@ -98,64 +90,124 @@ From your local machine:
 
 ```
 1001-stories/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── dashboard/         # Dashboard pages
-│   └── page.tsx           # Home page
-├── components/            # React components
-│   ├── layout/           # Layout components
-│   ├── ui/               # UI components
-│   └── providers/        # Context providers
-├── lib/                   # Utilities
-├── locales/              # Translation files
-├── nginx/                # Nginx configuration
-├── scripts/              # Deployment scripts
-├── types/                # TypeScript types
-├── docker-compose.yml    # Docker orchestration
-└── Dockerfile            # Docker image
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes (auth, health)
+│   ├── dashboard/         # Protected dashboard pages
+│   ├── demo/              # Demo experience pages
+│   └── (auth)/           # Authentication pages
+├── components/            # Reusable React components
+├── lib/                   # Utilities and configurations
+│   ├── auth.ts           # NextAuth configuration
+│   ├── prisma.ts         # Database client
+│   └── email.ts          # Email configuration
+├── prisma/               # Database schema and migrations
+├── public/               # Static assets
+├── scripts/              # Deployment and setup scripts
+├── tests/                # Playwright E2E tests
+└── docker-compose.yml    # Production orchestration
 ```
 
-## 🔧 Configuration
+## 🔧 Environment Variables
 
-### Environment Variables
-
-Create a `.env` file based on `.env.example`:
+### Required Variables
 
 ```env
-# Application
-NODE_ENV=production
-NEXT_PUBLIC_APP_URL=https://your-domain.com
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/1001stories"
 
 # NextAuth
-NEXTAUTH_URL=https://your-domain.com
-NEXTAUTH_SECRET=generate-with-openssl
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="generate-32-char-secret"
 
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
+# Email (Gmail example)
+EMAIL_SERVER_HOST="smtp.gmail.com"
+EMAIL_SERVER_PORT="587"
+EMAIL_SERVER_USER="your-email@gmail.com"
+EMAIL_SERVER_PASSWORD="your-app-password"
+EMAIL_FROM="noreply@1001stories.org"
 ```
 
-### SSL Certificate
+### Generate Secrets
 
-For production, setup SSL with Certbot:
 ```bash
-sudo certbot --nginx -d your-domain.com
+# Generate NEXTAUTH_SECRET
+openssl rand -base64 32
 ```
 
-## 📝 Scripts
+## 📝 Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run test` - Run tests
+```bash
+npm run dev              # Start development server
+npm run build           # Build for production
+npm run start           # Start production server
+npm run lint            # Run ESLint
+npx playwright test     # Run E2E tests
+npx prisma studio       # Open database GUI
+```
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+# Run all Playwright tests
+npx playwright test
+
+# Run specific test
+npx playwright test tests/landing-page.spec.ts
+
+# Run with UI
+npx playwright test --ui
+```
+
+### Lint Code
+```bash
+npm run lint
+```
+
+## 🚀 Production Server
+
+- **URL**: http://13.209.14.175
+- **Platform**: AWS Lightsail
+- **OS**: Ubuntu 22.04 LTS
+- **Services**: Docker Compose (nginx, PostgreSQL, Next.js app)
+
+## 🎯 Roadmap
+
+### Phase 1 (Current - MVP)
+- ✅ Core authentication system
+- ✅ Learner and Admin dashboards
+- ✅ Story library with subscriptions
+- ✅ Donation system
+- ✅ Demo mode
+
+### Phase 2 (Q2 2025)
+- [ ] Teacher dashboard
+- [ ] Institution partnerships
+- [ ] Volunteer features
+- [ ] Advanced analytics
+- [ ] Mobile app
+
+### Phase 3 (Q3 2025)
+- [ ] Multi-language content
+- [ ] Offline support
+- [ ] API for partners
+- [ ] Global expansion
 
 ## 🤝 Contributing
 
+We welcome contributions! Please follow these steps:
+
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+### Code Style
+- Use TypeScript with strict typing
+- Follow ESLint rules
+- Use Tailwind CSS for styling
+- Write Playwright tests for new features
 
 ## 📄 License
 
@@ -166,12 +218,23 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Seeds of Empowerment team
 - All volunteer contributors
 - Partner schools and institutions
+- Open source community
 
-## 📞 Contact
+## 📞 Support
 
-- Website: https://1001stories.org
-- Email: info@1001stories.org
+- **Issues**: [GitHub Issues](https://github.com/JihunKong/1001project/issues)
+- **Email**: info@1001stories.org
+- **Documentation**: See CLAUDE.md for detailed technical documentation
+
+## 🔒 Security
+
+- Authentication via NextAuth.js with email magic links
+- Role-based access control in middleware
+- Environment variables for sensitive data
+- HTTPS in production via nginx
 
 ---
 
-Built with ❤️ for children worldwide
+**Built with ❤️ for children worldwide**
+
+*1001 Stories - Empowering young voices, inspiring the world*

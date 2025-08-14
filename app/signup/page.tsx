@@ -2,24 +2,18 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { 
   UserPlus, 
   Mail, 
-  Lock, 
-  Eye, 
-  EyeOff,
   BookOpen,
   ArrowRight,
   Chrome,
   Facebook,
   Apple,
-  User,
   GraduationCap,
-  Users,
   School,
   Heart,
   Check
@@ -27,7 +21,6 @@ import {
 import Link from 'next/link';
 
 export default function SignUp() {
-  const { t } = useTranslation('common');
   const [step, setStep] = useState(1); // 1: Role Selection, 2: Form
   const [selectedRole, setSelectedRole] = useState('');
   const [formData, setFormData] = useState({
@@ -40,8 +33,6 @@ export default function SignUp() {
     agreeToTerms: false,
     subscribeNewsletter: true
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const roles = [

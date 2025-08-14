@@ -1,27 +1,21 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { 
   Users, 
   BookOpen, 
-  Globe, 
-  TrendingUp,
-  Award,
   BarChart3,
   Calendar,
   DollarSign,
   Target,
   Activity,
   MapPin,
-  ChevronRight,
   Download,
   Eye
 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function InstitutionDashboard() {
-  const { t } = useTranslation('common');
   
   // Mock data - in production, this would come from your backend
   const institutionData = {

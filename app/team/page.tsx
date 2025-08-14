@@ -6,11 +6,9 @@ import {
   BookOpen,
   Award,
   Linkedin,
-  Twitter,
   Mail,
   MapPin,
   Calendar,
-  Star,
   ArrowRight
 } from 'lucide-react';
 import Link from 'next/link';
@@ -200,7 +198,7 @@ export default function Team() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {teamStats.map((stat, index) => (
+            {teamStats.map((stat) => (
               <div
                 key={stat.label}
                 className="text-center"
@@ -228,7 +226,7 @@ export default function Team() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {leadership.map((leader, index) => (
+            {leadership.map((leader) => (
               <div
                 key={leader.name}
                 className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow"
@@ -292,7 +290,7 @@ export default function Team() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {coreTeam.map((member, index) => (
+            {coreTeam.map((member) => (
               <div
                 key={member.name}
                 className="text-center bg-gradient-to-br from-gray-50 to-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow"
@@ -338,7 +336,7 @@ export default function Team() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {advisors.map((advisor, index) => (
+            {advisors.map((advisor) => (
               <div
                 key={advisor.name}
                 className="bg-white p-8 rounded-xl shadow-lg"
@@ -379,7 +377,7 @@ export default function Team() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
+            {values.map((value) => (
               <div
                 key={value.title}
                 className="text-center"

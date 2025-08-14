@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { 
   isDemoEmail, 
   getOrCreateDemoUser, 
@@ -103,7 +101,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   // Return demo mode status
   const demoStatus = getDemoModeStatus();
   

@@ -177,7 +177,7 @@ export function hasPermission(
 // Get all permissions for a role
 export function getRolePermissions(role: UserRole): string[] {
   return Object.entries(permissions)
-    .filter(([_, allowedRoles]) => (allowedRoles as UserRole[]).includes(role))
+    .filter(([, allowedRoles]) => (allowedRoles as UserRole[]).includes(role))
     .map(([permission]) => permission);
 }
 
