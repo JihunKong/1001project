@@ -170,7 +170,8 @@ export function hasPermission(
 ): boolean {
   if (!session?.user) return false;
   const userRole = session.user.role || UserRole.LEARNER;
-  return permissions[permission].includes(userRole);
+  const allowedRoles = permissions[permission] as UserRole[];
+  return allowedRoles.includes(userRole);
 }
 
 // Get all permissions for a role
