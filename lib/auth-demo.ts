@@ -64,7 +64,7 @@ export async function getOrCreateDemoUser(email: string) {
   }
 
   // Determine role from email
-  let role = UserRole.LEARNER;
+  let role: UserRole = UserRole.LEARNER;
   if (mappedEmail.includes('teacher')) {
     role = UserRole.TEACHER;
   } else if (mappedEmail.includes('volunteer')) {

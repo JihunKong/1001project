@@ -97,7 +97,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       // For demo accounts, create/update user if needed
-      if (account?.provider === 'demo' || (email && isDemoEmail(email.verificationRequest ? email.verificationRequest : ''))) {
+      if (account?.provider === 'demo' || (email && typeof email === 'string' && isDemoEmail(email))) {
         const demoUser = await getOrCreateDemoUser(user.email!);
         if (demoUser) {
           user.id = demoUser.id;
