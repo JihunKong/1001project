@@ -1,15 +1,23 @@
 import nodemailer from 'nodemailer'
+import { isEmailServiceConfigured } from './auth-demo'
 
-// Create reusable transporter
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: process.env.SMTP_PORT === '465', // true for 465, false for other ports
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-})
+// Create reusable transporter only if email service is configured
+const createTransporter = () => {
+  if (!isEmailServiceConfigured()) {
+    console.warn('Email service not configured. Emails will not be sent.');
+    return null;
+  }
+  
+  return nodemailer.createTransporter({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_PORT === '465', // true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+}
 
 // Email templates
 const getVerificationEmailHtml = (url: string) => {
@@ -205,6 +213,15 @@ const getWelcomeEmailHtml = (name: string, role: string) => {
 
 // Send verification email
 export async function sendVerificationEmail(email: string, url: string) {
+  const transporter = createTransporter();
+  
+  if (!transporter) {
+    console.log(`[Email Service Disabled] Magic link for ${email}:`);
+    console.log(url);
+    console.log('To enable email sending, configure SMTP settings in .env.local');
+    return { success: false, message: 'Email service not configured' };
+  }
+  
   try {
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || '"1001 Stories" <noreply@1001stories.org>',
@@ -217,12 +234,20 @@ export async function sendVerificationEmail(email: string, url: string) {
     return { success: true, messageId: info.messageId }
   } catch (error) {
     console.error("Error sending verification email:", error)
+    console.log(`Fallback - Magic link for ${email}: ${url}`);
     throw new Error("Failed to send verification email")
   }
 }
 
 // Send welcome email
 export async function sendWelcomeEmail(email: string, name: string, role: string) {
+  const transporter = createTransporter();
+  
+  if (!transporter) {
+    console.log(`[Email Service Disabled] Welcome email would be sent to ${email}`);
+    return { success: false, message: 'Email service not configured' };
+  }
+  
   try {
     const info = await transporter.sendMail({
       from: process.env.EMAIL_FROM || '"1001 Stories" <noreply@1001stories.org>',
@@ -235,12 +260,20 @@ export async function sendWelcomeEmail(email: string, name: string, role: string
     return { success: true, messageId: info.messageId }
   } catch (error) {
     console.error("Error sending welcome email:", error)
-    throw new Error("Failed to send welcome email")
+    return { success: false, message: 'Failed to send welcome email' };
   }
 }
 
 // Send password reset email
 export async function sendPasswordResetEmail(email: string, url: string) {
+  const transporter = createTransporter();
+  
+  if (!transporter) {
+    console.log(`[Email Service Disabled] Password reset link for ${email}:`);
+    console.log(url);
+    return { success: false, message: 'Email service not configured' };
+  }
+  
   const html = `
     <!DOCTYPE html>
     <html>
@@ -313,6 +346,7 @@ export async function sendPasswordResetEmail(email: string, url: string) {
     return { success: true, messageId: info.messageId }
   } catch (error) {
     console.error("Error sending password reset email:", error)
-    throw new Error("Failed to send password reset email")
+    console.log(`Fallback - Password reset link for ${email}: ${url}`);
+    return { success: false, message: 'Failed to send password reset email' };
   }
 }

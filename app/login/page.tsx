@@ -75,21 +75,42 @@ export default function Login() {
     }
   };
 
-  // Demo account sign in
+  // Demo account sign in - instant access without email
   const handleDemoSignIn = async (demoEmail: string) => {
     setIsLoading(true);
     try {
-      // For demo accounts, we'll create them if they don't exist
-      const result = await signIn('email', {
+      // Check if demo mode is enabled
+      const demoStatusResponse = await fetch('/api/auth/demo-login');
+      const demoStatus = await demoStatusResponse.json();
+      
+      if (!demoStatus.demoMode?.enabled) {
+        // Fallback to email provider if demo mode is disabled
+        const result = await signIn('email', {
+          email: demoEmail,
+          redirect: false,
+          callbackUrl,
+        });
+
+        if (result?.error) {
+          toast.error('Demo mode is not enabled');
+        } else {
+          toast.success('Check your email for verification');
+          router.push('/verify-email');
+        }
+        return;
+      }
+
+      // Use demo credentials provider for instant access
+      const result = await signIn('demo', {
         email: demoEmail,
         redirect: false,
         callbackUrl,
       });
 
       if (result?.error) {
-        toast.error('Demo account not available');
-      } else {
-        toast.success('Demo account access granted!');
+        toast.error('Demo account login failed');
+      } else if (result?.ok) {
+        toast.success('Demo account access granted! 🎉');
         router.push(callbackUrl);
       }
     } catch (error) {
@@ -233,29 +254,57 @@ export default function Login() {
         </form>
 
         {/* Demo Accounts */}
-        <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-          <h4 className="text-sm font-medium text-blue-900 mb-2">Try Demo Accounts:</h4>
+        <div className="mt-8 p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-blue-900">Try Demo Accounts</h4>
+            {process.env.NEXT_PUBLIC_DEMO_MODE === 'true' && (
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                Instant Access
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-600 mb-3">
+            Click any account below for instant demo access - no email required!
+          </p>
           <div className="space-y-2">
             <button
-              onClick={() => handleDemoSignIn('learner@demo.com')}
+              onClick={() => handleDemoSignIn('learner@demo.1001stories.org')}
               disabled={isLoading}
-              className="w-full text-left text-xs text-blue-700 hover:text-blue-900 disabled:opacity-50"
+              className="w-full text-left p-2 rounded hover:bg-white/50 transition-colors disabled:opacity-50"
             >
-              <span className="font-semibold">Learner:</span> learner@demo.com
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-semibold text-xs text-blue-900">📚 Learner</span>
+                  <p className="text-xs text-gray-500">learner@demo.1001stories.org</p>
+                </div>
+                <ArrowRight className="w-3 h-3 text-blue-600" />
+              </div>
             </button>
             <button
-              onClick={() => handleDemoSignIn('teacher@demo.com')}
+              onClick={() => handleDemoSignIn('teacher@demo.1001stories.org')}
               disabled={isLoading}
-              className="w-full text-left text-xs text-blue-700 hover:text-blue-900 disabled:opacity-50"
+              className="w-full text-left p-2 rounded hover:bg-white/50 transition-colors disabled:opacity-50"
             >
-              <span className="font-semibold">Teacher:</span> teacher@demo.com
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-semibold text-xs text-blue-900">👩‍🏫 Teacher</span>
+                  <p className="text-xs text-gray-500">teacher@demo.1001stories.org</p>
+                </div>
+                <ArrowRight className="w-3 h-3 text-blue-600" />
+              </div>
             </button>
             <button
-              onClick={() => handleDemoSignIn('volunteer@demo.com')}
+              onClick={() => handleDemoSignIn('volunteer@demo.1001stories.org')}
               disabled={isLoading}
-              className="w-full text-left text-xs text-blue-700 hover:text-blue-900 disabled:opacity-50"
+              className="w-full text-left p-2 rounded hover:bg-white/50 transition-colors disabled:opacity-50"
             >
-              <span className="font-semibold">Volunteer:</span> volunteer@demo.com
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-semibold text-xs text-blue-900">💝 Volunteer</span>
+                  <p className="text-xs text-gray-500">volunteer@demo.1001stories.org</p>
+                </div>
+                <ArrowRight className="w-3 h-3 text-blue-600" />
+              </div>
             </button>
           </div>
         </div>

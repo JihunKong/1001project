@@ -2,13 +2,49 @@ import { NextAuthOptions } from "next-auth"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import EmailProvider from "next-auth/providers/email"
 import GoogleProvider from "next-auth/providers/google"
+import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import { UserRole } from "@prisma/client"
+import { isDemoEmail, getOrCreateDemoUser, isEmailServiceConfigured } from "@/lib/auth-demo"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   
   providers: [
+    // Demo Credentials Provider for demo accounts
+    CredentialsProvider({
+      id: "demo",
+      name: "Demo Account",
+      credentials: {
+        email: { label: "Email", type: "email" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email) return null;
+        
+        // Check if demo mode is enabled
+        if (process.env.DEMO_MODE_ENABLED !== 'true') return null;
+        
+        // Check if it's a demo email
+        if (!isDemoEmail(credentials.email)) return null;
+        
+        // Get or create demo user
+        const user = await getOrCreateDemoUser(credentials.email);
+        
+        if (user) {
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            emailVerified: user.emailVerified,
+          };
+        }
+        
+        return null;
+      }
+    }),
+    
+    // Email Provider with fallback handling
     EmailProvider({
       server: {
         host: process.env.SMTP_HOST,
@@ -19,8 +55,22 @@ export const authOptions: NextAuthOptions = {
         }
       },
       from: process.env.EMAIL_FROM || "noreply@1001stories.org",
-      // Custom email verification
+      // Custom email verification with demo bypass
       sendVerificationRequest: async ({ identifier: email, url, provider }) => {
+        // Check if it's a demo email
+        if (isDemoEmail(email)) {
+          console.log(`Demo account detected: ${email} - bypassing email verification`);
+          return; // Skip email sending for demo accounts
+        }
+        
+        // Check if email service is configured
+        if (!isEmailServiceConfigured()) {
+          console.warn('Email service not configured. Cannot send verification email.');
+          console.log(`Magic link for ${email}: ${url}`);
+          return; // Skip email sending but log the link
+        }
+        
+        // Send actual email
         const { sendVerificationEmail } = await import("@/lib/email")
         await sendVerificationEmail(email, url)
       },
@@ -45,7 +95,16 @@ export const authOptions: NextAuthOptions = {
   },
   
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile, email, credentials }) {
+      // For demo accounts, create/update user if needed
+      if (account?.provider === 'demo' || (email && isDemoEmail(email.verificationRequest ? email.verificationRequest : ''))) {
+        const demoUser = await getOrCreateDemoUser(user.email!);
+        if (demoUser) {
+          user.id = demoUser.id;
+          user.role = demoUser.role;
+        }
+      }
+      
       // Allow sign in
       return true
     },
