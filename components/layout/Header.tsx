@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import { useSession, signOut } from 'next-auth/react';
 import { 
@@ -28,6 +29,7 @@ import { UserRole } from '@prisma/client';
 
 export default function Header() {
   const { t } = useTranslation('common');
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -108,8 +110,15 @@ export default function Header() {
   ];
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' });
     setIsUserMenuOpen(false);
+    // Use redirect: false to prevent page reload and handle redirect manually
+    const data = await signOut({ 
+      redirect: false,
+      callbackUrl: '/' 
+    });
+    
+    // Manually redirect to home page using Next.js router
+    router.push(data.url || '/');
   };
 
   const getRoleLabel = (role: UserRole) => {

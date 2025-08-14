@@ -7,6 +7,11 @@ export default withAuth(
   function middleware(req: NextRequest) {
     const token = (req as any).nextauth?.token;
     const pathname = req.nextUrl.pathname;
+    
+    // Debug log for development
+    if (process.env.NODE_ENV === "development") {
+      console.log("[Middleware] Path:", pathname, "Role:", token?.role);
+    }
 
     // Role-based dashboard redirects
     if (pathname === "/dashboard" && token) {
@@ -21,7 +26,7 @@ export default withAuth(
           dashboardPath = "/dashboard/institution";
           break;
         case "VOLUNTEER":
-          dashboardPath = "/volunteer";
+          dashboardPath = "/dashboard/volunteer";  // Changed from "/volunteer" to "/dashboard/volunteer"
           break;
         case "ADMIN":
           dashboardPath = "/admin";
@@ -30,6 +35,7 @@ export default withAuth(
           dashboardPath = "/dashboard/learner";
       }
       
+      console.log(`[Middleware] Redirecting from /dashboard to ${dashboardPath} for role ${role}`);
       return NextResponse.redirect(new URL(dashboardPath, req.url));
     }
     

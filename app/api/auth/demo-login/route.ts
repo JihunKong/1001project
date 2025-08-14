@@ -49,6 +49,25 @@ export async function POST(request: NextRequest) {
 
     // Generate demo token
     const token = generateDemoToken(user.id, user.email, user.role);
+    
+    // Determine redirect URL based on role
+    let redirectUrl = '/dashboard/learner';
+    switch (user.role) {
+      case 'TEACHER':
+        redirectUrl = '/dashboard/teacher';
+        break;
+      case 'INSTITUTION':
+        redirectUrl = '/dashboard/institution';
+        break;
+      case 'VOLUNTEER':
+        redirectUrl = '/dashboard/volunteer';
+        break;
+      case 'ADMIN':
+        redirectUrl = '/admin';
+        break;
+      default:
+        redirectUrl = '/dashboard/learner';
+    }
 
     // Create response with demo session
     const response = NextResponse.json({
@@ -62,7 +81,7 @@ export async function POST(request: NextRequest) {
         isDemoAccount: true,
       },
       token,
-      redirectUrl: '/dashboard',
+      redirectUrl,
     });
 
     // Set demo session cookie

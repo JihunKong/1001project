@@ -92,18 +92,30 @@ function LoginContent() {
         // Successfully logged in via demo API
         toast.success('Demo account access granted! 🎉');
         
+        // Determine dashboard path based on demo email
+        let dashboardPath = '/dashboard';
+        if (demoEmail.includes('teacher')) {
+          dashboardPath = '/dashboard/teacher';
+        } else if (demoEmail.includes('institution')) {
+          dashboardPath = '/dashboard/institution';
+        } else if (demoEmail.includes('volunteer')) {
+          dashboardPath = '/dashboard/volunteer';
+        } else {
+          dashboardPath = '/dashboard/learner';
+        }
+        
         // Now sign in with NextAuth using the demo provider
         const result = await signIn('demo', {
           email: demoEmail,
           redirect: false,
-          callbackUrl,
+          callbackUrl: dashboardPath,
         });
 
         if (result?.ok) {
-          router.push(callbackUrl);
+          router.push(dashboardPath);
         } else {
           // If NextAuth fails, still redirect as we have a valid session
-          router.push(loginData.redirectUrl || callbackUrl);
+          router.push(loginData.redirectUrl || dashboardPath);
         }
       } else {
         // Fallback to email provider if demo login fails
