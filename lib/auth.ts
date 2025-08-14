@@ -123,7 +123,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.role = (user as { role?: UserRole }).role || UserRole.LEARNER
-        token.emailVerified = user.emailVerified
+        token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified
       }
       return token
     },
