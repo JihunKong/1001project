@@ -21,6 +21,9 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 # Don't set NODE_ENV=production during build to allow Tailwind to scan files properly
 
+# Generate Prisma Client
+RUN npx prisma generate
+
 # Build application
 RUN npm run build
 
