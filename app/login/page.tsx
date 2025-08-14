@@ -184,7 +184,8 @@ export default function Login() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 text-gray-900 bg-white dark:bg-white dark:text-gray-900 [color-scheme:light]"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 text-gray-900 bg-white dark:bg-white dark:text-gray-900"
+                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
                   placeholder="Enter your email"
                 />
               </div>
