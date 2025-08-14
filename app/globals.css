@@ -31,7 +31,7 @@ body {
 /* Gradient text animation */
 @layer utilities {
   .gradient-text {
-    background: linear-gradient(90deg, #3B82F6, #8B5CF6, #EC4899);
+    background: linear-gradient(90deg, #3B82F6, #6366F1, #8B5CF6);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -67,6 +67,35 @@ body {
   .glass {
     @apply backdrop-blur-2xl bg-white/80 dark:bg-gray-900/80 border border-white/20 dark:border-gray-700/30;
     @apply transition-all duration-300 hover:backdrop-blur-3xl hover:bg-white/90 dark:hover:bg-gray-900/90;
+  }
+  
+  /* Glass card styles */
+  .glass-card {
+    @apply backdrop-blur-xl bg-white/70 dark:bg-gray-900/70;
+    @apply border border-white/20 dark:border-gray-700/20;
+    @apply shadow-xl rounded-2xl;
+  }
+  
+  .glass-card-hover {
+    @apply hover:backdrop-blur-2xl hover:bg-white/80 dark:hover:bg-gray-900/80;
+    @apply hover:shadow-2xl transition-all duration-300;
+  }
+  
+  /* Button styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white;
+    @apply bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl;
+    @apply shadow-lg hover:shadow-xl transform hover:scale-105;
+    @apply transition-all duration-200 ease-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium;
+    @apply bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700;
+    @apply shadow-md hover:shadow-lg transform hover:scale-105;
+    @apply transition-all duration-200 ease-out;
+    @apply focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
   }
 }
 
@@ -120,6 +149,43 @@ html {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
   }
+  
+  /* Blob animation styles */
+  .blob {
+    @apply absolute rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl;
+    animation: blob 7s infinite;
+  }
+  
+  .blob-indigo {
+    @apply bg-indigo-300 dark:bg-indigo-600;
+  }
+  
+  .blob-blue {
+    @apply bg-blue-300 dark:bg-blue-600;
+  }
+  
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+  
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+  
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
 }
 
 /* Story card animations */
@@ -132,16 +198,30 @@ html {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
   }
   
-  .badge-pink {
-    @apply bg-pink-300 dark:bg-pink-600;
+  /* Role-specific badge colors with consistent theme */
+  .badge-learner {
+    @apply bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300;
   }
   
-  .badge-purple {
-    @apply bg-purple-300 dark:bg-purple-600;
+  .badge-teacher {
+    @apply bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300;
   }
   
-  .badge-blue {
-    @apply bg-indigo-300 dark:bg-indigo-600;
+  .badge-institution {
+    @apply bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300;
+  }
+  
+  .badge-volunteer {
+    @apply bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300;
+  }
+  
+  /* Primary color badges */
+  .badge-primary {
+    @apply bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300;
+  }
+  
+  .badge-secondary {
+    @apply bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300;
   }
 }
 

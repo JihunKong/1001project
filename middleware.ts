@@ -83,7 +83,12 @@ export default withAuth(
           "/ko",
           "/es",
           "/fr",
-          "/zh"
+          "/zh",
+          // Demo routes (safe, read-only with sample data)
+          "/demo/learner",
+          "/demo/teacher",
+          "/demo/institution",
+          "/demo/volunteer"
         ];
         
         // API routes that don't require authentication

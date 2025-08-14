@@ -3,6 +3,7 @@
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 import { 
   BookOpen, 
   Users, 
@@ -22,6 +23,10 @@ import {
 
 export default function Home() {
   const { t } = useTranslation('common');
+  const { data: session } = useSession();
+  
+  // Use demo routes if not authenticated
+  const dashboardPrefix = session ? '/dashboard' : '/demo';
   
   const roles = [
     {
@@ -29,9 +34,10 @@ export default function Home() {
       title: t('roles.learner.title'),
       description: t('roles.learner.description'),
       icon: GraduationCap,
-      gradient: 'from-blue-500 to-cyan-500',
-      shadowColor: 'rgba(59, 130, 246, 0.5)',
-      href: '/dashboard/learner',
+      gradient: 'from-blue-400 to-blue-600',
+      iconColor: 'text-blue-500',
+      shadowColor: 'rgba(59, 130, 246, 0.3)',
+      href: `${dashboardPrefix}/learner`,
       features: ['Interactive Stories', 'Progress Tracking', 'Achievements']
     },
     {
@@ -39,9 +45,10 @@ export default function Home() {
       title: t('roles.teacher.title'),
       description: t('roles.teacher.description'),
       icon: BookOpen,
-      gradient: 'from-emerald-500 to-teal-500',
-      shadowColor: 'rgba(16, 185, 129, 0.5)',
-      href: '/dashboard/teacher',
+      gradient: 'from-emerald-400 to-emerald-600',
+      iconColor: 'text-emerald-500',
+      shadowColor: 'rgba(52, 211, 153, 0.3)',
+      href: `${dashboardPrefix}/teacher`,
       features: ['Classroom Tools', 'Student Analytics', 'Content Library']
     },
     {
@@ -49,9 +56,10 @@ export default function Home() {
       title: t('roles.institution.title'),
       description: t('roles.institution.description'),
       icon: School,
-      gradient: 'from-purple-500 to-pink-500',
-      shadowColor: 'rgba(168, 85, 247, 0.5)',
-      href: '/dashboard/institution',
+      gradient: 'from-purple-400 to-purple-600',
+      iconColor: 'text-purple-500',
+      shadowColor: 'rgba(168, 85, 247, 0.3)',
+      href: `${dashboardPrefix}/institution`,
       features: ['Program Management', 'Impact Reports', 'Global Network']
     },
     {
@@ -59,9 +67,10 @@ export default function Home() {
       title: t('roles.volunteer.title'),
       description: t('roles.volunteer.description'),
       icon: Heart,
-      gradient: 'from-rose-500 to-orange-500',
-      shadowColor: 'rgba(244, 63, 94, 0.5)',
-      href: '/volunteer',
+      gradient: 'from-rose-400 to-rose-600',
+      iconColor: 'text-rose-500',
+      shadowColor: 'rgba(244, 63, 94, 0.3)',
+      href: `${dashboardPrefix}/volunteer`,
       features: ['Translation', 'Illustration', 'Mentorship']
     }
   ];
@@ -71,19 +80,19 @@ export default function Home() {
       title: 'Global Stories',
       description: 'Access stories from children around the world',
       icon: Globe,
-      gradient: 'from-indigo-500 to-purple-500'
+      gradient: 'from-blue-400 to-blue-600'
     },
     {
       title: 'Interactive Learning',
       description: 'Engage with content through interactive features',
       icon: Sparkles,
-      gradient: 'from-purple-500 to-pink-500'
+      gradient: 'from-indigo-400 to-indigo-600'
     },
     {
       title: 'Community Impact',
       description: 'Make a real difference in children\'s lives',
       icon: Users,
-      gradient: 'from-pink-500 to-rose-500'
+      gradient: 'from-purple-400 to-purple-600'
     }
   ];
 
@@ -98,12 +107,11 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-900/50 dark:to-gray-900">
       {/* Hero Section with animated background */}
       <section className="relative overflow-hidden py-24 sm:py-32 lg:py-40">
-        {/* Animated gradient background */}
+        {/* Animated gradient background - simplified */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 hero-gradient-light" />
-          <div className="blob blob-pink w-96 h-96 top-0 left-0 animate-delay-100" />
-          <div className="blob blob-purple w-96 h-96 bottom-0 right-0 animate-delay-300" />
-          <div className="blob blob-indigo w-96 h-96 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-delay-500" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-indigo-950/20 dark:to-purple-950/20" />
+          <div className="blob blob-indigo w-96 h-96 top-0 left-0 animate-delay-100 opacity-30" />
+          <div className="blob blob-blue w-96 h-96 bottom-0 right-0 animate-delay-300 opacity-30" />
         </div>
         
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
@@ -245,11 +253,11 @@ export default function Home() {
                     {/* Gradient overlay */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${role.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
                     
-                    {/* Icon */}
-                    <div className={`relative inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-gradient-to-br ${role.gradient} shadow-lg`}
+                    {/* Icon with role-specific color */}
+                    <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
                       style={{ boxShadow: `0 10px 30px -10px ${role.shadowColor}` }}
                     >
-                      <role.icon className="w-8 h-8 text-white" />
+                      <role.icon className={`w-8 h-8 ${role.iconColor}`} />
                     </div>
                     
                     {/* Content */}
