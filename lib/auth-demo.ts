@@ -128,7 +128,7 @@ export function generateDemoToken(userId: string, email: string, role: UserRole)
 /**
  * Verify demo token
  */
-export function verifyDemoToken(token: string): any {
+export function verifyDemoToken(token: string): unknown {
   const secret = process.env.NEXTAUTH_SECRET || 'demo-secret-key';
   
   try {
