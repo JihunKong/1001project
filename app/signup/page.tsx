@@ -289,7 +289,12 @@ export default function SignUp() {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
+                  style={{ 
+                    color: 'rgb(17, 24, 39)', 
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    WebkitTextFillColor: 'rgb(17, 24, 39)',
+                    caretColor: 'rgb(17, 24, 39)'
+                  }}
                   placeholder="John"
                 />
               </div>
@@ -305,7 +310,12 @@ export default function SignUp() {
                   value={formData.lastName}
                   onChange={handleInputChange}
                   className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
+                  style={{ 
+                    color: 'rgb(17, 24, 39)', 
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    WebkitTextFillColor: 'rgb(17, 24, 39)',
+                    caretColor: 'rgb(17, 24, 39)'
+                  }}
                   placeholder="Doe"
                 />
               </div>
@@ -328,7 +338,12 @@ export default function SignUp() {
                   value={formData.email}
                   onChange={handleInputChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
+                  style={{ 
+                    color: 'rgb(17, 24, 39)', 
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    WebkitTextFillColor: 'rgb(17, 24, 39)',
+                    caretColor: 'rgb(17, 24, 39)'
+                  }}
                   placeholder="john@example.com"
                 />
               </div>
@@ -346,7 +361,12 @@ export default function SignUp() {
                   value={formData.organization}
                   onChange={handleInputChange}
                   className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
-                  style={{ color: '#111827', backgroundColor: '#ffffff' }}
+                  style={{ 
+                    color: 'rgb(17, 24, 39)', 
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    WebkitTextFillColor: 'rgb(17, 24, 39)',
+                    caretColor: 'rgb(17, 24, 39)'
+                  }}
                   placeholder={selectedRole === 'teacher' ? 'Your school name' : 'Your organization name'}
                 />
               </div>
