@@ -109,12 +109,12 @@ export const authOptions: NextAuthOptions = {
       return true
     },
     
-    async session({ session, token, user }) {
-      if (session?.user) {
-        // Add user ID and role to session
-        session.user.id = user.id
-        session.user.role = (user as { role?: UserRole }).role || UserRole.LEARNER
-        session.user.emailVerified = user.emailVerified
+    async session({ session, token }) {
+      if (session?.user && token) {
+        // Add user ID and role to session from token
+        session.user.id = token.id as string
+        session.user.role = (token.role as UserRole) || UserRole.LEARNER
+        session.user.emailVerified = token.emailVerified as Date | null
       }
       return session
     },
@@ -123,6 +123,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.role = (user as { role?: UserRole }).role || UserRole.LEARNER
+        token.emailVerified = user.emailVerified
       }
       return token
     },
