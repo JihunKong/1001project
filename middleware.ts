@@ -85,6 +85,7 @@ export default withAuth(
           "/fr",
           "/zh",
           // Demo routes (safe, read-only with sample data)
+          "/demo",
           "/demo/learner",
           "/demo/teacher",
           "/demo/institution",

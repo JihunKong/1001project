@@ -3,7 +3,6 @@
 import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
 import { 
   BookOpen, 
   Users, 
@@ -18,15 +17,15 @@ import {
   Zap,
   Award,
   Target,
-  Rocket
+  Rocket,
+  Play
 } from 'lucide-react';
 
 export default function Home() {
   const { t } = useTranslation('common');
-  const { data: session } = useSession();
   
-  // Use demo routes if not authenticated
-  const dashboardPrefix = session ? '/dashboard' : '/demo';
+  // Always use actual dashboard routes - middleware handles authentication
+  const dashboardPrefix = '/dashboard';
   
   const roles = [
     {
@@ -150,6 +149,10 @@ export default function Home() {
               <Link href="#roles" className="btn-primary group">
                 {t('hero.cta')}
                 <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link href="/demo" className="btn-secondary text-gray-700 dark:text-gray-200">
+                <Play className="w-5 h-5 mr-2" />
+                Try Demo
               </Link>
               <Link href="/library" className="btn-secondary text-gray-700 dark:text-gray-200">
                 <BookOpen className="w-5 h-5 mr-2" />

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('CSS Loading Verification', () => {
   test('should load and apply Tailwind CSS styles correctly', async ({ page }) => {
     // Navigate to the homepage
-    await page.goto('http://localhost:3000');
+    await page.goto('http://localhost:3001');
     
     // Wait for the page to fully load
     await page.waitForLoadState('networkidle');

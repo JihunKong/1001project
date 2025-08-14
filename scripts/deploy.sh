@@ -5,7 +5,7 @@
 # ============================================
 
 # Configuration
-SERVER_IP="43.202.3.58"
+SERVER_IP="13.209.14.175"
 SERVER_USER="ubuntu"
 PEM_FILE="../1001project.pem"
 REPO_URL="https://github.com/JihunKong/1001project.git"
