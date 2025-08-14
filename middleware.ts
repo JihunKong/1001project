@@ -116,7 +116,8 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      * - images and other static assets
+     * - api/auth routes (handled by NextAuth)
      */
-    "/((?!_next/static|_next/image|favicon.ico|public|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.webp).*)",
+    "/((?!_next/static|_next/image|favicon.ico|public|api/auth|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.webp).*)",
   ],
 };
