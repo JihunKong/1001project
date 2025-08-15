@@ -69,6 +69,11 @@ model User {
   notifications   Notification[]
   activityLogs    ActivityLog[]
   
+  // CMS Admin
+  uploadedMedia   MediaFile[]
+  workflowActions WorkflowHistory[]
+  bulkImports     BulkImport[]
+  
   @@index([email])
   @@index([role])
   @@index([schoolId])
@@ -1283,22 +1288,35 @@ model StorySubmission {
   authorId        String
   title           String
   content         String           @db.Text
+  summary         String?          @db.Text
   language        String
   category        String
   ageGroup        String
   status          StorySubmissionStatus @default(DRAFT)
+  priority        Priority         @default(MEDIUM)
   reviewerId      String?
+  assigneeId      String?
+  dueDate         DateTime?
   reviewNotes     String?          @db.Text
   editorialNotes  String?          @db.Text
   publishDate     DateTime?
   compensation    Decimal?         @db.Decimal(10, 2)
+  tags            String[]
+  
+  // Media files
+  coverImageId    String?
+  attachments     String[]
   
   author          User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  coverImage      MediaFile?       @relation(fields: [coverImageId], references: [id])
+  workflowHistory WorkflowHistory[]
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   
   @@index([status])
+  @@index([priority])
+  @@index([assigneeId])
   @@map("story_submissions")
 }
 
@@ -1455,4 +1473,117 @@ model ActivityLog {
   @@index([userId])
   @@index([entity, entityId])
   @@map("activity_logs")
+}
+
+// ==========================================
+// CMS ADMIN MODELS
+// ==========================================
+
+// Priority levels for tasks and submissions
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// Media file library for CMS
+model MediaFile {
+  id              String           @id @default(cuid())
+  filename        String
+  originalName    String
+  mimeType        String
+  size            Int              // File size in bytes
+  url             String
+  thumbnailUrl    String?
+  altText         String?
+  description     String?
+  
+  // Image processing details
+  width           Int?
+  height          Int?
+  format          String?
+  
+  // Organization
+  folder          String           @default("/")
+  tags            String[]
+  
+  // Relationships
+  uploadedById    String
+  uploadedBy      User             @relation(fields: [uploadedById], references: [id])
+  storySubmissions StorySubmission[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([uploadedById])
+  @@index([mimeType])
+  @@index([folder])
+  @@map("media_files")
+}
+
+// Workflow history tracking for story submissions
+model WorkflowHistory {
+  id              String           @id @default(cuid())
+  storySubmissionId String
+  fromStatus      StorySubmissionStatus?
+  toStatus        StorySubmissionStatus
+  comment         String?          @db.Text
+  performedById   String
+  metadata        Json?
+  
+  storySubmission StorySubmission  @relation(fields: [storySubmissionId], references: [id], onDelete: Cascade)
+  performedBy     User             @relation(fields: [performedById], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  
+  @@index([storySubmissionId])
+  @@index([performedById])
+  @@map("workflow_history")
+}
+
+// Bulk import tracking for CSV/Excel uploads
+model BulkImport {
+  id              String           @id @default(cuid())
+  filename        String
+  originalName    String
+  fileUrl         String
+  type            ImportType
+  status          ImportStatus     @default(PENDING)
+  
+  // Processing details
+  totalRows       Int              @default(0)
+  processedRows   Int              @default(0)
+  successfulRows  Int              @default(0)
+  errorRows       Int              @default(0)
+  
+  // Results
+  errors          Json?            // Array of error details
+  summary         Json?            // Import summary
+  
+  // Relations
+  uploadedById    String
+  uploadedBy      User             @relation(fields: [uploadedById], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([uploadedById])
+  @@index([status])
+  @@map("bulk_imports")
+}
+
+enum ImportType {
+  STORIES
+  TRANSLATIONS
+  USERS
+  MEDIA
+}
+
+enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
 }

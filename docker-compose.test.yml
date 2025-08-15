@@ -1,0 +1,187 @@
+version: '3.9'
+
+services:
+  # Test database with isolated data
+  test-db:
+    image: postgres:15-alpine
+    container_name: 1001-stories-test-db
+    environment:
+      POSTGRES_DB: stories_test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password_123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+      - ./tests/fixtures/init-test-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports:
+      - "5433:5432"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d stories_test_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # Test application with debug capabilities
+  test-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      args:
+        - NODE_ENV=test
+    container_name: 1001-stories-test-app
+    environment:
+      - NODE_ENV=test
+      - NEXTAUTH_URL=http://localhost:3001
+      - NEXTAUTH_SECRET=test-secret-key-for-testing-only
+      - DATABASE_URL=postgresql://test_user:test_password_123@test-db:5432/stories_test_db
+      - SMTP_HOST=mailhog
+      - SMTP_PORT=1025
+      - SMTP_USER=test
+      - SMTP_PASSWORD=test
+      - EMAIL_FROM=test@1001stories.org
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - LOG_LEVEL=debug
+      - TEST_MODE=true
+      - DISABLE_RATE_LIMITING=true
+    volumes:
+      - ./src:/app/src:ro
+      - ./public:/app/public:ro
+      - ./locales:/app/locales:ro
+      - ./tests:/app/tests:ro
+      - ./playwright.config.docker.ts:/app/playwright.config.ts:ro
+      - test-artifacts:/app/test-artifacts
+      - test-results:/app/test-results
+      - playwright-report:/app/playwright-report
+    ports:
+      - "3001:3000"
+      - "9229:9229"  # Node.js debugging port
+    networks:
+      - test-network
+    depends_on:
+      test-db:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Playwright test runner container
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.54.2-jammy
+    container_name: 1001-stories-playwright
+    environment:
+      - CI=true
+      - TEST_BASE_URL=http://test-app:3000
+      - DATABASE_URL=postgresql://test_user:test_password_123@test-db:5432/stories_test_db
+      - HEADLESS=true
+      - WORKERS=4
+      - TRACE=retain-on-failure
+      - VIDEO=retain-on-failure
+      - SCREENSHOT=only-on-failure
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./playwright.config.docker.ts:/app/playwright.config.ts:ro
+      - ./package.json:/app/package.json:ro
+      - ./package-lock.json:/app/package-lock.json:ro
+      - test-artifacts:/app/test-artifacts
+      - test-results:/app/test-results
+      - playwright-report:/app/playwright-report
+      - /var/run/docker.sock:/var/run/docker.sock  # For container management tests
+    working_dir: /app
+    command: >
+      sh -c "
+        npm ci &&
+        npx playwright install --with-deps &&
+        npx playwright test --config=playwright.config.ts
+      "
+    networks:
+      - test-network
+    depends_on:
+      test-app:
+        condition: service_healthy
+    profiles:
+      - test
+
+  # Email testing with MailHog
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: 1001-stories-mailhog
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "echo", "1"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+
+  # Redis for session and cache testing
+  redis:
+    image: redis:7-alpine
+    container_name: 1001-stories-test-redis
+    ports:
+      - "6380:6379"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - redis_test_data:/data
+
+  # Mock payment services
+  stripe-mock:
+    image: stripe/stripe-mock:latest
+    container_name: 1001-stories-stripe-mock
+    ports:
+      - "12111:12111"
+    networks:
+      - test-network
+
+  # Browser recording for debugging
+  browser-recorder:
+    image: browserless/chrome:latest
+    container_name: 1001-stories-browser-recorder
+    environment:
+      - CONNECTION_TIMEOUT=600000
+      - MAX_CONCURRENT_SESSIONS=4
+      - PREBOOT_CHROME=true
+      - KEEP_ALIVE=true
+    ports:
+      - "3010:3000"
+    networks:
+      - test-network
+    profiles:
+      - debug
+
+networks:
+  test-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
+
+volumes:
+  test_postgres_data:
+    driver: local
+  test-artifacts:
+    driver: local
+  test-results:
+    driver: local
+  playwright-report:
+    driver: local
+  redis_test_data:
+    driver: local
