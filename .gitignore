@@ -49,3 +49,12 @@ nginx/logs/
 
 # uploads
 uploads/.env.local
+
+# sensitive files
+test-email.js
+*.backup
+*.bak
+.env.secrets
+
+# server sync files
+*.server
