@@ -43,9 +43,9 @@ export default defineConfig({
     baseURL: process.env.TEST_BASE_URL || 'http://localhost:3001',
     
     // Artifact collection
-    trace: process.env.TRACE || 'retain-on-failure',
-    screenshot: process.env.SCREENSHOT || 'only-on-failure',
-    video: process.env.VIDEO || 'retain-on-failure',
+    trace: (process.env.TRACE as any) || "retain-on-failure",
+    screenshot: (process.env.SCREENSHOT as any) || "only-on-failure",
+    video: (process.env.VIDEO as any) || "retain-on-failure",
     
     // Browser settings
     headless: process.env.HEADLESS !== 'false',

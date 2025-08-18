@@ -369,7 +369,7 @@ export class PerformanceHelper {
   async getWebVitals(): Promise<any> {
     return this.page.evaluate(() => {
       return new Promise((resolve) => {
-        let fcp, lcp, cls, fid, ttfb;
+        let fcp: any, lcp: any, cls: any, fid: any, ttfb: any;
         
         new PerformanceObserver((list) => {
           const entries = list.getEntries();

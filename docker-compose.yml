@@ -19,6 +19,8 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - EMAIL_FROM=${EMAIL_FROM:-noreply@1001stories.org}
+      - EMAIL_SERVICE_ENABLED=${EMAIL_SERVICE_ENABLED}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     volumes:
       - ./uploads:/app/uploads
     networks:
