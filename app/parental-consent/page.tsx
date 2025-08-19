@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+
+// Force dynamic rendering due to client-side search params
+export const dynamic = 'force-dynamic';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -18,8 +20,15 @@ import {
 } from 'lucide-react';
 
 export default function ParentalConsent() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const [token, setToken] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  
+  // Client-side only hook execution
+  useEffect(() => {
+    setIsClient(true);
+    const urlParams = new URLSearchParams(window.location.search);
+    setToken(urlParams.get('token'));
+  }, []);
   
   const [isLoading, setIsLoading] = useState(false);
   const [consentData, setConsentData] = useState<{
@@ -27,7 +36,15 @@ export default function ParentalConsent() {
     childEmail: string;
     childAge: number;
     isValid: boolean;
+    requestDate?: string;
+    expiryDate?: string;
+    isMinor?: boolean;
+    parentEmail?: string;
+    parentName?: string;
   } | null>(null);
+
+  // Detect if this is a deletion request based on presence of requestDate
+  const isDeletionRequest = consentData?.requestDate;
   const [decision, setDecision] = useState<'approve' | 'deny' | null>(null);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -78,8 +95,12 @@ export default function ParentalConsent() {
         setDecision(approved ? 'approve' : 'deny');
         toast.success(
           approved 
-            ? 'Consent granted! Your child can now access their account.' 
-            : 'Consent denied. The account will remain inactive.'
+            ? (isDeletionRequest 
+                ? 'Consent granted! Your child\'s account deletion will proceed.' 
+                : 'Consent granted! Your child can now access their account.')
+            : (isDeletionRequest 
+                ? 'Consent denied. Your child\'s account deletion has been cancelled.' 
+                : 'Consent denied. The account will remain inactive.')
         );
       } else {
         throw new Error('Failed to process consent');
@@ -91,6 +112,18 @@ export default function ParentalConsent() {
       setIsLoading(false);
     }
   };
+
+  // Show loading until client-side hydration
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!token) {
     return (
@@ -123,13 +156,22 @@ export default function ParentalConsent() {
           </div>
           
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            {decision === 'approve' ? 'Consent Granted' : 'Consent Denied'}
+            {decision === 'approve' 
+              ? (isDeletionRequest ? 'Deletion Approved' : 'Consent Granted')
+              : (isDeletionRequest ? 'Deletion Cancelled' : 'Consent Denied')
+            }
           </h2>
           
           <p className="text-gray-600 mb-6">
             {decision === 'approve' 
-              ? `${consentData?.childName}'s account has been activated. They will receive an email confirmation and can now start using 1001 Stories.`
-              : `${consentData?.childName}'s account will remain inactive. They will be notified of your decision.`
+              ? (isDeletionRequest
+                  ? `${consentData?.childName}'s account deletion has been approved and will proceed. All data will be permanently removed within 30 days.`
+                  : `${consentData?.childName}'s account has been activated. They will receive an email confirmation and can now start using 1001 Stories.`
+                )
+              : (isDeletionRequest
+                  ? `${consentData?.childName}'s account deletion has been cancelled. Their account remains active and they will be notified.`
+                  : `${consentData?.childName}'s account will remain inactive. They will be notified of your decision.`
+                )
             }
           </p>
           
@@ -168,7 +210,10 @@ export default function ParentalConsent() {
               Parental Consent Required
             </h1>
             <p className="text-gray-600">
-              Your child wants to create an account with 1001 Stories
+              {isDeletionRequest 
+                ? "Your child has requested to delete their 1001 Stories account"
+                : "Your child wants to create an account with 1001 Stories"
+              }
             </p>
           </div>
         </div>
@@ -177,7 +222,9 @@ export default function ParentalConsent() {
           <div className="space-y-6">
             {/* Child Information */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Account Request Details</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                {isDeletionRequest ? "Account Deletion Request Details" : "Account Request Details"}
+              </h2>
               
               <div className="space-y-3">
                 <div className="flex justify-between">
@@ -192,6 +239,24 @@ export default function ParentalConsent() {
                   <span className="text-gray-600">Age:</span>
                   <span className="font-medium text-gray-900">{consentData.childAge} years old</span>
                 </div>
+                {isDeletionRequest && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Request Date:</span>
+                      <span className="font-medium text-gray-900">
+                        {new Date(consentData.requestDate!).toLocaleDateString()}
+                      </span>
+                    </div>
+                    {consentData.expiryDate && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Expires:</span>
+                        <span className="font-medium text-gray-900">
+                          {new Date(consentData.expiryDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 
@@ -277,7 +342,10 @@ export default function ParentalConsent() {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Decision</h3>
               <p className="text-gray-600 mb-6">
-                Do you give permission for {consentData.childName} to create an account with 1001 Stories?
+                {isDeletionRequest
+                  ? `Do you give permission for ${consentData.childName}'s account to be permanently deleted from 1001 Stories?`
+                  : `Do you give permission for ${consentData.childName} to create an account with 1001 Stories?`
+                }
               </p>
 
               <div className="flex gap-4">
@@ -287,7 +355,10 @@ export default function ParentalConsent() {
                   className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 >
                   <Check className="h-5 w-5" />
-                  {isLoading ? 'Processing...' : 'Grant Permission'}
+                  {isLoading 
+                    ? 'Processing...' 
+                    : (isDeletionRequest ? 'Approve Deletion' : 'Grant Permission')
+                  }
                 </button>
 
                 <button
@@ -296,7 +367,10 @@ export default function ParentalConsent() {
                   className="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 >
                   <X className="h-5 w-5" />
-                  {isLoading ? 'Processing...' : 'Deny Permission'}
+                  {isLoading 
+                    ? 'Processing...' 
+                    : (isDeletionRequest ? 'Cancel Deletion' : 'Deny Permission')
+                  }
                 </button>
               </div>
 

@@ -7,12 +7,50 @@ services:
       dockerfile: Dockerfile.dev
     container_name: 1001-stories-dev
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - NODE_ENV=development
-      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL=http://localhost:3001
+      - NEXTAUTH_SECRET=dev-secret-key-for-local-development
+      - DATABASE_URL=postgresql://stories_user:stories_password_123@postgres-dev:5432/stories_db
+      - DEMO_MODE_ENABLED=true
+      - EMAIL_SERVICE_ENABLED=false
     volumes:
       - .:/app
       - /app/node_modules
       - /app/.next
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+    networks:
+      - dev-network
     command: npm run dev
+
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: 1001-stories-dev-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: stories_db
+      POSTGRES_USER: stories_user
+      POSTGRES_PASSWORD: stories_password_123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # 로컬 5432와 충돌 방지
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stories_user -d stories_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  dev-network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:

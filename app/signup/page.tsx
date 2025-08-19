@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -16,9 +16,13 @@ import {
   GraduationCap,
   School,
   Heart,
-  Check
+  Check,
+  Calendar,
+  AlertTriangle,
+  Info
 } from 'lucide-react';
 import Link from 'next/link';
+import { isValidDateOfBirth, verifyAge, checkCOPPACompliance } from '@/lib/coppa';
 
 export default function SignUp() {
   const [step, setStep] = useState(1); // 1: Role Selection, 2: Form
@@ -30,10 +34,21 @@ export default function SignUp() {
     password: '',
     confirmPassword: '',
     organization: '',
+    dateOfBirth: '',
+    parentEmail: '',
+    parentName: '',
     agreeToTerms: false,
-    subscribeNewsletter: true
+    subscribeNewsletter: true,
+    parentalConsentAcknowledged: false
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [ageVerification, setAgeVerification] = useState<{
+    isMinor: boolean;
+    age: number;
+    requiresParentalConsent: boolean;
+    isValid: boolean;
+  } | null>(null);
+  const [showParentalConsentInfo, setShowParentalConsentInfo] = useState(false);
 
   const roles = [
     {
@@ -103,13 +118,82 @@ export default function SignUp() {
     }));
   };
 
+  // Handle date of birth change and verify age
+  useEffect(() => {
+    if (formData.dateOfBirth) {
+      const dateOfBirth = new Date(formData.dateOfBirth);
+      
+      if (isValidDateOfBirth(dateOfBirth)) {
+        const verification = verifyAge(dateOfBirth);
+        setAgeVerification({
+          isMinor: verification.isMinor,
+          age: verification.age,
+          requiresParentalConsent: verification.requiresParentalConsent,
+          isValid: true
+        });
+        
+        if (verification.isMinor) {
+          setShowParentalConsentInfo(true);
+        } else {
+          setShowParentalConsentInfo(false);
+          setFormData(prev => ({
+            ...prev,
+            parentEmail: '',
+            parentName: '',
+            parentalConsentAcknowledged: false
+          }));
+        }
+      } else {
+        setAgeVerification({
+          isMinor: false,
+          age: 0,
+          requiresParentalConsent: false,
+          isValid: false
+        });
+        setShowParentalConsentInfo(false);
+      }
+    } else {
+      setAgeVerification(null);
+      setShowParentalConsentInfo(false);
+    }
+  }, [formData.dateOfBirth]);
+
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic validation
     if (!formData.agreeToTerms) {
       toast.error('Please agree to the terms and conditions');
       return;
+    }
+
+    if (!formData.dateOfBirth) {
+      toast.error('Please enter your date of birth');
+      return;
+    }
+
+    // Age verification
+    if (!ageVerification?.isValid) {
+      toast.error('Please enter a valid date of birth');
+      return;
+    }
+
+    // COPPA compliance check
+    const dateOfBirth = new Date(formData.dateOfBirth);
+    const complianceCheck = checkCOPPACompliance(dateOfBirth);
+    
+    if (complianceCheck.requiresParentalConsent) {
+      if (!formData.parentEmail || !formData.parentName) {
+        toast.error('Parent/guardian email and name are required for users under 13');
+        return;
+      }
+      
+      if (!formData.parentalConsentAcknowledged) {
+        toast.error('Please acknowledge the parental consent requirement');
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -125,6 +209,10 @@ export default function SignUp() {
           role: selectedRole,
           organization: formData.organization,
           subscribeNewsletter: formData.subscribeNewsletter,
+          dateOfBirth: formData.dateOfBirth,
+          parentEmail: formData.parentEmail,
+          parentName: formData.parentName,
+          ageVerification,
         }),
       });
 
@@ -133,19 +221,26 @@ export default function SignUp() {
         throw new Error(error.message || 'Failed to create account');
       }
 
-      // Send magic link for email verification
-      const result = await signIn('email', {
-        email: formData.email,
-        redirect: false,
-        callbackUrl: '/dashboard',
-      });
+      const result = await response.json();
+      
+      if (ageVerification.isMinor) {
+        toast.success('Account created! A parental consent email has been sent to your parent/guardian.');
+        router.push('/parental-consent-pending');
+      } else {
+        // Send magic link for email verification
+        const signInResult = await signIn('email', {
+          email: formData.email,
+          redirect: false,
+          callbackUrl: '/dashboard',
+        });
 
-      if (result?.error) {
-        throw new Error('Failed to send verification email');
+        if (signInResult?.error) {
+          throw new Error('Failed to send verification email');
+        }
+
+        toast.success('Account created! Check your email to verify.');
+        router.push('/verify-email');
       }
-
-      toast.success('Account created! Check your email to verify.');
-      router.push('/verify-email');
     } catch (error) {
       console.error('Registration error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to create account');
@@ -363,10 +458,156 @@ export default function SignUp() {
               </div>
             )}
 
+            {/* Date of Birth Field */}
+            <div>
+              <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
+                Date of Birth <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  type="date"
+                  required
+                  value={formData.dateOfBirth}
+                  onChange={handleInputChange}
+                  max={new Date().toISOString().split('T')[0]}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
+                  style={{ 
+                    color: 'rgb(17, 24, 39)', 
+                    backgroundColor: 'rgb(255, 255, 255)',
+                    WebkitTextFillColor: 'rgb(17, 24, 39)',
+                    caretColor: 'rgb(17, 24, 39)'
+                  }}
+                />
+              </div>
+              
+              {/* Age verification feedback */}
+              {ageVerification && (
+                <div className={`mt-2 text-sm ${ageVerification.isValid ? 'text-green-600' : 'text-red-600'}`}>
+                  {ageVerification.isValid ? (
+                    ageVerification.isMinor ? (
+                      <div className="flex items-center gap-1">
+                        <Info className="h-4 w-4" />
+                        Age: {ageVerification.age} years (Parental consent required)
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <Check className="h-4 w-4" />
+                        Age: {ageVerification.age} years
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <AlertTriangle className="h-4 w-4" />
+                      Please enter a valid date of birth
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Parental Consent Section for Minors */}
+            {showParentalConsentInfo && ageVerification?.isMinor && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                transition={{ duration: 0.3 }}
+                className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4"
+              >
+                <div className="flex items-start gap-3">
+                  <Info className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium text-blue-900">Parental Consent Required</h4>
+                    <p className="text-sm text-blue-700 mt-1">
+                      Since you are under 13 years old, we need permission from your parent or guardian 
+                      to create your account, as required by COPPA (Children&apos;s Online Privacy Protection Act).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <label htmlFor="parentName" className="block text-sm font-medium text-gray-700 mb-1">
+                      Parent/Guardian Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="parentName"
+                      name="parentName"
+                      type="text"
+                      required={ageVerification?.isMinor}
+                      value={formData.parentName}
+                      onChange={handleInputChange}
+                      className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
+                      style={{ 
+                        color: 'rgb(17, 24, 39)', 
+                        backgroundColor: 'rgb(255, 255, 255)',
+                        WebkitTextFillColor: 'rgb(17, 24, 39)',
+                        caretColor: 'rgb(17, 24, 39)'
+                      }}
+                      placeholder="Parent or guardian's full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="parentEmail" className="block text-sm font-medium text-gray-700 mb-1">
+                      Parent/Guardian Email <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        id="parentEmail"
+                        name="parentEmail"
+                        type="email"
+                        required={ageVerification?.isMinor}
+                        value={formData.parentEmail}
+                        onChange={handleInputChange}
+                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
+                        style={{ 
+                          color: 'rgb(17, 24, 39)', 
+                          backgroundColor: 'rgb(255, 255, 255)',
+                          WebkitTextFillColor: 'rgb(17, 24, 39)',
+                          caretColor: 'rgb(17, 24, 39)'
+                        }}
+                        placeholder="parent@example.com"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">
+                      We will send a consent email to this address for approval.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
           </div>
 
           {/* Checkboxes */}
           <div className="space-y-4">
+            {/* Parental Consent Acknowledgment for Minors */}
+            {ageVerification?.isMinor && (
+              <div className="flex items-start">
+                <input
+                  id="parentalConsentAcknowledged"
+                  name="parentalConsentAcknowledged"
+                  type="checkbox"
+                  required={ageVerification?.isMinor}
+                  checked={formData.parentalConsentAcknowledged}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
+                />
+                <label htmlFor="parentalConsentAcknowledged" className="ml-2 block text-sm text-gray-700">
+                  I understand that parental consent is required and that an email will be sent to 
+                  my parent/guardian for approval before my account can be activated.
+                </label>
+              </div>
+            )}
+
             <div className="flex items-start">
               <input
                 id="agreeToTerms"
@@ -386,6 +627,11 @@ export default function SignUp() {
                 <Link href="/privacy" className="text-blue-600 hover:text-blue-500">
                   Privacy Policy
                 </Link>
+                {ageVerification?.isMinor && (
+                  <span className="text-blue-600">
+                    {' '}(with parental consent)
+                  </span>
+                )}
               </label>
             </div>
 
@@ -394,12 +640,18 @@ export default function SignUp() {
                 id="subscribeNewsletter"
                 name="subscribeNewsletter"
                 type="checkbox"
-                checked={formData.subscribeNewsletter}
+                checked={formData.subscribeNewsletter && !ageVerification?.isMinor}
                 onChange={handleInputChange}
+                disabled={ageVerification?.isMinor}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="subscribeNewsletter" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="subscribeNewsletter" className={`ml-2 block text-sm ${ageVerification?.isMinor ? 'text-gray-400' : 'text-gray-700'}`}>
                 Subscribe to our newsletter for updates and new stories
+                {ageVerification?.isMinor && (
+                  <span className="block text-xs text-gray-500 mt-1">
+                    (Not available for users under 13 due to COPPA regulations)
+                  </span>
+                )}
               </label>
             </div>
           </div>

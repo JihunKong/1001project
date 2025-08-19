@@ -1,0 +1,44 @@
+
+> 1001-stories@0.2.0 dev
+> next dev --turbopack
+
+   ▲ Next.js 15.4.6 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.237.2.159:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Compiled middleware in 120ms
+ ✓ Ready in 753ms
+ ✓ Compiled /api/auth/demo-login in 496ms
+Demo login error: Error [PrismaClientInitializationError]: User was denied access on the database `(not available)`
+    at async POST (app/api/auth/demo-login/route.ts:39:17)
+  37 |
+  38 |     // Get or create demo user
+> 39 |     const user = await getOrCreateDemoUser(email);
+     |                 ^
+  40 |     
+  41 |     if (!user) {
+  42 |       return NextResponse.json( {
+  clientVersion: '6.13.0',
+  errorCode: 'P1010',
+  retryable: undefined
+}
+ POST /api/auth/demo-login 500 in 699ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 0ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 0ms
+ ✓ Compiled middleware in 3ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 0ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 0ms
+ ✓ Compiled middleware in 0ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 0ms
+ ✓ Compiled middleware in 0ms
+ ✓ Compiled middleware in 1ms
+ ✓ Compiled middleware in 1ms

@@ -1,5 +1,5 @@
 import { UserRole } from '@prisma/client';
-import { prisma } from '@/lib/prisma';
+import { executeWithRLSBypass } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
 import jwt from 'jsonwebtoken';
 
@@ -47,64 +47,72 @@ export function getMappedDemoEmail(email: string): string {
  * Create or get demo user
  */
 export async function getOrCreateDemoUser(email: string) {
-  // Map legacy email to new format
-  const mappedEmail = getMappedDemoEmail(email);
-  
-  // Check if user exists
-  let user = await prisma.user.findUnique({
-    where: { email: mappedEmail },
-    include: {
-      profile: true,
-      subscription: true,
-    },
-  });
+  // Try to use the default prisma client first
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    
+    // Map legacy email to new format
+    const mappedEmail = getMappedDemoEmail(email);
+    
+    // Check if user exists
+    let user = await prisma.user.findUnique({
+      where: { email: mappedEmail },
+      include: {
+        profile: true,
+        subscription: true,
+      },
+    });
 
-  if (user) {
+    if (user) {
+      return user;
+    }
+
+    // Determine role from email
+    let role: UserRole = UserRole.LEARNER;
+    if (mappedEmail.includes('teacher')) {
+      role = UserRole.TEACHER;
+    } else if (mappedEmail.includes('volunteer')) {
+      role = UserRole.VOLUNTEER;
+    } else if (mappedEmail.includes('institution')) {
+      role = UserRole.INSTITUTION;
+    }
+
+    // Create demo user
+    user = await prisma.user.create({
+      data: {
+        email: mappedEmail,
+        name: `Demo ${role.charAt(0) + role.slice(1).toLowerCase()}`,
+        role,
+        emailVerified: new Date(),
+        profile: {
+          create: {
+            bio: `Demo account for ${role.toLowerCase()} role`,
+            language: 'en',
+          },
+        },
+        subscription: {
+          create: {
+            plan: 'FREE',
+            status: 'ACTIVE',
+            maxStudents: 30,
+            maxDownloads: 10,
+            canAccessPremium: false,
+            canDownloadPDF: false,
+            canCreateClasses: role === UserRole.TEACHER || role === UserRole.INSTITUTION,
+          },
+        },
+      },
+      include: {
+        profile: true,
+        subscription: true,
+      },
+    });
+
     return user;
+  } catch (error) {
+    console.error('Demo user creation failed:', error);
+    throw error;
   }
-
-  // Determine role from email
-  let role: UserRole = UserRole.LEARNER;
-  if (mappedEmail.includes('teacher')) {
-    role = UserRole.TEACHER;
-  } else if (mappedEmail.includes('volunteer')) {
-    role = UserRole.VOLUNTEER;
-  } else if (mappedEmail.includes('institution')) {
-    role = UserRole.INSTITUTION;
-  }
-
-  // Create demo user
-  user = await prisma.user.create({
-    data: {
-      email: mappedEmail,
-      name: `Demo ${role.charAt(0) + role.slice(1).toLowerCase()}`,
-      role,
-      emailVerified: new Date(),
-      profile: {
-        create: {
-          bio: `Demo account for ${role.toLowerCase()} role`,
-          language: 'en',
-        },
-      },
-      subscription: {
-        create: {
-          plan: 'FREE',
-          status: 'ACTIVE',
-          maxStudents: 30,
-          maxDownloads: 10,
-          canAccessPremium: false,
-          canDownloadPDF: false,
-          canCreateClasses: role === UserRole.TEACHER || role === UserRole.INSTITUTION,
-        },
-      },
-    },
-    include: {
-      profile: true,
-      subscription: true,
-    },
-  });
-
-  return user;
 }
 
 /**
