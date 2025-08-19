@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
           childAge,
           requestDate: deletionRequest.createdAt,
           expiryDate: deletionRequest.parentConfirmationExpiry,
-          isMinor: childAge ? isMinorUnderCOPPA(childAge) : true,
+          isMinor: profile?.dateOfBirth ? isMinorUnderCOPPA(profile.dateOfBirth) : true,
           parentEmail: profile?.parentEmail,
           parentName: profile?.parentName,
           isValid: true
