@@ -1,14 +1,14 @@
 import { NextAuthOptions } from "next-auth"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import EmailProvider from "next-auth/providers/email"
 import GoogleProvider from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { prisma } from "@/lib/prisma"
+import { executeWithRLSBypass } from "@/lib/prisma"
 import { UserRole } from "@prisma/client"
 import { isDemoEmail, getOrCreateDemoUser, isEmailServiceConfigured } from "@/lib/auth-demo"
+import { createRLSBypassAdapter } from "@/lib/auth-adapter"
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: createRLSBypassAdapter(),
   
   providers: [
     // Demo Credentials Provider for demo accounts
@@ -143,21 +143,22 @@ export const authOptions: NextAuthOptions = {
   
   events: {
     async createUser({ user }) {
-      // Create default profile for new user
-      await prisma.profile.create({
-        data: {
-          userId: user.id,
-          language: "en",
-        }
-      })
-      
-      // Create default free subscription
-      await prisma.subscription.create({
-        data: {
-          userId: user.id,
-          plan: "FREE",
-          status: "ACTIVE",
-        }
+      // Create default profile and subscription using RLS bypass
+      await executeWithRLSBypass(async (client) => {
+        await client.profile.create({
+          data: {
+            userId: user.id,
+            language: "en",
+          }
+        })
+        
+        await client.subscription.create({
+          data: {
+            userId: user.id,
+            plan: "FREE",
+            status: "ACTIVE",
+          }
+        })
       })
     },
     

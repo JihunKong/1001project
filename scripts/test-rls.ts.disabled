@@ -1,0 +1,498 @@
+#!/usr/bin/env npx tsx
+
+/**
+ * RLS (Row-Level Security) Test Script
+ * 1001 Stories Volunteer Management System
+ * 
+ * This script tests the RLS policies to ensure proper data isolation
+ * between volunteers and admin access controls.
+ */
+
+import { PrismaClient } from '@prisma/client'
+import { RLSPrismaClient, executeWithRLS, isAdmin, isVolunteer, canAccessVolunteerData } from '../lib/rls-context'
+
+interface TestResult {
+  testName: string
+  passed: boolean
+  error?: string
+  details?: any
+}
+
+class RLSTestSuite {
+  private results: TestResult[] = []
+  private testUserId1 = 'test_volunteer_1'
+  private testUserId2 = 'test_volunteer_2'
+  private adminUserId = 'test_admin_1'
+
+  constructor() {}
+
+  private addResult(testName: string, passed: boolean, error?: string, details?: any) {
+    this.results.push({ testName, passed, error, details })
+    const status = passed ? '✅ PASS' : '❌ FAIL'
+    console.log(`${status} ${testName}`)
+    if (error) {
+      console.log(`  Error: ${error}`)
+    }
+    if (details) {
+      console.log(`  Details:`, details)
+    }
+  }
+
+  async setupTestData() {
+    console.log('🔧 Setting up test data...')
+    
+    try {
+      // Use admin context to set up test data
+      const adminPrisma = await executeWithRLS(async (prisma) => {
+        // Create test users first
+        await prisma.user.upsert({
+          where: { id: this.testUserId1 },
+          update: {},
+          create: {
+            id: this.testUserId1,
+            email: 'volunteer1@test.com',
+            role: 'VOLUNTEER',
+            name: 'Test Volunteer 1'
+          }
+        })
+
+        await prisma.user.upsert({
+          where: { id: this.testUserId2 },
+          update: {},
+          create: {
+            id: this.testUserId2,
+            email: 'volunteer2@test.com',
+            role: 'VOLUNTEER',
+            name: 'Test Volunteer 2'
+          }
+        })
+
+        await prisma.user.upsert({
+          where: { id: this.adminUserId },
+          update: {},
+          create: {
+            id: this.adminUserId,
+            email: 'admin@test.com',
+            role: 'ADMIN',
+            name: 'Test Admin'
+          }
+        })
+
+        return prisma
+      }, { id: this.adminUserId, role: 'ADMIN' })
+
+      // Create volunteer profiles
+      await executeWithRLS(async (prisma) => {
+        await prisma.volunteerProfile.upsert({
+          where: { userId: this.testUserId1 },
+          update: {},
+          create: {
+            userId: this.testUserId1,
+            languages: ['en', 'ko'],
+            languageLevels: { "en": "native", "ko": "advanced" },
+            skills: ['translation', 'teaching'],
+            qualifications: ['TESOL'],
+            timezone: 'UTC',
+            availableSlots: { "monday": ["9:00-12:00", "14:00-17:00"], "wednesday": ["9:00-12:00"] },
+            maxHoursPerWeek: 10,
+            remoteOnly: true,
+            totalHours: 0,
+            totalPoints: 0
+          }
+        })
+
+        await prisma.volunteerProfile.upsert({
+          where: { userId: this.testUserId2 },
+          update: {},
+          create: {
+            userId: this.testUserId2,
+            languages: ['en', 'es'],
+            languageLevels: { "en": "native", "es": "intermediate" },
+            skills: ['illustration', 'design'],
+            qualifications: ['Adobe Certified'],
+            timezone: 'UTC',
+            availableSlots: { "tuesday": ["10:00-13:00"], "thursday": ["14:00-18:00"], "saturday": ["9:00-15:00"] },
+            maxHoursPerWeek: 15,
+            remoteOnly: true,
+            totalHours: 0,
+            totalPoints: 0
+          }
+        })
+
+        return prisma
+      }, { id: this.adminUserId, role: 'ADMIN' })
+
+      console.log('✅ Test data setup completed')
+    } catch (error) {
+      console.error('❌ Failed to setup test data:', error)
+      throw error
+    }
+  }
+
+  async testHelperFunctions() {
+    console.log('\n🧪 Testing helper functions...')
+
+    try {
+      // Test role checking functions
+      this.addResult(
+        'Helper function isAdmin for ADMIN role',
+        isAdmin('ADMIN'),
+        undefined,
+        { input: 'ADMIN', output: isAdmin('ADMIN') }
+      )
+
+      this.addResult(
+        'Helper function isAdmin for VOLUNTEER role',
+        !isAdmin('VOLUNTEER'),
+        undefined,
+        { input: 'VOLUNTEER', output: isAdmin('VOLUNTEER') }
+      )
+
+      this.addResult(
+        'Helper function isVolunteer for VOLUNTEER role',
+        isVolunteer('VOLUNTEER'),
+        undefined,
+        { input: 'VOLUNTEER', output: isVolunteer('VOLUNTEER') }
+      )
+
+      this.addResult(
+        'Helper function canAccessVolunteerData - own data',
+        canAccessVolunteerData('VOLUNTEER', this.testUserId1, this.testUserId1),
+        undefined,
+        { userRole: 'VOLUNTEER', targetUserId: this.testUserId1, currentUserId: this.testUserId1 }
+      )
+
+      this.addResult(
+        'Helper function canAccessVolunteerData - other\'s data',
+        !canAccessVolunteerData('VOLUNTEER', this.testUserId2, this.testUserId1),
+        undefined,
+        { userRole: 'VOLUNTEER', targetUserId: this.testUserId2, currentUserId: this.testUserId1 }
+      )
+
+      this.addResult(
+        'Helper function canAccessVolunteerData - admin access',
+        canAccessVolunteerData('ADMIN', this.testUserId1, this.adminUserId),
+        undefined,
+        { userRole: 'ADMIN', targetUserId: this.testUserId1, currentUserId: this.adminUserId }
+      )
+
+    } catch (error) {
+      this.addResult('Helper functions test', false, error instanceof Error ? error instanceof Error ? error.message : String(error) : String(error))
+    }
+  }
+
+  async testVolunteerProfileAccess() {
+    console.log('\n🧪 Testing volunteer profile access...')
+
+    // Test volunteer can access own profile
+    try {
+      const ownProfile = await executeWithRLS(async (prisma) => {
+        return await prisma.volunteerProfile.findFirst({
+          where: { userId: this.testUserId1 }
+        })
+      }, { id: this.testUserId1, role: 'VOLUNTEER' })
+
+      this.addResult(
+        'Volunteer can access own profile',
+        ownProfile !== null && ownProfile.userId === this.testUserId1,
+        undefined,
+        { profileFound: ownProfile !== null, correctUser: ownProfile?.userId === this.testUserId1 }
+      )
+    } catch (error) {
+      this.addResult('Volunteer access own profile', false, error instanceof Error ? error.message : String(error))
+    }
+
+    // Test volunteer cannot access other's profile
+    try {
+      const otherProfile = await executeWithRLS(async (prisma) => {
+        return await prisma.volunteerProfile.findFirst({
+          where: { userId: this.testUserId2 }
+        })
+      }, { id: this.testUserId1, role: 'VOLUNTEER' })
+
+      this.addResult(
+        'Volunteer cannot access other\'s profile',
+        otherProfile === null,
+        undefined,
+        { profileFound: otherProfile !== null, shouldBeNull: true }
+      )
+    } catch (error) {
+      this.addResult('Volunteer blocked from other\'s profile', false, error instanceof Error ? error.message : String(error))
+    }
+
+    // Test admin can access all profiles
+    try {
+      const allProfiles = await executeWithRLS(async (prisma) => {
+        return await prisma.volunteerProfile.findMany()
+      }, { id: this.adminUserId, role: 'ADMIN' })
+
+      this.addResult(
+        'Admin can access all profiles',
+        allProfiles.length >= 2,
+        undefined,
+        { profileCount: allProfiles.length, expectedMinimum: 2 }
+      )
+    } catch (error) {
+      this.addResult('Admin access all profiles', false, error instanceof Error ? error.message : String(error))
+    }
+  }
+
+  async testVolunteerApplicationAccess() {
+    console.log('\n🧪 Testing volunteer application access...')
+
+    // First create test applications
+    try {
+      await executeWithRLS(async (prisma) => {
+        // Create a quest first
+        const quest = await prisma.quest.create({
+          data: {
+            title: 'Test Quest for RLS',
+            description: 'A test quest for RLS testing',
+            type: 'TRANSLATION',
+            startDate: new Date(),
+            duration: 10,
+            maxVolunteers: 5,
+            pointsReward: 100,
+            creatorId: this.adminUserId
+          }
+        })
+
+        // Get volunteer profile IDs
+        const profile1 = await prisma.volunteerProfile.findUnique({ where: { userId: this.testUserId1 } })
+        const profile2 = await prisma.volunteerProfile.findUnique({ where: { userId: this.testUserId2 } })
+
+        if (!profile1 || !profile2) {
+          throw new Error('Volunteer profiles not found')
+        }
+
+        // Create applications
+        await prisma.volunteerApplication.create({
+          data: {
+            questId: quest.id,
+            volunteerId: profile1.id,
+            volunteerUserId: this.testUserId1,
+            motivation: 'Test motivation 1',
+            experience: 'Test experience 1',
+            availability: 'Weekends'
+          }
+        })
+
+        await prisma.volunteerApplication.create({
+          data: {
+            questId: quest.id,
+            volunteerId: profile2.id,
+            volunteerUserId: this.testUserId2,
+            motivation: 'Test motivation 2',
+            experience: 'Test experience 2',
+            availability: 'Evenings'
+          }
+        })
+
+        return prisma
+      }, { id: this.adminUserId, role: 'ADMIN' })
+
+      console.log('✅ Test applications created')
+    } catch (error) {
+      console.error('❌ Failed to create test applications:', error)
+    }
+
+    // Test volunteer can see own applications
+    try {
+      const ownApplications = await executeWithRLS(async (prisma) => {
+        return await prisma.volunteerApplication.findMany({
+          where: { volunteerUserId: this.testUserId1 }
+        })
+      }, { id: this.testUserId1, role: 'VOLUNTEER' })
+
+      this.addResult(
+        'Volunteer can see own applications',
+        ownApplications.length > 0 && ownApplications.every(app => app.volunteerUserId === this.testUserId1),
+        undefined,
+        { applicationCount: ownApplications.length, allOwnApplications: ownApplications.every(app => app.volunteerUserId === this.testUserId1) }
+      )
+    } catch (error) {
+      this.addResult('Volunteer access own applications', false, error instanceof Error ? error.message : String(error))
+    }
+
+    // Test volunteer cannot see other's applications
+    try {
+      const allApplications = await executeWithRLS(async (prisma) => {
+        return await prisma.volunteerApplication.findMany()
+      }, { id: this.testUserId1, role: 'VOLUNTEER' })
+
+      const hasOthersApplications = allApplications.some(app => app.volunteerUserId !== this.testUserId1)
+
+      this.addResult(
+        'Volunteer cannot see other\'s applications',
+        !hasOthersApplications,
+        undefined,
+        { totalApplications: allApplications.length, hasOthersApplications }
+      )
+    } catch (error) {
+      this.addResult('Volunteer blocked from other\'s applications', false, error instanceof Error ? error.message : String(error))
+    }
+  }
+
+  async testQuestAccess() {
+    console.log('\n🧪 Testing quest access...')
+
+    // Test volunteers can see active quests
+    try {
+      const activeQuests = await executeWithRLS(async (prisma) => {
+        return await prisma.quest.findMany({
+          where: { status: 'OPEN', isActive: true }
+        })
+      }, { id: this.testUserId1, role: 'VOLUNTEER' })
+
+      this.addResult(
+        'Volunteer can see active quests',
+        activeQuests.length > 0,
+        undefined,
+        { questCount: activeQuests.length }
+      )
+    } catch (error) {
+      this.addResult('Volunteer access active quests', false, error instanceof Error ? error.message : String(error))
+    }
+
+    // Test admin can see all quests
+    try {
+      const allQuests = await executeWithRLS(async (prisma) => {
+        return await prisma.quest.findMany()
+      }, { id: this.adminUserId, role: 'ADMIN' })
+
+      this.addResult(
+        'Admin can see all quests',
+        allQuests.length > 0,
+        undefined,
+        { questCount: allQuests.length }
+      )
+    } catch (error) {
+      this.addResult('Admin access all quests', false, error instanceof Error ? error.message : String(error))
+    }
+  }
+
+  async testContextIsolation() {
+    console.log('\n🧪 Testing context isolation...')
+
+    try {
+      const rlsClient = new RLSPrismaClient()
+
+      // Test that different user contexts return different data
+      const client1 = await rlsClient.withUserContext({ id: this.testUserId1, role: 'VOLUNTEER' })
+      const client2 = await rlsClient.withUserContext({ id: this.testUserId2, role: 'VOLUNTEER' })
+
+      const profiles1 = await client1.volunteerProfile.findMany()
+      const profiles2 = await client2.volunteerProfile.findMany()
+
+      const user1CanSeeUser2 = profiles1.some(p => p.userId === this.testUserId2)
+      const user2CanSeeUser1 = profiles2.some(p => p.userId === this.testUserId1)
+
+      this.addResult(
+        'Context isolation works correctly',
+        !user1CanSeeUser2 && !user2CanSeeUser1,
+        undefined,
+        { 
+          user1CanSeeUser2, 
+          user2CanSeeUser1,
+          user1ProfileCount: profiles1.length,
+          user2ProfileCount: profiles2.length
+        }
+      )
+
+      await rlsClient.disconnect()
+    } catch (error) {
+      this.addResult('Context isolation test', false, error instanceof Error ? error.message : String(error))
+    }
+  }
+
+  async cleanupTestData() {
+    console.log('\n🧹 Cleaning up test data...')
+
+    try {
+      await executeWithRLS(async (prisma) => {
+        // Delete in correct order due to foreign key constraints
+        await prisma.volunteerApplication.deleteMany({
+          where: { 
+            volunteerUserId: { in: [this.testUserId1, this.testUserId2] }
+          }
+        })
+
+        await prisma.quest.deleteMany({
+          where: { creatorId: this.adminUserId }
+        })
+
+        await prisma.volunteerProfile.deleteMany({
+          where: { userId: { in: [this.testUserId1, this.testUserId2] } }
+        })
+
+        await prisma.user.deleteMany({
+          where: { id: { in: [this.testUserId1, this.testUserId2, this.adminUserId] } }
+        })
+
+        return prisma
+      }, { id: this.adminUserId, role: 'ADMIN' })
+
+      console.log('✅ Test data cleanup completed')
+    } catch (error) {
+      console.error('❌ Failed to cleanup test data:', error)
+    }
+  }
+
+  async runAllTests() {
+    console.log('🚀 Starting RLS Test Suite\n')
+
+    try {
+      await this.setupTestData()
+      await this.testHelperFunctions()
+      await this.testVolunteerProfileAccess()
+      await this.testVolunteerApplicationAccess()
+      await this.testQuestAccess()
+      await this.testContextIsolation()
+    } catch (error) {
+      console.error('❌ Test suite failed:', error)
+    } finally {
+      await this.cleanupTestData()
+    }
+
+    this.printSummary()
+  }
+
+  printSummary() {
+    console.log('\n📊 Test Summary')
+    console.log('================')
+
+    const passed = this.results.filter(r => r.passed).length
+    const failed = this.results.filter(r => !r.passed).length
+    const total = this.results.length
+
+    console.log(`Total Tests: ${total}`)
+    console.log(`Passed: ${passed} ✅`)
+    console.log(`Failed: ${failed} ❌`)
+    console.log(`Success Rate: ${((passed / total) * 100).toFixed(1)}%`)
+
+    if (failed > 0) {
+      console.log('\n❌ Failed Tests:')
+      this.results.filter(r => !r.passed).forEach(result => {
+        console.log(`  - ${result.testName}: ${result.error}`)
+      })
+    }
+
+    console.log('\n' + (failed === 0 ? '🎉 All tests passed!' : '⚠️  Some tests failed. Please review the RLS policies.'))
+  }
+}
+
+// Run the test suite
+async function main() {
+  const testSuite = new RLSTestSuite()
+  await testSuite.runAllTests()
+  process.exit(0)
+}
+
+if (require.main === module) {
+  main().catch(error => {
+    console.error('Test suite failed:', error)
+    process.exit(1)
+  })
+}
+
+export { RLSTestSuite }

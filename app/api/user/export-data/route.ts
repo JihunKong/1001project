@@ -365,7 +365,7 @@ async function collectUserData(userId: string) {
 
       // Educational Data
       educationalData: {
-        classEnrollments: educationalData.map(enrollment => ({
+        classEnrollments: educationalData.map((enrollment: any) => ({
           className: enrollment.class.name,
           subject: enrollment.class.subject,
           gradeLevel: enrollment.class.gradeLevel,
@@ -377,7 +377,7 @@ async function collectUserData(userId: string) {
           classStartDate: enrollment.class.startDate,
           classEndDate: enrollment.class.endDate,
         })),
-        submissions: submissions.map(sub => ({
+        submissions: submissions.map((sub: any) => ({
           assignmentTitle: sub.assignment.title,
           assignmentType: sub.assignment.type,
           assignmentDueDate: sub.assignment.dueDate,
@@ -386,7 +386,7 @@ async function collectUserData(userId: string) {
           feedback: sub.feedback,
           status: sub.status,
         })),
-        lessonProgress: lessonProgress.map(progress => ({
+        lessonProgress: lessonProgress.map((progress: any) => ({
           lessonTitle: progress.lesson.title,
           lessonNumber: progress.lesson.lessonNumber,
           startedAt: progress.startedAt,
@@ -398,7 +398,7 @@ async function collectUserData(userId: string) {
 
       // Reading Data
       readingData: {
-        readingProgress: readingProgress.map(progress => ({
+        readingProgress: readingProgress.map((progress: any) => ({
           storyTitle: progress.story.title,
           storyLanguage: progress.story.language,
           storyCategory: progress.story.category,
@@ -411,7 +411,7 @@ async function collectUserData(userId: string) {
           completedAt: progress.completedAt,
           notes: progress.notes,
         })),
-        bookmarks: bookmarks.map(bookmark => ({
+        bookmarks: bookmarks.map((bookmark: any) => ({
           storyTitle: bookmark.story.title,
           chapterId: bookmark.chapterId,
           position: bookmark.position,
@@ -419,7 +419,7 @@ async function collectUserData(userId: string) {
           color: bookmark.color,
           createdAt: bookmark.createdAt,
         })),
-        readingLists: readingLists.map(list => ({
+        readingLists: readingLists.map((list: any) => ({
           name: list.name,
           description: list.description,
           isPublic: list.isPublic,
@@ -431,7 +431,7 @@ async function collectUserData(userId: string) {
 
       // E-commerce Data
       ecommerceData: {
-        orders: orders.map(order => ({
+        orders: orders.map((order: any) => ({
           orderNumber: order.orderNumber,
           email: order.email,
           phone: order.phone,
@@ -451,7 +451,7 @@ async function collectUserData(userId: string) {
           trackingNumber: order.trackingNumber,
           notes: order.notes,
           tags: order.tags,
-          items: order.items.map(item => ({
+          items: order.items.map((item: any) => ({
             productTitle: item.product.title,
             productSku: item.product.sku,
             variantTitle: item.variantTitle,
@@ -463,7 +463,7 @@ async function collectUserData(userId: string) {
           updatedAt: order.updatedAt,
         })),
         currentCart: cart ? {
-          items: cart.items.map(item => ({
+          items: cart.items.map((item: any) => ({
             productTitle: item.product.title,
             productSku: item.product.sku,
             quantity: item.quantity,
@@ -473,7 +473,7 @@ async function collectUserData(userId: string) {
           updatedAt: cart.updatedAt,
           expiresAt: cart.expiresAt,
         } : null,
-        reviews: reviews.map(review => ({
+        reviews: reviews.map((review: any) => ({
           contentType: review.contentType,
           contentId: review.contentId,
           rating: review.rating,
@@ -487,7 +487,7 @@ async function collectUserData(userId: string) {
 
       // Donation Data
       donationData: {
-        donations: donations.map(donation => ({
+        donations: donations.map((donation: any) => ({
           amount: donation.amount,
           currency: donation.currency,
           type: donation.type,
@@ -500,7 +500,7 @@ async function collectUserData(userId: string) {
           status: donation.status,
           createdAt: donation.createdAt,
         })),
-        recurringDonations: recurringDonations.map(recurring => ({
+        recurringDonations: recurringDonations.map((recurring: any) => ({
           amount: recurring.amount,
           currency: recurring.currency,
           frequency: recurring.frequency,
@@ -519,7 +519,7 @@ async function collectUserData(userId: string) {
 
       // Content Creation Data
       contentCreationData: {
-        publishedStories: stories.map(story => ({
+        publishedStories: stories.map((story: any) => ({
           title: story.title,
           subtitle: story.subtitle,
           summary: story.summary,
@@ -547,7 +547,7 @@ async function collectUserData(userId: string) {
           createdAt: story.createdAt,
           updatedAt: story.updatedAt,
         })),
-        storySubmissions: storySubmissions.map(submission => ({
+        storySubmissions: storySubmissions.map((submission: any) => ({
           title: submission.title,
           summary: submission.summary,
           language: submission.language,
@@ -563,7 +563,7 @@ async function collectUserData(userId: string) {
           createdAt: submission.createdAt,
           updatedAt: submission.updatedAt,
         })),
-        translations: translations.map(translation => ({
+        translations: translations.map((translation: any) => ({
           fromLanguage: translation.fromLanguage,
           toLanguage: translation.toLanguage,
           title: translation.title,
@@ -573,7 +573,7 @@ async function collectUserData(userId: string) {
           createdAt: translation.createdAt,
           updatedAt: translation.updatedAt,
         })),
-        illustrations: illustrations.map(illustration => ({
+        illustrations: illustrations.map((illustration: any) => ({
           title: illustration.title,
           description: illustration.description,
           position: illustration.position,
@@ -590,7 +590,7 @@ async function collectUserData(userId: string) {
 
       // System Data
       systemData: {
-        notifications: notifications.map(notif => ({
+        notifications: notifications.map((notif: any) => ({
           type: notif.type,
           title: notif.title,
           message: notif.message,
@@ -598,7 +598,7 @@ async function collectUserData(userId: string) {
           readAt: notif.readAt,
           createdAt: notif.createdAt,
         })),
-        activityLogs: activityLogs.map(log => ({
+        activityLogs: activityLogs.map((log: any) => ({
           action: log.action,
           entity: log.entity,
           entityId: log.entityId,
@@ -619,7 +619,7 @@ async function collectUserData(userId: string) {
           createdAt: onboardingProgress.createdAt,
           updatedAt: onboardingProgress.updatedAt,
         } : null,
-        activities: onboardingProgress?.activities.map(activity => ({
+        activities: onboardingProgress?.activities.map((activity: any) => ({
           activityType: activity.activityType,
           contentId: activity.contentId,
           timeSpent: activity.timeSpent,
@@ -627,7 +627,7 @@ async function collectUserData(userId: string) {
           interactionData: activity.interactionData,
           createdAt: activity.createdAt,
         })) || [],
-        sampleContentAccess: sampleContentAccess.map(access => ({
+        sampleContentAccess: sampleContentAccess.map((access: any) => ({
           storyTitle: access.story.title,
           viewCount: access.viewCount,
           totalTimeSpent: access.totalTimeSpent,
@@ -673,7 +673,7 @@ function convertToCSV(data: any): string {
 
   const csvRows = [
     headers.join(','),
-    values.map(value => 
+    values.map((value: any) => 
       typeof value === 'string' && value.includes(',') 
         ? `"${value.replace(/"/g, '""')}"` 
         : value
