@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -15,136 +15,119 @@ import {
   Crown,
   ArrowRight,
   Users,
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useSubscription } from '@/lib/hooks/useContentAccess';
 
-// Mock data for stories
-const stories = [
-  {
-    id: '1',
-    title: 'The Little Fisherman',
-    author: 'Maria Santos',
-    authorAge: 12,
-    country: 'Philippines',
-    language: 'English',
-    category: 'Adventure',
-    ageGroup: '8-12',
-    rating: 4.8,
-    readTime: '8 min',
-    isPremium: false,
-    coverImage: '/images/stories/fisherman.jpg',
-    description: 'A young boy learns about courage and perseverance while helping his father fish in the beautiful waters of Palawan.',
-    tags: ['courage', 'family', 'ocean']
-  },
-  {
-    id: '2',
-    title: 'Dancing with the Wind',
-    author: 'Amara Okafor',
-    authorAge: 10,
-    country: 'Nigeria',
-    language: 'English',
-    category: 'Cultural',
-    ageGroup: '6-10',
-    rating: 4.9,
-    readTime: '6 min',
-    isPremium: true,
-    coverImage: '/images/stories/dancing.jpg',
-    description: 'A celebration of traditional dance and music in a small Nigerian village during harvest season.',
-    tags: ['culture', 'music', 'celebration']
-  },
-  {
-    id: '3',
-    title: 'The Magic Paintbrush',
-    author: 'Li Wei',
-    authorAge: 11,
-    country: 'China',
-    language: 'English',
-    category: 'Fantasy',
-    ageGroup: '8-12',
-    rating: 4.7,
-    readTime: '10 min',
-    isPremium: false,
-    coverImage: '/images/stories/paintbrush.jpg',
-    description: 'When Li Wei finds an old paintbrush, she discovers it has the power to bring her drawings to life.',
-    tags: ['magic', 'art', 'creativity']
-  },
-  {
-    id: '4',
-    title: 'The School Garden',
-    author: 'Carlos Rodriguez',
-    authorAge: 13,
-    country: 'Guatemala',
-    language: 'Spanish',
-    category: 'Educational',
-    ageGroup: '10-14',
-    rating: 4.6,
-    readTime: '7 min',
-    isPremium: true,
-    coverImage: '/images/stories/garden.jpg',
-    description: 'Students work together to create a school garden that feeds both bodies and minds.',
-    tags: ['environment', 'teamwork', 'growth']
-  },
-  {
-    id: '5',
-    title: 'The Night Sky Stories',
-    author: 'Fatima Al-Rashid',
-    authorAge: 12,
-    country: 'Jordan',
-    language: 'Arabic',
-    category: 'Adventure',
-    ageGroup: '8-12',
-    rating: 4.8,
-    readTime: '9 min',
-    isPremium: false,
-    coverImage: '/images/stories/stars.jpg',
-    description: 'A young girl learns about constellations and ancient stories from her grandmother in the desert.',
-    tags: ['astronomy', 'tradition', 'family']
-  },
-  {
-    id: '6',
-    title: 'The Soccer Dream',
-    author: 'João Silva',
-    authorAge: 14,
-    country: 'Brazil',
-    language: 'Portuguese',
-    category: 'Sports',
-    ageGroup: '10-16',
-    rating: 4.7,
-    readTime: '12 min',
-    isPremium: true,
-    coverImage: '/images/stories/soccer.jpg',
-    description: 'A passionate young player from the favelas dreams of playing professional soccer.',
-    tags: ['sports', 'dreams', 'perseverance']
+interface Story {
+  id: string
+  title: string
+  subtitle?: string
+  summary?: string
+  authorName: string
+  authorAge?: number
+  authorLocation?: string
+  language: string
+  category: string[]
+  tags: string[]
+  readingLevel?: string
+  readingTime?: number
+  coverImage?: string
+  isPremium: boolean
+  featured: boolean
+  price?: number
+  rating?: number
+  viewCount: number
+  likeCount: number
+  accessLevel: 'preview' | 'full'
+  stats: {
+    readers: number
+    bookmarks: number
   }
-];
+}
 
-const categories = ['All', 'Adventure', 'Cultural', 'Fantasy', 'Educational', 'Sports'];
-const languages = ['All Languages', 'English', 'Spanish', 'Arabic', 'Portuguese', 'French'];
-const ageGroups = ['All Ages', '6-10', '8-12', '10-14', '10-16'];
+interface StoriesResponse {
+  stories: Story[]
+  pagination: {
+    page: number
+    limit: number
+    totalCount: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+  filters: {
+    categories: Array<{ value: string; count: number }>
+    languages: Array<{ value: string; count: number }>
+    ageGroups: Array<{ value: string; count: number }>
+  }
+}
 
 export default function Library() {
   const { t } = useTranslation('common');
+  const { data: session } = useSession();
+  const { subscription } = useSubscription();
+  
+  const [stories, setStories] = useState<Story[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
+  const [filters, setFilters] = useState<any>({ categories: [], languages: [], ageGroups: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedLanguage, setSelectedLanguage] = useState('All Languages');
-  const [selectedAge, setSelectedAge] = useState('All Ages');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedLanguage, setSelectedLanguage] = useState('all');
+  const [selectedAge, setSelectedAge] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter stories based on search and filters
-  const filteredStories = stories.filter(story => {
-    const matchesSearch = story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         story.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         story.country.toLowerCase().includes(searchTerm.toLowerCase());
+  // Fetch stories from API
+  const fetchStories = async () => {
+    setLoading(true);
+    setError(null);
     
-    const matchesCategory = selectedCategory === 'All' || story.category === selectedCategory;
-    const matchesLanguage = selectedLanguage === 'All Languages' || story.language === selectedLanguage;
-    const matchesAge = selectedAge === 'All Ages' || story.ageGroup === selectedAge;
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '12'
+      });
+      
+      if (searchTerm) params.set('search', searchTerm);
+      if (selectedCategory !== 'all') params.set('category', selectedCategory);
+      if (selectedLanguage !== 'all') params.set('language', selectedLanguage);
+      if (selectedAge !== 'all') params.set('ageGroup', selectedAge);
+      
+      const response = await fetch(`/api/library/stories?${params}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch stories');
+      }
+      
+      const data: StoriesResponse = await response.json();
+      setStories(data.stories);
+      setPagination(data.pagination);
+      setFilters(data.filters);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load stories');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Fetch stories when page or filters change
+  useEffect(() => {
+    fetchStories();
+  }, [currentPage, searchTerm, selectedCategory, selectedLanguage, selectedAge]);
+  
+  // Reset to first page when filters change (not page)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, selectedLanguage, selectedAge]);
 
-    return matchesSearch && matchesCategory && matchesLanguage && matchesAge;
-  });
-
-  const StoryCard = ({ story }: { story: typeof stories[0] }) => (
+  const StoryCard = ({ story }: { story: Story }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -170,10 +153,10 @@ export default function Library() {
       <div className="p-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
           <Globe className="w-4 h-4" />
-          {story.country}
+          {story.authorLocation || 'Unknown'}
           <span>•</span>
           <Clock className="w-4 h-4" />
-          {story.readTime}
+          {story.readingTime || 5} min
         </div>
         
         <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
@@ -181,11 +164,11 @@ export default function Library() {
         </h3>
         
         <div className="text-sm text-gray-600 mb-3">
-          By {story.author}, age {story.authorAge}
+          By {story.authorName}{story.authorAge ? `, age ${story.authorAge}` : ''}
         </div>
         
         <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {story.description}
+          {story.summary || 'No description available'}
         </p>
         
         <div className="flex flex-wrap gap-1 mb-4">
@@ -198,18 +181,24 @@ export default function Library() {
         
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-            {story.category}
+            {story.category[0] || 'Story'}
           </span>
           
           <div className="flex gap-2">
-            <button className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+            <Link
+              href={`/library/stories/${story.id}`}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            >
               <Play className="w-4 h-4" />
               Preview
-            </button>
-            <button className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+            </Link>
+            <Link
+              href={`/library/stories/${story.id}`}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            >
               {story.isPremium ? <Lock className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
-              {story.isPremium ? 'Unlock' : 'Read'}
-            </button>
+              {story.accessLevel === 'full' ? 'Read' : (story.isPremium ? 'Unlock' : 'Read')}
+            </Link>
           </div>
         </div>
       </div>
@@ -278,8 +267,11 @@ export default function Library() {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                  <option value="all">All Categories</option>
+                  {filters.categories.map((category: any) => (
+                    <option key={category.value} value={category.value}>
+                      {category.value} ({category.count})
+                    </option>
                   ))}
                 </select>
               </div>
@@ -291,8 +283,11 @@ export default function Library() {
                   onChange={(e) => setSelectedLanguage(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  {languages.map(language => (
-                    <option key={language} value={language}>{language}</option>
+                  <option value="all">All Languages</option>
+                  {filters.languages.map((language: any) => (
+                    <option key={language.value} value={language.value}>
+                      {language.value} ({language.count})
+                    </option>
                   ))}
                 </select>
               </div>
@@ -304,8 +299,11 @@ export default function Library() {
                   onChange={(e) => setSelectedAge(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
-                  {ageGroups.map(age => (
-                    <option key={age} value={age}>{age}</option>
+                  <option value="all">All Ages</option>
+                  {filters.ageGroups.map((age: any) => (
+                    <option key={age.value} value={age.value}>
+                      {age.value} ({age.count})
+                    </option>
                   ))}
                 </select>
               </div>
@@ -320,7 +318,7 @@ export default function Library() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">
-                Stories ({filteredStories.length})
+                Stories ({pagination?.totalCount || 0})
               </h2>
               <p className="text-gray-600">
                 Discover amazing stories from young authors worldwide
@@ -341,7 +339,24 @@ export default function Library() {
             </div>
           </div>
 
-          {filteredStories.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              <span className="ml-2 text-gray-600">Loading stories...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <BookOpen className="w-16 h-16 text-red-300 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Error loading stories</h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button
+                onClick={() => fetchStories()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : stories.length === 0 ? (
             <div className="text-center py-12">
               <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No stories found</h3>
@@ -349,9 +364,50 @@ export default function Library() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredStories.map((story, index) => (
+              {stories.map((story, index) => (
                 <StoryCard key={story.id} story={story} />
               ))}
+            </div>
+          )}
+          
+          {/* Pagination Controls */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-center mt-12 space-x-1">
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={!pagination.hasPrev || loading}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Previous
+              </button>
+              
+              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                const pageNum = i + Math.max(1, currentPage - 2)
+                if (pageNum > pagination.totalPages) return null
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    disabled={loading}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      pageNum === currentPage
+                        ? 'text-white bg-blue-600 hover:bg-blue-700'
+                        : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+              
+              <button
+                onClick={() => setCurrentPage(Math.min(pagination.totalPages, currentPage + 1))}
+                disabled={!pagination.hasNext || loading}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Next
+              </button>
             </div>
           )}
         </div>

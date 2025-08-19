@@ -13,6 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
+import LibrarySection from '@/components/dashboard/LibrarySection';
 
 export default function LearnerDashboard() {
   const { t } = useTranslation('common');
@@ -246,6 +247,20 @@ export default function LearnerDashboard() {
             </div>
           </motion.div>
         </div>
+        
+        {/* My Library Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="lg:col-span-3 mt-8"
+        >
+          <LibrarySection 
+            maxItems={6}
+            showFilters={true}
+            className="shadow-sm"
+          />
+        </motion.div>
       </div>
     </div>
   );

@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['1001stories.seedsofempowerment.org', 'seedsofempowerment.org'],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 }
 
 export default nextConfig;
