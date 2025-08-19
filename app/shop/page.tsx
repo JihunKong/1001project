@@ -1,192 +1,204 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Search, ShoppingBag, Heart, TrendingUp } from 'lucide-react';
+import { Search, ShoppingBag, Heart, Loader2 } from 'lucide-react';
 import ProductCard from '@/components/shop/ProductCard';
 import ProductFilters from '@/components/shop/ProductFilters';
 import ImpactBadge from '@/components/shop/ImpactBadge';
-import { Product } from '@/lib/cart-store';
+import { useCart } from '@/lib/hooks/useContentAccess';
 
-// Mock data for products
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    type: 'book',
-    title: 'Dreams of the Ocean: Stories from Filipino Children',
-    creator: {
-      name: 'Maria Santos & Friends',
-      age: 12,
-      location: 'Palawan, Philippines',
-      story: 'A collection of stories written by children in coastal villages, illustrated by local artists.',
-    },
-    price: 24.99,
-    images: ['/images/shop/book1.jpg'],
-    description: 'A beautiful collection of 20 stories from children living in the Philippines coastal communities. Each story captures the unique perspective of island life, family traditions, and dreams for the future.',
-    impact: {
-      metric: 'days of education',
-      value: '5',
-    },
-    stock: 15,
-    category: ['books', 'asia', 'ocean'],
-    featured: true,
-  },
-  {
-    id: '2',
-    type: 'goods',
-    title: 'Hand-woven Bookmark Set - African Patterns',
-    creator: {
-      name: 'Amara Collective',
-      location: 'Kenya',
-      story: 'Created by a women\'s cooperative supporting education in rural Kenya.',
-    },
-    price: 12.99,
-    images: ['/images/shop/bookmark1.jpg'],
-    description: 'Set of 3 handmade bookmarks featuring traditional African patterns. Each bookmark is unique and made with sustainable materials.',
-    impact: {
-      metric: 'school supplies',
-      value: '2 sets of',
-    },
-    stock: 25,
-    category: ['goods', 'africa', 'handmade'],
-    featured: false,
-  },
-  {
-    id: '3',
-    type: 'book',
-    title: 'Mountain Tales: Voices from the Himalayas',
-    creator: {
-      name: 'Children of Nepal',
-      age: 10,
-      location: 'Kathmandu, Nepal',
-      story: 'Stories collected from schools in mountain villages, sharing daily life and cultural traditions.',
-    },
-    price: 29.99,
-    images: ['/images/shop/book2.jpg'],
-    description: 'An inspiring collection of stories from children living in the Himalayan region, featuring hand-drawn illustrations.',
-    impact: {
-      metric: 'nutritious meals',
-      value: '10',
-    },
-    stock: 8,
-    category: ['books', 'asia', 'mountains'],
-    featured: true,
-  },
-  {
-    id: '4',
-    type: 'goods',
-    title: 'Story Illustration Print - The Magic Garden',
-    creator: {
-      name: 'Li Wei',
-      age: 14,
-      location: 'Rural China',
-      story: 'Original artwork from our published story "The Magic Garden", created by a young artist.',
-    },
-    price: 35.00,
-    images: ['/images/shop/print1.jpg'],
-    description: 'High-quality art print of an original illustration from one of our most beloved stories. Printed on sustainable paper.',
-    impact: {
-      metric: 'art supplies for',
-      value: '1 classroom',
-    },
-    stock: 20,
-    category: ['goods', 'art', 'prints'],
-    featured: false,
-  },
-  {
-    id: '5',
-    type: 'book',
-    title: 'Amazon Adventures: Tales from the Rainforest',
-    creator: {
-      name: 'Indigenous Youth Collective',
-      location: 'Brazil',
-      story: 'Stories from indigenous communities sharing their connection with the rainforest.',
-    },
-    price: 27.99,
-    images: ['/images/shop/book3.jpg'],
-    description: 'A unique collection of stories that share indigenous wisdom and the importance of protecting our natural world.',
-    impact: {
-      metric: 'new stories published',
-      value: '2',
-    },
-    stock: 12,
-    category: ['books', 'south-america', 'nature'],
-    featured: true,
-  },
-  {
-    id: '6',
-    type: 'goods',
-    title: 'Handmade Story Pouch - Guatemalan Textiles',
-    creator: {
-      name: 'Maya Weavers',
-      location: 'Guatemala',
-      story: 'Traditional textile pouches made by indigenous artisans, perfect for carrying books.',
-    },
-    price: 18.99,
-    images: ['/images/shop/pouch1.jpg'],
-    description: 'Beautiful hand-woven pouch featuring traditional Guatemalan patterns. Perfect size for carrying a book or journal.',
-    impact: {
-      metric: 'days of vocational training',
-      value: '3',
-    },
-    stock: 30,
-    category: ['goods', 'textiles', 'central-america'],
-    featured: false,
-  },
-];
+interface ApiProduct {
+  id: string
+  sku: string
+  type: string
+  title: string
+  description: string
+  price: number
+  compareAtPrice?: number
+  currency: string
+  featured: boolean
+  creator: {
+    name: string
+    age?: number
+    location: string
+    story: string
+  }
+  category: {
+    id: string
+    name: string
+    slug: string
+  }
+  tags: string[]
+  impact: {
+    metric: string
+    value: string
+  }
+  images: Array<{
+    id: string
+    url: string
+    alt: string
+    position: number
+  }>
+  primaryImage?: string
+  variants: Array<{
+    id: string
+    title: string
+    price: number
+    compareAtPrice?: number
+    inventoryQuantity: number
+    attributes: any
+  }>
+  inventory: {
+    inStock: boolean
+    availableQuantity?: number
+    isDigital: boolean
+  }
+  stats: {
+    rating: number
+    reviewCount: number
+    soldCount: number
+  }
+  digitalFile?: {
+    downloadLimit: number
+    hasFile: boolean
+  }
+}
+
+// Convert API product to cart-store Product format
+function transformApiProduct(apiProduct: ApiProduct): Product {
+  return {
+    id: apiProduct.id,
+    type: apiProduct.type as 'book' | 'goods',
+    title: apiProduct.title,
+    creator: apiProduct.creator,
+    price: apiProduct.price,
+    images: apiProduct.images.map(img => img.url),
+    description: apiProduct.description,
+    impact: apiProduct.impact,
+    stock: apiProduct.inventory.availableQuantity || (apiProduct.inventory.inStock ? 1 : 0),
+    category: apiProduct.tags,
+    featured: apiProduct.featured
+  }
+}
+
+interface ProductsResponse {
+  products: ApiProduct[]
+  pagination: {
+    page: number
+    limit: number
+    totalCount: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+  filters: {
+    categories: Array<{ id: string; name: string; slug: string; count: number }>
+    priceRange: {
+      min: number
+      max: number
+    }
+  }
+}
+
+// Re-export for compatibility with existing components
+type Product = {
+  id: string
+  type: 'book' | 'goods'
+  title: string
+  creator: {
+    name: string
+    age?: number
+    location: string
+    story: string
+  }
+  price: number
+  images: string[]
+  description: string
+  impact: {
+    metric: string
+    value: string
+  }
+  stock: number
+  category: string[]
+  featured: boolean
+}
+
 
 export default function ShopPage() {
   const { t } = useTranslation('common');
+  
+  const [products, setProducts] = useState<Product[]>([]);
+  const [pagination, setPagination] = useState<ProductsResponse['pagination'] | null>(null);
+  const [availableFilters, setAvailableFilters] = useState<ProductsResponse['filters'] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedSort, setSelectedSort] = useState('newest');
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter and sort products
-  const filteredProducts = useMemo(() => {
-    let filtered = [...mockProducts];
-
-    // Category filter
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(p => p.type === selectedCategory);
+  // Fetch products from API
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '12'
+      });
+      
+      if (searchQuery) params.set('search', searchQuery);
+      if (selectedCategory !== 'all') params.set('type', selectedCategory);
+      if (selectedSort !== 'newest') {
+        const sortMap = {
+          'priceLow': 'price_low',
+          'priceHigh': 'price_high',
+          'popular': 'popular',
+          'newest': 'newest'
+        };
+        params.set('sort', sortMap[selectedSort as keyof typeof sortMap] || 'newest');
+      }
+      
+      const response = await fetch(`/api/shop/products?${params}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      
+      const data: ProductsResponse = await response.json();
+      
+      // Transform API products to Product format for compatibility
+      const transformedProducts = data.products.map(transformApiProduct);
+      
+      setProducts(transformedProducts);
+      setPagination(data.pagination);
+      setAvailableFilters(data.filters);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load products');
+    } finally {
+      setLoading(false);
     }
-
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.title.toLowerCase().includes(query) ||
-        p.creator.name.toLowerCase().includes(query) ||
-        p.creator.location.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query)
-      );
-    }
-
-    // Sorting
-    switch (selectedSort) {
-      case 'priceLow':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'priceHigh':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case 'popular':
-        filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-        break;
-      case 'newest':
-      default:
-        // Keep original order (newest first)
-        break;
-    }
-
-    return filtered;
+  }, [currentPage, searchQuery, selectedCategory, selectedSort]);
+  
+  // Fetch products when filters change
+  useEffect(() => {
+    fetchProducts();
+  }, [currentPage, searchQuery, selectedCategory, selectedSort]);
+  
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
   }, [searchQuery, selectedCategory, selectedSort]);
 
-  // Calculate total impact
+  // Calculate total impact (placeholder - would come from API in real implementation)
   const totalImpact = {
-    education: 23,
-    meals: 145,
-    stories: 8,
+    education: pagination?.totalCount ? Math.floor(pagination.totalCount * 1.5) : 23,
+    meals: pagination?.totalCount ? Math.floor(pagination.totalCount * 8.2) : 145,
+    stories: pagination?.totalCount ? Math.floor(pagination.totalCount * 0.4) : 8,
   };
 
   return (
@@ -248,7 +260,10 @@ export default function ShopPage() {
             {/* Results Header */}
             <div className="flex items-center justify-between mb-6">
               <p className="text-gray-600">
-                Showing <span className="font-semibold">{filteredProducts.length}</span> products
+                Showing <span className="font-semibold">{pagination?.totalCount || 0}</span> products
+                {pagination && pagination.totalPages > 1 && (
+                  <span> (Page {pagination.page} of {pagination.totalPages})</span>
+                )}
               </p>
               
               {/* View Options (optional) */}
@@ -272,9 +287,26 @@ export default function ShopPage() {
             </div>
 
             {/* Products Grid */}
-            {filteredProducts.length > 0 ? (
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <span className="ml-2 text-gray-600">Loading products...</span>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <ShoppingBag className="w-16 h-16 text-red-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Error loading products</h3>
+                <p className="text-gray-600 mb-4">{error}</p>
+                <button
+                  onClick={() => fetchProducts()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product, index) => (
+                {products.map((product, index) => (
                   <motion.div
                     key={product.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -290,6 +322,47 @@ export default function ShopPage() {
                 <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-600 mb-2">No products found</h3>
                 <p className="text-gray-500">Try adjusting your filters or search query</p>
+              </div>
+            )}
+            
+            {/* Pagination Controls */}
+            {pagination && pagination.totalPages > 1 && (
+              <div className="flex items-center justify-center mt-12 space-x-1">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={!pagination.hasPrev || loading}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                
+                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                  const pageNum = i + Math.max(1, currentPage - 2)
+                  if (pageNum > pagination.totalPages) return null
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      disabled={loading}
+                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        pageNum === currentPage
+                          ? 'text-white bg-blue-600 hover:bg-blue-700'
+                          : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                })}
+                
+                <button
+                  onClick={() => setCurrentPage(Math.min(pagination.totalPages, currentPage + 1))}
+                  disabled={!pagination.hasNext || loading}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
               </div>
             )}
           </div>

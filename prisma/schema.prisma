@@ -3,11 +3,13 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema", "postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [pgcrypto]
 }
 
 // ==========================================
@@ -26,12 +28,17 @@ model User {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   
+  // GDPR Deletion fields
+  deletedAt       DateTime?
+  deletionRequestId String?
+  
   // Relations
   accounts        Account[]
   sessions        Session[]
   profile         Profile?
   subscription    Subscription?
   school          School?          @relation(fields: [schoolId], references: [id])
+  deletionRequest UserDeletionRequest?
   
   // E-commerce
   cart            Cart?
@@ -56,10 +63,16 @@ model User {
   readingLists    ReadingList[]
   
   // Volunteer
+  volunteerProfile VolunteerProfile?
   volunteerApplications VolunteerApplication[]
   volunteerHours  VolunteerHours[]
   volunteerCertificates VolunteerCertificate[]
   coordinatingProjects VolunteerProject[]
+  createdQuests Quest[]
+  reviewedEvidence VolunteerEvidence[]
+  issuedPoints VolunteerPoints[]
+  fulfilledRewards VolunteerRedemption[]
+  questReviews QuestReview[]
   
   // Donations
   donations       Donation[]
@@ -73,6 +86,10 @@ model User {
   uploadedMedia   MediaFile[]
   workflowActions WorkflowHistory[]
   bulkImports     BulkImport[]
+  
+  // Onboarding
+  onboardingProgress OnboardingProgress?
+  sampleContentAccess SampleContentAccess[]
   
   @@index([email])
   @@index([role])
@@ -102,6 +119,16 @@ model Profile {
   dateOfBirth     DateTime?
   language        String           @default("en")
   timezone        String           @default("UTC")
+  
+  // COPPA Compliance Fields
+  isMinor         Boolean          @default(false)
+  ageVerificationStatus AgeVerificationStatus @default(PENDING)
+  parentalConsentRequired Boolean  @default(false)
+  parentalConsentStatus ParentalConsentStatus @default(NOT_REQUIRED)
+  parentalConsentDate DateTime?
+  parentEmail     String?
+  parentName      String?
+  coppaCompliant  Boolean          @default(false)
   
   // For teachers/institutions
   teachingLevel   String?
@@ -570,6 +597,7 @@ model Story {
   bookmarks       Bookmark[]
   reviews         Review[]         @relation("StoryReviews")
   translations    Translation[]
+  sampleAccesses  SampleContentAccess[]
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -1061,25 +1089,43 @@ enum ProjectStatus {
   CANCELLED
 }
 
-// Volunteer applications for projects
+// Volunteer applications for projects (Enhanced)
 model VolunteerApplication {
   id              String           @id @default(cuid())
-  projectId       String
+  projectId       String?          // Old projects
+  questId         String?          // New quest system
   volunteerId     String
+  volunteerUserId String           // Link to User for backward compatibility
+  
+  // Application content
   motivation      String           @db.Text
   experience      String           @db.Text
   availability    String
+  coverLetter     String?          @db.Text
+  
+  // Status and review
   status          ApplicationStatus @default(PENDING)
   reviewedBy      String?
   reviewedAt      DateTime?
   notes           String?          @db.Text
+  rejectionReason String?          @db.Text
   
-  project         VolunteerProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  volunteer       User             @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  // Matching and selection
+  matchScore      Float?           // Auto-calculated match score
+  isRecommended   Boolean          @default(false)
+  selectionReason String?          @db.Text
+  
+  // Relations
+  project         VolunteerProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  quest           Quest?           @relation(fields: [questId], references: [id], onDelete: Cascade)
+  volunteer       User             @relation(fields: [volunteerUserId], references: [id], onDelete: Cascade)
+  volunteerProfile VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
   
   createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   
   @@unique([projectId, volunteerId])
+  @@unique([questId, volunteerId])
   @@map("volunteer_applications")
 }
 
@@ -1586,4 +1632,816 @@ enum ImportStatus {
   COMPLETED
   FAILED
   CANCELLED
+}
+
+// ==========================================
+// ONBOARDING ZONE MODELS
+// ==========================================
+
+// User onboarding progress tracking
+model OnboardingProgress {
+  id              String           @id @default(cuid())
+  userId          String           @unique
+  currentStep     OnboardingStep   @default(WELCOME)
+  completionRate  Float            @default(0)
+  samplesViewed   Int              @default(0)
+  tutorialCompleted Boolean        @default(false)
+  lastActivity    DateTime         @default(now())
+  isCompleted     Boolean          @default(false)
+  
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activities      OnboardingActivity[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@map("onboarding_progress")
+}
+
+// Individual onboarding activities
+model OnboardingActivity {
+  id              String           @id @default(cuid())
+  progressId      String
+  activityType    ActivityType
+  contentId       String?
+  timeSpent       Int              @default(0) // Minutes
+  isCompleted     Boolean          @default(false)
+  interactionData Json?            // Clicks, scrolls, etc.
+  
+  progress        OnboardingProgress @relation(fields: [progressId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  
+  @@map("onboarding_activities")
+}
+
+// Sample content access tracking
+model SampleContentAccess {
+  id              String           @id @default(cuid())
+  userId          String
+  storyId         String
+  viewCount       Int              @default(0)
+  totalTimeSpent  Int              @default(0) // Minutes
+  lastAccessed    DateTime         @default(now())
+  
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story           Story            @relation(fields: [storyId], references: [id])
+  
+  @@unique([userId, storyId])
+  @@map("sample_content_access")
+}
+
+// Welcome messages and notifications
+model WelcomeMessage {
+  id              String           @id @default(cuid())
+  messageType     WelcomeType
+  language        String           @default("ko")
+  content         String           @db.Text
+  isActive        Boolean          @default(true)
+  priority        Int              @default(1)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@map("welcome_messages")
+}
+
+// Onboarding step enumeration
+enum OnboardingStep {
+  WELCOME
+  TUTORIAL
+  SAMPLE_STORIES
+  PREPARATION
+  COMMUNITY
+  COMPLETED
+}
+
+// Activity type enumeration
+enum ActivityType {
+  STORY_VIEW
+  TUTORIAL_STEP
+  COMMUNITY_POST
+  PREPARATION_TASK
+  BADGE_EARNED
+}
+
+// Welcome message type enumeration
+enum WelcomeType {
+  BRIEF
+  FRIENDLY
+  FORMAL
+  APPROVAL_PENDING
+  APPROVAL_APPROVED
+  APPROVAL_REJECTED
+  RESUBMISSION_REQUIRED
+}
+
+// ==========================================
+// VOLUNTEER MANAGEMENT SYSTEM (Enhanced)
+// ==========================================
+
+// Enhanced volunteer profile with comprehensive information
+model VolunteerProfile {
+  id              String           @id @default(cuid())
+  userId          String           @unique
+  
+  // Skills and qualifications
+  languages       String[]         // Spoken languages
+  languageLevels  Json             // {"en": "native", "es": "advanced"}
+  skills          String[]         // Technical and soft skills
+  qualifications  String[]         // Certifications, degrees
+  experience      String?          @db.Text
+  portfolio       String?          // Portfolio URL
+  
+  // Availability and preferences
+  timezone        String           @default("UTC")
+  availableSlots  Json             // Weekly availability slots
+  maxHoursPerWeek Int              @default(10)
+  remoteOnly      Boolean          @default(true)
+  preferredTypes  VolunteerType[]  // Preferred activity types
+  
+  // Verification and approval
+  verificationStatus VerificationStatus @default(PENDING)
+  backgroundCheck Boolean          @default(false)
+  documentUrl     String?          // ID or background check document
+  verifiedAt      DateTime?
+  verifiedById    String?
+  
+  // Performance tracking
+  totalHours      Float            @default(0)
+  totalPoints     Int              @default(0)
+  currentLevel    VolunteerLevel   @default(BRONZE)
+  rating          Float            @default(5.0)
+  reliability     Float            @default(100.0) // Percentage
+  
+  // Mentorship
+  isMentor        Boolean          @default(false)
+  mentorLevel     MentorLevel?
+  canAcceptMentees Boolean          @default(false)
+  maxMentees      Int              @default(0)
+  
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relations for tracking
+  applications    VolunteerApplication[]
+  assignments     QuestAssignment[]
+  evidenceRecords VolunteerEvidence[]
+  pointHistory    VolunteerPoints[]
+  redemptions     VolunteerRedemption[]
+  mentorships     MentorRelation[]  @relation("MentorRelations")
+  mentorees       MentorRelation[]  @relation("MenteeRelations")
+  matchScores     VolunteerMatch[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@map("volunteer_profiles")
+}
+
+// Enhanced quest/class system for scheduling and matching
+model Quest {
+  id              String           @id @default(cuid())
+  title           String
+  description     String           @db.Text
+  type            VolunteerType
+  category        QuestCategory    @default(EDUCATION)
+  difficulty      DifficultyLevel  @default(BEGINNER)
+  
+  // Requirements
+  requiredSkills  String[]
+  requiredLanguages String[]       // Required languages
+  minimumLevel    VolunteerLevel   @default(BRONZE)
+  experienceRequired Boolean       @default(false)
+  
+  // Scheduling
+  startDate       DateTime
+  endDate         DateTime?
+  duration        Int              // Expected hours
+  isRecurring     Boolean          @default(false)
+  recurringPattern String?         // e.g., "weekly", "biweekly"
+  timezone        String           @default("UTC")
+  timeSlots       Json             // Available time slots
+  
+  // Capacity and urgency
+  maxVolunteers   Int              @default(1)
+  currentVolunteers Int            @default(0)
+  urgency         UrgencyLevel     @default(MEDIUM)
+  priority        Int              @default(1)
+  
+  // Rewards
+  pointsReward    Int              @default(10)
+  additionalRewards String[]       // Badges, certificates, etc.
+  
+  // Content and location
+  location        String           @default("Remote")
+  materials       String[]         // Required materials/resources
+  targetAudience  String?          // Who this quest helps
+  expectedImpact  String?          // Expected outcome
+  
+  // Creator and approval
+  creatorId       String
+  createdByRole   UserRole         @default(ADMIN)
+  approvalRequired Boolean         @default(false)
+  isApproved      Boolean          @default(true)
+  approvedById    String?
+  approvedAt      DateTime?
+  
+  // Status
+  status          QuestStatus      @default(OPEN)
+  isActive        Boolean          @default(true)
+  isFeatured      Boolean          @default(false)
+  
+  creator         User             @relation(fields: [creatorId], references: [id])
+  applications    VolunteerApplication[]
+  assignments     QuestAssignment[]
+  evidenceRecords VolunteerEvidence[]
+  reviews         QuestReview[]
+  matches         VolunteerMatch[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([status, type])
+  @@index([urgency, startDate])
+  @@map("quests")
+}
+
+// Assignment relationship between volunteers and quests
+model QuestAssignment {
+  id              String           @id @default(cuid())
+  questId         String
+  volunteerId     String
+  
+  // Assignment details
+  assignedAt      DateTime         @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  status          AssignmentStatus @default(ASSIGNED)
+  
+  // Performance tracking
+  hoursLogged     Float            @default(0)
+  progressPercent Int              @default(0)
+  qualityScore    Float?
+  
+  // Notes and feedback
+  volunteerNotes  String?          @db.Text
+  supervisorNotes String?          @db.Text
+  finalFeedback   String?          @db.Text
+  rating          Int?             // 1-5 rating
+  
+  quest           Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
+  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  evidenceRecords VolunteerEvidence[]
+  
+  @@unique([questId, volunteerId])
+  @@map("quest_assignments")
+}
+
+// Evidence submission and verification system
+model VolunteerEvidence {
+  id              String           @id @default(cuid())
+  assignmentId    String
+  volunteerId     String
+  questId         String
+  
+  // Evidence details
+  type            EvidenceType
+  title           String
+  description     String?          @db.Text
+  fileUrls        String[]         // Multiple files supported
+  metadata        Json?            // OCR results, timestamps, etc.
+  
+  // Verification
+  status          EvidenceStatus   @default(PENDING)
+  submittedAt     DateTime         @default(now())
+  reviewedAt      DateTime?
+  reviewerId      String?
+  reviewNotes     String?          @db.Text
+  
+  // Hours and points
+  hoursSubmitted  Float
+  hoursApproved   Float            @default(0)
+  pointsAwarded   Int              @default(0)
+  
+  // Auto-verification
+  autoVerified    Boolean          @default(false)
+  verificationScore Float?         // Confidence score for auto-verification
+  
+  assignment      QuestAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  quest           Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
+  reviewer        User?            @relation(fields: [reviewerId], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([status, submittedAt])
+  @@index([volunteerId, status])
+  @@map("volunteer_evidence")
+}
+
+// Point transaction history
+model VolunteerPoints {
+  id              String           @id @default(cuid())
+  volunteerId     String
+  
+  // Transaction details
+  type            PointTransactionType
+  amount          Int              // Positive for earning, negative for spending
+  reason          String
+  description     String?
+  referenceId     String?          // Quest ID, reward ID, etc.
+  referenceType   String?          // "quest", "reward", "bonus", etc.
+  
+  // Balance tracking
+  balanceAfter    Int
+  
+  // Metadata
+  metadata        Json?
+  issuedById      String?
+  
+  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  issuedBy        User?            @relation(fields: [issuedById], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  
+  @@index([volunteerId, createdAt])
+  @@map("volunteer_points")
+}
+
+// Reward system
+model VolunteerReward {
+  id              String           @id @default(cuid())
+  name            String
+  description     String           @db.Text
+  type            RewardType
+  category        RewardCategory   @default(DIGITAL)
+  
+  // Cost and availability
+  pointsCost      Int
+  levelRequired   VolunteerLevel   @default(BRONZE)
+  maxRedemptions  Int?             // Null = unlimited
+  currentRedemptions Int           @default(0)
+  
+  // Reward details
+  value           String?          // "$25", "Certificate", etc.
+  imageUrl        String?
+  terms           String?          @db.Text
+  
+  // Availability
+  isActive        Boolean          @default(true)
+  validFrom       DateTime         @default(now())
+  validUntil      DateTime?
+  
+  redemptions     VolunteerRedemption[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@map("volunteer_rewards")
+}
+
+// Reward redemption tracking
+model VolunteerRedemption {
+  id              String           @id @default(cuid())
+  volunteerId     String
+  rewardId        String
+  
+  // Redemption details
+  pointsUsed      Int
+  status          RedemptionStatus @default(PENDING)
+  
+  // Fulfillment
+  fulfilledAt     DateTime?
+  fulfilledById   String?
+  fulfillmentNotes String?         @db.Text
+  trackingInfo    String?          // Tracking number, download link, etc.
+  
+  // Digital delivery
+  deliveryMethod  String?          // "email", "download", "physical"
+  recipientEmail  String?
+  shippingAddress Json?
+  
+  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  reward          VolunteerReward  @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  fulfilledBy     User?            @relation(fields: [fulfilledById], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@map("volunteer_redemptions")
+}
+
+// Mentor-mentee relationships
+model MentorRelation {
+  id              String           @id @default(cuid())
+  mentorId        String
+  menteeId        String
+  
+  // Relationship details
+  status          MentorshipStatus @default(ACTIVE)
+  startDate       DateTime         @default(now())
+  endDate         DateTime?
+  
+  // Goals and progress
+  goals           String[]
+  progress        Json?            // Goal progress tracking
+  meetingSchedule String?          // "weekly", "biweekly", etc.
+  lastMeeting     DateTime?
+  nextMeeting     DateTime?
+  
+  // Feedback and notes
+  mentorNotes     String?          @db.Text
+  menteeNotes     String?          @db.Text
+  adminNotes      String?          @db.Text
+  
+  mentor          VolunteerProfile @relation("MentorRelations", fields: [mentorId], references: [id], onDelete: Cascade)
+  mentee          VolunteerProfile @relation("MenteeRelations", fields: [menteeId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@unique([mentorId, menteeId])
+  @@map("mentor_relations")
+}
+
+// Matching algorithm support
+model VolunteerMatch {
+  id              String           @id @default(cuid())
+  volunteerId     String
+  questId         String
+  
+  // Matching scores
+  overallScore    Float            // 0-100
+  languageScore   Float            @default(0)
+  skillScore      Float            @default(0)
+  availabilityScore Float          @default(0)
+  experienceScore Float            @default(0)
+  locationScore   Float            @default(0)
+  
+  // Matching metadata
+  reasons         String[]         // Why this match was made
+  concerns        String[]         // Potential issues
+  confidence      Float            @default(0) // 0-1
+  
+  // Selection tracking
+  isRecommended   Boolean          @default(false)
+  wasSelected     Boolean          @default(false)
+  selectionReason String?
+  
+  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  quest           Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@unique([volunteerId, questId])
+  @@index([questId, overallScore])
+  @@map("volunteer_matches")
+}
+
+// Quest reviews and feedback
+model QuestReview {
+  id              String           @id @default(cuid())
+  questId         String
+  reviewerId      String
+  reviewerRole    UserRole
+  
+  // Review content
+  rating          Int              // 1-5 stars
+  title           String?
+  content         String           @db.Text
+  
+  // Categories
+  difficultyRating Int?            // Was difficulty accurate?
+  clarityRating   Int?             // Was description clear?
+  supportRating   Int?             // Was support adequate?
+  
+  // Recommendation
+  wouldRecommend  Boolean          @default(true)
+  improvementSuggestions String?   @db.Text
+  
+  quest           Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
+  reviewer        User             @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  
+  @@map("quest_reviews")
+}
+
+// ==========================================
+// ENUMS FOR VOLUNTEER SYSTEM
+// ==========================================
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+enum VolunteerLevel {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+enum MentorLevel {
+  JUNIOR_MENTOR
+  SENIOR_MENTOR
+  LEAD_MENTOR
+  MASTER_MENTOR
+}
+
+enum QuestCategory {
+  EDUCATION
+  TRANSLATION
+  CONTENT_CREATION
+  COMMUNITY
+  TECHNICAL
+  ADMINISTRATIVE
+  SPECIAL_EVENTS
+}
+
+enum QuestStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  PAUSED
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum AssignmentStatus {
+  ASSIGNED
+  STARTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+enum EvidenceType {
+  TIME_LOG
+  PHOTO
+  VIDEO
+  DOCUMENT
+  LINK
+  SCREENSHOT
+  RECORDING
+  OTHER
+}
+
+enum EvidenceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_REVISION
+}
+
+enum PointTransactionType {
+  EARNED_QUEST
+  EARNED_BONUS
+  EARNED_REFERRAL
+  SPENT_REWARD
+  PENALTY
+  ADJUSTMENT
+  REFUND
+}
+
+enum RewardType {
+  DIGITAL_GOOD
+  PHYSICAL_GOOD
+  EXPERIENCE
+  RECOGNITION
+  ACCESS_PRIVILEGE
+  DONATION
+  CREDIT
+}
+
+enum RewardCategory {
+  DIGITAL
+  PHYSICAL
+  EXPERIENCE
+  EDUCATION
+  RECOGNITION
+}
+
+enum RedemptionStatus {
+  PENDING
+  PROCESSING
+  FULFILLED
+  CANCELLED
+  FAILED
+}
+
+enum MentorshipStatus {
+  REQUESTED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+// ==========================================
+// COPPA COMPLIANCE ENUMS
+// ==========================================
+
+enum AgeVerificationStatus {
+  PENDING
+  VERIFIED_ADULT
+  VERIFIED_MINOR
+  FAILED
+}
+
+enum ParentalConsentStatus {
+  NOT_REQUIRED
+  PENDING
+  GRANTED
+  DENIED
+  EXPIRED
+}
+
+// ==========================================
+// GDPR ARTICLE 17 - RIGHT TO DELETION
+// ==========================================
+
+// User deletion requests tracking
+model UserDeletionRequest {
+  id                        String           @id @default(cuid())
+  userId                    String           @unique
+  status                    DeletionStatus   @default(PENDING)
+  deletionReason            String?          @db.Text
+  
+  // COPPA compliance for minors
+  parentalConsentRequired   Boolean          @default(false)
+  parentalConsentVerified   Boolean          @default(false)
+  parentConfirmationToken   String?          @unique
+  parentConfirmationSentAt  DateTime?
+  parentConfirmationExpiry  DateTime?
+  
+  // Soft delete timing
+  softDeletedAt             DateTime?
+  hardDeletedAt             DateTime?
+  recoveryDeadline          DateTime?
+  
+  // Request metadata
+  requestSource             String           @default("self_service") // "self_service", "parental", "admin"
+  ipAddress                 String?
+  userAgent                 String?
+  additionalContext         Json?
+  
+  // Processing status
+  reviewRequired            Boolean          @default(false)
+  reviewedBy                String?
+  reviewedAt                DateTime?
+  reviewNotes               String?          @db.Text
+  
+  // Final confirmation
+  finalConfirmationToken    String?          @unique
+  finalConfirmationSentAt   DateTime?
+  finalConfirmationExpiry   DateTime?
+  
+  user                      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auditLogs                 DeletionAuditLog[]
+  
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
+  
+  @@index([status])
+  @@index([softDeletedAt])
+  @@index([recoveryDeadline])
+  @@map("user_deletion_requests")
+}
+
+enum DeletionStatus {
+  PENDING                    // Initial request received
+  PARENTAL_CONSENT_REQUIRED  // Waiting for parental consent (COPPA)
+  PARENTAL_CONSENT_PENDING   // Parental consent email sent
+  REVIEW_REQUIRED           // Manual review needed
+  CONFIRMED                 // Ready for soft delete
+  SOFT_DELETED              // Account soft deleted, in recovery period
+  HARD_DELETED              // Permanently deleted
+  CANCELLED                 // Request cancelled by user
+  RECOVERED                 // Account recovered during soft delete period
+  FAILED                    // Deletion failed due to error
+}
+
+// Comprehensive audit logging for deletion operations
+model DeletionAuditLog {
+  id                        String           @id @default(cuid())
+  deletionRequestId         String
+  
+  // Action details
+  action                    DeletionAction
+  performedBy               String?          // User ID who performed action
+  performedByRole           UserRole?
+  performedByType           ActorType        @default(SYSTEM)
+  
+  // Data affected
+  tableName                 String?
+  recordId                  String?
+  recordCount               Int?
+  
+  // Action details
+  previousStatus            DeletionStatus?
+  newStatus                 DeletionStatus?
+  actionDetails             String?          @db.Text
+  metadata                  Json?
+  
+  // Technical details
+  ipAddress                 String?
+  userAgent                 String?
+  sessionId                 String?
+  
+  // Data processing
+  dataAnonymized            Boolean          @default(false)
+  anonymizedFields          String[]
+  dataBackedUp              Boolean          @default(false)
+  backupLocation            String?
+  
+  deletionRequest           UserDeletionRequest @relation(fields: [deletionRequestId], references: [id], onDelete: Cascade)
+  
+  createdAt                 DateTime         @default(now())
+  
+  @@index([deletionRequestId])
+  @@index([action])
+  @@index([tableName, recordId])
+  @@map("deletion_audit_logs")
+}
+
+enum DeletionAction {
+  REQUEST_CREATED
+  PARENTAL_CONSENT_SENT
+  PARENTAL_CONSENT_GRANTED
+  PARENTAL_CONSENT_DENIED
+  REVIEW_ASSIGNED
+  REVIEW_APPROVED
+  REVIEW_REJECTED
+  FINAL_CONFIRMATION_SENT
+  FINAL_CONFIRMATION_RECEIVED
+  SOFT_DELETE_EXECUTED
+  HARD_DELETE_EXECUTED
+  DATA_ANONYMIZED
+  DATA_BACKED_UP
+  ACCOUNT_RECOVERED
+  REQUEST_CANCELLED
+  SYSTEM_ERROR
+  CLEANUP_COMPLETED
+}
+
+enum ActorType {
+  USER
+  PARENT
+  ADMIN
+  SYSTEM
+  AUTOMATED
+}
+
+// Anonymization tracking for retained data
+model AnonymizationLog {
+  id                        String           @id @default(cuid())
+  tableName                 String
+  recordId                  String
+  
+  // Anonymization details
+  anonymizedFields          Json             // {"email": "user_123@anonymized.local", "name": "[ANONYMIZED]"}
+  retainedFields            Json?            // Fields kept for legitimate interest
+  anonymizationMethod       String           // "hash", "pseudonym", "removal", "generalization"
+  
+  // Legal basis for retention
+  retentionReason           String?          @db.Text
+  retentionPeriod           String?          // "7_years", "indefinite", etc.
+  legalBasis                String?          // "legitimate_interest", "legal_obligation", etc.
+  
+  // Processing metadata
+  processedBy               String?          // User/system that performed anonymization
+  processingJobId           String?
+  
+  // Verification
+  verificationHash          String?          // Hash to verify data integrity
+  reversible                Boolean          @default(false)
+  
+  createdAt                 DateTime         @default(now())
+  
+  @@unique([tableName, recordId])
+  @@index([tableName])
+  @@index([createdAt])
+  @@map("anonymization_logs")
 }
