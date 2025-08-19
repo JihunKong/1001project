@@ -91,8 +91,9 @@ export async function GET(request: NextRequest) {
  * Generates new audit reports
  */
 export async function POST(request: NextRequest) {
+  let session = null
   try {
-    const session = await getServerSession(authOptions)
+    session = await getServerSession(authOptions)
     
     if (!session?.user?.id || session.user.role !== 'ADMIN') {
       return NextResponse.json(
