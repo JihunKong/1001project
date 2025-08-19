@@ -8,7 +8,7 @@ import { monitorAuditLogEntry } from '@/lib/audit-monitoring';
 import { headers } from 'next/headers';
 
 export async function POST(request: NextRequest) {
-  let body = null;
+  let body: any = null;
   try {
     body = await request.json();
     const { token, approved, timestamp, parentInfo } = body;
