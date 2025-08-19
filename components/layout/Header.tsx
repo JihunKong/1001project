@@ -61,6 +61,18 @@ export default function Header() {
     { name: t('navigation.shop'), href: '/shop', icon: ShoppingBag },
   ];
 
+  // Add onboarding zone for users who need approval
+  const getOnboardingNavigation = () => {
+    if (!session?.user) return [];
+    
+    // Show onboarding zone if user is not email verified (pending approval)
+    if (!session.user.emailVerified) {
+      return [{ name: 'Onboarding Zone', href: '/onboarding', icon: GraduationCap }];
+    }
+    
+    return [];
+  };
+
   // Additional navigation based on role
   const getRoleBasedNavigation = () => {
     if (!session?.user) return [];
@@ -87,7 +99,7 @@ export default function Header() {
         roleNav.push({ name: 'Institution', href: '/dashboard/institution', icon: School });
         break;
       case UserRole.VOLUNTEER:
-        roleNav.push({ name: 'Volunteer Hub', href: '/volunteer', icon: Users });
+        roleNav.push({ name: 'Volunteer Hub', href: '/dashboard/volunteer', icon: Users });
         break;
       case UserRole.LEARNER:
         roleNav.push({ name: 'My Learning', href: '/dashboard/learner', icon: BookOpen });
@@ -105,6 +117,7 @@ export default function Header() {
 
   const navigation = [
     ...baseNavigation,
+    ...getOnboardingNavigation(),
     ...getRoleBasedNavigation(),
     ...(session ? [] : publicNavigation)
   ];

@@ -130,6 +130,13 @@ test.describe('Role-Based Access Control', () => {
       await expect(page).not.toHaveURL('/admin');
       await expect(page.locator('text=/access denied|unauthorized/i')).toBeVisible();
     });
+    
+    test('should NOT access volunteer dashboard', async ({ page }) => {
+      await page.goto('/dashboard/volunteer');
+      
+      // Should redirect to main dashboard
+      await expect(page).toHaveURL(/.*\/dashboard$/);
+    });
   });
   
   test.describe('Institution Role', () => {
@@ -206,6 +213,20 @@ test.describe('Role-Based Access Control', () => {
       
       expect(download.suggestedFilename()).toContain('impact-report');
     });
+    
+    test('should NOT access volunteer dashboard', async ({ page }) => {
+      await page.goto('/dashboard/volunteer');
+      
+      // Should redirect to main dashboard
+      await expect(page).toHaveURL(/.*\/dashboard$/);
+    });
+    
+    test('should NOT access teacher dashboard', async ({ page }) => {
+      await page.goto('/dashboard/teacher');
+      
+      // Should redirect to main dashboard
+      await expect(page).toHaveURL(/.*\/dashboard$/);
+    });
   });
   
   test.describe('Volunteer Role', () => {
@@ -272,6 +293,26 @@ test.describe('Role-Based Access Control', () => {
       await page.click('button:has-text("Post")');
       
       await expect(page.locator('text=Translation Best Practices')).toBeVisible();
+    });
+    
+    test('should NOT access teacher dashboard', async ({ page }) => {
+      await page.goto('/dashboard/teacher');
+      
+      // Should redirect to main dashboard
+      await expect(page).toHaveURL(/.*\/dashboard$/);
+    });
+    
+    test('should NOT access institution dashboard', async ({ page }) => {
+      await page.goto('/dashboard/institution');
+      
+      // Should redirect to main dashboard
+      await expect(page).toHaveURL(/.*\/dashboard$/);
+    });
+    
+    test('should NOT access admin panel', async ({ page }) => {
+      await page.goto('/admin');
+      
+      await expect(page).not.toHaveURL('/admin');
     });
   });
   
