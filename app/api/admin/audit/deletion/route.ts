@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getDeletionAuditStatistics } from '@/lib/gdpr-deletion'
-import { DeletionAction, DeletionStatus, ActorType } from '@prisma/client'
+import { DeletionAction, DeletionStatus, ActorType, Prisma } from '@prisma/client'
 
 /**
  * Admin API for Deletion Audit Log Management
@@ -404,7 +404,7 @@ async function generateIntegrityReport() {
     where: {
       metadata: {
         path: ['integrityHash'],
-        not: null
+        not: Prisma.JsonNull
       }
     },
     select: {
