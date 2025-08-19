@@ -129,10 +129,24 @@ export const authOptions: NextAuthOptions = {
     },
     
     async redirect({ url, baseUrl }) {
+      // Public routes that should NOT redirect to dashboard
+      const publicRoutes = ['/library', '/shop', '/about', '/contact', '/mission', '/partners', '/programs', '/team', '/terms', '/privacy', '/donate'];
+      
+      // Check if the URL is a public route
+      const isPublicRoute = publicRoutes.some(route => 
+        url === route || url.startsWith(`${route}/`)
+      );
+      
+      // For public routes, allow the user to stay on that route
+      if (isPublicRoute) {
+        return url.startsWith("/") ? `${baseUrl}${url}` : url;
+      }
+      
       // Redirect to dashboard based on user role after sign in
       if (url === "/login" || url === "/signup") {
         return "/dashboard"
       }
+      
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`
       // Allows callback URLs on the same origin

@@ -97,7 +97,11 @@ export default withAuth(
         ];
         
         // API routes that don't require authentication
-        if (pathname.startsWith("/api/auth") || pathname.startsWith("/api/health")) {
+        if (pathname.startsWith("/api/auth") || 
+            pathname.startsWith("/api/health") ||
+            pathname.startsWith("/api/library/stories") ||
+            pathname.startsWith("/api/shop/products") ||
+            pathname.startsWith("/api/shop/cart")) {
           return true;
         }
         
