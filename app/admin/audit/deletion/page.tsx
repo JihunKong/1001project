@@ -45,6 +45,9 @@ interface AuditStatistics {
   totalRequests: number
   actionBreakdown: Record<string, number>
   statusBreakdown: Record<string, number>
+  totalAlerts?: number
+  activeAlerts?: number
+  resolvedAlerts?: number
 }
 
 export default function DeletionAuditDashboard() {
