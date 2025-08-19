@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { executeWithRLSBypass } from '@/lib/prisma';
-import { UserDeletionStatus, ParentalConsentStatus } from '@prisma/client';
+import { DeletionStatus, ParentalConsentStatus } from '@prisma/client';
 import { validateConsentToken } from '@/lib/coppa';
 import { processParentalConsent } from '@/lib/gdpr-deletion';
 import { createDeletionAuditLog } from '@/lib/gdpr-deletion';
