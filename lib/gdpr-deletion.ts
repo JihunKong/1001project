@@ -2,8 +2,9 @@ import { prisma } from '@/lib/prisma'
 import { PrismaClient, DeletionStatus, UserRole, DeletionAction, ActorType } from '@prisma/client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { randomBytes } from 'crypto'
+import { randomBytes, createHash } from 'crypto'
 import { calculateAge, isMinorUnderCOPPA } from '@/lib/coppa'
+import { headers } from 'next/headers'
 
 /**
  * GDPR Article 17 (Right to Erasure) Implementation
@@ -18,8 +19,18 @@ export interface DeletionRequestParams {
   requestSource?: 'self_service' | 'parental' | 'admin'
   ipAddress?: string
   userAgent?: string
+  sessionId?: string
   performedBy?: string
   performedByRole?: UserRole
+}
+
+export interface AuditLogContext {
+  ipAddress?: string
+  userAgent?: string
+  sessionId?: string
+  fingerprint?: string
+  location?: string
+  device?: string
 }
 
 export interface DeletionValidationResult {
@@ -172,19 +183,26 @@ export async function initiateDeletionRequest(params: DeletionRequestParams) {
     }
   })
 
-  // Create audit log entry
+  // Create audit log entry with enhanced context
   await createDeletionAuditLog({
     deletionRequestId: deletionRequest.id,
     action: 'REQUEST_CREATED',
     performedBy,
     performedByRole,
     performedByType: requestSource === 'admin' ? 'ADMIN' : 'USER',
+    newStatus: initialStatus,
     details: `Deletion request initiated with status: ${initialStatus}`,
     metadata: {
       reason,
       warnings: validation.warnings,
+      requestSource,
+      validationResults: validation
+    },
+    context: {
       ipAddress,
-      userAgent
+      userAgent,
+      sessionId: params.sessionId,
+      fingerprint: params.sessionId ? createFingerprint(params) : undefined
     }
   })
 
@@ -234,8 +252,13 @@ export async function processParentalConsent(
       deletionRequestId: deletionRequest.id,
       action: 'PARENTAL_CONSENT_GRANTED',
       performedByType: 'PARENT',
+      previousStatus: deletionRequest.status,
+      newStatus: deletionRequest.reviewRequired ? 'REVIEW_REQUIRED' : 'CONFIRMED',
       details: 'Parental consent granted for minor account deletion',
-      metadata: { parentInfo }
+      metadata: { 
+        parentInfo,
+        consentToken: token.substring(0, 8) + '...' // Log partial token for audit
+      }
     })
   } else {
     // Parent denied deletion
@@ -255,8 +278,14 @@ export async function processParentalConsent(
       deletionRequestId: deletionRequest.id,
       action: 'PARENTAL_CONSENT_DENIED',
       performedByType: 'PARENT',
+      previousStatus: deletionRequest.status,
+      newStatus: 'CANCELLED',
       details: 'Parental consent denied for minor account deletion',
-      metadata: { parentInfo }
+      metadata: { 
+        parentInfo,
+        consentToken: token.substring(0, 8) + '...',
+        cancellationReason: 'Parental consent denied'
+      }
     })
   }
 }
@@ -306,9 +335,12 @@ export async function performSoftDelete(deletionRequestId: string, performedBy?:
     action: 'SOFT_DELETE_EXECUTED',
     performedBy,
     performedByType: 'SYSTEM',
+    previousStatus: 'CONFIRMED',
+    newStatus: 'SOFT_DELETED',
     details: `Account soft deleted. Recovery deadline: ${recoveryDeadline.toISOString()}`,
     metadata: {
-      recoveryDeadline: recoveryDeadline.toISOString()
+      recoveryDeadline: recoveryDeadline.toISOString(),
+      softDeletedAt: new Date().toISOString()
     }
   })
 }
@@ -358,7 +390,13 @@ export async function recoverAccount(userId: string, performedBy?: string): Prom
     action: 'ACCOUNT_RECOVERED',
     performedBy,
     performedByType: 'USER',
-    details: 'Account recovered during soft delete period'
+    previousStatus: 'SOFT_DELETED',
+    newStatus: 'RECOVERED',
+    details: 'Account recovered during soft delete period',
+    metadata: {
+      recoveredAt: new Date().toISOString(),
+      daysUntilHardDelete: Math.ceil((user.deletionRequest.recoveryDeadline!.getTime() - Date.now()) / (24 * 60 * 60 * 1000))
+    }
   })
 }
 
@@ -400,7 +438,13 @@ export async function performHardDelete(deletionRequestId: string, performedBy?:
     action: 'HARD_DELETE_EXECUTED',
     performedBy,
     performedByType: 'SYSTEM',
-    details: 'Account permanently deleted with data anonymization'
+    previousStatus: 'SOFT_DELETED',
+    newStatus: 'HARD_DELETED',
+    details: 'Account permanently deleted with data anonymization',
+    metadata: {
+      hardDeletedAt: new Date().toISOString(),
+      dataAnonymized: true
+    }
   })
 }
 
@@ -444,25 +488,65 @@ async function anonymizeUserData(tx: any, userId: string, deletionRequestId: str
     }
   })
 
-  // Log anonymization actions
-  await tx.anonymizationLog.createMany({
-    data: [
-      {
-        tableName: 'orders',
-        recordId: userId,
-        anonymizedFields: { customerEmail: true, customerName: true }
-      },
-      {
-        tableName: 'stories',
-        recordId: userId,
-        anonymizedFields: { authorId: true, authorName: true }
-      },
-      {
-        tableName: 'volunteer_profiles',
-        recordId: userId,
-        anonymizedFields: { bio: true, skills: true, languages: true }
-      }
-    ]
+  // Log anonymization actions with verification
+  const timestamp = new Date()
+  const anonymizationRecords = [
+    {
+      tableName: 'orders',
+      recordId: userId,
+      anonymizedFields: { customerEmail: `${anonymizedId}@anonymized.local`, customerName: 'Anonymized User' },
+      retainedFields: { orderId: true, amount: true, date: true },
+      anonymizationMethod: 'pseudonymization',
+      retentionReason: 'Financial and tax compliance requirements',
+      retentionPeriod: '7_years',
+      legalBasis: 'legal_obligation',
+      processedBy: 'system_anonymizer',
+      verificationHash: createHash('sha256').update(`orders_${userId}_${timestamp.toISOString()}`).digest('hex'),
+      createdAt: timestamp
+    },
+    {
+      tableName: 'stories',
+      recordId: userId,
+      anonymizedFields: { authorId: null, authorName: 'Anonymous' },
+      retainedFields: { title: true, content: true, publishedDate: true },
+      anonymizationMethod: 'removal',
+      retentionReason: 'Published content preservation for educational purposes',
+      retentionPeriod: 'indefinite',
+      legalBasis: 'legitimate_interest',
+      processedBy: 'system_anonymizer',
+      verificationHash: createHash('sha256').update(`stories_${userId}_${timestamp.toISOString()}`).digest('hex'),
+      createdAt: timestamp
+    },
+    {
+      tableName: 'volunteer_profiles',
+      recordId: userId,
+      anonymizedFields: { bio: 'Anonymized', skills: [], languages: [] },
+      retainedFields: { totalHours: true, completedProjects: true },
+      anonymizationMethod: 'generalization',
+      retentionReason: 'Volunteer impact metrics and program evaluation',
+      retentionPeriod: '5_years',
+      legalBasis: 'legitimate_interest',
+      processedBy: 'system_anonymizer',
+      verificationHash: createHash('sha256').update(`volunteer_profiles_${userId}_${timestamp.toISOString()}`).digest('hex'),
+      createdAt: timestamp
+    }
+  ]
+
+  await tx.anonymizationLog.createMany({ data: anonymizationRecords })
+
+  // Log data anonymization action in deletion audit log
+  await createDeletionAuditLog({
+    deletionRequestId,
+    action: 'DATA_ANONYMIZED',
+    performedByType: 'SYSTEM',
+    recordCount: anonymizationRecords.length,
+    details: `Data anonymized across ${anonymizationRecords.length} tables`,
+    metadata: {
+      anonymizedTables: anonymizationRecords.map(r => r.tableName),
+      anonymizationMethod: 'mixed_pseudonymization_removal',
+      retentionBases: anonymizationRecords.map(r => ({ table: r.tableName, basis: r.legalBasis, period: r.retentionPeriod })),
+      processedAt: timestamp.toISOString()
+    }
   })
 
   // Finally, delete the user record
@@ -470,9 +554,9 @@ async function anonymizeUserData(tx: any, userId: string, deletionRequestId: str
 }
 
 /**
- * Creates a comprehensive audit log entry for deletion actions
+ * Creates a comprehensive audit log entry for deletion actions with enhanced security
  */
-async function createDeletionAuditLog(params: {
+export async function createDeletionAuditLog(params: {
   deletionRequestId: string
   action: DeletionAction
   performedBy?: string
@@ -481,25 +565,57 @@ async function createDeletionAuditLog(params: {
   tableName?: string
   recordId?: string
   recordCount?: number
+  previousStatus?: DeletionStatus
+  newStatus?: DeletionStatus
   details?: string
   metadata?: any
-}): Promise<void> {
-  await prisma.deletionAuditLog.create({
+  context?: AuditLogContext
+}): Promise<any> {
+  const timestamp = new Date()
+  const logData = {
+    deletionRequestId: params.deletionRequestId,
+    action: params.action,
+    performedBy: params.performedBy,
+    performedByRole: params.performedByRole,
+    performedByType: params.performedByType || 'SYSTEM',
+    tableName: params.tableName,
+    recordId: params.recordId,
+    recordCount: params.recordCount,
+    previousStatus: params.previousStatus,
+    newStatus: params.newStatus,
+    actionDetails: params.details,
+    metadata: params.metadata,
+    ipAddress: params.context?.ipAddress,
+    userAgent: params.context?.userAgent,
+    sessionId: params.context?.sessionId,
+    createdAt: timestamp
+  }
+
+  // Create integrity hash for the log entry
+  const logHash = createLogIntegrityHash(logData)
+  
+  const auditLog = await prisma.deletionAuditLog.create({
     data: {
-      deletionRequestId: params.deletionRequestId,
-      action: params.action,
-      performedBy: params.performedBy,
-      performedByRole: params.performedByRole,
-      performedByType: params.performedByType || 'SYSTEM',
-      tableName: params.tableName,
-      recordId: params.recordId,
-      recordCount: params.recordCount,
-      actionDetails: params.details,
-      metadata: params.metadata,
-      ipAddress: null, // Could be added based on request context
-      userAgent: null
+      ...logData,
+      metadata: {
+        ...params.metadata,
+        integrityHash: logHash,
+        context: params.context
+      }
     }
   })
+
+  // Log critical actions to system log for monitoring
+  if (['HARD_DELETE_EXECUTED', 'DATA_ANONYMIZED', 'SYSTEM_ERROR'].includes(params.action)) {
+    console.log(`CRITICAL_AUDIT: ${params.action}`, {
+      deletionRequestId: params.deletionRequestId,
+      timestamp: timestamp.toISOString(),
+      performer: params.performedBy || 'SYSTEM',
+      hash: logHash
+    })
+  }
+  
+  return auditLog
 }
 
 /**
@@ -544,7 +660,86 @@ export async function canRecoverAccount(userId: string): Promise<boolean> {
 }
 
 /**
- * Gets deletion request status for a user
+ * Creates a cryptographic fingerprint for request tracking
+ */
+function createFingerprint(params: DeletionRequestParams): string {
+  const data = `${params.userId}_${params.ipAddress}_${params.userAgent}_${params.sessionId}_${Date.now()}`
+  return createHash('sha256').update(data).digest('hex')
+}
+
+/**
+ * Creates an integrity hash for audit log entries
+ */
+function createLogIntegrityHash(logData: any): string {
+  // Remove dynamic fields that shouldn't be part of integrity check
+  const { metadata, ...coreData } = logData
+  const dataString = JSON.stringify(coreData, Object.keys(coreData).sort())
+  return createHash('sha256').update(dataString).digest('hex')
+}
+
+/**
+ * Verifies the integrity of audit log entries
+ */
+async function verifyAuditLogIntegrity(auditLogs: any[]): Promise<{ verified: boolean; tamperedEntries: string[] }> {
+  const tamperedEntries: string[] = []
+  
+  for (const log of auditLogs) {
+    if (log.metadata?.integrityHash) {
+      const { metadata, ...logData } = log
+      const { integrityHash, ...otherMetadata } = metadata
+      const recalculatedHash = createLogIntegrityHash({ ...logData, metadata: otherMetadata })
+      
+      if (recalculatedHash !== integrityHash) {
+        tamperedEntries.push(log.id)
+      }
+    }
+  }
+  
+  return {
+    verified: tamperedEntries.length === 0,
+    tamperedEntries
+  }
+}
+
+/**
+ * Gets comprehensive audit statistics for compliance reporting
+ */
+export async function getDeletionAuditStatistics(startDate?: Date, endDate?: Date) {
+  const whereClause = startDate && endDate ? {
+    createdAt: {
+      gte: startDate,
+      lte: endDate
+    }
+  } : {}
+
+  const [totalRequests, actionCounts, statusCounts] = await Promise.all([
+    prisma.userDeletionRequest.count({ where: whereClause }),
+    prisma.deletionAuditLog.groupBy({
+      by: ['action'],
+      _count: { action: true },
+      where: whereClause
+    }),
+    prisma.userDeletionRequest.groupBy({
+      by: ['status'],
+      _count: { status: true },
+      where: whereClause
+    })
+  ])
+
+  return {
+    totalRequests,
+    actionBreakdown: Object.fromEntries(
+      actionCounts.map(item => [item.action, item._count.action])
+    ),
+    statusBreakdown: Object.fromEntries(
+      statusCounts.map(item => [item.status, item._count.status])
+    ),
+    generatedAt: new Date().toISOString()
+  }
+}
+
+/**
+ * Gets deletion request status for a user with enhanced audit trail
  */
 export async function getDeletionStatus(userId: string) {
   const user = await prisma.user.findUnique({
@@ -554,7 +749,17 @@ export async function getDeletionStatus(userId: string) {
         include: {
           auditLogs: {
             orderBy: { createdAt: 'desc' },
-            take: 10
+            take: 20,
+            select: {
+              id: true,
+              action: true,
+              performedByType: true,
+              actionDetails: true,
+              createdAt: true,
+              previousStatus: true,
+              newStatus: true,
+              metadata: true
+            }
           }
         }
       }
@@ -562,11 +767,18 @@ export async function getDeletionStatus(userId: string) {
   })
 
   if (!user?.deletionRequest) {
-    return { status: 'none', canRequest: true }
+    return { 
+      status: 'none', 
+      canRequest: true,
+      auditTrail: []
+    }
   }
 
   const request = user.deletionRequest
   const canRecover = await canRecoverAccount(userId)
+  
+  // Verify audit log integrity
+  const auditTrailIntegrity = await verifyAuditLogIntegrity(request.auditLogs)
 
   return {
     status: request.status.toLowerCase(),
@@ -574,9 +786,21 @@ export async function getDeletionStatus(userId: string) {
     canRecover,
     createdAt: request.createdAt,
     softDeletedAt: request.softDeletedAt,
+    hardDeletedAt: request.hardDeletedAt,
     recoveryDeadline: request.recoveryDeadline,
     parentalConsentRequired: request.parentalConsentRequired,
     reviewRequired: request.reviewRequired,
-    auditLogs: request.auditLogs
+    auditTrail: request.auditLogs.map(log => ({
+      id: log.id,
+      action: log.action,
+      performer: log.performedByType,
+      details: log.actionDetails,
+      timestamp: log.createdAt,
+      statusChange: log.previousStatus && log.newStatus ? {
+        from: log.previousStatus,
+        to: log.newStatus
+      } : null
+    })),
+    integrity: auditTrailIntegrity
   }
 }

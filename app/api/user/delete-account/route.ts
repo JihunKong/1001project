@@ -128,27 +128,37 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    // Get request metadata
+    // Get enhanced request metadata for audit trail
     const userAgent = headersList.get('user-agent')
     const ipAddress = clientIP
+    const sessionToken = headersList.get('authorization') || headersList.get('cookie')
+    const sessionId = sessionToken ? sessionToken.substring(0, 16) + '...' : undefined
+    const referer = headersList.get('referer')
+    const acceptLanguage = headersList.get('accept-language')
 
-    // Initiate deletion request
+    // Initiate deletion request with enhanced audit context
     const result = await initiateDeletionRequest({
       userId: session.user.id,
       reason: reason || 'User requested account deletion',
       requestSource: 'self_service',
       ipAddress,
       userAgent: userAgent || undefined,
+      sessionId,
       performedBy: session.user.id,
       performedByRole: session.user.role
     })
 
-    // Log the deletion request initiation
-    console.log(`Deletion request initiated for user ${session.user.id}`, {
+    // Enhanced security logging for deletion request initiation
+    console.log(`SECURITY_AUDIT: Deletion request initiated`, {
+      userId: session.user.id,
       requestId: result.deletionRequest.id,
       status: result.deletionRequest.status,
       requiresParentalConsent: validation.requiresParentalConsent,
-      requiresReview: validation.requiresReview
+      requiresReview: validation.requiresReview,
+      ipAddress: ipAddress.substring(0, 8) + '...', // Partial IP for privacy
+      userAgent: userAgent?.substring(0, 50) + '...',
+      timestamp: new Date().toISOString(),
+      sessionId
     })
 
     return NextResponse.json({
