@@ -8,8 +8,9 @@ import { monitorAuditLogEntry } from '@/lib/audit-monitoring';
 import { headers } from 'next/headers';
 
 export async function POST(request: NextRequest) {
+  let body = null;
   try {
-    const body = await request.json();
+    body = await request.json();
     const { token, approved, timestamp, parentInfo } = body;
     
     // Get request context for audit logging
