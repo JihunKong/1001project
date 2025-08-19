@@ -51,6 +51,10 @@ export default withAuth(
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
       
+      if (pathname.startsWith("/dashboard/volunteer") && role !== "VOLUNTEER" && role !== "ADMIN") {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+      
       if (pathname.startsWith("/admin") && role !== "ADMIN") {
         return NextResponse.redirect(new URL("/", req.url));
       }
