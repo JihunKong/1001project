@@ -50,6 +50,11 @@ nginx/logs/
 # uploads
 uploads/.env.local
 
+# PDF files and books content
+*.PDF
+*.pdf
+/public/books/
+
 # sensitive files
 test-email.js
 *.backup
@@ -58,3 +63,22 @@ test-email.js
 
 # server sync files
 *.server
+
+# AWS and deployment files
+*.pem
+aws-config.json
+deployment-secrets.txt
+
+# Local development overrides
+docker-compose.local.yml
+docker-compose.dev.yml
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+Desktop.ini
