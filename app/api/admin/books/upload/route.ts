@@ -305,9 +305,9 @@ export async function GET(request: NextRequest) {
       books: books.map(book => ({
         ...book,
         files: {
-          main: book.metadata?.mainPdfPath || null,
-          frontCover: book.metadata?.frontCoverPath || null,
-          backCover: book.metadata?.backCoverPath || null,
+          main: book.fullPdf || null,
+          frontCover: book.coverImage || null,
+          backCover: null, // Back cover not implemented yet
         }
       })),
       pagination: {
