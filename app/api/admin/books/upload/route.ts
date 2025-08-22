@@ -228,7 +228,14 @@ export async function POST(request: NextRequest) {
           frontCover: frontCover ? `/books/${bookId}/cover.pdf` : null,
           backCover: backCover ? `/books/${bookId}/back.pdf` : null,
         },
-        metadata: story.metadata,
+        metadata: {
+          authorName: story.authorName,
+          language: story.language,
+          category: story.category,
+          isbn: story.isbn,
+          publishedDate: story.publishedDate,
+          tags: story.tags,
+        },
       }
     }, { status: 201 });
 
