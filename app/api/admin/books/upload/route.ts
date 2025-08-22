@@ -285,17 +285,15 @@ export async function GET(request: NextRequest) {
         },
         where: {
           // Only include stories that have PDF files
-          metadata: {
-            path: ['hasMainPdf'],
-            equals: true
+          fullPdf: {
+            not: null
           }
         }
       }),
       prisma.story.count({
         where: {
-          metadata: {
-            path: ['hasMainPdf'],
-            equals: true
+          fullPdf: {
+            not: null
           }
         }
       })
