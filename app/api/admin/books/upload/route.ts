@@ -197,6 +197,7 @@ export async function POST(request: NextRequest) {
         isPublished: true,
         tags: tagList,
         authorId: author.id,
+        authorName: bookData.authorName,
         price: bookData.price ? parseFloat(bookData.price) : null,
         isbn: bookData.isbn,
         publishedDate: bookData.publicationDate ? new Date(bookData.publicationDate) : null,
