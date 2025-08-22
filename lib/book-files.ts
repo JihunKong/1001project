@@ -6,6 +6,16 @@ export interface BookFiles {
   backCover: string | null;
   bookId: string;
   folderName: string;
+  thumbnailPage?: number;
+  previewPageLimit?: number;
+  metadata?: {
+    hasMainPdf?: boolean;
+    hasFrontCover?: boolean;
+    hasBackCover?: boolean;
+    isbn?: string;
+    price?: number;
+    publicationDate?: string;
+  };
 }
 
 export interface BookFileConfig {
@@ -44,7 +54,8 @@ export function generateBookId(folderName: string): string {
  */
 export function resolveBookFiles(
   bookId: string, 
-  config: Partial<BookFileConfig> = {}
+  config: Partial<BookFileConfig> = {},
+  metadata?: any
 ): BookFiles {
   const { publicUrl } = { ...DEFAULT_CONFIG, ...config };
   
@@ -54,7 +65,17 @@ export function resolveBookFiles(
     frontCover: `${publicUrl}/${bookId}/cover.pdf`, // Use correct cover files
     backCover: `${publicUrl}/${bookId}/back.pdf`,
     bookId,
-    folderName: bookId
+    folderName: bookId,
+    thumbnailPage: metadata?.thumbnailPage || 1,
+    previewPageLimit: metadata?.previewPageLimit || 5,
+    metadata: {
+      hasMainPdf: metadata?.hasMainPdf || true,
+      hasFrontCover: metadata?.hasFrontCover || false,
+      hasBackCover: metadata?.hasBackCover || false,
+      isbn: metadata?.isbn,
+      price: metadata?.price,
+      publicationDate: metadata?.publicationDate,
+    }
   };
 
   return result;
@@ -176,4 +197,133 @@ export function parseOriginalBookFolder(folderName: string): {
   }
 
   return result;
+}
+
+/**
+ * Get thumbnail source for a book with page preference
+ * Priority: front cover > specified page from main PDF > first page of main PDF
+ */
+export function getBookThumbnailSourceWithPage(bookFiles: BookFiles): {
+  pdfUrl: string;
+  pageNumber: number;
+  sourceType: 'front-cover' | 'main-pdf' | 'main-pdf-page';
+} {
+  if (bookFiles.frontCover && bookFiles.metadata?.hasFrontCover) {
+    return {
+      pdfUrl: bookFiles.frontCover,
+      pageNumber: 1,
+      sourceType: 'front-cover'
+    };
+  }
+
+  if (bookFiles.main) {
+    const pageNumber = bookFiles.thumbnailPage || 1;
+    return {
+      pdfUrl: bookFiles.main,
+      pageNumber,
+      sourceType: pageNumber === 1 ? 'main-pdf' : 'main-pdf-page'
+    };
+  }
+
+  throw new Error('No PDF source available for thumbnail generation');
+}
+
+/**
+ * Check if a page is within the preview limit
+ */
+export function isPageWithinPreviewLimit(pageNumber: number, bookFiles: BookFiles): boolean {
+  if (!bookFiles.previewPageLimit) {
+    return true; // No limit set
+  }
+  return pageNumber <= bookFiles.previewPageLimit;
+}
+
+/**
+ * Get preview configuration for a book
+ */
+export function getBookPreviewConfig(bookFiles: BookFiles): {
+  allowedPages: number;
+  hasPreviewLimit: boolean;
+  isPreviewLimited: boolean;
+} {
+  const previewLimit = bookFiles.previewPageLimit || 5;
+  
+  return {
+    allowedPages: previewLimit,
+    hasPreviewLimit: !!bookFiles.previewPageLimit,
+    isPreviewLimited: previewLimit > 0,
+  };
+}
+
+/**
+ * Generate book thumbnail URL based on available files and preferences
+ */
+export function generateThumbnailUrl(bookFiles: BookFiles): string {
+  try {
+    const thumbnailSource = getBookThumbnailSourceWithPage(bookFiles);
+    
+    // In a real implementation, this would generate/serve a thumbnail image
+    // For now, we'll return a placeholder or PDF viewer URL
+    if (thumbnailSource.sourceType === 'front-cover') {
+      return `/api/pdf-thumbnail?url=${encodeURIComponent(thumbnailSource.pdfUrl)}&page=1`;
+    }
+    
+    return `/api/pdf-thumbnail?url=${encodeURIComponent(thumbnailSource.pdfUrl)}&page=${thumbnailSource.pageNumber}`;
+  } catch (error) {
+    // Fallback to a default thumbnail
+    return '/images/book-placeholder.png';
+  }
+}
+
+/**
+ * Validate book file configuration with enhanced checks
+ */
+export function validateBookFilesEnhanced(bookFiles: BookFiles): {
+  isValid: boolean;
+  errors: string[];
+  warnings: string[];
+  recommendations: string[];
+} {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const recommendations: string[] = [];
+
+  if (!bookFiles.main) {
+    errors.push('Main PDF file is required');
+  }
+
+  if (!bookFiles.frontCover && !bookFiles.metadata?.hasFrontCover) {
+    warnings.push('Front cover PDF is missing - thumbnail will be generated from main PDF');
+    
+    if (!bookFiles.thumbnailPage || bookFiles.thumbnailPage === 1) {
+      recommendations.push('Consider specifying a different page for thumbnail if page 1 is not suitable');
+    }
+  }
+
+  if (!bookFiles.backCover && !bookFiles.metadata?.hasBackCover) {
+    warnings.push('Back cover PDF is missing');
+  }
+
+  if (!bookFiles.bookId || bookFiles.bookId.trim() === '') {
+    errors.push('Book ID is required');
+  }
+
+  if (bookFiles.thumbnailPage && (bookFiles.thumbnailPage < 1 || bookFiles.thumbnailPage > 50)) {
+    errors.push('Thumbnail page must be between 1 and 50');
+  }
+
+  if (bookFiles.previewPageLimit && (bookFiles.previewPageLimit < 1 || bookFiles.previewPageLimit > 100)) {
+    errors.push('Preview page limit must be between 1 and 100');
+  }
+
+  if (!bookFiles.previewPageLimit) {
+    recommendations.push('Consider setting a preview page limit to control content access');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings,
+    recommendations
+  };
 }
