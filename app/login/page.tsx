@@ -57,7 +57,7 @@ function LoginContent() {
       // Validate email input
       const validatedData = emailSchema.safeParse({ email });
       if (!validatedData.success) {
-        const errorMessage = validatedData.error.errors[0]?.message || 'Invalid email format';
+        const errorMessage = validatedData.error.issues[0]?.message || 'Invalid email format';
         setError(errorMessage);
         toast.error(errorMessage);
         return;
@@ -94,7 +94,7 @@ function LoginContent() {
       // Validate credentials input
       const validatedData = credentialsSchema.safeParse({ email, password });
       if (!validatedData.success) {
-        const errorMessage = validatedData.error.errors[0]?.message || 'Invalid input format';
+        const errorMessage = validatedData.error.issues[0]?.message || 'Invalid input format';
         setError(errorMessage);
         toast.error(errorMessage);
         return;
