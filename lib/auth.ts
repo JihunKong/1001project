@@ -6,11 +6,86 @@ import { executeWithRLSBypass } from "@/lib/prisma"
 import { UserRole } from "@prisma/client"
 import { isDemoEmail, getOrCreateDemoUser, isEmailServiceConfigured } from "@/lib/auth-demo"
 import { createRLSBypassAdapter } from "@/lib/auth-adapter"
+import bcrypt from "bcryptjs"
+
+// Password security constants
+const SALT_ROUNDS = 12; // Industry standard for 2024
+
+// Password hashing utilities
+export async function hashPassword(password: string): Promise<string> {
+  return await bcrypt.hash(password, SALT_ROUNDS);
+}
+
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return await bcrypt.compare(password, hash);
+}
 
 export const authOptions: NextAuthOptions = {
   adapter: createRLSBypassAdapter(),
   
   providers: [
+    // Admin/Staff Credentials Provider for password login
+    CredentialsProvider({
+      id: "credentials",
+      name: "ID & Password",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+        
+        try {
+          const { prisma } = await import("@/lib/prisma");
+          
+          // Find user with password
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email.toLowerCase() },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+              emailVerified: true,
+              password: true,
+            }
+          });
+          
+          // Prevent timing attacks - always check password even if user doesn't exist
+          const dummyHash = '$2b$12$dummyhashtopreventtimingatks.abcdefghijklmnopqrstuvwxy';
+          const userHash = user?.password || dummyHash;
+          const isValidPassword = await verifyPassword(credentials.password, userHash);
+          
+          // Only proceed if user exists, has password, and password is valid
+          if (!user || !user.password || !isValidPassword) {
+            // Log failed attempt for security monitoring
+            console.warn(`Failed login attempt for email: ${credentials.email}`);
+            return null;
+          }
+          
+          // Only allow ADMIN and VOLUNTEER roles to use password login
+          if (user.role !== UserRole.ADMIN && user.role !== UserRole.VOLUNTEER) {
+            console.warn(`Unauthorized password login attempt for role: ${user.role}`);
+            return null;
+          }
+          
+          // Log successful admin/volunteer login
+          console.log(`Successful password login for ${user.role}: ${user.email}`);
+          
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            emailVerified: user.emailVerified,
+          };
+        } catch (error) {
+          console.error("Credentials authentication error:", error);
+          return null;
+        }
+      }
+    }),
+
     // Demo Credentials Provider for demo accounts
     CredentialsProvider({
       id: "demo",
@@ -124,6 +199,12 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         token.role = (user as { role?: UserRole }).role || UserRole.LEARNER
         token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified
+        
+        // Set shorter expiry for admin/volunteer accounts (8 hours instead of 30 days)
+        const userRole = (user as { role?: UserRole }).role;
+        if (userRole === UserRole.ADMIN || userRole === UserRole.VOLUNTEER) {
+          token.exp = Math.floor(Date.now() / 1000) + (8 * 60 * 60); // 8 hours
+        }
       }
       return token
     },
@@ -184,7 +265,8 @@ export const authOptions: NextAuthOptions = {
   
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60, // 30 days for regular users
+    updateAge: 2 * 60 * 60, // Refresh session every 2 hours
   },
   
   debug: process.env.NODE_ENV === "development",

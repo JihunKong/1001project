@@ -23,6 +23,7 @@ model User {
   emailVerified   DateTime?
   name            String?
   image           String?
+  password        String?          // For admin/volunteer password login
   role            UserRole         @default(LEARNER)
   schoolId        String?
   createdAt       DateTime         @default(now())
@@ -90,6 +91,13 @@ model User {
   // Onboarding
   onboardingProgress OnboardingProgress?
   sampleContentAccess SampleContentAccess[]
+  
+  // Enhanced 1001 Stories relations
+  entitlements    Entitlement[]
+  volunteerSubmissions VolunteerSubmission[] @relation("VolunteerSubmissions")
+  reviewedVolunteerSubmissions VolunteerSubmission[] @relation("ReviewedVolunteerSubmissions")
+  assignedVolunteerSubmissions VolunteerSubmission[] @relation("AssignedVolunteerSubmissions")
+  publishedContent Publication[] @relation("PublishedContent")
   
   @@index([email])
   @@index([role])
@@ -232,6 +240,7 @@ model Subscription {
   updatedAt       DateTime         @updatedAt
   
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entitlements    Entitlement[]
   
   @@map("subscriptions")
 }
@@ -480,6 +489,7 @@ model Order {
   // Relations
   user            User?            @relation(fields: [userId], references: [id])
   items           OrderItem[]
+  entitlements    Entitlement[]
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -598,6 +608,9 @@ model Story {
   reviews         Review[]         @relation("StoryReviews")
   translations    Translation[]
   sampleAccesses  SampleContentAccess[]
+  entitlements    Entitlement[]
+  publications    Publication[]
+  shopProducts    ShopProduct[]
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -635,12 +648,14 @@ model ReadingProgress {
   storyId         String
   currentChapter  Int              @default(1)
   currentPage     Int?
+  totalPages      Int?
   currentPosition String?          // Text position for continue reading
   percentComplete Float            @default(0)
   totalReadingTime Int             @default(0) // Minutes
   lastReadAt      DateTime         @default(now())
   startedAt       DateTime         @default(now())
   completedAt     DateTime?
+  isCompleted     Boolean          @default(false)
   notes           String[]
   
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -658,7 +673,7 @@ model Bookmark {
   userId          String
   storyId         String
   chapterId       Int?
-  position        String           // Text position
+  position        String?          // Text position
   note            String?
   color           String?          // Highlight color
   
@@ -666,7 +681,9 @@ model Bookmark {
   story           Story            @relation(fields: [storyId], references: [id], onDelete: Cascade)
   
   createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   
+  @@unique([userId, storyId], name: "userId_storyId")
   @@index([userId])
   @@map("bookmarks")
 }
@@ -2444,4 +2461,389 @@ model AnonymizationLog {
   @@index([tableName])
   @@index([createdAt])
   @@map("anonymization_logs")
+}
+
+// ==========================================
+// 1001 STORIES ENHANCED MODELS
+// ==========================================
+
+// Enhanced Book model for PDF-based digital books
+model Book {
+  id              String           @id @default(cuid())
+  title           String
+  subtitle        String?
+  summary         String?          @db.Text
+  
+  // Author information
+  authorName      String
+  authorAlias     String?          // For privacy/anonymity
+  authorAge       Int?
+  authorLocation  String?
+  coAuthors       String[]
+  
+  // Publication details
+  language        String           @default("en")
+  ageRange        String?          // "5-8", "9-12", etc.
+  readingLevel    String?
+  category        String[]
+  genres          String[]
+  subjects        String[]
+  tags            String[]
+  
+  // PDF and media
+  coverImage      String?
+  pdfKey          String?          // Storage key for main PDF file
+  pdfFrontCover   String?          // Storage key for front cover PDF
+  pdfBackCover    String?          // Storage key for back cover PDF
+  pageLayout      String           @default("single")  // "single" or "double" for spread view
+  pageCount       Int?
+  previewPages    Int              @default(10)  // Number of pages available for preview
+  
+  // DRM and access control
+  drm             Json?            // {"watermark":true,"downloadAllowed":false,"printAllowed":false}
+  downloadAllowed Boolean          @default(false)
+  printAllowed    Boolean          @default(false)
+  
+  // Publishing status
+  isPublished     Boolean          @default(false)
+  publishedAt     DateTime?
+  featured        Boolean          @default(false)
+  
+  // Pricing and access
+  isPremium       Boolean          @default(false)
+  price           Decimal?         @db.Decimal(10, 2)
+  currency        String           @default("USD")
+  
+  // Visibility and permissions
+  visibility      BookVisibility   @default(PUBLIC)
+  
+  // Metrics
+  viewCount       Int              @default(0)
+  downloadCount   Int              @default(0)
+  rating          Float?
+  
+  // Relations
+  entitlements    Entitlement[]
+  publications    Publication[]
+  shopProducts    ShopProduct[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([isPublished])
+  @@index([isPremium])
+  @@index([language])
+  @@index([visibility])
+  @@map("books")
+}
+
+// Volunteer PDF submission system (No WYSIWYG editor)
+model VolunteerSubmission {
+  id            String           @id @default(cuid())
+  volunteerId   String
+  projectId     String?
+  
+  // Submission type and content
+  type          VolunteerSubmissionType   @default(PDF_UPLOAD)
+  pdfRef        String?          // Storage key for uploaded PDF
+  originalName  String?          // Original filename
+  fileSize      Int?             // File size in bytes
+  
+  // Content metadata
+  title         String
+  authorAlias   String           // Author's chosen name/pseudonym
+  language      String           @default("en")
+  ageRange      String?
+  category      String[]
+  tags          String[]
+  summary       String           @db.Text
+  
+  // Visibility and access
+  visibility    ContentVisibility @default(PUBLIC)
+  targetAudience String?         // Who this content is for
+  
+  // Copyright and permissions
+  copyrightConfirmed Boolean     @default(false)
+  portraitRightsConfirmed Boolean @default(false)
+  originalWork  Boolean          @default(true)
+  licenseType   String?          // "CC-BY", "CC-BY-SA", etc.
+  
+  // Review and approval workflow
+  status        VolunteerSubmissionStatus @default(SUBMITTED)
+  priority      Priority         @default(MEDIUM)
+  reviewerId    String?
+  assigneeId    String?
+  dueDate       DateTime?
+  reviewNotes   String?          @db.Text
+  rejectionReason String?        @db.Text
+  
+  // Publishing information
+  publishDate   DateTime?
+  compensation  Decimal?         @db.Decimal(10, 2)
+  
+  // Relations
+  volunteer     User             @relation("VolunteerSubmissions", fields: [volunteerId], references: [id], onDelete: Cascade)
+  reviewer      User?            @relation("ReviewedVolunteerSubmissions", fields: [reviewerId], references: [id])
+  assignee      User?            @relation("AssignedVolunteerSubmissions", fields: [assigneeId], references: [id])
+  publications  Publication[]
+  
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  
+  @@index([status])
+  @@index([volunteerId])
+  @@index([reviewerId])
+  @@index([priority])
+  @@map("volunteer_submissions")
+}
+
+// User entitlements for accessing premium content
+model Entitlement {
+  id              String           @id @default(cuid())
+  userId          String?          // Null for guest purchases
+  email           String?          // For guest purchase tracking
+  bookId          String?          // For individual book access
+  storyId         String?          // For legacy Story compatibility
+  
+  // Purchase/grant details
+  orderId         String?          // Connected to purchase
+  subscriptionId  String?          // Connected to subscription
+  licenseId       String?          // Connected to classroom license
+  grantReason     String?          // "purchase", "subscription", "license", "promotional"
+  
+  // Entitlement type and scope
+  type            EntitlementType  @default(PURCHASE)
+  scope           EntitlementScope @default(BOOK)
+  
+  // Validity and timing
+  grantedAt       DateTime         @default(now())
+  expiresAt       DateTime?        // Null = permanent
+  isActive        Boolean          @default(true)
+  activatedAt     DateTime?        // When first accessed
+  
+  // Usage tracking
+  lastAccessedAt  DateTime?
+  accessCount     Int              @default(0)
+  downloadCount   Int              @default(0)
+  
+  // Restrictions
+  maxDownloads    Int?             // Download limit
+  ipRestrictions  String[]         // Allowed IP ranges
+  
+  // Relations
+  user            User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book            Book?            @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  story           Story?           @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  order           Order?           @relation(fields: [orderId], references: [id])
+  subscription    Subscription?    @relation(fields: [subscriptionId], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([userId])
+  @@index([email])
+  @@index([bookId])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@map("entitlements")
+}
+
+// Publication management (Approval → Library)
+model Publication {
+  id           String           @id @default(cuid())
+  bookId       String?
+  storyId      String?          // Legacy support
+  submissionId String?          // Source submission
+  
+  // Publication settings
+  visibility   ContentVisibility @default(PUBLIC)
+  isPremium    Boolean          @default(false)
+  unlockPolicy UnlockPolicy     @default(PURCHASE)
+  price        Decimal?         @db.Decimal(10, 2)
+  currency     String           @default("USD")
+  
+  // Version control
+  version      Int              @default(1)
+  changelog    String?          @db.Text
+  
+  // Publishing workflow
+  status       PublicationStatus @default(DRAFT)
+  publishedAt  DateTime?
+  publishedBy  String           // Admin user ID
+  
+  // Content organization
+  featured     Boolean          @default(false)
+  category     String[]
+  tags         String[]
+  sortOrder    Int              @default(0)
+  
+  // Relations
+  book         Book?            @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  story        Story?           @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  submission   VolunteerSubmission? @relation(fields: [submissionId], references: [id])
+  publisher    User             @relation("PublishedContent", fields: [publishedBy], references: [id])
+  
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  
+  @@index([status])
+  @@index([publishedAt])
+  @@index([featured])
+  @@index([isPremium])
+  @@map("publications")
+}
+
+// Enhanced Product model for Shop system
+model ShopProduct {
+  id              String           @id @default(cuid())
+  sku             String           @unique
+  type            ShopProductType  @default(DIGITAL_BOOK)
+  
+  // Basic information
+  title           String
+  description     String           @db.Text
+  shortDescription String?
+  
+  // Pricing
+  price           Decimal          @db.Decimal(10, 2)
+  compareAtPrice  Decimal?         @db.Decimal(10, 2)
+  currency        String           @default("USD")
+  
+  // Digital product specifics
+  bookId          String?          // Connected book
+  storyId         String?          // Legacy story support
+  downloadLimit   Int?             // Max downloads per purchase
+  accessDuration  Int?             // Days of access (null = permanent)
+  
+  // Bundle support
+  bundleItems     String[]         // IDs of bundled products
+  bundleDiscount  Decimal?         @db.Decimal(5, 2) // Percentage discount
+  
+  // Categorization and discovery
+  category        String[]
+  tags            String[]
+  featured        Boolean          @default(false)
+  
+  // Media and presentation
+  images          String[]
+  thumbnailUrl    String?
+  demoUrl         String?          // Preview/demo link
+  
+  // Creator attribution
+  creatorName     String?
+  creatorAge      Int?
+  creatorLocation String?
+  creatorStory    String?          @db.Text
+  
+  // Impact metrics
+  impactMetric    String?          // "Children reached", "Stories published"
+  impactValue     String?          // "500+", "50 communities"
+  
+  // Availability
+  status          ShopProductStatus @default(ACTIVE)
+  availableFrom   DateTime?
+  availableUntil  DateTime?
+  maxQuantity     Int?             // Purchase limit per user
+  
+  // SEO and marketing
+  metaTitle       String?
+  metaDescription String?
+  marketingTags   String[]
+  
+  // Relations
+  book            Book?            @relation(fields: [bookId], references: [id])
+  story           Story?           @relation(fields: [storyId], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([status])
+  @@index([type])
+  @@index([featured])
+  @@index([bookId])
+  @@map("shop_products")
+}
+
+// ==========================================
+// ENHANCED ENUMS
+// ==========================================
+
+enum BookVisibility {
+  PUBLIC
+  RESTRICTED
+  CLASSROOM
+  PRIVATE
+}
+
+enum VolunteerSubmissionType {
+  PDF_UPLOAD
+  TEXT_ASSISTANCE     // Optional text-based helper (no editor)
+  TRANSLATION
+  ILLUSTRATION
+}
+
+enum ContentVisibility {
+  PUBLIC
+  RESTRICTED
+  CLASSROOM
+  PRIVATE
+}
+
+enum VolunteerSubmissionStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  NEEDS_CHANGES
+  APPROVED
+  REJECTED
+  PUBLISHED
+}
+
+enum EntitlementType {
+  PURCHASE
+  SUBSCRIPTION
+  LICENSE
+  PROMOTIONAL
+  FREE_ACCESS
+  TRIAL
+}
+
+enum EntitlementScope {
+  BOOK
+  CATEGORY
+  UNLIMITED
+  BUNDLE
+}
+
+enum PublicationStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+  WITHDRAWN
+}
+
+enum UnlockPolicy {
+  FREE
+  PURCHASE
+  SUBSCRIPTION
+  CLASSROOM_LICENSE
+  INSTITUTIONAL
+}
+
+enum ShopProductType {
+  DIGITAL_BOOK
+  BOOK_BUNDLE
+  SUBSCRIPTION
+  CLASSROOM_LICENSE
+  DONATION_ITEM
+  MERCHANDISE
+}
+
+enum ShopProductStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+  OUT_OF_STOCK
 }

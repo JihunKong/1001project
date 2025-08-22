@@ -11,10 +11,31 @@ import {
   Chrome,
   Facebook,
   Apple,
-  AlertCircle
+  AlertCircle,
+  Lock,
+  Key
 } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { z } from 'zod';
+
+// Input validation schemas
+const emailSchema = z.object({
+  email: z.string()
+    .email('Please enter a valid email address')
+    .max(255, 'Email address is too long')
+    .toLowerCase()
+});
+
+const credentialsSchema = z.object({
+  email: z.string()
+    .email('Please enter a valid email address')
+    .max(255, 'Email address is too long')
+    .toLowerCase(),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128, 'Password is too long')
+});
 
 function LoginContent() {
   const router = useRouter();
@@ -22,8 +43,10 @@ function LoginContent() {
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
   
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loginMode, setLoginMode] = useState<'email' | 'credentials'>('email');
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +54,17 @@ function LoginContent() {
     setError('');
 
     try {
+      // Validate email input
+      const validatedData = emailSchema.safeParse({ email });
+      if (!validatedData.success) {
+        const errorMessage = validatedData.error.errors[0]?.message || 'Invalid email format';
+        setError(errorMessage);
+        toast.error(errorMessage);
+        return;
+      }
+
       const result = await signIn('email', {
-        email,
+        email: validatedData.data.email,
         redirect: false,
         callbackUrl,
       });
@@ -46,6 +78,44 @@ function LoginContent() {
       }
     } catch (error) {
       console.error('Sign in error:', error);
+      setError('An unexpected error occurred. Please try again.');
+      toast.error('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCredentialsSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Validate credentials input
+      const validatedData = credentialsSchema.safeParse({ email, password });
+      if (!validatedData.success) {
+        const errorMessage = validatedData.error.errors[0]?.message || 'Invalid input format';
+        setError(errorMessage);
+        toast.error(errorMessage);
+        return;
+      }
+
+      const result = await signIn('credentials', {
+        email: validatedData.data.email,
+        password: validatedData.data.password,
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (result?.error) {
+        setError('Invalid email or password. Please try again.');
+        toast.error('Invalid credentials');
+      } else if (result?.ok) {
+        toast.success('Successfully signed in!');
+        router.push(callbackUrl);
+      }
+    } catch (error) {
+      console.error('Credentials sign in error:', error);
       setError('An unexpected error occurred. Please try again.');
       toast.error('An unexpected error occurred');
     } finally {
@@ -195,72 +265,182 @@ function LoginContent() {
           </div>
         </div>
 
-        {/* Email Sign In Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleEmailSignIn}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+        {/* Login Mode Tabs */}
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setLoginMode('email')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              loginMode === 'email'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Mail className="w-4 h-4" />
+            Magic Link
+          </button>
+          <button
+            onClick={() => setLoginMode('credentials')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+              loginMode === 'credentials'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Key className="w-4 h-4" />
+            Password
+          </button>
+        </div>
+
+        {/* Login Forms */}
+        {loginMode === 'email' ? (
+          /* Email Magic Link Form */
+          <form className="mt-8 space-y-6" onSubmit={handleEmailSignIn}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{ 
+                      color: 'rgb(17, 24, 39)', 
+                      backgroundColor: 'rgb(255, 255, 255)',
+                      WebkitTextFillColor: 'rgb(17, 24, 39)',
+                      caretColor: 'rgb(17, 24, 39)'
+                    }}
+                    placeholder="Enter your email"
+                  />
                 </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  style={{ 
-                    color: 'rgb(17, 24, 39)', 
-                    backgroundColor: 'rgb(255, 255, 255)',
-                    WebkitTextFillColor: 'rgb(17, 24, 39)',
-                    caretColor: 'rgb(17, 24, 39)'
-                  }}
-                  placeholder="Enter your email"
-                />
               </div>
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading || !email}
-            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-            ) : (
-              <>
-                <Mail className="h-5 w-5 mr-2" />
-                Send Magic Link
-                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </>
-            )}
-          </button>
+            <button
+              type="submit"
+              disabled={isLoading || !email}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              ) : (
+                <>
+                  <Mail className="h-5 w-5 mr-2" />
+                  Send Magic Link
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
 
-          {/* Info Message */}
-          <div className="bg-blue-50 rounded-lg p-4">
-            <p className="text-sm text-blue-700">
-              We&apos;ll send you a magic link to sign in without a password. Check your email after clicking the button above.
-            </p>
-          </div>
+            <div className="bg-blue-50 rounded-lg p-4">
+              <p className="text-sm text-blue-700">
+                We&apos;ll send you a magic link to sign in without a password. Check your email after clicking the button above.
+              </p>
+            </div>
+          </form>
+        ) : (
+          /* Credentials (Password) Form */
+          <form className="mt-8 space-y-6" onSubmit={handleCredentialsSignIn}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email-creds" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email-creds"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{ 
+                      color: 'rgb(17, 24, 39)', 
+                      backgroundColor: 'rgb(255, 255, 255)',
+                      WebkitTextFillColor: 'rgb(17, 24, 39)',
+                      caretColor: 'rgb(17, 24, 39)'
+                    }}
+                    placeholder="Enter your email"
+                  />
+                </div>
+              </div>
 
-          {/* Sign Up Link */}
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-                Sign up for free
-              </Link>
-            </p>
-          </div>
-        </form>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    style={{ 
+                      color: 'rgb(17, 24, 39)', 
+                      backgroundColor: 'rgb(255, 255, 255)',
+                      WebkitTextFillColor: 'rgb(17, 24, 39)',
+                      caretColor: 'rgb(17, 24, 39)'
+                    }}
+                    placeholder="Enter your password"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading || !email || !password}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              ) : (
+                <>
+                  <Key className="h-5 w-5 mr-2" />
+                  Sign In
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
+
+            <div className="bg-amber-50 rounded-lg p-4">
+              <p className="text-sm text-amber-700">
+                <strong>For Admin & Volunteer accounts only.</strong> Regular users should use the Magic Link option above.
+              </p>
+            </div>
+          </form>
+        )}
+
+        {/* Sign Up Link */}
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+              Sign up for free
+            </Link>
+          </p>
+        </div>
 
         {/* Demo Accounts */}
         <div className="mt-8 p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200">
