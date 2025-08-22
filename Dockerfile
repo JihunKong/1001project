@@ -27,6 +27,7 @@ RUN npx prisma generate
 # Build application
 RUN npm run build
 
+
 # Stage 3: Runner
 FROM node:20-alpine AS runner
 WORKDIR /app
@@ -42,9 +43,10 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/locales ./locales
 
-# Copy standalone build
+# Copy standalone build (includes server.js)
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
 
 # Switch to non-root user
 USER nextjs

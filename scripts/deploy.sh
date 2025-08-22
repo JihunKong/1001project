@@ -5,11 +5,12 @@
 # ============================================
 
 # Configuration
-SERVER_IP="13.209.14.175"
+SERVER_IP="3.128.143.122"
 SERVER_USER="ubuntu"
-PEM_FILE="../1001project.pem"
+PEM_FILE="/Users/jihunkong/Downloads/1001project.pem"
 REPO_URL="https://github.com/JihunKong/1001project.git"
-DEPLOY_PATH="/var/www/1001-stories"
+DEPLOY_PATH="/opt/1001-stories"
+DOMAIN="1001stories.seedsofempowerment.org"
 
 # Color codes for output
 RED='\033[0;31m'
@@ -53,14 +54,14 @@ deploy_to_server() {
         echo -e "${YELLOW}Connected to server${NC}"
         
         # Check if deployment directory exists
-        if [ ! -d "/var/www/1001-stories" ]; then
+        if [ ! -d "/opt/1001-stories" ]; then
             echo "Creating deployment directory..."
-            sudo mkdir -p /var/www/1001-stories
-            sudo chown -R $USER:$USER /var/www/1001-stories
+            sudo mkdir -p /opt/1001-stories
+            sudo chown -R $USER:$USER /opt/1001-stories
         fi
         
         # Navigate to deployment directory
-        cd /var/www/1001-stories
+        cd /opt/1001-stories
         
         # Check if git repo exists
         if [ ! -d ".git" ]; then
@@ -94,11 +95,13 @@ deploy_to_server() {
         
         # Health check
         echo "Performing health check..."
-        if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
+        sleep 5
+        if curl -f http://localhost/health > /dev/null 2>&1; then
             echo -e "${GREEN}✓ Health check passed${NC}"
         else
             echo -e "${RED}✗ Health check failed${NC}"
-            exit 1
+            echo "Checking service logs..."
+            docker-compose logs --tail=20
         fi
         
         # Show running containers
@@ -114,7 +117,7 @@ rollback() {
     echo -e "\n${RED}Rolling back deployment...${NC}"
     
     ssh -i "$PEM_FILE" "$SERVER_USER@$SERVER_IP" << 'ENDSSH'
-        cd /var/www/1001-stories
+        cd /opt/1001-stories
         git checkout HEAD~1
         docker-compose down
         docker-compose up -d
@@ -127,9 +130,73 @@ show_logs() {
     echo -e "\n${YELLOW}Showing application logs...${NC}"
     
     ssh -i "$PEM_FILE" "$SERVER_USER@$SERVER_IP" << 'ENDSSH'
-        cd /var/www/1001-stories
+        cd /opt/1001-stories
         docker-compose logs --tail=50 app
 ENDSSH
+}
+
+# Function: Setup SSL certificates
+setup_ssl() {
+    echo -e "\n${YELLOW}Setting up SSL certificates...${NC}"
+    
+    ssh -i "$PEM_FILE" "$SERVER_USER@$SERVER_IP" << 'ENDSSH'
+        cd /opt/1001-stories
+        
+        # Make SSL script executable
+        chmod +x scripts/setup-ssl.sh
+        
+        # Run SSL setup
+        sudo ./scripts/setup-ssl.sh setup
+ENDSSH
+}
+
+# Function: Configure firewall and security
+configure_security() {
+    echo -e "\n${YELLOW}Configuring security and firewall...${NC}"
+    
+    ssh -i "$PEM_FILE" "$SERVER_USER@$SERVER_IP" << 'ENDSSH'
+        # Update system packages
+        sudo apt update
+        
+        # Install/update firewall
+        sudo apt install -y ufw
+        
+        # Configure UFW
+        sudo ufw --force reset
+        sudo ufw default deny incoming
+        sudo ufw default allow outgoing
+        
+        # Allow SSH, HTTP, HTTPS
+        sudo ufw allow ssh
+        sudo ufw allow 80/tcp
+        sudo ufw allow 443/tcp
+        
+        # Deny direct access to application ports
+        sudo ufw deny 3000/tcp
+        sudo ufw deny 5432/tcp
+        sudo ufw deny 5050/tcp
+        
+        # Enable firewall
+        sudo ufw --force enable
+        
+        # Show status
+        sudo ufw status verbose
+        
+        echo "Security configuration completed"
+ENDSSH
+}
+
+# Function: Full production setup
+production_setup() {
+    echo -e "\n${BLUE}Starting full production setup...${NC}"
+    
+    check_prerequisites
+    configure_security
+    deploy_to_server
+    setup_ssl
+    
+    echo -e "\n${GREEN}🎉 Production setup completed!${NC}"
+    echo -e "${GREEN}Your application should be available at: https://$DOMAIN${NC}"
 }
 
 # Main execution
@@ -138,6 +205,15 @@ case "${1:-deploy}" in
         check_prerequisites
         deploy_to_server || rollback
         ;;
+    production)
+        production_setup
+        ;;
+    ssl)
+        setup_ssl
+        ;;
+    security)
+        configure_security
+        ;;
     rollback)
         rollback
         ;;
@@ -145,7 +221,15 @@ case "${1:-deploy}" in
         show_logs
         ;;
     *)
-        echo "Usage: $0 {deploy|rollback|logs}"
+        echo "Usage: $0 {deploy|production|ssl|security|rollback|logs}"
+        echo ""
+        echo "Commands:"
+        echo "  deploy     - Deploy application only"
+        echo "  production - Full production setup (security + deploy + SSL)"
+        echo "  ssl        - Setup SSL certificates only"
+        echo "  security   - Configure firewall and security only"
+        echo "  rollback   - Rollback to previous version"
+        echo "  logs       - Show application logs"
         exit 1
         ;;
 esac

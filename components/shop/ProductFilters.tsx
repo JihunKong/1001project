@@ -74,7 +74,7 @@ export default function ProductFilters({
                     w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all
                     ${selectedCategory === category.value
                       ? 'bg-blue-50 border-2 border-blue-500 text-blue-700'
-                      : 'bg-white border border-gray-200 hover:bg-gray-50'
+                      : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                     }
                   `}
                 >

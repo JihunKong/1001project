@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!.env.local.example
 
 # vercel
 .vercel
@@ -66,12 +68,29 @@ test-email.js
 
 # AWS and deployment files
 *.pem
+*.key
 aws-config.json
 deployment-secrets.txt
+server-config.json
 
-# Local development overrides
+# SSL and certificate files
+ssl/
+*.crt
+*.csr
+fullchain.pem
+privkey.pem
+
+# Docker Compose overrides and SSL setup
 docker-compose.local.yml
 docker-compose.dev.yml
+docker-compose.ssl.yml
+docker-compose.override.yml
+
+# Backup files
+backups/
+*.sql.gz
+*.tar.gz
+*.backup
 
 # IDE files
 .vscode/
