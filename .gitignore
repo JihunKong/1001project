@@ -83,8 +83,17 @@ privkey.pem
 # Docker Compose overrides and SSL setup
 docker-compose.local.yml
 docker-compose.dev.yml
+docker-compose.test.yml
 docker-compose.ssl.yml
 docker-compose.override.yml
+
+# Test files and temporary files
+test-rls-*.js
+test-rls-*.sql
+test-*.sql
+*.log
+server.log
+test-email.js
 
 # Backup files
 backups/
