@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { 
@@ -44,6 +45,7 @@ export default function EnhancedPDFViewer({
   pageLayout = 'single',
   isAuthenticated = false
 }: PDFViewerProps) {
+  const router = useRouter();
   const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -413,7 +415,18 @@ export default function EnhancedPDFViewer({
 
           {/* Close */}
           <button
-            onClick={onClose}
+            onClick={() => {
+              if (process.env.NODE_ENV === 'development') {
+                console.log('Close button clicked, onClose:', onClose);
+              }
+              if (onClose) {
+                onClose();
+              } else {
+                // Fallback navigation using Next.js router
+                console.warn('PDF Viewer: onClose not provided, using fallback navigation');
+                router.push('/library');
+              }
+            }}
             className="p-2 rounded hover:bg-gray-100 text-gray-700"
             title="Close"
           >

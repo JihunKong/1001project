@@ -79,9 +79,20 @@ export default function SimplePDFThumbnail({
         
         // Get first page
         const page = await pdf.getPage(1);
-        const viewport = page.getViewport({ scale: 1.0 });
         
-        // Create canvas with PDF's original size
+        // Calculate scale to fit thumbnail frame (assuming 3:4 aspect ratio card)
+        const originalViewport = page.getViewport({ scale: 1.0 });
+        const targetWidth = 300; // Target thumbnail width
+        const targetHeight = 400; // Target thumbnail height (3:4 ratio)
+        
+        // Calculate scale to fill the frame while maintaining aspect ratio
+        const scaleX = targetWidth / originalViewport.width;
+        const scaleY = targetHeight / originalViewport.height;
+        const scale = Math.min(Math.max(scaleX, scaleY), 2.0); // Use max to fill the frame, cap at 2x
+        
+        const viewport = page.getViewport({ scale });
+        
+        // Create canvas with calculated size
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         
@@ -89,7 +100,7 @@ export default function SimplePDFThumbnail({
           throw new Error('Could not get canvas context');
         }
 
-        // Set canvas size to match PDF page size
+        // Set canvas size to fit the frame
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         
