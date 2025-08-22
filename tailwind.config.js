@@ -12,6 +12,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Existing shadcn/ui colors
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -45,10 +46,40 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        
+        // 1001 Stories Brand Colors
+        brand: {
+          50: "var(--brand-50)", // warm peach
+          100: "var(--brand-100)", // coral pink  
+          200: "var(--brand-200)", // mauve
+          300: "var(--brand-300)", // purple
+          400: "var(--brand-400)", // deep blue
+          DEFAULT: "var(--brand-100)", // coral pink as default
+        },
+        
+        // Semantic brand colors
+        "brand-primary": "var(--brand-100)", // coral pink for CTAs
+        "brand-secondary": "var(--brand-300)", // purple for accents
+        "brand-accent": "var(--brand-50)", // warm peach for highlights
+        "brand-text": "var(--brand-400)", // deep blue for text
+        
+        // Success, warning, danger (Seeds of Empowerment theme)
+        success: "var(--success)", // #16a34a
+        warning: "var(--warning)", // #f59e0b
+        danger: "var(--danger)", // #dc2626
       },
       fontFamily: {
+        // Default system fonts
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        
+        // Brand fonts with Korean support
+        heading: ['Poppins', 'Montserrat', 'Noto Sans KR', 'Apple SD Gothic Neo', 'sans-serif'],
+        body: ['Inter', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
+        
+        // Specific font families
         poppins: ['Poppins', 'sans-serif'],
+        montserrat: ['Montserrat', 'sans-serif'],
+        korean: ['Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', 'sans-serif'],
       },
       animation: {
         'blob': 'blob 7s infinite',

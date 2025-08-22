@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -16,58 +16,95 @@ import {
   Users,
   BookOpen,
   Plus,
-  Minus
+  Minus,
+  CreditCard,
+  Loader2,
+  ExternalLink
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import useCartStore, { Product } from '@/lib/cart-store';
 import ProductCard from '@/components/shop/ProductCard';
 import ImpactBadge from '@/components/shop/ImpactBadge';
 
-// Mock data - in production, this would come from an API
-const mockProducts: Product[] = [
-  {
-    id: '1',
-    type: 'book',
-    title: 'Dreams of the Ocean: Stories from Filipino Children',
-    creator: {
-      name: 'Maria Santos & Friends',
-      age: 12,
-      location: 'Palawan, Philippines',
-      story: 'Maria and her classmates from a small coastal school in Palawan wrote these stories during a creative writing workshop. Each story reflects their daily life by the sea, their dreams, and the challenges they face. The illustrations were created by local artists who volunteered their time to bring these stories to life.',
-    },
-    price: 24.99,
-    images: ['/images/shop/book1.jpg', '/images/shop/book1-2.jpg', '/images/shop/book1-3.jpg'],
-    description: 'A beautiful collection of 20 stories from children living in the Philippines coastal communities. Each story captures the unique perspective of island life, family traditions, and dreams for the future. The book includes original illustrations by local artists and photographs of the young authors.',
-    impact: {
-      metric: 'days of education',
-      value: '5',
-    },
-    stock: 15,
-    category: ['books', 'asia', 'ocean'],
-    featured: true,
-  },
-  // Add other products...
-];
+// Extended Product interface for detailed shop product
+interface DetailedProduct extends Product {
+  bookId?: string;
+  pdfKey?: string;
+  description: string;
+  specifications?: {
+    [key: string]: string;
+  };
+  relatedProducts?: Product[];
+}
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { t } = useTranslation('common');
+  const { data: session, status } = useSession();
   const addItem = useCartStore((state) => state.addItem);
   const getItemQuantity = useCartStore((state) => state.getItemQuantity);
   
+  // Product state
+  const [product, setProduct] = useState<DetailedProduct | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  
+  // UI state
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isGuestPurchasing, setIsGuestPurchasing] = useState(false);
 
-  // Find product by ID
-  const product = mockProducts.find(p => p.id === params.id) || mockProducts[0];
-  const cartQuantity = getItemQuantity(product.id);
-  const availableStock = product.stock - cartQuantity;
+  // Fetch product data
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!params.id) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await fetch(`/api/shop/products/${params.id}`);
+        
+        if (!response.ok) {
+          throw new Error('Product not found');
+        }
+        
+        const data = await response.json();
+        setProduct(data);
+        
+        // Fetch related products if we have category info
+        if (data.category && data.category.length > 0) {
+          try {
+            const relatedResponse = await fetch(`/api/shop/products?category=${data.category[0]}&limit=4`);
+            const relatedData = await relatedResponse.json();
+            setRelatedProducts(relatedData.products?.filter((p: Product) => p.id !== data.id) || []);
+          } catch (e) {
+            console.error('Failed to fetch related products:', e);
+          }
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load product');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [params.id]);
+
+  // Calculate cart and stock info
+  const cartQuantity = product ? getItemQuantity(product.id) : 0;
+  const availableStock = product ? product.stock - cartQuantity : 0;
 
   const handleAddToCart = () => {
+    if (!product) return;
+    
     setIsAdding(true);
     addItem(product, quantity);
     setTimeout(() => {
@@ -83,8 +120,54 @@ export default function ProductDetailPage() {
     }
   };
 
-  // Related products (mock)
-  const relatedProducts = mockProducts.filter(p => p.id !== product.id).slice(0, 3);
+  const handleGuestPurchase = async () => {
+    if (!product) return;
+    
+    setIsGuestPurchasing(true);
+    
+    // Store purchase intent in sessionStorage for after login
+    const purchaseIntent = {
+      productId: product.id,
+      quantity: quantity,
+      timestamp: Date.now()
+    };
+    sessionStorage.setItem('purchaseIntent', JSON.stringify(purchaseIntent));
+    
+    // Redirect to guest checkout flow
+    router.push(`/checkout/guest?productId=${product.id}&quantity=${quantity}`);
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Loading product...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Product Not Found</h2>
+          <p className="text-gray-600 mb-4">{error || 'The product you are looking for does not exist.'}</p>
+          <Link 
+            href="/shop"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Shop
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -248,44 +331,103 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3">
-                {availableStock > 0 ? (
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={isAdding}
-                    className={`
-                      flex-1 px-6 py-3 rounded-lg font-semibold transition-all
-                      ${isAdding 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-blue-600 hover:bg-blue-700 text-white'
-                      }
-                    `}
-                  >
-                    {isAdding ? (
-                      <>✓ Added to Cart</>
-                    ) : (
-                      <>
-                        <ShoppingCart className="w-5 h-5 inline mr-2" />
-                        {t('shop.product.addToCart')}
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <button disabled className="flex-1 px-6 py-3 bg-gray-200 text-gray-500 rounded-lg font-semibold cursor-not-allowed">
-                    {t('shop.product.outOfStock')}
-                  </button>
+              <div className="space-y-3">
+                {/* Primary Action - Add to Cart or Guest Purchase */}
+                <div className="flex gap-3">
+                  {availableStock > 0 ? (
+                    <>
+                      {session ? (
+                        <button
+                          onClick={handleAddToCart}
+                          disabled={isAdding}
+                          className={`
+                            flex-1 px-6 py-3 rounded-lg font-semibold transition-all
+                            ${isAdding 
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            }
+                          `}
+                        >
+                          {isAdding ? (
+                            <>✓ Added to Cart</>
+                          ) : (
+                            <>
+                              <ShoppingCart className="w-5 h-5 inline mr-2" />
+                              {t('shop.product.addToCart')}
+                            </>
+                          )}
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={handleGuestPurchase}
+                            disabled={isGuestPurchasing}
+                            className={`
+                              flex-1 px-6 py-3 rounded-lg font-semibold transition-all
+                              ${isGuestPurchasing 
+                                ? 'bg-orange-500 text-white' 
+                                : 'bg-brand-100 hover:bg-brand-200 text-white'
+                              }
+                            `}
+                          >
+                            {isGuestPurchasing ? (
+                              <>Processing...</>
+                            ) : (
+                              <>
+                                <CreditCard className="w-5 h-5 inline mr-2" />
+                                Buy as Guest
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={() => router.push('/login')}
+                            className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
+                          >
+                            Login to Add to Cart
+                          </button>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <button disabled className="flex-1 px-6 py-3 bg-gray-200 text-gray-500 rounded-lg font-semibold cursor-not-allowed">
+                      {t('shop.product.outOfStock')}
+                    </button>
+                  )}
+                </div>
+                
+                {/* Library Access Button */}
+                {product.bookId && (
+                  <div className="mt-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-blue-900 mb-1">📚 Available in Library</h4>
+                        <p className="text-xs text-blue-700">Read this book instantly in our digital library</p>
+                      </div>
+                      <Link 
+                        href={`/library/books/${product.bookId}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        Read Now
+                        <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    </div>
+                  </div>
                 )}
-                
-                <button
-                  onClick={() => setIsFavorite(!isFavorite)}
-                  className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <Heart className={`w-5 h-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                </button>
-                
-                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                  <Share2 className="w-5 h-5 text-gray-600" />
-                </button>
+
+                {/* Secondary Actions */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setIsFavorite(!isFavorite)}
+                    className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <Heart className={`w-5 h-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                  </button>
+                  
+                  <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <Share2 className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
               </div>
             </div>
 

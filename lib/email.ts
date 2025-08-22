@@ -350,3 +350,33 @@ export async function sendPasswordResetEmail(email: string, url: string) {
     return { success: false, message: 'Failed to send password reset email' };
   }
 }
+
+// Generic send email function
+export async function sendEmail(options: {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+}) {
+  const transporter = createTransporter();
+  
+  if (!transporter) {
+    console.log(`[Email Service Disabled] Email would be sent to ${options.to}: ${options.subject}`);
+    return { success: false, message: 'Email service not configured' };
+  }
+  
+  try {
+    const info = await transporter.sendMail({
+      from: options.from || process.env.EMAIL_FROM || '"1001 Stories" <noreply@1001stories.org>',
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+    });
+
+    console.log("Email sent: %s", info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return { success: false, message: 'Failed to send email' };
+  }
+}

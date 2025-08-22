@@ -100,8 +100,10 @@ export default withAuth(
         if (pathname.startsWith("/api/auth") || 
             pathname.startsWith("/api/health") ||
             pathname.startsWith("/api/library/stories") ||
+            pathname.startsWith("/api/library/books") ||
             pathname.startsWith("/api/shop/products") ||
-            pathname.startsWith("/api/shop/cart")) {
+            pathname.startsWith("/api/shop/cart") ||
+            pathname.startsWith("/api/pdf")) {
           return true;
         }
         
@@ -130,8 +132,9 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      * - images and other static assets
+     * - PDF files (for thumbnails and reading)
      * - api/auth routes (handled by NextAuth)
      */
-    "/((?!_next/static|_next/image|favicon.ico|public|api/auth|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.webp).*)",
+    "/((?!_next/static|_next/image|favicon.ico|public|api/auth|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.webp|.*\\.pdf|.*\\.js).*)",
   ],
 };

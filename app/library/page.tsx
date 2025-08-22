@@ -16,53 +16,59 @@ import {
   ArrowRight,
   Users,
   Clock,
-  Loader2
+  Loader2,
+  Grid3X3,
+  Library as LibraryIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useSubscription } from '@/lib/hooks/useContentAccess';
+import EnhancedPDFThumbnailWrapper from '@/components/shop/EnhancedPDFThumbnailWrapper';
+import SimpleBookCard from '@/components/library/SimpleBookCard';
+import BookshelfView from '@/components/library/BookshelfView';
 
-interface Story {
+interface Book {
   id: string
   title: string
   subtitle?: string
   summary?: string
-  authorName: string
-  authorAge?: number
-  authorLocation?: string
+  author: {
+    name: string
+    age?: number
+    location?: string
+  }
   language: string
   category: string[]
   tags: string[]
-  readingLevel?: string
+  ageRange?: string
   readingTime?: number
   coverImage?: string
   isPremium: boolean
-  featured: boolean
+  isFeatured: boolean
   price?: number
   rating?: number
-  viewCount: number
-  likeCount: number
   accessLevel: 'preview' | 'full'
   stats: {
     readers: number
     bookmarks: number
   }
+  // PDF-specific fields
+  bookId: string
+  pdfKey?: string
+  pdfFrontCover?: string
+  pdfBackCover?: string
+  pageLayout?: string
+  previewPages: number
 }
 
-interface StoriesResponse {
-  stories: Story[]
+interface BooksResponse {
+  books: Book[]
   pagination: {
-    page: number
-    limit: number
-    totalCount: number
+    currentPage: number
     totalPages: number
-    hasNext: boolean
-    hasPrev: boolean
-  }
-  filters: {
-    categories: Array<{ value: string; count: number }>
-    languages: Array<{ value: string; count: number }>
-    ageGroups: Array<{ value: string; count: number }>
+    totalCount: number
+    hasMore: boolean
+    limit: number
   }
 }
 
@@ -71,9 +77,8 @@ export default function Library() {
   const { data: session } = useSession();
   const { subscription } = useSubscription();
   
-  const [stories, setStories] = useState<Story[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [pagination, setPagination] = useState<any>(null);
-  const [filters, setFilters] = useState<any>({ categories: [], languages: [], ageGroups: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -83,9 +88,34 @@ export default function Library() {
   const [selectedAge, setSelectedAge] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<'cards' | 'bookshelf'>('cards');
+  
+  // Static filter options (could be fetched from API in the future)
+  const filters = {
+    categories: [
+      { value: 'Adventure', count: 0 },
+      { value: 'Educational', count: 0 },
+      { value: 'Fantasy', count: 0 },
+      { value: 'Biography', count: 0 },
+      { value: 'Science', count: 0 },
+      { value: 'History', count: 0 }
+    ],
+    languages: [
+      { value: 'en', count: 0 },
+      { value: 'es', count: 0 },
+      { value: 'fr', count: 0 },
+      { value: 'ko', count: 0 }
+    ],
+    ageGroups: [
+      { value: '3-5', count: 0 },
+      { value: '6-8', count: 0 },
+      { value: '9-12', count: 0 },
+      { value: '13-15', count: 0 }
+    ]
+  };
 
-  // Fetch stories from API
-  const fetchStories = async () => {
+  // Fetch books from API
+  const fetchBooks = async () => {
     setLoading(true);
     setError(null);
     
@@ -100,26 +130,33 @@ export default function Library() {
       if (selectedLanguage !== 'all') params.set('language', selectedLanguage);
       if (selectedAge !== 'all') params.set('ageGroup', selectedAge);
       
-      const response = await fetch(`/api/library/stories?${params}`);
+      const response = await fetch(`/api/library/books?${params}`);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch stories');
+        // Handle different error cases
+        if (response.status === 401) {
+          throw new Error('AUTHENTICATION_REQUIRED');
+        } else if (response.status === 403) {
+          throw new Error('NO_PURCHASED_BOOKS');
+        } else {
+          throw new Error('FETCH_ERROR');
+        }
       }
       
-      const data: StoriesResponse = await response.json();
-      setStories(data.stories);
+      const data: BooksResponse = await response.json();
+      setBooks(data.books);
       setPagination(data.pagination);
-      setFilters(data.filters);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load stories');
+      const errorMessage = err instanceof Error ? err.message : 'FETCH_ERROR';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
   
-  // Fetch stories when page or filters change
+  // Fetch books when page or filters change
   useEffect(() => {
-    fetchStories();
+    fetchBooks();
   }, [currentPage, searchTerm, selectedCategory, selectedLanguage, selectedAge]);
   
   // Reset to first page when filters change (not page)
@@ -127,7 +164,7 @@ export default function Library() {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, selectedLanguage, selectedAge]);
 
-  const StoryCard = ({ story }: { story: Story }) => (
+  const BookCard = ({ book }: { book: Book }) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -135,44 +172,70 @@ export default function Library() {
       className="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-2"
     >
       <div className="relative">
-        <div className="aspect-[4/3] bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-          <BookOpen className="w-16 h-16 text-blue-600 opacity-50" />
+        <div className="aspect-[2/3] bg-gradient-to-br from-blue-100 to-purple-100">
+          {book.pdfKey && book.bookId ? (
+            <EnhancedPDFThumbnailWrapper
+              bookId={book.bookId}
+              title={book.title}
+              sources={{
+                mainPdf: book.pdfKey,
+                frontCover: book.pdfFrontCover,
+                backCover: book.pdfBackCover
+              }}
+              size="large"
+              existingImage={book.coverImage?.endsWith('.pdf') ? undefined : book.coverImage}
+              className="w-full h-full"
+              alt={book.title}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <BookOpen className="w-16 h-16 text-blue-600 opacity-50" />
+            </div>
+          )}
         </div>
-        {story.isPremium && (
+        {book.isPremium && (
           <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full">
             <Crown className="w-3 h-3" />
             Premium
           </div>
         )}
-        <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
-          <Star className="w-3 h-3 text-yellow-500 fill-current" />
-          {story.rating}
-        </div>
+        {book.isFeatured && (
+          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
+            <Star className="w-3 h-3" />
+            Featured
+          </div>
+        )}
+        {book.rating && (
+          <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
+            <Star className="w-3 h-3 text-yellow-500 fill-current" />
+            {book.rating?.toFixed(1)}
+          </div>
+        )}
       </div>
       
       <div className="p-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
           <Globe className="w-4 h-4" />
-          {story.authorLocation || 'Unknown'}
+          {book.author.location || 'Unknown'}
           <span>•</span>
           <Clock className="w-4 h-4" />
-          {story.readingTime || 5} min
+          {book.readingTime || 5} min
         </div>
         
         <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-          {story.title}
+          {book.title}
         </h3>
         
         <div className="text-sm text-gray-600 mb-3">
-          By {story.authorName}{story.authorAge ? `, age ${story.authorAge}` : ''}
+          By {book.author.name}{book.author.age ? `, age ${book.author.age}` : ''}
         </div>
         
         <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {story.summary || 'No description available'}
+          {book.summary || 'No description available'}
         </p>
         
         <div className="flex flex-wrap gap-1 mb-4">
-          {story.tags.slice(0, 2).map(tag => (
+          {book.tags.slice(0, 2).map(tag => (
             <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
               #{tag}
             </span>
@@ -181,25 +244,38 @@ export default function Library() {
         
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-            {story.category[0] || 'Story'}
+            {book.category[0] || 'Story'}
           </span>
           
-          <div className="flex gap-2">
-            <Link
-              href={`/library/stories/${story.id}`}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            >
-              <Play className="w-4 h-4" />
-              Preview
-            </Link>
-            <Link
-              href={`/library/stories/${story.id}`}
-              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-            >
-              {story.isPremium ? <Lock className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
-              {story.accessLevel === 'full' ? 'Read' : (story.isPremium ? 'Unlock' : 'Read')}
-            </Link>
-          </div>
+          {session ? (
+            <div className="flex gap-2">
+              <Link
+                href={`/library/stories/${book.id}`}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                <Play className="w-4 h-4" />
+                Preview
+              </Link>
+              <Link
+                href={`/library/stories/${book.id}`}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+              >
+                {book.isPremium ? <Lock className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
+                {book.accessLevel === 'full' ? 'Read' : (book.isPremium ? 'Unlock' : 'Read')}
+              </Link>
+            </div>
+          ) : (
+            <div className="text-center">
+              <p className="text-xs text-gray-600 mb-2">Sign up to read stories</p>
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                Sign Up Free
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
@@ -250,6 +326,32 @@ export default function Library() {
               <Filter className="w-5 h-5" />
               Filters
             </button>
+            
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                  viewMode === 'cards'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <Grid3X3 className="w-4 h-4" />
+                Cards
+              </button>
+              <button
+                onClick={() => setViewMode('bookshelf')}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                  viewMode === 'bookshelf'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <LibraryIcon className="w-4 h-4" />
+                Bookshelf
+              </button>
+            </div>
           </div>
 
           {/* Filter Options */}
@@ -342,32 +444,97 @@ export default function Library() {
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <span className="ml-2 text-gray-600">Loading stories...</span>
+              <span className="ml-2 text-gray-600">Loading books...</span>
             </div>
           ) : error ? (
             <div className="text-center py-12">
-              <BookOpen className="w-16 h-16 text-red-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Error loading stories</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
-              <button
-                onClick={() => fetchStories()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Try Again
-              </button>
+              {error === 'NO_PURCHASED_BOOKS' ? (
+                <>
+                  <BookOpen className="w-16 h-16 text-blue-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">구매한 책이 없습니다</h3>
+                  <p className="text-gray-600 mb-6">
+                    아직 구매하신 책이 없어요. 다양한 책들을 둘러보고 마음에 드는 책을 찾아보세요!
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link 
+                      href="/shop"
+                      className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      📚 책 둘러보기
+                    </Link>
+                    <Link 
+                      href="/demo/library"
+                      className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+                    >
+                      🎭 체험용 계정으로 미리보기
+                    </Link>
+                  </div>
+                  <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
+                    <div className="flex items-center gap-2 text-yellow-800 mb-2">
+                      <Crown className="w-5 h-5" />
+                      <span className="font-medium">무료 체험 가능!</span>
+                    </div>
+                    <p className="text-sm text-yellow-700">
+                      체험용 계정으로 몇 권의 샘플 책을 미리 읽어보실 수 있어요.
+                    </p>
+                  </div>
+                </>
+              ) : error === 'AUTHENTICATION_REQUIRED' ? (
+                <>
+                  <Users className="w-16 h-16 text-orange-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">로그인이 필요합니다</h3>
+                  <p className="text-gray-600 mb-6">
+                    개인 라이브러리에 접근하려면 먼저 로그인해주세요.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link 
+                      href="/login"
+                      className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      🔐 로그인하기
+                    </Link>
+                    <Link 
+                      href="/demo/library"
+                      className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+                    >
+                      🎭 체험용 계정으로 둘러보기
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <BookOpen className="w-16 h-16 text-red-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">책을 불러오는 중 오류가 발생했습니다</h3>
+                  <p className="text-gray-600 mb-4">
+                    일시적인 문제일 수 있어요. 잠시 후 다시 시도해주세요.
+                  </p>
+                  <button
+                    onClick={() => fetchBooks()}
+                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    🔄 다시 시도하기
+                  </button>
+                </>
+              )}
             </div>
-          ) : stories.length === 0 ? (
+          ) : books.length === 0 ? (
             <div className="text-center py-12">
               <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No stories found</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No books found</h3>
               <p className="text-gray-600">Try adjusting your search terms or filters.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {stories.map((story, index) => (
-                <StoryCard key={story.id} story={story} />
-              ))}
-            </div>
+            <>
+              {viewMode === 'cards' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {books.map((book, index) => (
+                    <SimpleBookCard key={book.id} book={book} />
+                  ))}
+                </div>
+              ) : (
+                <BookshelfView books={books} />
+              )}
+            </>
           )}
           
           {/* Pagination Controls */}
@@ -375,7 +542,7 @@ export default function Library() {
             <div className="flex items-center justify-center mt-12 space-x-1">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={!pagination.hasPrev || loading}
+                disabled={currentPage <= 1 || loading}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Previous
@@ -403,7 +570,7 @@ export default function Library() {
               
               <button
                 onClick={() => setCurrentPage(Math.min(pagination.totalPages, currentPage + 1))}
-                disabled={!pagination.hasNext || loading}
+                disabled={!pagination.hasMore || loading}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
@@ -454,3 +621,6 @@ export default function Library() {
     </div>
   );
 }
+
+// Force dynamic rendering to avoid prerendering issues with PDF.js
+export const dynamic = 'force-dynamic';

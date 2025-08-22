@@ -418,7 +418,7 @@ async function generateIntegrityReport() {
   })
 
   let verifiedCount = 0
-  let tamperedCount = 0
+  const tamperedCount = 0
   const tamperedEntries: string[] = []
 
   // This would need the full verification logic

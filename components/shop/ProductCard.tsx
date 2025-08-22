@@ -2,11 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { ShoppingCart, Heart, Star, Users } from 'lucide-react';
+import { ShoppingCart, Heart, Star, Users, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import useCartStore, { Product } from '@/lib/cart-store';
 import { useState } from 'react';
+import EnhancedPDFThumbnailWrapper from './EnhancedPDFThumbnailWrapper';
 
 interface ProductCardProps {
   product: Product;
@@ -34,12 +35,27 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
         <Link href={`/shop/${product.id}`}>
-          {product.images[0] ? (
+          {product.pdfKey && product.bookId ? (
+            <EnhancedPDFThumbnailWrapper
+              bookId={product.bookId}
+              title={product.title}
+              sources={{
+                mainPdf: product.pdfKey,
+                frontCover: product.pdfFrontCover,
+                backCover: product.pdfBackCover
+              }}
+              size="large"
+              existingImage={product.coverImage}
+              fallbackImage={product.images[0]}
+              className="w-full h-full group-hover:scale-105 transition-transform duration-300"
+              alt={product.title}
+            />
+          ) : product.images[0] ? (
             <Image
               src={product.images[0]}
               alt={product.title}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-contain group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
@@ -139,5 +155,3 @@ export default function ProductCard({ product }: ProductCardProps) {
   );
 }
 
-// Fix missing import
-import { BookOpen } from 'lucide-react';

@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface Product {
   id: string;
-  type: 'book' | 'goods';
+  type: 'book' | 'goods' | 'digital_book';
   title: string;
   creator: {
     name: string;
@@ -21,6 +21,13 @@ export interface Product {
   stock: number;
   category: string[];
   featured: boolean;
+  // Book-specific fields for PDF handling
+  bookId?: string;
+  pdfKey?: string;
+  pdfFrontCover?: string;
+  pdfBackCover?: string;
+  pageLayout?: string;
+  coverImage?: string;
 }
 
 export interface CartItem {
