@@ -25,6 +25,7 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
     volumes:
       - ./uploads:/app/uploads
+      - ./prisma:/app/prisma
     networks:
       - app-network
     depends_on:
