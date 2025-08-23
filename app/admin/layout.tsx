@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Menu,
   X,
+  ShoppingCart,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -40,6 +41,11 @@ const navigation = [
     name: 'Books',
     href: '/admin/books',
     icon: BookOpen,
+  },
+  {
+    name: 'Shop',
+    href: '/admin/shop',
+    icon: ShoppingCart,
   },
   {
     name: 'Media Library',

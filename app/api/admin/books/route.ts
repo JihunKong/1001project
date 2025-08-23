@@ -143,3 +143,48 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
+
+// DELETE /api/admin/books?id=<id> - Delete book
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session || session.user.role !== UserRole.ADMIN) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (!id) {
+      return NextResponse.json({ error: 'Book ID is required' }, { status: 400 });
+    }
+
+    // Check if book exists
+    const existingBook = await prisma.story.findUnique({
+      where: { id },
+      select: { id: true, title: true }
+    });
+
+    if (!existingBook) {
+      return NextResponse.json({ error: 'Book not found' }, { status: 404 });
+    }
+
+    // Delete the book
+    await prisma.story.delete({
+      where: { id }
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      message: `Book "${existingBook.title}" deleted successfully` 
+    });
+
+  } catch (error) {
+    console.error('Error deleting book:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
