@@ -102,9 +102,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate book ID from title
-    const bookId = normalizeBookFolderName(bookData.title);
+    let bookId = normalizeBookFolderName(bookData.title);
     
-    // Check if book already exists
+    // Check if book already exists and generate unique ID if needed
     const existingBook = await prisma.story.findFirst({
       where: {
         OR: [
@@ -115,10 +115,24 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingBook) {
-      return NextResponse.json(
-        { error: 'A book with this title already exists' },
-        { status: 409 }
-      );
+      // If exact title match, reject
+      if (existingBook.title === bookData.title) {
+        return NextResponse.json(
+          { error: 'A book with this exact title already exists' },
+          { status: 409 }
+        );
+      }
+      
+      // If ID match, generate unique ID by appending timestamp
+      if (existingBook.id === bookId) {
+        bookId = `${bookId}-${Date.now()}`;
+      }
+    }
+
+    // Additional check to ensure the new bookId doesn't exist
+    const existingById = await prisma.story.findUnique({ where: { id: bookId } });
+    if (existingById) {
+      bookId = `${bookId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     }
 
     // Create book directory
@@ -252,10 +266,59 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error uploading book:', error);
     
+    // More detailed error handling
+    if (error instanceof Error) {
+      // Check for specific error types
+      if (error.message.includes('Unique constraint')) {
+        return NextResponse.json(
+          { 
+            error: 'Book already exists', 
+            details: 'A book with this title or ID already exists. Please use a different title.'
+          },
+          { status: 409 }
+        );
+      }
+      
+      if (error.message.includes('Foreign key constraint')) {
+        return NextResponse.json(
+          { 
+            error: 'Author not found', 
+            details: 'The specified author does not exist. Please check the author email.'
+          },
+          { status: 400 }
+        );
+      }
+      
+      if (error.message.includes('ENOENT') || error.message.includes('EACCES')) {
+        return NextResponse.json(
+          { 
+            error: 'File system error', 
+            details: 'Unable to save book files. Please check file permissions.'
+          },
+          { status: 500 }
+        );
+      }
+
+      // Log the full error for debugging
+      console.error('Book upload error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      
+      return NextResponse.json(
+        { 
+          error: 'Upload failed', 
+          details: error.message
+        },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
       { 
         error: 'Internal server error', 
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: 'Unknown error occurred during book upload'
       },
       { status: 500 }
     );
