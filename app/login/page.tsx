@@ -37,10 +37,40 @@ const credentialsSchema = z.object({
     .max(128, 'Password is too long')
 });
 
+// Callback URL validation function
+function validateCallbackUrl(url: string | null): string {
+  if (!url) return '/dashboard';
+  
+  try {
+    // Remove any non-ASCII characters and decode URI components safely
+    const cleanUrl = decodeURIComponent(url).replace(/[^\x00-\x7F]/g, '');
+    
+    // Ensure URL starts with / and doesn't contain suspicious patterns
+    if (!cleanUrl.startsWith('/')) return '/dashboard';
+    if (cleanUrl.includes('//') || cleanUrl.includes('..')) return '/dashboard';
+    
+    // Allow only specific safe paths
+    const allowedPaths = [
+      '/dashboard', '/admin', '/login', '/signup', '/library', '/shop',
+      '/settings', '/volunteer', '/donate', '/onboarding'
+    ];
+    
+    // Check if it's an allowed path or starts with an allowed path + /
+    const isAllowed = allowedPaths.some(path => 
+      cleanUrl === path || cleanUrl.startsWith(path + '/')
+    );
+    
+    return isAllowed ? cleanUrl : '/dashboard';
+  } catch (error) {
+    console.warn('Invalid callback URL:', url);
+    return '/dashboard';
+  }
+}
+
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const callbackUrl = validateCallbackUrl(searchParams.get('callbackUrl'));
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
