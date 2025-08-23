@@ -114,11 +114,11 @@ export const authOptions: NextAuthOptions = {
     // Email Provider with fallback handling
     EmailProvider({
       server: {
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
+        host: process.env.SMTP_HOST || process.env.EMAIL_SERVER_HOST,
+        port: Number(process.env.SMTP_PORT || process.env.EMAIL_SERVER_PORT || '587'),
         auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASSWORD
+          user: process.env.SMTP_USER || process.env.EMAIL_SERVER_USER,
+          pass: process.env.SMTP_PASSWORD || process.env.EMAIL_SERVER_PASSWORD
         }
       },
       from: process.env.EMAIL_FROM || "noreply@1001stories.org",
