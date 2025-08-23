@@ -177,13 +177,6 @@ export default function Library() {
             <EnhancedPDFThumbnailWrapper
               bookId={book.bookId}
               title={book.title}
-              sources={{
-                mainPdf: book.pdfKey,
-                frontCover: book.pdfFrontCover,
-                backCover: book.pdfBackCover
-              }}
-              size="large"
-              existingImage={book.coverImage?.endsWith('.pdf') ? undefined : book.coverImage}
               className="w-full h-full"
               alt={book.title}
             />

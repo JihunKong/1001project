@@ -39,14 +39,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             <EnhancedPDFThumbnailWrapper
               bookId={product.bookId}
               title={product.title}
-              sources={{
-                mainPdf: product.pdfKey,
-                frontCover: product.pdfFrontCover,
-                backCover: product.pdfBackCover
-              }}
-              size="large"
-              existingImage={product.coverImage}
-              fallbackImage={product.images[0]}
               className="w-full h-full group-hover:scale-105 transition-transform duration-300"
               alt={product.title}
             />
