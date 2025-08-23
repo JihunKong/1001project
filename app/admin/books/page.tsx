@@ -128,7 +128,7 @@ export default function AdminBooksPage() {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  if (!session || session.user.role !== UserRole.ADMIN) {
+  if (!session || (session.user as any).role !== UserRole.ADMIN) {
     redirect('/');
   }
 
