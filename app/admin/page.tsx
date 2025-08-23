@@ -279,6 +279,16 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
             <div className="space-y-3">
+              <button 
+                onClick={() => window.location.href = '/admin/books'}
+                className="w-full text-left flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg"
+              >
+                <span className="flex items-center gap-3">
+                  <BookOpen className="w-5 h-5 text-gray-600" />
+                  <span>Manage Books</span>
+                </span>
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+              </button>
               <button className="w-full text-left flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
                 <span className="flex items-center gap-3">
                   <Users className="w-5 h-5 text-gray-600" />
