@@ -14,10 +14,10 @@ export async function GET(
     const filePath = resolvedParams.path.join('/');
     
     // Construct the full path to the PDF file
-    const pdfPath = path.join(process.cwd(), 'public', 'pdfs', filePath);
+    const pdfPath = path.join(process.cwd(), 'public', 'books', filePath);
     
-    // Security check - ensure the path is within the pdfs directory
-    const publicPdfDir = path.join(process.cwd(), 'public', 'pdfs');
+    // Security check - ensure the path is within the books directory
+    const publicPdfDir = path.join(process.cwd(), 'public', 'books');
     const resolvedPath = path.resolve(pdfPath);
     const resolvedPublicDir = path.resolve(publicPdfDir);
     
