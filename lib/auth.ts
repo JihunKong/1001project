@@ -40,24 +40,16 @@ export const authOptions: NextAuthOptions = {
           
           // Find user with password
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email.toLowerCase() },
-            select: {
-              id: true,
-              email: true,
-              name: true,
-              role: true,
-              emailVerified: true,
-              password: true,
-            }
+            where: { email: credentials.email.toLowerCase() }
           });
           
           // Prevent timing attacks - always check password even if user doesn't exist
           const dummyHash = '$2b$12$dummyhashtopreventtimingatks.abcdefghijklmnopqrstuvwxy';
-          const userHash = user?.password || dummyHash;
+          const userHash = (user as any)?.password || dummyHash;
           const isValidPassword = await verifyPassword(credentials.password, userHash);
           
           // Only proceed if user exists, has password, and password is valid
-          if (!user || !user.password || !isValidPassword) {
+          if (!user || !(user as any).password || !isValidPassword) {
             // Log failed attempt for security monitoring
             console.warn(`Failed login attempt for email: ${credentials.email}`);
             return null;

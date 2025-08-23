@@ -78,13 +78,6 @@ export default function EnhancedBookCard({ book }: EnhancedBookCardProps) {
                 <EnhancedPDFThumbnailWrapper
                   bookId={book.id || book.bookId || ''}
                   title={book.title}
-                  sources={{
-                    mainPdf: book.pdfKey || bookFiles.main || undefined,
-                    frontCover: book.pdfFrontCover || bookFiles.frontCover || undefined,
-                    backCover: book.pdfBackCover || bookFiles.backCover || undefined
-                  }}
-                  size="large"
-                  existingImage={book.coverImage?.endsWith('.pdf') ? undefined : book.coverImage}
                   className="w-full h-full"
                   alt={book.title}
                 />

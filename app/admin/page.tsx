@@ -40,6 +40,13 @@ interface DashboardStats {
   totalUsers: number;
   totalVolunteers: number;
   monthlyRevenue: number;
+  activeUsers: number;
+  recentActivity: Array<{
+    id: string;
+    type: 'story_submitted' | 'user_joined' | 'translation_completed' | 'volunteer_joined';
+    description: string;
+    timestamp: string;
+  }>;
 }
 
 
@@ -60,6 +67,8 @@ export default function AdminDashboard() {
     totalUsers: 0,
     totalVolunteers: 0,
     monthlyRevenue: 0,
+    activeUsers: 0,
+    recentActivity: [],
   });
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,19 +78,29 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       
-      // Fetch stories
-      const storiesResponse = await fetch('/api/admin/stories?limit=50');
+      // Fetch dashboard stats from new API
+      const [storiesResponse, dashboardResponse] = await Promise.all([
+        fetch('/api/admin/stories?limit=50'),
+        fetch('/api/admin/dashboard')
+      ]);
+      
       if (storiesResponse.ok) {
         const storiesData = await storiesResponse.json();
         setStories(storiesData.stories || []);
-        
-        // Update stats based on real data
+      }
+      
+      if (dashboardResponse.ok) {
+        const dashboardData = await dashboardResponse.json();
         setStats({
-          totalStories: storiesData.pagination?.totalCount || 0,
-          totalUsers: 245,
-          totalVolunteers: 89,
-          monthlyRevenue: 12340
+          totalStories: dashboardData.totalStories || 0,
+          totalUsers: dashboardData.totalUsers || 0,
+          totalVolunteers: dashboardData.totalVolunteers || 0,
+          monthlyRevenue: dashboardData.monthlyRevenue || 0,
+          activeUsers: dashboardData.activeUsers || 0,
+          recentActivity: dashboardData.recentActivity || [],
         });
+      } else {
+        console.error('Failed to fetch dashboard stats');
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -107,7 +126,7 @@ export default function AdminDashboard() {
 
   const statsDisplay = [
     { label: 'Total Stories', value: stats.totalStories.toString(), change: '+12%', icon: BookOpen, color: 'bg-blue-500' },
-    { label: 'Active Users', value: stats.totalUsers.toString(), change: '+8%', icon: Users, color: 'bg-green-500' },
+    { label: 'Total Users', value: stats.totalUsers.toString(), change: '+8%', icon: Users, color: 'bg-green-500' },
     { label: 'Revenue', value: `$${stats.monthlyRevenue.toLocaleString()}`, change: '+15%', icon: DollarSign, color: 'bg-purple-500' },
     { label: 'Volunteers', value: stats.totalVolunteers.toString(), change: '+5%', icon: Shield, color: 'bg-pink-500' },
   ];
@@ -287,27 +306,50 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
             <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">New story submitted</p>
-                  <p className="text-xs text-gray-600">5 minutes ago</p>
+              {stats.recentActivity.length > 0 ? (
+                stats.recentActivity.map((activity) => {
+                  const getActivityColor = (type: string) => {
+                    switch (type) {
+                      case 'story_submitted': return 'bg-green-500';
+                      case 'volunteer_joined': return 'bg-purple-500';
+                      case 'user_joined': return 'bg-blue-500';
+                      case 'translation_completed': return 'bg-orange-500';
+                      default: return 'bg-gray-500';
+                    }
+                  };
+
+                  const getTimeAgo = (timestamp: string) => {
+                    const now = new Date();
+                    const activityTime = new Date(timestamp);
+                    const diffMs = now.getTime() - activityTime.getTime();
+                    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                    const diffDays = Math.floor(diffHours / 24);
+                    
+                    if (diffDays > 0) {
+                      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+                    } else if (diffHours > 0) {
+                      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+                    } else {
+                      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+                      return `${Math.max(1, diffMinutes)} minute${diffMinutes > 1 ? 's' : ''} ago`;
+                    }
+                  };
+
+                  return (
+                    <div key={activity.id} className="flex items-start gap-3">
+                      <div className={`w-2 h-2 rounded-full mt-2 ${getActivityColor(activity.type)}`}></div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-900">{activity.description}</p>
+                        <p className="text-xs text-gray-600">{getTimeAgo(activity.timestamp)}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-500">No recent activity</p>
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">Translation completed</p>
-                  <p className="text-xs text-gray-600">1 hour ago</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">New volunteer joined</p>
-                  <p className="text-xs text-gray-600">3 hours ago</p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
