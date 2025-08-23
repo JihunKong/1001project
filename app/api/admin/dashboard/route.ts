@@ -80,17 +80,8 @@ export async function GET(request: NextRequest) {
         }
       }),
       
-      // Monthly donations (if donation table exists)
-      prisma.donation.aggregate({
-        where: {
-          createdAt: {
-            gte: startOfMonth
-          }
-        },
-        _sum: {
-          amount: true
-        }
-      }).catch(() => ({ _sum: { amount: null } })), // Handle case where donation table doesn't exist
+      // Monthly donations - skip for now since Donation table structure needs review
+      Promise.resolve({ _sum: { amount: null } }), // Placeholder until donation system is implemented
       
       // Recent stories for activity feed
       prisma.story.findMany({
