@@ -193,7 +193,9 @@ export async function POST(request: NextRequest) {
         content: `Book content available in PDF format: /books/${bookId}/main.pdf`,
         summary: bookData.summary,
         language: bookData.language,
-        category: bookData.category ? [bookData.category] : [],
+        category: bookData.category ? [bookData.category] : ['General'],
+        genres: bookData.ageGroup ? [bookData.ageGroup] : [],
+        subjects: [],
         isPublished: true,
         tags: tagList,
         authorId: author.id,
@@ -202,7 +204,11 @@ export async function POST(request: NextRequest) {
         isbn: bookData.isbn,
         publishedDate: bookData.publicationDate ? new Date(bookData.publicationDate) : null,
         fullPdf: `/books/${bookId}/main.pdf`,
-        coverImage: frontCover ? `/books/${bookId}/cover.pdf` : null
+        coverImage: frontCover ? `/books/${bookId}/cover.pdf` : null,
+        viewCount: 0,
+        likeCount: 0,
+        isPremium: !!bookData.price && parseFloat(bookData.price) > 0,
+        featured: false
       }
     });
 
