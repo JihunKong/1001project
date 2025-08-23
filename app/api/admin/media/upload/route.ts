@@ -10,6 +10,10 @@ import sharp from 'sharp';
 import { z } from 'zod';
 import { uploadLimiter } from '@/lib/rate-limiter';
 
+// Configure the API to handle large files (100MB)
+export const maxDuration = 300; // 5 minutes
+export const runtime = 'nodejs';
+
 const uploadSchema = z.object({
   folder: z.string().optional().default('/'),
   altText: z.string().optional(),
@@ -133,11 +137,11 @@ export async function POST(request: NextRequest) {
       console.warn(`Potentially malicious filename detected: ${file.name}`);
     }
 
-    // Validate file size (10MB max)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // Validate file size (100MB max)
+    const maxSize = 100 * 1024 * 1024; // 100MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'File too large. Maximum size: 10MB' },
+        { error: 'File too large. Maximum size: 100MB' },
         { status: 400 }
       );
     }
