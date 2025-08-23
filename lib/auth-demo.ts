@@ -153,11 +153,11 @@ export function verifyDemoToken(token: string): unknown {
 export function isEmailServiceConfigured(): boolean {
   return (
     process.env.EMAIL_SERVICE_ENABLED === 'true' &&
-    !!process.env.SMTP_HOST &&
-    !!process.env.SMTP_PORT &&
-    !!process.env.SMTP_USER &&
-    !!process.env.SMTP_PASSWORD &&
-    process.env.SMTP_USER !== 'your-email@gmail.com'
+    !!(process.env.SMTP_HOST || process.env.EMAIL_SERVER_HOST) &&
+    !!(process.env.SMTP_PORT || process.env.EMAIL_SERVER_PORT) &&
+    !!(process.env.SMTP_USER || process.env.EMAIL_SERVER_USER) &&
+    !!(process.env.SMTP_PASSWORD || process.env.EMAIL_SERVER_PASSWORD) &&
+    (process.env.SMTP_USER || process.env.EMAIL_SERVER_USER) !== 'your-email@gmail.com'
   );
 }
 
