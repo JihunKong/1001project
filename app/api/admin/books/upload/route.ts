@@ -21,7 +21,7 @@ interface BookUploadData {
   ageGroup: string;
   summary: string;
   tags: string;
-  isbn?: string;
+  isbn?: string | null;
   publicationDate?: string;
   price?: string;
   thumbnailPage: number;
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       ageGroup: formData.get('ageGroup') as string,
       summary: formData.get('summary') as string,
       tags: formData.get('tags') as string || '',
-      isbn: formData.get('isbn') as string || '',
+      isbn: formData.get('isbn') as string || null,
       publicationDate: formData.get('publicationDate') as string || '',
       price: formData.get('price') as string || '',
       thumbnailPage: parseInt(formData.get('thumbnailPage') as string) || 1,
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
         authorId: author.id,
         authorName: bookData.authorName,
         price: bookData.price ? parseFloat(bookData.price) : null,
-        isbn: bookData.isbn,
+        isbn: bookData.isbn || null,
         publishedDate: bookData.publicationDate ? new Date(bookData.publicationDate) : null,
         fullPdf: `/books/${bookId}/main.pdf`,
         coverImage: frontCover ? `/books/${bookId}/cover.pdf` : null,
