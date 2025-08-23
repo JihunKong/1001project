@@ -1,5 +1,3 @@
-'use client';
-
 export interface BookFiles {
   main: string | null;
   frontCover: string | null;
@@ -82,10 +80,13 @@ export function resolveBookFiles(
 }
 
 /**
- * Get all available book folders (not available client-side)
+ * Get all available book folders (server-side only, returns empty array on client)
  */
 export function getAvailableBooks(config: Partial<BookFileConfig> = {}): string[] {
-  console.warn('getAvailableBooks can only be called on server side');
+  // Return empty array on client-side, actual implementation needed on server-side
+  if (typeof window !== 'undefined') {
+    return [];
+  }
   return [];
 }
 
