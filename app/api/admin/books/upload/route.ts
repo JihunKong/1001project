@@ -8,6 +8,10 @@ import prisma from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { normalizeBookFolderName } from '@/lib/book-files';
 
+// Configure the API to handle large files (100MB)
+export const maxDuration = 300; // 5 minutes
+export const runtime = 'nodejs';
+
 interface BookUploadData {
   title: string;
   authorName: string;
@@ -51,9 +55,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file sizes
-    if (mainPdf.size > 50 * 1024 * 1024) { // 50MB
+    if (mainPdf.size > 100 * 1024 * 1024) { // 100MB
       return NextResponse.json(
-        { error: 'Main PDF file size cannot exceed 50MB' },
+        { error: 'Main PDF file size cannot exceed 100MB' },
         { status: 400 }
       );
     }

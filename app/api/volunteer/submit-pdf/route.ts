@@ -7,6 +7,10 @@ import { randomBytes } from 'crypto'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 
+// Configure the API to handle large files (100MB)
+export const maxDuration = 300; // 5 minutes
+export const runtime = 'nodejs';
+
 /**
  * POST /api/volunteer/submit-pdf
  * 
@@ -54,11 +58,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file size (max 50MB)
-    const maxSize = 50 * 1024 * 1024 // 50MB
+    // Validate file size (max 100MB)
+    const maxSize = 100 * 1024 * 1024 // 100MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'File size too large. Maximum 50MB allowed.' },
+        { error: 'File size too large. Maximum 100MB allowed.' },
         { status: 400 }
       )
     }
