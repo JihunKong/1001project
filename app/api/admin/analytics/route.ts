@@ -111,9 +111,9 @@ export async function GET(request: NextRequest) {
       categoryDistribution: categoryDistribution,
       revenue: {
         monthly: revenueAnalytics._sum.total || 0,
-        orderCount: revenueAnalytics._count || 0,
-        averageOrderValue: revenueAnalytics._count > 0 
-          ? Number(revenueAnalytics._sum.total) / revenueAnalytics._count 
+        orderCount: revenueAnalytics._count.id || 0,
+        averageOrderValue: revenueAnalytics._count.id > 0 
+          ? Number(revenueAnalytics._sum.total) / revenueAnalytics._count.id 
           : 0
       }
     };
