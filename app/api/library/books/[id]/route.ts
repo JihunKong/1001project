@@ -17,11 +17,19 @@ export async function GET(
     const bookId = id
     const session = await getServerSession(authOptions)
     
-    // Get book with related data
-    const book = await prisma.book.findFirst({
+    // Get story with related data (books are managed as Story records)
+    const book = await prisma.story.findFirst({
       where: {
         id: bookId,
         isPublished: true
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
       }
     })
     
@@ -81,14 +89,13 @@ export async function GET(
     // Prepare PDF access based on access level
     // For books, content is in PDF format, not text
     let fullPdfAccess = accessLevel === 'full'
-    let previewPagesCount = book.previewPages || 3
+    let previewPagesCount = 3 // Default preview pages
     
     // Update view count
-    await prisma.book.update({
+    await prisma.story.update({
       where: { id: bookId },
       data: { 
-        viewCount: { increment: 1 },
-        updatedAt: new Date()
+        viewCount: { increment: 1 }
       }
     })
     
@@ -110,13 +117,13 @@ export async function GET(
     }
     
     // Get related books (same category/author)
-    const relatedBooks = await prisma.book.findMany({
+    const relatedBooks = await prisma.story.findMany({
       where: {
         id: { not: bookId },
         isPublished: true,
+        fullPdf: { not: null }, // Only books with PDF files
         OR: [
           { authorName: book.authorName },
-          { authorAlias: book.authorAlias },
           { category: { hasSome: book.category } }
         ]
       },
@@ -124,7 +131,6 @@ export async function GET(
         id: true,
         title: true,
         authorName: true,
-        authorAlias: true,
         coverImage: true,
         isPremium: true,
         rating: true,
@@ -141,23 +147,23 @@ export async function GET(
       subtitle: book.subtitle,
       summary: book.summary,
       author: {
-        id: book.id,
-        name: book.authorAlias || book.authorName,
+        id: book.author.id,
+        name: book.authorName,
         age: book.authorAge,
         location: book.authorLocation
       },
-      publishedDate: book.publishedAt,
+      publishedDate: book.publishedDate,
       language: book.language,
       pageCount: book.pageCount,
-      readingLevel: book.ageRange,
-      readingTime: Math.ceil((book.pageCount || 20) / 2),
+      readingLevel: book.readingLevel,
+      readingTime: book.readingTime || Math.ceil((book.pageCount || 20) / 2),
       category: book.category,
       genres: book.genres,
       subjects: book.subjects,
       tags: book.tags,
       coverImage: book.coverImage,
-      samplePdf: book.pdfKey,
-      fullPdf: accessLevel === 'full' ? book.pdfKey : null,
+      samplePdf: book.samplePdf || book.fullPdf,
+      fullPdf: accessLevel === 'full' ? book.fullPdf : null,
       isPremium: book.isPremium,
       featured: book.featured,
       price: book.price,
@@ -178,7 +184,7 @@ export async function GET(
       relatedStories: relatedBooks.map(relatedBook => ({
         id: relatedBook.id,
         title: relatedBook.title,
-        authorName: relatedBook.authorAlias || relatedBook.authorName,
+        authorName: relatedBook.authorName,
         coverImage: relatedBook.coverImage,
         isPremium: relatedBook.isPremium,
         rating: relatedBook.rating,
@@ -186,8 +192,8 @@ export async function GET(
       })),
       // Additional fields for PDF handling
       bookId: book.id,
-      pdfKey: book.pdfKey,
-      previewPages: book.previewPages || 3
+      fullPdfUrl: book.fullPdf,
+      samplePdfUrl: book.samplePdf
     }
     
     return NextResponse.json(response)
