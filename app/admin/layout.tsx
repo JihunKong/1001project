@@ -76,7 +76,8 @@ export default function AdminLayout({
 }) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar
+  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true); // Desktop sidebar
   const [expandedItems, setExpandedItems] = useState<string[]>(['Stories']);
 
   // Loading state
@@ -120,8 +121,10 @@ export default function AdminLayout({
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:fixed lg:inset-y-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:fixed lg:inset-y-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } ${
+          desktopSidebarOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'
         }`}
       >
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
@@ -214,8 +217,10 @@ export default function AdminLayout({
       </div>
 
       {/* Main content */}
-      <div className="lg:ml-64 flex flex-col min-h-screen">
-        {/* Top bar */}
+      <div className={`flex flex-col min-h-screen transition-all duration-300 ease-in-out ${
+        desktopSidebarOpen ? 'lg:ml-64' : 'lg:ml-0'
+      }`}>
+        {/* Top bar - Mobile */}
         <div className="bg-white shadow-sm border-b border-gray-200 lg:hidden">
           <div className="flex items-center justify-between px-4 py-3">
             <button
@@ -233,6 +238,24 @@ export default function AdminLayout({
             <button className="p-2 hover:bg-gray-100 rounded-lg">
               <Bell className="w-5 h-5 text-gray-600" />
             </button>
+          </div>
+        </div>
+
+        {/* Top bar - Desktop */}
+        <div className="hidden lg:flex bg-white shadow-sm border-b border-gray-200 px-6 py-3">
+          <div className="flex items-center justify-between w-full">
+            <button
+              onClick={() => setDesktopSidebarOpen(!desktopSidebarOpen)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              title={desktopSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            >
+              <Menu className="w-5 h-5 text-gray-600" />
+            </button>
+            <div className="flex items-center gap-4">
+              <button className="p-2 hover:bg-gray-100 rounded-lg">
+                <Bell className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
           </div>
         </div>
 
