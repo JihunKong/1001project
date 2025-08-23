@@ -41,68 +41,77 @@ export async function GET(request: NextRequest) {
       })
     }
     
-    // Build where clause for books
-    const bookWhereClause: any = {
-      isPublished: true
+    // Build where clause for stories (books are managed as Story records)
+    const whereClause: any = {
+      isPublished: true,
+      fullPdf: { not: null } // Only show books with PDF files
     }
     
     // Apply filters
     if (category && category !== 'all') {
-      bookWhereClause.category = {
+      whereClause.category = {
         has: category
       }
     }
     
     if (language && language !== 'all') {
-      bookWhereClause.language = language
+      whereClause.language = language
     }
     
     if (ageGroup && ageGroup !== 'all') {
-      bookWhereClause.ageRange = ageGroup
+      // Note: Story model uses readingLevel, not ageRange
+      whereClause.readingLevel = ageGroup
     }
     
     if (search) {
-      bookWhereClause.OR = [
+      whereClause.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { subtitle: { contains: search, mode: 'insensitive' } },
         { authorName: { contains: search, mode: 'insensitive' } },
-        { authorAlias: { contains: search, mode: 'insensitive' } },
         { summary: { contains: search, mode: 'insensitive' } },
         { tags: { has: search } }
       ]
     }
     
     if (featured === 'true') {
-      bookWhereClause.featured = true
+      whereClause.featured = true
     }
     
     if (premium === 'true') {
-      bookWhereClause.isPremium = true
+      whereClause.isPremium = true
     } else if (premium === 'false') {
-      bookWhereClause.isPremium = false
+      whereClause.isPremium = false
     }
     
-    // Query books
-    const [books, totalCount] = await Promise.all([
-      prisma.book.findMany({
-        where: bookWhereClause,
+    // Query stories (books are managed as Story records)
+    const [stories, totalCount] = await Promise.all([
+      prisma.story.findMany({
+        where: whereClause,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        },
         orderBy: [
           { featured: 'desc' },
-          { publishedAt: 'desc' },
+          { publishedDate: 'desc' },
           { createdAt: 'desc' }
         ],
         skip,
         take: limit
       }),
-      prisma.book.count({ where: bookWhereClause })
+      prisma.story.count({ where: whereClause })
     ])
     
-    // Transform books for response
-    const transformedBooks = books.map(book => {
+    // Transform stories to books for response
+    const transformedBooks = stories.map(story => {
       // Determine access level
       let accessLevel = 'preview'
       
-      if (!book.isPremium) {
+      if (!story.isPremium) {
         accessLevel = 'full'
       } else if (userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE') {
         accessLevel = 'full'
@@ -114,45 +123,47 @@ export async function GET(request: NextRequest) {
       // This will be fetched separately for each book when needed
       
       return {
-        id: book.id,
-        title: book.title,
-        subtitle: book.subtitle,
-        summary: book.summary,
+        id: story.id,
+        title: story.title,
+        subtitle: story.subtitle,
+        summary: story.summary,
         author: {
-          id: book.id, // Using book id as author id for now
-          name: book.authorAlias || book.authorName,
-          age: book.authorAge,
-          location: book.authorLocation
+          id: story.author.id,
+          name: story.authorName,
+          age: story.authorAge,
+          location: story.authorLocation
         },
-        publishedDate: book.publishedAt,
-        language: book.language,
-        ageRange: book.ageRange,
-        pageCount: book.pageCount,
-        readingTime: Math.ceil((book.pageCount || 20) / 2), // Estimate 2 pages per minute
-        category: book.category,
-        genres: book.genres,
-        subjects: book.subjects,
-        tags: book.tags,
-        coverImage: book.coverImage,
-        samplePdf: book.pdfKey, // Same PDF, access control handled by viewer
-        fullPdf: accessLevel === 'full' ? book.pdfKey : null,
-        isPremium: book.isPremium,
-        isFeatured: book.featured,
-        price: book.price,
-        rating: book.rating,
+        publishedDate: story.publishedDate,
+        language: story.language,
+        ageRange: story.readingLevel, // Story uses readingLevel instead of ageRange
+        pageCount: story.pageCount,
+        readingTime: story.readingTime || Math.ceil((story.pageCount || 20) / 2), // Use story readingTime or estimate
+        category: story.category,
+        genres: story.genres,
+        subjects: story.subjects,
+        tags: story.tags,
+        coverImage: story.coverImage,
+        samplePdf: story.samplePdf || story.fullPdf, // Use sample or full PDF for preview
+        fullPdf: accessLevel === 'full' ? story.fullPdf : null,
+        isPremium: story.isPremium,
+        isFeatured: story.featured,
+        price: story.price,
+        rating: story.rating,
         accessLevel,
         stats: {
-          readers: 0, // TODO: Count from ReadingProgress where storyId = book.id
-          bookmarks: 0, // TODO: Count from Bookmark where storyId = book.id
-          reviews: 0 // Placeholder
+          readers: 0, // TODO: Count from ReadingProgress where storyId = story.id
+          bookmarks: 0, // TODO: Count from Bookmark where storyId = story.id
+          reviews: 0, // Placeholder
+          views: story.viewCount,
+          likes: story.likeCount
         },
-        // Additional fields for PDF handling
-        bookId: book.id,
-        pdfKey: book.pdfKey,
-        pdfFrontCover: book.pdfFrontCover,
-        pdfBackCover: book.pdfBackCover,
-        pageLayout: book.pageLayout,
-        previewPages: book.previewPages || 3
+        // Additional fields for compatibility
+        bookId: story.id,
+        storyId: story.id,
+        fullPdfUrl: story.fullPdf,
+        samplePdfUrl: story.samplePdf,
+        viewCount: story.viewCount,
+        likeCount: story.likeCount
       }
     })
     

@@ -9,47 +9,45 @@ import {
   Search,
   Eye,
   EyeOff,
-  BookOpen,
+  ShoppingCart,
   CheckCircle,
   AlertCircle,
   Edit,
   Filter,
-  Download,
   Plus,
   Trash2,
+  Package,
+  DollarSign,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-interface Book {
+interface Product {
   id: string;
   title: string;
-  authorName: string;
-  language: string;
-  isPublished: boolean;
-  fullPdf?: string | null;
-  coverImage?: string | null;
+  description?: string;
+  price: number;
+  currency: string;
+  type: 'PHYSICAL_BOOK' | 'DIGITAL_BOOK' | 'MERCHANDISE' | 'ARTWORK' | 'DONATION_ITEM';
+  status: 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
+  featured: boolean;
   createdAt: string;
-  publishedDate?: string | null;
-  price?: number | null;
-  isPremium: boolean;
-  viewCount: number;
-  likeCount: number;
-  author: {
+  updatedAt: string;
+  variants?: {
     id: string;
-    name: string;
-    email: string;
-  };
-  visibility: {
-    hasFullPdf: boolean;
-    isPublished: boolean;
-    inLibrary: boolean;
-    inAdminBooks: boolean;
-  };
+    title: string;
+    price: number;
+    sku: string;
+  }[];
+  images?: {
+    id: string;
+    url: string;
+    alt?: string;
+  }[];
 }
 
 interface ApiResponse {
-  books: Book[];
+  products: Product[];
   pagination: {
     page: number;
     limit: number;
@@ -60,12 +58,13 @@ interface ApiResponse {
   };
 }
 
-export default function AdminBooksPage() {
+export default function AdminShopPage() {
   const { data: session, status } = useSession();
-  const [books, setBooks] = useState<Book[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [publishedFilter, setPublishedFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -76,74 +75,68 @@ export default function AdminBooksPage() {
     hasPreviousPage: false,
   });
 
-  const fetchBooks = useCallback(async (page = 1) => {
+  const fetchProducts = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '20',
         search,
-        published: publishedFilter,
+        status: statusFilter,
+        type: typeFilter,
       });
 
-      const response = await fetch(`/api/admin/books?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch books');
+      const response = await fetch(`/api/admin/shop/products?${params}`);
+      if (!response.ok) {
+        // If API doesn't exist yet, show empty state
+        setProducts([]);
+        setPagination({
+          page: 1,
+          limit: 20,
+          totalCount: 0,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        });
+        return;
+      }
 
       const data: ApiResponse = await response.json();
-      setBooks(data.books);
+      setProducts(data.products);
       setPagination(data.pagination);
       setCurrentPage(page);
     } catch (error) {
-      console.error('Error fetching books:', error);
+      console.error('Error fetching products:', error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
-  }, [search, publishedFilter]);
+  }, [search, statusFilter, typeFilter]);
 
-  const togglePublished = async (bookId: string, currentStatus: boolean) => {
+  const toggleStatus = async (productId: string, currentStatus: string) => {
     try {
-      const response = await fetch(`/api/admin/books?id=${bookId}`, {
+      const newStatus = currentStatus === 'ACTIVE' ? 'DRAFT' : 'ACTIVE';
+      const response = await fetch(`/api/admin/shop/products/${productId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ isPublished: !currentStatus }),
+        body: JSON.stringify({ status: newStatus }),
       });
 
-      if (!response.ok) throw new Error('Failed to update book');
+      if (!response.ok) throw new Error('Failed to update product');
       
       // Refresh the list
-      await fetchBooks(currentPage);
+      await fetchProducts(currentPage);
     } catch (error) {
-      console.error('Error updating book:', error);
-      alert('Failed to update book status');
-    }
-  };
-
-  const deleteBook = async (bookId: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/admin/books?id=${bookId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) throw new Error('Failed to delete book');
-      
-      // Refresh the list
-      await fetchBooks(currentPage);
-      alert('Book deleted successfully');
-    } catch (error) {
-      console.error('Error deleting book:', error);
-      alert('Failed to delete book');
+      console.error('Error updating product:', error);
+      alert('Failed to update product status');
     }
   };
 
   useEffect(() => {
-    fetchBooks(1);
-  }, [fetchBooks]);
+    fetchProducts(1);
+  }, [fetchProducts]);
 
   // Redirect if not admin
   if (status === 'loading') {
@@ -154,35 +147,47 @@ export default function AdminBooksPage() {
     redirect('/');
   }
 
-  const getVisibilityBadge = (visibility: Book['visibility']) => {
-    if (visibility.inLibrary) {
-      return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-          <CheckCircle className="w-3 h-3" />
-          Visible in Library
-        </span>
-      );
-    } else if (visibility.isPublished && !visibility.hasFullPdf) {
-      return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
-          <AlertCircle className="w-3 h-3" />
-          Published but no PDF
-        </span>
-      );
-    } else if (!visibility.isPublished && visibility.hasFullPdf) {
-      return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-          <EyeOff className="w-3 h-3" />
-          Has PDF but unpublished
-        </span>
-      );
-    } else {
-      return (
-        <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-          <AlertCircle className="w-3 h-3" />
-          Not visible (unpublished, no PDF)
-        </span>
-      );
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+            <CheckCircle className="w-3 h-3" />
+            Active
+          </span>
+        );
+      case 'DRAFT':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+            <EyeOff className="w-3 h-3" />
+            Draft
+          </span>
+        );
+      case 'ARCHIVED':
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+            <AlertCircle className="w-3 h-3" />
+            Archived
+          </span>
+        );
+      default:
+        return status;
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'PHYSICAL_BOOK':
+      case 'DIGITAL_BOOK':
+        return '📚';
+      case 'MERCHANDISE':
+        return '👕';
+      case 'ARTWORK':
+        return '🎨';
+      case 'DONATION_ITEM':
+        return '💝';
+      default:
+        return '📦';
     }
   };
 
@@ -200,16 +205,16 @@ export default function AdminBooksPage() {
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </Link>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">All Books</h1>
-                <p className="text-sm text-gray-600">Manage all books in the system</p>
+                <h1 className="text-xl font-semibold text-gray-900">Shop Management</h1>
+                <p className="text-sm text-gray-600">Manage products and merchandise</p>
               </div>
             </div>
             <Link
-              href="/admin/stories/new"
+              href="/admin/shop/products/new"
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Upload New Book
+              Add Product
             </Link>
           </div>
         </div>
@@ -218,44 +223,67 @@ export default function AdminBooksPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search books..."
+                placeholder="Search products..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <select
-              value={publishedFilter}
-              onChange={(e) => setPublishedFilter(e.target.value)}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">All Books</option>
-              <option value="true">Published Only</option>
-              <option value="false">Unpublished Only</option>
+              <option value="">All Status</option>
+              <option value="ACTIVE">Active</option>
+              <option value="DRAFT">Draft</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="">All Types</option>
+              <option value="PHYSICAL_BOOK">Physical Books</option>
+              <option value="DIGITAL_BOOK">Digital Books</option>
+              <option value="MERCHANDISE">Merchandise</option>
+              <option value="ARTWORK">Artwork</option>
+              <option value="DONATION_ITEM">Donation Items</option>
             </select>
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Filter className="w-4 h-4" />
-              {pagination.totalCount} total books
+              {pagination.totalCount} total products
             </div>
           </div>
         </div>
 
-        {/* Books Table */}
+        {/* Products Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {loading ? (
             <div className="p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-gray-600 mt-2">Loading books...</p>
+              <p className="text-gray-600 mt-2">Loading products...</p>
             </div>
-          ) : books.length === 0 ? (
+          ) : products.length === 0 ? (
             <div className="p-8 text-center">
-              <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No books found</p>
+              <ShoppingCart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 mb-4">No products found</p>
+              <p className="text-sm text-gray-500 mb-6">
+                Start by adding your first product to the shop.
+              </p>
+              <Link
+                href="/admin/shop/products/new"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Add First Product
+              </Link>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -263,19 +291,19 @@ export default function AdminBooksPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Book
+                      Product
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Author
+                      Type
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Price
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Visibility
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Stats
+                      Featured
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
@@ -283,94 +311,78 @@ export default function AdminBooksPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {books.map((book) => (
-                    <tr key={book.id} className="hover:bg-gray-50">
+                  {products.map((product) => (
+                    <tr key={product.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
-                            {book.coverImage ? (
+                            {product.images?.[0]?.url ? (
                               <Image
                                 className="h-10 w-10 rounded-lg object-cover"
-                                src={book.coverImage}
-                                alt={book.title}
+                                src={product.images[0].url}
+                                alt={product.title}
                                 width={40}
                                 height={40}
                               />
                             ) : (
                               <div className="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                                <BookOpen className="w-5 h-5 text-gray-500" />
+                                <Package className="w-5 h-5 text-gray-500" />
                               </div>
                             )}
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {book.title}
+                              {product.title}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {book.language.toUpperCase()} • {book.isPremium && '$' + book.price}
+                              {product.description?.slice(0, 60)}...
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{book.authorName}</div>
-                        <div className="text-sm text-gray-500">{book.author.email}</div>
+                        <span className="flex items-center gap-2 text-sm text-gray-900">
+                          <span>{getTypeIcon(product.type)}</span>
+                          {product.type.replace('_', ' ')}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
+                          <DollarSign className="w-4 h-4" />
+                          {product.price.toFixed(2)} {product.currency}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
-                          onClick={() => togglePublished(book.id, book.isPublished)}
-                          className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full transition-colors ${
-                            book.isPublished
-                              ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                          }`}
+                          onClick={() => toggleStatus(product.id, product.status)}
+                          className="hover:scale-105 transition-transform"
                         >
-                          {book.isPublished ? (
-                            <Eye className="w-3 h-3" />
-                          ) : (
-                            <EyeOff className="w-3 h-3" />
-                          )}
-                          {book.isPublished ? 'Published' : 'Draft'}
+                          {getStatusBadge(product.status)}
                         </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {getVisibilityBadge(book.visibility)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center gap-4">
-                          <span className="flex items-center gap-1">
-                            <Eye className="w-3 h-3" />
-                            {book.viewCount}
+                        {product.featured && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
+                            ⭐ Featured
                           </span>
-                          <span className="flex items-center gap-1">
-                            ❤️ {book.likeCount}
-                          </span>
-                        </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center gap-2">
-                          {book.fullPdf && (
-                            <a
-                              href={book.fullPdf}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-900"
-                              title="Download PDF"
-                            >
-                              <Download className="w-4 h-4" />
-                            </a>
-                          )}
                           <Link
-                            href={`/admin/stories/${book.id}`}
-                            className="text-gray-600 hover:text-gray-900"
-                            title="Edit book"
+                            href={`/admin/shop/products/${product.id}/edit`}
+                            className="text-blue-600 hover:text-blue-900"
                           >
                             <Edit className="w-4 h-4" />
                           </Link>
                           <button 
-                            onClick={() => deleteBook(book.id, book.title)}
                             className="text-red-600 hover:text-red-900"
-                            title="Delete book"
+                            onClick={() => {
+                              if (confirm('Are you sure you want to delete this product?')) {
+                                // TODO: Implement delete
+                                console.log('Delete product:', product.id);
+                              }
+                            }}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -390,11 +402,11 @@ export default function AdminBooksPage() {
             <div className="text-sm text-gray-600">
               Showing {((currentPage - 1) * pagination.limit) + 1} to{' '}
               {Math.min(currentPage * pagination.limit, pagination.totalCount)} of{' '}
-              {pagination.totalCount} books
+              {pagination.totalCount} products
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => fetchBooks(currentPage - 1)}
+                onClick={() => fetchProducts(currentPage - 1)}
                 disabled={!pagination.hasPreviousPage}
                 className="px-3 py-1 text-sm border rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -404,7 +416,7 @@ export default function AdminBooksPage() {
                 {currentPage} / {pagination.totalPages}
               </span>
               <button
-                onClick={() => fetchBooks(currentPage + 1)}
+                onClick={() => fetchProducts(currentPage + 1)}
                 disabled={!pagination.hasNextPage}
                 className="px-3 py-1 text-sm border rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
