@@ -304,4 +304,5 @@ if (require.main === module) {
   main();
 }
 
-export { BookMetadata, generateBookMetadata, normalizeBookFolderName };
+export type { BookMetadata };
+export { generateBookMetadata, normalizeBookFolderName };

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, ContentType } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -216,12 +216,11 @@ async function main() {
           await prisma.review.create({
             data: {
               userId: user.id,
-              bookId: book.id,
-              storyId: book.id,
+              contentType: ContentType.BOOK,
+              contentId: book.id,
               rating: reviewData.rating,
               title: reviewData.title,
               comment: reviewData.comment,
-              isPublished: true,
               createdAt: new Date(Date.now() - Math.random() * 21 * 24 * 60 * 60 * 1000), // Within last 3 weeks
             },
           });
@@ -233,7 +232,7 @@ async function main() {
     console.log('🔄 Updating book ratings...');
     for (const book of createdBooks) {
       const reviews = await prisma.review.findMany({
-        where: { bookId: book.id },
+        where: { contentId: book.id, contentType: ContentType.BOOK },
         select: { rating: true },
       });
 

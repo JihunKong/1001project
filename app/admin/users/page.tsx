@@ -21,6 +21,8 @@ import {
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { UserRole } from '@prisma/client';
+import UserFormModal from '@/components/admin/UserFormModal';
+import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal';
 
 interface User {
   id: string;
@@ -73,6 +75,13 @@ export default function UsersPage() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(20);
+  
+  // Modal states
+  const [isUserFormModalOpen, setIsUserFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [usersToDelete, setUsersToDelete] = useState<User[]>([]);
+  const [isOperationLoading, setIsOperationLoading] = useState(false);
 
   // Redirect if not admin
   if (status === 'loading') {
@@ -107,6 +116,116 @@ export default function UsersPage() {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // CRUD Operations
+  const handleCreateUser = async (userData: any) => {
+    setIsOperationLoading(true);
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        await fetchUsers();
+        setIsUserFormModalOpen(false);
+        setEditingUser(null);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create user');
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+      alert('Failed to create user. Please try again.');
+    } finally {
+      setIsOperationLoading(false);
+    }
+  };
+
+  const handleUpdateUser = async (userData: any) => {
+    if (!editingUser) return;
+    
+    setIsOperationLoading(true);
+    try {
+      const response = await fetch(`/api/admin/users/${editingUser.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        await fetchUsers();
+        setIsUserFormModalOpen(false);
+        setEditingUser(null);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update user');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+      alert('Failed to update user. Please try again.');
+    } finally {
+      setIsOperationLoading(false);
+    }
+  };
+
+  const handleDeleteUsers = async () => {
+    if (usersToDelete.length === 0) return;
+
+    setIsOperationLoading(true);
+    try {
+      const deletePromises = usersToDelete.map(user =>
+        fetch(`/api/admin/users/${user.id}`, {
+          method: 'DELETE',
+        })
+      );
+
+      const results = await Promise.all(deletePromises);
+      const failed = results.filter(response => !response.ok);
+
+      if (failed.length > 0) {
+        throw new Error(`Failed to delete ${failed.length} user(s)`);
+      }
+
+      await fetchUsers();
+      setIsDeleteModalOpen(false);
+      setUsersToDelete([]);
+      setSelectedUsers([]);
+    } catch (error) {
+      console.error('Error deleting users:', error);
+      alert('Failed to delete user(s). Please try again.');
+    } finally {
+      setIsOperationLoading(false);
+    }
+  };
+
+  // Modal handlers
+  const openCreateModal = () => {
+    setEditingUser(null);
+    setIsUserFormModalOpen(true);
+  };
+
+  const openEditModal = (user: User) => {
+    setEditingUser(user);
+    setIsUserFormModalOpen(true);
+  };
+
+  const openDeleteModal = (users: User[]) => {
+    setUsersToDelete(users);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeModals = () => {
+    setIsUserFormModalOpen(false);
+    setIsDeleteModalOpen(false);
+    setEditingUser(null);
+    setUsersToDelete([]);
+  };
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -160,7 +279,10 @@ export default function UsersPage() {
                 <Download className="w-4 h-4" />
                 Export
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <button 
+                onClick={openCreateModal}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 <UserPlus className="w-4 h-4" />
                 Add User
               </button>
@@ -237,7 +359,13 @@ export default function UsersPage() {
               </div>
               {selectedUsers.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <button className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded">
+                  <button 
+                    onClick={() => {
+                      const usersToDelete = paginatedUsers.filter(user => selectedUsers.includes(user.id));
+                      openDeleteModal(usersToDelete);
+                    }}
+                    className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
+                  >
                     Delete Selected
                   </button>
                 </div>
@@ -318,13 +446,24 @@ export default function UsersPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex items-center justify-end gap-2">
-                            <button className="text-blue-600 hover:text-blue-900">
+                            <button 
+                              className="text-blue-600 hover:text-blue-900"
+                              title="View Details"
+                            >
                               <Eye className="w-4 h-4" />
                             </button>
-                            <button className="text-gray-600 hover:text-gray-900">
+                            <button 
+                              onClick={() => openEditModal(user)}
+                              className="text-gray-600 hover:text-gray-900"
+                              title="Edit User"
+                            >
                               <Edit className="w-4 h-4" />
                             </button>
-                            <button className="text-red-600 hover:text-red-900">
+                            <button 
+                              onClick={() => openDeleteModal([user])}
+                              className="text-red-600 hover:text-red-900"
+                              title="Delete User"
+                            >
                               <Trash2 className="w-4 h-4" />
                             </button>
                             <button className="text-gray-600 hover:text-gray-900">
@@ -371,6 +510,23 @@ export default function UsersPage() {
           )}
         </div>
       </div>
+
+      {/* Modals */}
+      <UserFormModal
+        isOpen={isUserFormModalOpen}
+        onClose={closeModals}
+        onSubmit={editingUser ? handleUpdateUser : handleCreateUser}
+        user={editingUser}
+        isLoading={isOperationLoading}
+      />
+
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeModals}
+        onConfirm={handleDeleteUsers}
+        users={usersToDelete}
+        isLoading={isOperationLoading}
+      />
     </div>
   );
 }
