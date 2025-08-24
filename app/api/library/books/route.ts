@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
         fullPdf: accessLevel === 'full' ? `/api/pdf/books/${story.id}/main.pdf` : `/api/pdf/books/${story.id}/main.pdf`,
         isPremium: story.isPremium,
         isFeatured: story.featured,
-        price: story.price,
+        price: story.price ? story.price.toNumber() : 0,
         rating: story.rating,
         accessLevel,
         stats: {

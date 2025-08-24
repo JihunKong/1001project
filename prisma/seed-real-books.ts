@@ -50,8 +50,11 @@ async function main() {
         const frontCoverUrl = bookData.frontCoverFile ? `/api/pdf/books/${bookData.id}/front.pdf` : null;
         const backCoverUrl = bookData.backCoverFile ? `/api/pdf/books/${bookData.id}/back.pdf` : null;
         
-        // Generate cover image path using existing structure
-        const coverImageUrl = `/books/${bookData.id}/cover.png`;
+        // Generate cover image path - use placeholder for missing files
+        const existingBooks = ['neema-01', 'neema-02', 'neema-03', 'second-chance', 'angel-prayer', 'martha-01'];
+        const coverImageUrl = existingBooks.includes(bookData.id) 
+          ? `/books/${bookData.id}/cover.png` 
+          : '/images/placeholder-book.jpg';
 
         return prisma.story.create({
           data: {
@@ -114,6 +117,7 @@ async function main() {
             tags: book.tags,
             featured: !book.isPremium,
             thumbnailUrl: book.coverImage,
+            images: [book.coverImage || '/images/placeholder-book.jpg'],
             creatorName: book.authorName,
             creatorAge: book.authorAge,
             creatorLocation: book.authorLocation,
