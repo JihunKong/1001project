@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import { 
   BookOpen, 
   Search, 
@@ -75,7 +75,15 @@ interface BooksResponse {
 }
 
 export default function Library() {
-  const { t } = useTranslation('common');
+  // const { t } = useTranslation('common');
+  const t = (key: string) => {
+    const translations: Record<string, string> = {
+      'library.title': 'Digital Library',
+      'library.subtitle': 'Explore stories from children around the world',
+      'library.search': 'Search stories...'
+    };
+    return translations[key] || key;
+  };
   const { data: session } = useSession();
   const { subscription } = useSubscription();
   
