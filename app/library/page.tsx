@@ -448,68 +448,68 @@ export default function Library() {
               {error === 'NO_PURCHASED_BOOKS' ? (
                 <>
                   <BookOpen className="w-16 h-16 text-blue-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">구매한 책이 없습니다</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No Books Available</h3>
                   <p className="text-gray-600 mb-6">
-                    아직 구매하신 책이 없어요. 다양한 책들을 둘러보고 마음에 드는 책을 찾아보세요!
+                    You don't have any books in your library yet. Browse our collection and discover amazing stories!
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link 
                       href="/shop"
                       className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
-                      📚 책 둘러보기
+                      📚 Browse Books
                     </Link>
                     <Link 
                       href="/demo/library"
                       className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
                     >
-                      🎭 체험용 계정으로 미리보기
+                      🎭 Try Demo
                     </Link>
                   </div>
                   <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
                     <div className="flex items-center gap-2 text-yellow-800 mb-2">
                       <Crown className="w-5 h-5" />
-                      <span className="font-medium">무료 체험 가능!</span>
+                      <span className="font-medium">Free Preview Available!</span>
                     </div>
                     <p className="text-sm text-yellow-700">
-                      체험용 계정으로 몇 권의 샘플 책을 미리 읽어보실 수 있어요.
+                      Try our demo account to preview sample books before purchasing.
                     </p>
                   </div>
                 </>
               ) : error === 'AUTHENTICATION_REQUIRED' ? (
                 <>
                   <Users className="w-16 h-16 text-orange-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">로그인이 필요합니다</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Login Required</h3>
                   <p className="text-gray-600 mb-6">
-                    개인 라이브러리에 접근하려면 먼저 로그인해주세요.
+                    Please sign in to access your personal library.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link 
                       href="/login"
                       className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
-                      🔐 로그인하기
+                      🔐 Sign In
                     </Link>
                     <Link 
                       href="/demo/library"
                       className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
                     >
-                      🎭 체험용 계정으로 둘러보기
+                      🎭 Try Demo
                     </Link>
                   </div>
                 </>
               ) : (
                 <>
                   <BookOpen className="w-16 h-16 text-red-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">책을 불러오는 중 오류가 발생했습니다</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Books</h3>
                   <p className="text-gray-600 mb-4">
-                    일시적인 문제일 수 있어요. 잠시 후 다시 시도해주세요.
+                    There was a temporary issue loading the books. Please try again.
                   </p>
                   <button
                     onClick={() => fetchBooks()}
                     className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                   >
-                    🔄 다시 시도하기
+                    🔄 Try Again
                   </button>
                 </>
               )}

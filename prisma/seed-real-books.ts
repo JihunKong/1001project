@@ -1,42 +1,11 @@
 import { PrismaClient, ContentType } from '@prisma/client';
-import * as fs from 'fs';
-import * as path from 'path';
+import { booksData } from './books-data';
+import type { BookMetadata } from '../scripts/create-book-data';
 
 const prisma = new PrismaClient();
 
-interface BookData {
-  id: string;
-  title: string;
-  subtitle?: string;
-  summary: string;
-  authorName: string;
-  authorAlias: string;
-  authorAge?: number;
-  authorLocation: string;
-  language: string;
-  ageRange: string;
-  category: string[];
-  genres: string[];
-  subjects: string[];
-  tags: string[];
-  isPremium: boolean;
-  pageCount: number;
-  mainPdfFile: string;
-  frontCoverFile?: string;
-  backCoverFile?: string;
-  originalFolder: string;
-}
-
-// Load the generated book metadata
-const bookMetadataPath = path.join(__dirname, 'book-metadata.json');
-let booksData: BookData[] = [];
-
-if (fs.existsSync(bookMetadataPath)) {
-  booksData = JSON.parse(fs.readFileSync(bookMetadataPath, 'utf8'));
-} else {
-  console.error('Book metadata not found. Please run create-book-data.ts first.');
-  process.exit(1);
-}
+// Type alias for backwards compatibility
+type BookData = BookMetadata;
 
 async function main() {
   console.log('📚 Starting Real Books Seed Process...');
@@ -81,8 +50,8 @@ async function main() {
         const frontCoverUrl = bookData.frontCoverFile ? `/api/pdf/books/${bookData.id}/front.pdf` : null;
         const backCoverUrl = bookData.backCoverFile ? `/api/pdf/books/${bookData.id}/back.pdf` : null;
         
-        // Generate cover image path
-        const coverImageUrl = `/images/book-covers/${bookData.id}.jpg`;
+        // Generate cover image path using existing structure
+        const coverImageUrl = `/books/${bookData.id}/cover.png`;
 
         return prisma.story.create({
           data: {
@@ -252,6 +221,7 @@ async function main() {
     console.log(`  🆓 Free books: ${createdBooks.filter(b => !b.isPremium).length}`);
     console.log(`  💎 Premium books: ${createdBooks.filter(b => b.isPremium).length}`);
     console.log(`  🛍️ Shop products: ${shopProducts.length}`);
+    console.log(`  🌍 Languages: ${[...new Set(booksData.map(b => b.language))].join(', ')}`);
     console.log('');
     console.log('🎯 Free Preview Books (Demo):');
     createdBooks.filter(b => !b.isPremium).forEach(book => {

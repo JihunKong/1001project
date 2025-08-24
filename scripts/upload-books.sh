@@ -4,10 +4,10 @@
 # This script uploads all books from local folder to the server and organizes them
 
 # Configuration
-SERVER_IP="13.209.14.175"
+SERVER_IP="3.128.143.122"
 PEM_KEY="/Users/jihunkong/Downloads/1001project.pem"
 LOCAL_BOOKS_DIR="/Users/jihunkong/1001project/1001books"
-REMOTE_PUBLIC_DIR="/home/ubuntu/1001-stories/public/books"
+REMOTE_PUBLIC_DIR="/opt/1001-stories/public/books"
 REMOTE_USER="ubuntu"
 
 echo "🚀 Starting Book Upload Process..."
@@ -55,7 +55,7 @@ identify_back_pdf() {
 
 # Create remote directory structure
 echo "📁 Creating remote directory structure..."
-ssh -i "$PEM_KEY" "$REMOTE_USER@$SERVER_IP" "mkdir -p $REMOTE_PUBLIC_DIR"
+ssh -i "$PEM_KEY" "$REMOTE_USER@$SERVER_IP" "sudo mkdir -p $REMOTE_PUBLIC_DIR && sudo chown -R $REMOTE_USER:$REMOTE_USER $REMOTE_PUBLIC_DIR"
 
 # Counter for progress tracking
 counter=0

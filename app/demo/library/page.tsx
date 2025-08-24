@@ -45,7 +45,7 @@ const demoBooks: DemoBook[] = [
     authorAge: 12,
     authorLocation: 'Uganda',
     summary: 'A powerful story of hope and resilience following a young girl\'s journey through challenges and triumph.',
-    coverImage: '/images/book-covers/neema-01.jpg',
+    coverImage: '/books/neema-01/cover.png',
     pdfKey: '/api/pdf/books/neema-01/main.pdf',
     pageCount: 24,
     language: 'en',
@@ -62,7 +62,7 @@ const demoBooks: DemoBook[] = [
     authorAge: 12,
     authorLocation: 'Uganda',
     summary: 'A powerful story of hope and resilience following a young girl\'s journey through challenges and triumph.',
-    coverImage: '/images/book-covers/neema-02.jpg',
+    coverImage: '/books/neema-02/cover.png',
     pdfKey: '/api/pdf/books/neema-02/main.pdf',
     pageCount: 24,
     language: 'en',
@@ -79,7 +79,7 @@ const demoBooks: DemoBook[] = [
     authorAge: 12,
     authorLocation: 'Uganda',
     summary: 'A powerful story of hope and resilience following a young girl\'s journey through challenges and triumph.',
-    coverImage: '/images/book-covers/neema-03.jpg',
+    coverImage: '/books/neema-03/cover.png',
     pdfKey: '/api/pdf/books/neema-03/main.pdf',
     pageCount: 24,
     language: 'en',
@@ -113,7 +113,7 @@ export default function DemoLibrary() {
               <span>🎭 Demo Library</span>
             </div>
             <span>|</span>
-            <span>Experience the books you can actually purchase!</span>
+            <span>Experience real books from our collection!</span>
             <Link 
               href="/signup"
               className="ml-4 px-4 py-1 bg-black text-yellow-400 rounded-full text-xs font-semibold hover:bg-gray-800 transition-colors"

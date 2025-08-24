@@ -796,7 +796,7 @@ export default function BookDetailPage() {
                 {book.isPremium && book.price && (
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900">
-                      ${book.price.toFixed(2)}
+                      ${(book.price || 0).toFixed(2)}
                     </div>
                     <div className="text-sm text-gray-600">One-time purchase</div>
                   </div>
@@ -819,30 +819,39 @@ export default function BookDetailPage() {
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                       >
                         <Play className="w-5 h-5" />
-                        Preview ({book.previewPages || 10} pages)
+                        Preview ({book.previewPages || 5} pages)
                       </button>
                       {book.isPremium && (
-                        <button
-                          onClick={handlePurchase}
-                          disabled={isAddingToCart}
-                          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors font-medium ${
-                            isAddingToCart
-                              ? 'bg-green-600 text-white'
-                              : 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                          }`}
-                        >
-                          {isAddingToCart ? (
-                            <>
-                              <ShoppingCart className="w-5 h-5" />
-                              Added to Cart!
-                            </>
-                          ) : (
-                            <>
-                              <ShoppingCart className="w-5 h-5" />
-                              Add to Cart - ${book.price?.toFixed(2)}
-                            </>
-                          )}
-                        </button>
+                        <div className="space-y-2">
+                          <button
+                            onClick={handlePurchase}
+                            disabled={isAddingToCart}
+                            className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors font-medium ${
+                              isAddingToCart
+                                ? 'bg-green-600 text-white'
+                                : 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                            }`}
+                          >
+                            {isAddingToCart ? (
+                              <>
+                                <ShoppingCart className="w-5 h-5" />
+                                Added to Cart!
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingCart className="w-5 h-5" />
+                                Purchase - ${(book.price || 0).toFixed(2)}
+                              </>
+                            )}
+                          </button>
+                          <Link 
+                            href="/shop/subscription"
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium"
+                          >
+                            <Crown className="w-5 h-5" />
+                            Get Unlimited Access
+                          </Link>
+                        </div>
                       )}
                     </>
                   )}
