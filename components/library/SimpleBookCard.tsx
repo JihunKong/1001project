@@ -43,6 +43,8 @@ interface Book {
   pdfBackCover?: string;
   pageLayout?: string;
   bookId?: string;
+  fullPdf?: string;
+  samplePdf?: string;
 }
 
 interface SimpleBookCardProps {
@@ -54,7 +56,7 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
   const bookFiles = resolveBookFiles(book.id || book.bookId || '');
   
   // Use the correct cover.pdf files first
-  const pdfSource = bookFiles.frontCover || book.pdfFrontCover || book.pdfKey || bookFiles.main;
+  const pdfSource = bookFiles.frontCover || book.pdfFrontCover || book.pdfKey || book.fullPdf || book.samplePdf || bookFiles.main;
   
   // Debug log to check which source is being used
   if (process.env.NODE_ENV === 'development') {
