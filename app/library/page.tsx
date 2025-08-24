@@ -53,12 +53,14 @@ interface Book {
     bookmarks: number
   }
   // PDF-specific fields
-  bookId: string
+  bookId?: string
   pdfKey?: string
   pdfFrontCover?: string
   pdfBackCover?: string
   pageLayout?: string
   previewPages?: number
+  fullPdf?: string
+  samplePdf?: string
 }
 
 interface BooksResponse {
