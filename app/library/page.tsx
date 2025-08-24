@@ -58,7 +58,7 @@ interface Book {
   pdfFrontCover?: string
   pdfBackCover?: string
   pageLayout?: string
-  previewPages: number
+  previewPages?: number
 }
 
 interface BooksResponse {
@@ -144,7 +144,7 @@ export default function Library() {
       }
       
       const data: BooksResponse = await response.json();
-      setBooks(data.books);
+      setBooks(data.books || []);
       setPagination(data.pagination);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'FETCH_ERROR';

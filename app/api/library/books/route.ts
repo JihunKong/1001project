@@ -160,6 +160,10 @@ export async function GET(request: NextRequest) {
         // Additional fields for compatibility
         bookId: story.id,
         storyId: story.id,
+        pdfKey: story.fullPdf, // Add pdfKey for SimpleBookCard compatibility
+        pdfFrontCover: story.coverImage, // Add pdfFrontCover field
+        pdfBackCover: null, // Add pdfBackCover field (not available)
+        pageLayout: 'standard', // Add pageLayout field
         fullPdfUrl: story.fullPdf,
         samplePdfUrl: story.samplePdf,
         viewCount: story.viewCount,
