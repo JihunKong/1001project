@@ -545,7 +545,11 @@ export default function Library() {
               {viewMode === 'cards' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {books.map((book, index) => (
-                    <SimpleBookCard key={book.id} book={book} />
+                    <div key={book.id} className="p-4 border rounded">
+                      <h3>{book.title}</h3>
+                      <p>By {book.author?.name}</p>
+                      <p>Premium: {book.isPremium ? 'Yes' : 'No'}</p>
+                    </div>
                   ))}
                 </div>
               ) : (
