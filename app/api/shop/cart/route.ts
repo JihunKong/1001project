@@ -145,7 +145,7 @@ export async function GET(request: NextRequest) {
     
     const transformedItems = availableItems.map(item => {
       const price = item.variant?.price || item.product.price
-      const lineTotal = price.toNumber() * item.quantity
+      const lineTotal = Number(price.toNumber()) * item.quantity
       
       subtotal += lineTotal
       totalWeight += (item.product.weight || 0) * item.quantity
@@ -156,7 +156,7 @@ export async function GET(request: NextRequest) {
         productId: item.productId,
         variantId: item.variantId,
         quantity: item.quantity,
-        price: price.toNumber(),
+        price: Number(price.toNumber()),
         lineTotal: lineTotal,
         product: {
           id: item.product.id,

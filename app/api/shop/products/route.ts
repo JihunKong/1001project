@@ -158,7 +158,7 @@ export async function GET(request: NextRequest) {
         type: product.type.toLowerCase(),
         title: book?.title || product.title,
         description: book?.summary || product.description,
-        price: product.price ? product.price.toNumber() : 0,
+        price: product.price ? Number(product.price.toNumber()) : 0,
         compareAtPrice: product.compareAtPrice ? product.compareAtPrice.toNumber() : null,
         currency: product.currency,
         featured: product.featured,

@@ -5,8 +5,8 @@
 # ============================================
 
 # Configuration
-SERVER_IP="13.209.14.175"
-SERVER_USER="root"
+SERVER_IP="3.128.143.122"
+SERVER_USER="ubuntu"
 PEM_FILE="/Users/jihunkong/Downloads/1001project.pem"
 REPO_URL="https://github.com/JihunKong/1001project.git"
 DEPLOY_PATH="/opt/1001-stories"
