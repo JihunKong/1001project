@@ -68,8 +68,25 @@ deploy_to_server() {
             echo "Cloning repository..."
             git clone https://github.com/JihunKong/1001project.git .
         else
+            echo "Backing up uploaded files..."
+            if [ -d "public/books" ]; then
+                sudo cp -R public/books /tmp/books-backup-$(date +%s) || true
+                echo "✓ Books backup created"
+            fi
+            
             echo "Pulling latest changes..."
             git pull origin main
+            
+            echo "Restoring uploaded files..."
+            LATEST_BACKUP=$(ls -t /tmp/books-backup-* 2>/dev/null | head -n1)
+            if [ -n "$LATEST_BACKUP" ] && [ -d "$LATEST_BACKUP" ]; then
+                sudo mkdir -p public/books
+                sudo cp -R "$LATEST_BACKUP"/* public/books/ || true
+                sudo rm -rf "$LATEST_BACKUP"
+                sudo chown -R $USER:$USER public/books
+                sudo chmod -R 755 public/books
+                echo "✓ Books restored from backup"
+            fi
         fi
         
         # Check if .env file exists

@@ -27,6 +27,7 @@ services:
     volumes:
       - ./uploads:/app/uploads
       - ./prisma:/app/prisma
+      - ./public/books:/app/public/books
     networks:
       - app-network
     depends_on:
