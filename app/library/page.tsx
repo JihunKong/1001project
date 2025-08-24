@@ -180,8 +180,18 @@ export default function Library() {
   
   // Fetch books when page or filters change
   useEffect(() => {
+    console.log('useEffect triggered');
     fetchBooks();
-  }, [currentPage, searchTerm, selectedCategory, selectedLanguage, selectedAge]);
+  }, []); // Simplified to only run on mount
+
+  // Debug: log state changes
+  useEffect(() => {
+    console.log('Books state changed:', books.length);
+  }, [books]);
+
+  useEffect(() => {
+    console.log('Loading state changed:', loading);
+  }, [loading]);
   
   // Reset to first page when filters change (not page)
   useEffect(() => {
