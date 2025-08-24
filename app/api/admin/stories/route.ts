@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { UserRole, StorySubmissionStatus, Priority } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { z } from 'zod';
 import { adminApiLimiter } from '@/lib/rate-limiter';
 
@@ -11,11 +11,10 @@ const storyQuerySchema = z.object({
   page: z.string().optional().default('1'),
   limit: z.string().optional().default('10'),
   search: z.string().max(100).optional(), // Limit search length
-  status: z.nativeEnum(StorySubmissionStatus).optional(),
-  priority: z.nativeEnum(Priority).optional(),
+  status: z.enum(['PUBLISHED', 'DRAFT']).optional(),
   language: z.string().regex(/^[a-z]{2,5}$/).optional(), // Validate language format
   assignee: z.string().uuid().optional(), // Validate UUID format
-  sortBy: z.enum(['createdAt', 'updatedAt', 'title', 'status', 'priority']).optional().default('createdAt'),
+  sortBy: z.enum(['createdAt', 'updatedAt', 'title', 'isPublished', 'featured']).optional().default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -25,10 +24,8 @@ const createStorySchema = z.object({
   summary: z.string().optional(),
   language: z.string().min(2).max(5),
   category: z.string().min(1),
-  ageGroup: z.string().min(1),
-  priority: z.nativeEnum(Priority).optional(),
+  authorName: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  dueDate: z.string().optional(),
   assigneeId: z.string().optional(),
 });
 
@@ -70,16 +67,20 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { title: { contains: validatedParams.search, mode: 'insensitive' } },
         { content: { contains: validatedParams.search, mode: 'insensitive' } },
-        { author: { name: { contains: validatedParams.search, mode: 'insensitive' } } },
+        { authorName: { contains: validatedParams.search, mode: 'insensitive' } },
+        { summary: { contains: validatedParams.search, mode: 'insensitive' } },
       ];
     }
     
+    // Story model doesn't have status/priority - these are for StorySubmission workflow
+    // For Story model, we can filter by isPublished, featured, etc.
     if (validatedParams.status) {
-      where.status = validatedParams.status; // Already validated by Zod
-    }
-    
-    if (validatedParams.priority) {
-      where.priority = validatedParams.priority; // Already validated by Zod
+      // Map submission statuses to Story fields
+      if (validatedParams.status === 'PUBLISHED') {
+        where.isPublished = true;
+      } else if (validatedParams.status === 'DRAFT') {
+        where.isPublished = false;
+      }
     }
     
     if (validatedParams.language) {
@@ -94,9 +95,9 @@ export async function GET(request: NextRequest) {
     const orderBy: any = {};
     orderBy[validatedParams.sortBy] = validatedParams.sortOrder;
 
-    // Fetch stories with pagination
+    // Fetch stories with pagination (using Story table for published books)
     const [stories, totalCount] = await Promise.all([
-      prisma.storySubmission.findMany({
+      prisma.story.findMany({
         where,
         skip,
         take: limit,
@@ -109,29 +110,9 @@ export async function GET(request: NextRequest) {
               email: true,
             },
           },
-          coverImage: {
-            select: {
-              id: true,
-              url: true,
-              thumbnailUrl: true,
-              altText: true,
-            },
-          },
-          workflowHistory: {
-            take: 1,
-            orderBy: { createdAt: 'desc' },
-            include: {
-              performedBy: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
         },
       }),
-      prisma.storySubmission.count({ where }),
+      prisma.story.count({ where }),
     ]);
 
     const totalPages = Math.ceil(totalCount / limit);
@@ -183,12 +164,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createStorySchema.parse(body);
 
-    const story = await prisma.storySubmission.create({
+    const story = await prisma.story.create({
       data: {
-        ...validatedData,
-        authorId: validatedData.assigneeId || session.user.id, // Default to current user if no author specified
-        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
-        status: StorySubmissionStatus.DRAFT,
+        title: validatedData.title,
+        content: validatedData.content,
+        summary: validatedData.summary,
+        language: validatedData.language,
+        category: [validatedData.category],
+        authorId: validatedData.assigneeId || session.user.id,
+        authorName: validatedData.authorName || session.user.name || 'Unknown',
+        tags: validatedData.tags || [],
+        isPublished: false, // Start as draft
+        featured: false,
+        viewCount: 0,
+        likeCount: 0,
+        isPremium: false,
       },
       include: {
         author: {
@@ -198,17 +188,6 @@ export async function POST(request: NextRequest) {
             email: true,
           },
         },
-        coverImage: true,
-      },
-    });
-
-    // Create workflow history entry
-    await prisma.workflowHistory.create({
-      data: {
-        storySubmissionId: story.id,
-        toStatus: StorySubmissionStatus.DRAFT,
-        comment: 'Story created',
-        performedById: session.user.id,
       },
     });
 
