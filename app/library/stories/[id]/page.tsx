@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { 
@@ -101,8 +101,10 @@ interface Story {
 export default function StoryPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const storyId = params.id as string;
+  const isPreviewMode = searchParams?.get('preview') === 'true';
 
   const [story, setStory] = useState<Story | null>(null);
   const [loading, setLoading] = useState(true);
@@ -256,8 +258,9 @@ export default function StoryPage() {
     );
   }
 
-  const canReadFull = story.accessLevel === 'full';
+  const canReadFull = story.accessLevel === 'full' && !isPreviewMode;
   const pdfUrl = canReadFull ? story.fullPdf : story.samplePdf;
+  const maxPages = isPreviewMode ? 10 : (story.accessLevel === 'full' ? undefined : 10);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -266,11 +269,11 @@ export default function StoryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link
-              href="/library"
+              href={isPreviewMode ? `/library/books/${storyId}` : "/library"}
               className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              Back to Library
+              {isPreviewMode ? 'Back to Book Details' : 'Back to Library'}
             </Link>
             
             <div className="flex items-center gap-2">
@@ -295,6 +298,28 @@ export default function StoryPage() {
         </div>
       </div>
 
+      {/* Preview Mode Banner */}
+      {isPreviewMode && (
+        <div className="bg-yellow-50 border-b border-yellow-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Eye className="w-5 h-5 text-yellow-600" />
+                <span className="text-sm font-medium text-yellow-800">
+                  Preview Mode - First {maxPages} pages only
+                </span>
+              </div>
+              <Link
+                href={`/library/books/${storyId}`}
+                className="text-sm font-medium text-yellow-700 hover:text-yellow-800 underline"
+              >
+                View full book details
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
@@ -306,7 +331,7 @@ export default function StoryPage() {
                   pdfUrl={pdfUrl}
                   title={story.title}
                   isAuthenticated={!!session}
-                  maxPages={story.accessLevel === 'full' ? undefined : 10}
+                  maxPages={maxPages}
                   pageLayout={(story.pageLayout as 'single' | 'double') || 'single'}
                   onClose={() => router.push('/library')}
                 />
@@ -384,7 +409,21 @@ export default function StoryPage() {
 
               {/* Access Level Indicator */}
               <div className="mt-4 pt-4 border-t">
-                {story.accessLevel === 'full' ? (
+                {isPreviewMode ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-yellow-600 text-sm">
+                      <Eye className="w-4 h-4" />
+                      Preview mode - {maxPages} pages
+                    </div>
+                    <Link
+                      href={`/library/books/${storyId}`}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      View Book Details
+                    </Link>
+                  </div>
+                ) : story.accessLevel === 'full' ? (
                   <div className="flex items-center gap-2 text-green-600 text-sm">
                     <BookOpen className="w-4 h-4" />
                     Full access
@@ -395,13 +434,13 @@ export default function StoryPage() {
                       <Eye className="w-4 h-4" />
                       Preview only
                     </div>
-                    <button
-                      onClick={handlePurchase}
+                    <Link
+                      href={`/library/books/${storyId}`}
                       className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       <Lock className="w-4 h-4" />
                       {story.isPremium ? 'Subscribe or Purchase' : 'Get Full Access'}
-                    </button>
+                    </Link>
                   </div>
                 )}
               </div>

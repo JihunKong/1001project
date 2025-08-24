@@ -18,7 +18,8 @@ import {
   Clock,
   Loader2,
   Grid3X3,
-  Library as LibraryIcon
+  Library as LibraryIcon,
+  Eye
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -253,18 +254,11 @@ export default function Library() {
           {session ? (
             <div className="flex gap-2">
               <Link
-                href={`/library/stories/${book.id}`}
+                href={`/library/books/${book.id}`}
                 className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
               >
-                <Play className="w-4 h-4" />
-                Preview
-              </Link>
-              <Link
-                href={`/library/stories/${book.id}`}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-              >
-                {book.isPremium ? <Lock className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
-                {book.accessLevel === 'full' ? 'Read' : (book.isPremium ? 'Unlock' : 'Read')}
+                <Eye className="w-4 h-4" />
+                View Details
               </Link>
             </div>
           ) : (

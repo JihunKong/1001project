@@ -1470,9 +1470,11 @@ model Review {
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   product         Product?         @relation("ProductReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_product_contentId_fkey")
   story           Story?           @relation("StoryReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_story_contentId_fkey")
+  book            Book?            @relation("BookReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_book_contentId_fkey")
   
   createdAt       DateTime         @default(now())
   
+  @@unique([userId, contentType, contentId], name: "unique_user_content_review")
   @@index([userId])
   @@index([contentType, contentId])
   @@map("reviews")
@@ -2526,6 +2528,7 @@ model Book {
   entitlements    Entitlement[]
   publications    Publication[]
   shopProducts    ShopProduct[]
+  reviews         Review[]         @relation("BookReviews")
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt

@@ -76,7 +76,7 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
       whileHover={{ scale: 1.02 }}
       className="group"
     >
-      <Link href={`/library/stories/${book.id}`}>
+      <Link href={`/library/books/${book.id}`}>
         <div className="relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl">
           {/* Cover Image Container with Fixed Aspect Ratio */}
           <div className="relative bg-white aspect-[3/4]">
