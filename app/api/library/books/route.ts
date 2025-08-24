@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
     ])
     
     // Transform stories to books for response
-    const transformedBooks = stories.map(story => {
+    const transformedBooks = await Promise.all(stories.map(async (story) => {
       // Determine access level
       let accessLevel = 'preview'
       
@@ -122,29 +122,9 @@ export async function GET(request: NextRequest) {
       // Premium books require subscription or purchase
       else if (userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE') {
         accessLevel = 'full'
-      } else if (session?.user?.id) {
-        // Check individual purchases
-        const purchase = await prisma.order.findFirst({
-          where: {
-            userId: session.user.id,
-            status: 'COMPLETED',
-            orderItems: {
-              some: {
-                product: {
-                  bookId: story.id
-                }
-              }
-            }
-          },
-          select: {
-            id: true
-          }
-        })
-        
-        if (purchase) {
-          accessLevel = 'full'
-        }
       }
+      // For now, individual purchases are handled via subscription
+      // TODO: Implement individual book purchase checking when product-story linking is available
       
       // Get user progress if logged in
       let userProgress = null
@@ -198,7 +178,7 @@ export async function GET(request: NextRequest) {
         viewCount: story.viewCount,
         likeCount: story.likeCount
       }
-    })
+    }))
     
     // Calculate pagination
     const totalPages = Math.ceil(totalCount / limit)

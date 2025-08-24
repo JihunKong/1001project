@@ -214,7 +214,8 @@ async function main() {
         const pdfKey = await copyPdfToPublic(bookData.pdfPath, filename);
 
         // 커버 이미지 URL 생성 (실제 경로 사용)
-        const coverImage = `/books/${bookData.id}/cover.png`;
+        const bookSlug = bookData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const coverImage = `/books/${bookSlug}/cover.png`;
 
         return prisma.book.create({
           data: {

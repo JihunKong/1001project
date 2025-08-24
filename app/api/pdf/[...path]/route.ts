@@ -74,27 +74,8 @@ export async function GET(
             hasAccess = true;
           }
           
-          // Check individual purchases
-          const purchase = await prisma.order.findFirst({
-            where: {
-              userId: session.user.id,
-              status: 'COMPLETED',
-              orderItems: {
-                some: {
-                  product: {
-                    bookId: bookId
-                  }
-                }
-              }
-            },
-            select: {
-              id: true
-            }
-          });
-          
-          if (purchase) {
-            hasAccess = true;
-          }
+          // For now, individual purchases are handled via subscription
+          // TODO: Implement individual book purchase checking when product-story linking is available
         }
         
         // Free books (preview books 1-3) are accessible to everyone when logged in
