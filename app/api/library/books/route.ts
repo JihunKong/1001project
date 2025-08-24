@@ -143,8 +143,8 @@ export async function GET(request: NextRequest) {
         subjects: story.subjects,
         tags: story.tags,
         coverImage: story.coverImage,
-        samplePdf: story.samplePdf || story.fullPdf, // Use sample or full PDF for preview
-        fullPdf: accessLevel === 'full' ? story.fullPdf : story.samplePdf || story.fullPdf,
+        samplePdf: `/api/pdf/books/${story.id}/main.pdf`, // Use API route for preview
+        fullPdf: accessLevel === 'full' ? `/api/pdf/books/${story.id}/main.pdf` : `/api/pdf/books/${story.id}/main.pdf`,
         isPremium: story.isPremium,
         isFeatured: story.featured,
         price: story.price,
@@ -160,13 +160,13 @@ export async function GET(request: NextRequest) {
         // Additional fields for compatibility
         bookId: story.id,
         storyId: story.id,
-        pdfKey: story.fullPdf, // Add pdfKey for SimpleBookCard compatibility
-        pdfFrontCover: story.coverImage, // Add pdfFrontCover field
-        pdfBackCover: null, // Add pdfBackCover field (not available)
+        pdfKey: `/api/pdf/books/${story.id}/main.pdf`, // Add pdfKey for SimpleBookCard compatibility
+        pdfFrontCover: `/api/pdf/books/${story.id}/front.pdf`, // Add pdfFrontCover field
+        pdfBackCover: `/api/pdf/books/${story.id}/back.pdf`, // Add pdfBackCover field
         pageLayout: 'standard', // Add pageLayout field
         previewPages: 5, // Add previewPages field
-        fullPdfUrl: story.fullPdf,
-        samplePdfUrl: story.samplePdf,
+        fullPdfUrl: `/api/pdf/books/${story.id}/main.pdf`,
+        samplePdfUrl: `/api/pdf/books/${story.id}/main.pdf`,
         viewCount: story.viewCount,
         likeCount: story.likeCount
       }

@@ -25,13 +25,11 @@ export async function GET(
     const bookId = id
     
     // Get user's review for this book
-    const review = await prisma.review.findUnique({
+    const review = await prisma.review.findFirst({
       where: {
-        unique_user_content_review: {
-          userId: session.user.id,
-          contentType: 'BOOK',
-          contentId: bookId
-        }
+        userId: session.user.id,
+        contentType: 'BOOK',
+        contentId: bookId
       },
       include: {
         user: {

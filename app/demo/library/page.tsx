@@ -36,58 +36,58 @@ interface DemoBook {
   estimatedReadTime: number;
 }
 
-// Sample demo books with actual PDF data
+// Real books for demo - using the first 3 free books (Neema series)
 const demoBooks: DemoBook[] = [
   {
-    id: 'demo-1',
-    title: 'My Friend Phong',
-    authorName: 'Little Writer',
-    authorAge: 10,
-    authorLocation: 'Vietnam',
-    summary: 'A heartwarming tale about friendship and cultural understanding between children from different backgrounds.',
-    coverImage: '/images/book-covers/My friend Phong.jpg',
-    pdfKey: '/api/pdf/My friend Phong.pdf',
-    pageCount: 20,
-    language: 'en',
-    ageRange: '6-10',
-    category: 'Friendship',
-    rating: 4.8,
-    isPremium: false,
-    estimatedReadTime: 15
-  },
-  {
-    id: 'demo-2',
-    title: "Let's Run!",
-    authorName: 'Running Star',
-    authorAge: 9,
-    authorLocation: 'Active Community',
-    summary: 'An energetic story about the joy of running and staying active. Follow our young protagonist as they discover the fun of sports.',
-    coverImage: "/images/book-covers/let's run!.jpg",
-    pdfKey: "/api/pdf/let's run!.pdf",
-    pageCount: 16,
+    id: 'neema-01',
+    title: 'Neema Part 1',
+    authorName: 'Emma Grace',
+    authorAge: 12,
+    authorLocation: 'Uganda',
+    summary: 'A powerful story of hope and resilience following a young girl\'s journey through challenges and triumph.',
+    coverImage: '/images/book-covers/neema-01.jpg',
+    pdfKey: '/api/pdf/books/neema-01/main.pdf',
+    pageCount: 24,
     language: 'en',
     ageRange: '6-12',
-    category: 'Sports',
+    category: 'Drama',
+    rating: 4.8,
+    isPremium: false,
+    estimatedReadTime: 12
+  },
+  {
+    id: 'neema-02',
+    title: 'Neema Part 2',
+    authorName: 'Emma Grace',
+    authorAge: 12,
+    authorLocation: 'Uganda',
+    summary: 'A powerful story of hope and resilience following a young girl\'s journey through challenges and triumph.',
+    coverImage: '/images/book-covers/neema-02.jpg',
+    pdfKey: '/api/pdf/books/neema-02/main.pdf',
+    pageCount: 24,
+    language: 'en',
+    ageRange: '6-12',
+    category: 'Drama',
     rating: 4.6,
     isPremium: false,
     estimatedReadTime: 12
   },
   {
-    id: 'demo-3',
-    title: 'My Friend Puru',
-    authorName: "Puru's Friend",
-    authorAge: 11,
-    authorLocation: 'Imaginative Land',
-    summary: 'Meet Puru, a delightful character who brings joy and laughter to everyone around. A story about friendship and imagination.',
-    coverImage: '/images/book-covers/my friend puru.jpg',
-    pdfKey: '/api/pdf/my friend puru.pdf',
+    id: 'neema-03',
+    title: 'Neema Part 3',
+    authorName: 'Emma Grace',
+    authorAge: 12,
+    authorLocation: 'Uganda',
+    summary: 'A powerful story of hope and resilience following a young girl\'s journey through challenges and triumph.',
+    coverImage: '/images/book-covers/neema-03.jpg',
+    pdfKey: '/api/pdf/books/neema-03/main.pdf',
     pageCount: 24,
     language: 'en',
-    ageRange: '8-12',
-    category: 'Adventure',
+    ageRange: '6-12',
+    category: 'Drama',
     rating: 4.7,
-    isPremium: true,
-    estimatedReadTime: 18
+    isPremium: false,
+    estimatedReadTime: 12
   }
 ];
 

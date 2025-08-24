@@ -162,8 +162,8 @@ export async function GET(
       subjects: book.subjects,
       tags: book.tags,
       coverImage: book.coverImage,
-      samplePdf: book.samplePdf || book.fullPdf,
-      fullPdf: accessLevel === 'full' ? book.fullPdf : null,
+      samplePdf: book.samplePdf ? `/api/pdf/books/${book.id}/main.pdf` : `/api/pdf/books/${book.id}/main.pdf`,
+      fullPdf: accessLevel === 'full' ? `/api/pdf/books/${book.id}/main.pdf` : null,
       isPremium: book.isPremium,
       featured: book.featured,
       price: book.price,
@@ -192,8 +192,8 @@ export async function GET(
       })),
       // Additional fields for PDF handling
       bookId: book.id,
-      fullPdfUrl: book.fullPdf,
-      samplePdfUrl: book.samplePdf
+      fullPdfUrl: `/api/pdf/books/${book.id}/main.pdf`,
+      samplePdfUrl: `/api/pdf/books/${book.id}/main.pdf`
     }
     
     return NextResponse.json(response)

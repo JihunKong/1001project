@@ -24,7 +24,7 @@ export interface BookFileConfig {
 // Default configuration for book files
 const DEFAULT_CONFIG: BookFileConfig = {
   baseDir: '/books',
-  publicUrl: '/books'
+  publicUrl: '/api/pdf/books'
 };
 
 /**
@@ -57,10 +57,10 @@ export function resolveBookFiles(
 ): BookFiles {
   const { publicUrl } = { ...DEFAULT_CONFIG, ...config };
   
-  // In browser, we construct standard URLs
+  // In browser, we construct API URLs
   const result: BookFiles = {
     main: `${publicUrl}/${bookId}/main.pdf`,
-    frontCover: `${publicUrl}/${bookId}/cover.pdf`, // Use correct cover files
+    frontCover: `${publicUrl}/${bookId}/front.pdf`,
     backCover: `${publicUrl}/${bookId}/back.pdf`,
     bookId,
     folderName: bookId,
