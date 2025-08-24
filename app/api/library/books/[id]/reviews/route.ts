@@ -117,13 +117,11 @@ export async function POST(
     }
     
     // Check if user already reviewed this book
-    const existingReview = await prisma.review.findUnique({
+    const existingReview = await prisma.review.findFirst({
       where: {
-        unique_user_content_review: {
-          userId: session.user.id,
-          contentType: 'BOOK',
-          contentId: bookId
-        }
+        userId: session.user.id,
+        contentType: 'BOOK',
+        contentId: bookId
       }
     })
     
