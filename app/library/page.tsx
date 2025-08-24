@@ -126,7 +126,6 @@ export default function Library() {
 
   // Fetch books from API
   const fetchBooks = async () => {
-    console.log('fetchBooks called');
     setLoading(true);
     setError(null);
     
@@ -141,7 +140,6 @@ export default function Library() {
       if (selectedLanguage !== 'all') params.set('language', selectedLanguage);
       if (selectedAge !== 'all') params.set('ageGroup', selectedAge);
       
-      console.log('Fetching from:', `/api/library/books?${params}`);
       const response = await fetch(`/api/library/books?${params}`);
       
       if (!response.ok) {
@@ -156,20 +154,8 @@ export default function Library() {
       }
       
       const data: BooksResponse = await response.json();
-      console.log('Books API response:', data);
-      console.log('Number of books:', data.books?.length || 0);
-      
-      if (data.books && Array.isArray(data.books)) {
-        setBooks(data.books);
-        console.log('Books set successfully:', data.books.length);
-      } else {
-        console.error('Invalid books data:', data.books);
-        setBooks([]);
-      }
-      
-      if (data.pagination) {
-        setPagination(data.pagination);
-      }
+      setBooks(data.books || []);
+      setPagination(data.pagination);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'FETCH_ERROR';
       setError(errorMessage);
@@ -180,18 +166,8 @@ export default function Library() {
   
   // Fetch books when page or filters change
   useEffect(() => {
-    console.log('useEffect triggered');
     fetchBooks();
-  }, []); // Simplified to only run on mount
-
-  // Debug: log state changes
-  useEffect(() => {
-    console.log('Books state changed:', books.length);
-  }, [books]);
-
-  useEffect(() => {
-    console.log('Loading state changed:', loading);
-  }, [loading]);
+  }, [currentPage, searchTerm, selectedCategory, selectedLanguage, selectedAge]);
   
   // Reset to first page when filters change (not page)
   useEffect(() => {
@@ -555,11 +531,7 @@ export default function Library() {
               {viewMode === 'cards' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {books.map((book, index) => (
-                    <div key={book.id} className="p-4 border rounded">
-                      <h3>{book.title}</h3>
-                      <p>By {book.author?.name}</p>
-                      <p>Premium: {book.isPremium ? 'Yes' : 'No'}</p>
-                    </div>
+                    <SimpleBookCard key={book.id} book={book} />
                   ))}
                 </div>
               ) : (
