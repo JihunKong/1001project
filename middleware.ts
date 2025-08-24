@@ -76,7 +76,6 @@ export default withAuth(
           "/about",
           "/contact",
           "/library",
-          "/library-test",
           "/mission",
           "/partners",
           "/programs",
