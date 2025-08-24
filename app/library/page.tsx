@@ -126,6 +126,7 @@ export default function Library() {
 
   // Fetch books from API
   const fetchBooks = async () => {
+    console.log('fetchBooks called');
     setLoading(true);
     setError(null);
     
@@ -140,6 +141,7 @@ export default function Library() {
       if (selectedLanguage !== 'all') params.set('language', selectedLanguage);
       if (selectedAge !== 'all') params.set('ageGroup', selectedAge);
       
+      console.log('Fetching from:', `/api/library/books?${params}`);
       const response = await fetch(`/api/library/books?${params}`);
       
       if (!response.ok) {
@@ -154,8 +156,20 @@ export default function Library() {
       }
       
       const data: BooksResponse = await response.json();
-      setBooks(data.books || []);
-      setPagination(data.pagination);
+      console.log('Books API response:', data);
+      console.log('Number of books:', data.books?.length || 0);
+      
+      if (data.books && Array.isArray(data.books)) {
+        setBooks(data.books);
+        console.log('Books set successfully:', data.books.length);
+      } else {
+        console.error('Invalid books data:', data.books);
+        setBooks([]);
+      }
+      
+      if (data.pagination) {
+        setPagination(data.pagination);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'FETCH_ERROR';
       setError(errorMessage);
