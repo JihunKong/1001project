@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
         tags: story.tags,
         coverImage: story.coverImage,
         samplePdf: story.samplePdf || story.fullPdf, // Use sample or full PDF for preview
-        fullPdf: accessLevel === 'full' ? story.fullPdf : null,
+        fullPdf: accessLevel === 'full' ? story.fullPdf : story.samplePdf || story.fullPdf,
         isPremium: story.isPremium,
         isFeatured: story.featured,
         price: story.price,
@@ -164,6 +164,7 @@ export async function GET(request: NextRequest) {
         pdfFrontCover: story.coverImage, // Add pdfFrontCover field
         pdfBackCover: null, // Add pdfBackCover field (not available)
         pageLayout: 'standard', // Add pageLayout field
+        previewPages: 5, // Add previewPages field
         fullPdfUrl: story.fullPdf,
         samplePdfUrl: story.samplePdf,
         viewCount: story.viewCount,
