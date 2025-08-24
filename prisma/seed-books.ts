@@ -213,8 +213,8 @@ async function main() {
         const filename = path.basename(bookData.pdfPath);
         const pdfKey = await copyPdfToPublic(bookData.pdfPath, filename);
 
-        // 커버 이미지 URL 생성 (기본 이미지 사용)
-        const coverImage = `/images/book-covers/${filename.replace('.pdf', '.jpg')}`;
+        // 커버 이미지 URL 생성 (실제 경로 사용)
+        const coverImage = `/books/${bookData.id}/cover.png`;
 
         return prisma.book.create({
           data: {

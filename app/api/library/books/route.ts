@@ -111,12 +111,40 @@ export async function GET(request: NextRequest) {
       // Determine access level
       let accessLevel = 'preview'
       
-      if (!story.isPremium) {
-        accessLevel = 'full'
-      } else if (userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE') {
+      // Admin users have full access to all books
+      if (session?.user?.role === 'ADMIN') {
         accessLevel = 'full'
       }
-      // TODO: Check individual purchases from Order/Entitlement models
+      // Free books get full access for logged-in users
+      else if (!story.isPremium) {
+        accessLevel = 'full'
+      }
+      // Premium books require subscription or purchase
+      else if (userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE') {
+        accessLevel = 'full'
+      } else if (session?.user?.id) {
+        // Check individual purchases
+        const purchase = await prisma.order.findFirst({
+          where: {
+            userId: session.user.id,
+            status: 'COMPLETED',
+            orderItems: {
+              some: {
+                product: {
+                  bookId: story.id
+                }
+              }
+            }
+          },
+          select: {
+            id: true
+          }
+        })
+        
+        if (purchase) {
+          accessLevel = 'full'
+        }
+      }
       
       // Get user progress if logged in
       let userProgress = null

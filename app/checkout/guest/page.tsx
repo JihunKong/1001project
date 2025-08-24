@@ -310,7 +310,7 @@ function GuestCheckoutForm() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-gray-900">
-                        ${(parseFloat(product.price) * quantity).toFixed(2)}
+                        ${(parseFloat(product.price || '0') * quantity).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -319,7 +319,7 @@ function GuestCheckoutForm() {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Subtotal</span>
                       <span className="text-gray-900">
-                        ${(parseFloat(product.price) * quantity).toFixed(2)}
+                        ${(parseFloat(product.price || '0') * quantity).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -329,7 +329,7 @@ function GuestCheckoutForm() {
                     <div className="flex justify-between text-lg font-semibold border-t pt-2">
                       <span className="text-gray-900">Total</span>
                       <span className="text-gray-900">
-                        ${(parseFloat(product.price) * quantity).toFixed(2)}
+                        ${(parseFloat(product.price || '0') * quantity).toFixed(2)}
                       </span>
                     </div>
                   </div>

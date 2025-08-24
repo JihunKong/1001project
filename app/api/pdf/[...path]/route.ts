@@ -22,6 +22,9 @@ export async function GET(
       const bookId = pathSegments[1];
       const filename = pathSegments[2] || 'main.pdf';
       
+      // Get user session first
+      const session = await getServerSession(authOptions);
+      
       // Get the book details to check if it's premium
       const book = await prisma.story.findFirst({
         where: {
@@ -36,12 +39,25 @@ export async function GET(
       });
       
       if (!book) {
-        return new NextResponse('Book not found', { status: 404 });
+        return new NextResponse(JSON.stringify({
+          error: 'Book not found',
+          message: 'The requested book does not exist or is not published.',
+          requiresAuth: !session?.user?.id,
+          redirectTo: !session?.user?.id ? '/login' : '/library'
+        }), { 
+          status: 404,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
       }
       
+      // Admin users have access to all books
+      if (session?.user?.role === 'ADMIN') {
+        // Allow admin access - continue to serve the file
+      }
       // If the book is premium, check user access
-      if (book.isPremium) {
-        const session = await getServerSession(authOptions);
+      else if (book.isPremium) {
         let hasAccess = false;
         
         if (session?.user?.id) {
@@ -58,18 +74,41 @@ export async function GET(
             hasAccess = true;
           }
           
-          // TODO: Check individual purchases
-          // const purchase = await prisma.order.findFirst({...})
+          // Check individual purchases
+          const purchase = await prisma.order.findFirst({
+            where: {
+              userId: session.user.id,
+              status: 'COMPLETED',
+              orderItems: {
+                some: {
+                  product: {
+                    bookId: bookId
+                  }
+                }
+              }
+            },
+            select: {
+              id: true
+            }
+          });
+          
+          if (purchase) {
+            hasAccess = true;
+          }
         }
         
-        // For now, allow access to free books (neema series) only
+        // Free books (preview books 1-3) are accessible to everyone when logged in
         const freeBooks = ['neema-01', 'neema-02', 'neema-03'];
         if (!freeBooks.includes(bookId) && !hasAccess) {
           return new NextResponse(JSON.stringify({
             error: 'Premium content access required',
-            message: 'This book requires a subscription or purchase to access.',
+            message: 'This book requires a subscription or purchase to access. You can preview the first few pages or purchase full access.',
             bookId: bookId,
-            isPremium: true
+            isPremium: true,
+            requiresAuth: !session?.user?.id,
+            redirectTo: !session?.user?.id ? '/login' : '/shop',
+            purchaseUrl: `/shop/books/${bookId}`,
+            subscriptionUrl: '/shop/subscription'
           }), { 
             status: 403,
             headers: {
@@ -77,6 +116,22 @@ export async function GET(
             }
           });
         }
+      }
+      // For free books, require authentication but allow access
+      else if (!session?.user?.id) {
+        return new NextResponse(JSON.stringify({
+          error: 'Authentication required',
+          message: 'Please sign in to access this content.',
+          bookId: bookId,
+          isPremium: false,
+          requiresAuth: true,
+          redirectTo: '/login'
+        }), { 
+          status: 401,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
       }
     }
     

@@ -110,10 +110,10 @@ export default function CartItem({ item }: CartItemProps) {
       {/* Price */}
       <div className="text-right">
         <p className="text-sm text-gray-500">
-          ${item.product.price.toFixed(2)} each
+          ${(item.product.price || 0).toFixed(2)} each
         </p>
         <p className="text-xl font-bold text-gray-900 mt-1">
-          ${(item.product.price * item.quantity).toFixed(2)}
+          ${((item.product.price || 0) * item.quantity).toFixed(2)}
         </p>
       </div>
     </motion.div>

@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
       const inStock = product.type === 'DIGITAL_BOOK'
       
       // Get primary image from book cover or default
-      const primaryImage = book?.coverImage || '/images/book-covers/default.jpg'
+      const primaryImage = book?.coverImage || '/images/placeholder-book.jpg'
       
       return {
         id: product.id,

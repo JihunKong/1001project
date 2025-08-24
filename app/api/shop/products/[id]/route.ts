@@ -69,7 +69,7 @@ export async function GET(
     const inStock = product.type === 'DIGITAL_BOOK' || product.status === 'ACTIVE'
     
     // Calculate primary image
-    const primaryImage = book?.coverImage || `/images/book-covers/${book?.title || product.title}.jpg`
+    const primaryImage = book?.coverImage || '/images/placeholder-book.jpg'
     
     // Get related products (same creator or similar tags)
     const relatedProducts = await prisma.shopProduct.findMany({
@@ -105,7 +105,7 @@ export async function GET(
     // Transform related products to match expected format
     const transformedRelatedProducts = relatedProducts.map(relatedProduct => {
       const relatedBook = relatedBookMap.get(relatedProduct.bookId || '')
-      const relatedPrimaryImage = relatedBook?.coverImage || `/images/book-covers/${relatedBook?.title || relatedProduct.title}.jpg`
+      const relatedPrimaryImage = relatedBook?.coverImage || '/images/placeholder-book.jpg'
       
       return {
         id: relatedProduct.id,
