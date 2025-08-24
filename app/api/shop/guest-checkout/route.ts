@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Calculate totals
-    const subtotal = shopProduct.price.toNumber() * quantity
+    const subtotal = Number(shopProduct.price.toNumber()) * quantity
     const tax = 0 // No tax for digital products
     const total = subtotal + tax
     

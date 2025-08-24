@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     
     for (const item of cart.items) {
       const price = item.variant?.price || item.product.price
-      const lineTotal = price.toNumber() * item.quantity
+      const lineTotal = Number(price.toNumber()) * item.quantity
       
       subtotal += lineTotal
       totalWeight += (item.product.weight || 0) * item.quantity
