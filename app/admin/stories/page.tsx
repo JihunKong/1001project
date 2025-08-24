@@ -3,9 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
-import { UserRole, StorySubmissionStatus } from '@prisma/client';
-
-type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+import { UserRole } from '@prisma/client';
 import {
   useReactTable,
   getCoreRowModel,
@@ -38,36 +36,24 @@ interface Story {
   content: string;
   summary?: string;
   language: string;
-  category: string;
-  ageGroup: string;
-  status: StorySubmissionStatus;
-  priority: Priority;
+  category: string[];
+  authorName: string;
+  isPublished: boolean;
+  featured: boolean;
   tags: string[];
   createdAt: string;
   updatedAt: string;
-  dueDate?: string;
+  publishedDate?: string;
   author: {
     id: string;
     name: string;
     email: string;
   };
-  coverImage?: {
-    id: string;
-    url: string;
-    thumbnailUrl: string;
-    altText?: string;
-  };
-  workflowHistory: Array<{
-    id: string;
-    fromStatus?: StorySubmissionStatus;
-    toStatus: StorySubmissionStatus;
-    comment: string;
-    createdAt: string;
-    performedBy: {
-      id: string;
-      name: string;
-    };
-  }>;
+  coverImage?: string;
+  fullPdf?: string;
+  viewCount: number;
+  likeCount: number;
+  isPremium: boolean;
 }
 
 interface StoriesResponse {
@@ -83,19 +69,13 @@ interface StoriesResponse {
 }
 
 const statusConfig = {
-  SUBMITTED: { label: 'Submitted', color: 'bg-gray-100 text-gray-800' },
-  IN_REVIEW: { label: 'In Review', color: 'bg-blue-100 text-blue-800' },
-  APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-800' },
   PUBLISHED: { label: 'Published', color: 'bg-green-100 text-green-800' },
-  REJECTED: { label: 'Rejected', color: 'bg-red-100 text-red-800' },
   DRAFT: { label: 'Draft', color: 'bg-gray-100 text-gray-800' },
 };
 
-const priorityConfig = {
-  LOW: { label: 'Low', color: 'bg-gray-100 text-gray-800' },
-  MEDIUM: { label: 'Medium', color: 'bg-yellow-100 text-yellow-800' },
-  HIGH: { label: 'High', color: 'bg-orange-100 text-orange-800' },
-  URGENT: { label: 'Urgent', color: 'bg-red-100 text-red-800' },
+const featuredConfig = {
+  true: { label: 'Featured', color: 'bg-yellow-100 text-yellow-800' },
+  false: { label: 'Regular', color: 'bg-gray-100 text-gray-800' },
 };
 
 const columnHelper = createColumnHelper<Story>();
@@ -132,15 +112,15 @@ export default function StoriesManagement() {
           <div className="max-w-xs">
             <div className="font-medium text-gray-900 truncate">{info.getValue()}</div>
             <div className="text-sm text-gray-500 truncate">
-              by {info.row.original.author.name}
+              by {info.row.original.authorName}
             </div>
           </div>
         ),
       }),
-      columnHelper.accessor('status', {
+      columnHelper.accessor('isPublished', {
         header: 'Status',
         cell: (info) => {
-          const status = info.getValue();
+          const status = info.getValue() ? 'PUBLISHED' : 'DRAFT';
           const config = statusConfig[status];
           return (
             <span className={`px-2 py-1 text-xs font-medium rounded-full ${config.color}`}>
@@ -149,11 +129,11 @@ export default function StoriesManagement() {
           );
         },
       }),
-      columnHelper.accessor('priority', {
-        header: 'Priority',
+      columnHelper.accessor('featured', {
+        header: 'Featured',
         cell: (info) => {
-          const priority = info.getValue();
-          const config = priorityConfig[priority];
+          const featured = info.getValue();
+          const config = featuredConfig[featured ? 'true' : 'false'];
           return (
             <span className={`px-2 py-1 text-xs font-medium rounded-full ${config.color}`}>
               {config.label}
@@ -169,9 +149,14 @@ export default function StoriesManagement() {
       }),
       columnHelper.accessor('category', {
         header: 'Category',
-        cell: (info) => (
-          <span className="text-sm text-gray-900">{info.getValue()}</span>
-        ),
+        cell: (info) => {
+          const categories = info.getValue() || [];
+          return (
+            <span className="text-sm text-gray-900">
+              {categories.length > 0 ? categories.join(', ') : 'Uncategorized'}
+            </span>
+          );
+        },
       }),
       columnHelper.accessor('createdAt', {
         header: 'Created',
@@ -373,24 +358,21 @@ export default function StoriesManagement() {
             </div>
             <select
               value={
-                columnFilters.find((f) => f.id === 'status')?.value as string || ''
+                columnFilters.find((f) => f.id === 'isPublished')?.value as string || ''
               }
               onChange={(e) => {
                 const value = e.target.value;
                 setColumnFilters((prev) =>
                   value
-                    ? [...prev.filter((f) => f.id !== 'status'), { id: 'status', value }]
-                    : prev.filter((f) => f.id !== 'status')
+                    ? [...prev.filter((f) => f.id !== 'isPublished'), { id: 'isPublished', value }]
+                    : prev.filter((f) => f.id !== 'isPublished')
                 );
               }}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">All Statuses</option>
-              {Object.entries(statusConfig).map(([key, config]) => (
-                <option key={key} value={key}>
-                  {config.label}
-                </option>
-              ))}
+              <option value="">All Stories</option>
+              <option value="true">Published</option>
+              <option value="false">Draft</option>
             </select>
             <select
               value={
