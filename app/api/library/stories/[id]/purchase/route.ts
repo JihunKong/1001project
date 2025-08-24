@@ -54,7 +54,7 @@ export async function POST(
       )
     }
     
-    if (!story.price || story.Number(price.toNumber()) <= 0) {
+    if (!story.price || Number(story.price.toNumber()) <= 0) {
       return NextResponse.json(
         { error: 'Story price not set' },
         { status: 400 }
