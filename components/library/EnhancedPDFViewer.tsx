@@ -513,10 +513,10 @@ export default function EnhancedPDFViewer({
             <button
               onClick={() => onPurchase(bookId)}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-              title={`Buy full book for $${price}`}
+              title={`Buy full book for $${Number(price || 0).toFixed(2)}`}
             >
               <ShoppingCart className="w-4 h-4" />
-              Buy Full Book ${price}
+              Buy Full Book $${Number(price || 0).toFixed(2)}
             </button>
           )}
 
@@ -613,7 +613,7 @@ export default function EnhancedPDFViewer({
                 onClick={() => onPurchase(bookId)}
                 className="bg-white text-purple-600 px-4 py-1 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors"
               >
-                Buy Now ${price}
+                Buy Now $${Number(price || 0).toFixed(2)}
               </button>
             )}
           </div>

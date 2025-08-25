@@ -349,7 +349,7 @@ export default function AdminShopPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-1 text-sm font-medium text-gray-900">
                           <DollarSign className="w-4 h-4" />
-                          {(product.price || 0).toFixed(2)} {product.currency}
+                          {Number(product.price || 0).toFixed(2)} {product.currency}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
