@@ -43,13 +43,15 @@ upload_book() {
             local filename=$(basename "$file")
             local remote_file="$REMOTE_DIR/$book_id/$filename"
             
-            echo "  📄 Uploading $filename..."
+            # Get file size for monitoring
+            local file_size=$(ls -lh "$file" | awk '{print $5}')
+            echo "  📄 Uploading $filename ($file_size)..."
             
-            # Try upload with timeout
-            timeout 300 scp -o StrictHostKeyChecking=no -i "$PEM_FILE" \
+            # Try upload
+            scp -o StrictHostKeyChecking=no -i "$PEM_FILE" \
                 "$file" ubuntu@"$SERVER":"$remote_file" || {
                 echo "  ⚠️  Upload failed for $filename, retrying..."
-                timeout 300 scp -o StrictHostKeyChecking=no -i "$PEM_FILE" \
+                scp -o StrictHostKeyChecking=no -i "$PEM_FILE" \
                     "$file" ubuntu@"$SERVER":"$remote_file" || {
                     echo "  ❌ Failed to upload $filename after retry"
                     return 1
@@ -61,15 +63,18 @@ upload_book() {
     echo "✅ $book_id uploaded successfully"
 }
 
-# Priority books (free books that need to work first)
+# Priority books (free books - already uploaded)
 PRIORITY_BOOKS=("neema-01" "neema-02" "neema-03")
 
-echo "📋 Uploading priority books first..."
-for book in "${PRIORITY_BOOKS[@]}"; do
+# Complete books with main.pdf files (excluding already uploaded ones)
+COMPLETE_BOOKS=("angel-prayer" "appreciation" "fatuma" "greedy-fisherman" "martha-01" "never-give-up" "second-chance" "test4" "who-is-real")
+
+echo "📋 Uploading remaining complete books with PDFs..."
+for book in "${COMPLETE_BOOKS[@]}"; do
     upload_book "$book"
 done
 
-echo "🎉 Priority books uploaded successfully!"
+echo "🎉 Complete PDF books uploaded successfully!"
 
 # Set correct permissions
 echo "🔒 Setting file permissions..."
