@@ -3,6 +3,160 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
+// Comprehensive book access checking
+async function checkComprehensiveBookAccess(userId: string | undefined, bookId: string, userRole?: string) {
+  try {
+    // Admin users have full access
+    if (userRole === 'ADMIN') {
+      return { hasAccess: true, reason: 'admin_access', details: 'Administrator access' };
+    }
+
+    // Get book details
+    const book = await prisma.story.findUnique({
+      where: { id: bookId },
+      select: { isPremium: true, price: true, title: true }
+    });
+
+    if (!book) {
+      return { hasAccess: false, reason: 'book_not_found' };
+    }
+
+    // Free books are accessible to authenticated users
+    if (!book.isPremium && userId) {
+      return { hasAccess: true, reason: 'free_book', details: 'Free content for authenticated users' };
+    }
+
+    // Preview books (hardcoded for now)
+    const freeBooks = ['neema-01', 'neema-02', 'neema-03'];
+    if (freeBooks.includes(bookId) && userId) {
+      return { hasAccess: true, reason: 'preview_book', details: 'Sample/preview content' };
+    }
+
+    if (!userId) {
+      return { hasAccess: false, reason: 'authentication_required' };
+    }
+
+    // Teacher institutional access
+    if (userRole === 'TEACHER') {
+      const institutionalAccess = await checkTeacherInstitutionalAccess(userId);
+      if (institutionalAccess.hasAccess) {
+        return { 
+          hasAccess: true, 
+          reason: 'teacher_institutional', 
+          details: institutionalAccess.details 
+        };
+      }
+    }
+
+    // Individual entitlements
+    const entitlement = await prisma.entitlement.findFirst({
+      where: {
+        userId: userId,
+        OR: [
+          { bookId: bookId },
+          { storyId: bookId }
+        ],
+        isActive: true,
+        AND: [
+          {
+            OR: [
+              { expiresAt: null },
+              { expiresAt: { gt: new Date() } }
+            ]
+          }
+        ]
+      }
+    });
+
+    if (entitlement) {
+      return { 
+        hasAccess: true, 
+        reason: 'individual_purchase', 
+        details: `${entitlement.type}: ${entitlement.grantReason}` 
+      };
+    }
+
+    // Subscription access
+    const subscription = await prisma.subscription.findUnique({
+      where: { userId: userId },
+      select: {
+        status: true,
+        canAccessPremium: true,
+        plan: true
+      }
+    });
+
+    if (subscription?.canAccessPremium && subscription.status === 'ACTIVE') {
+      return { 
+        hasAccess: true, 
+        reason: 'subscription', 
+        details: `${subscription.plan} subscription` 
+      };
+    }
+
+    return { 
+      hasAccess: false, 
+      reason: 'no_access', 
+      details: book.isPremium ? 'Premium content requires purchase or subscription' : 'Authentication required'
+    };
+
+  } catch (error) {
+    console.error('Error checking book access:', error);
+    return { hasAccess: false, reason: 'system_error' };
+  }
+}
+
+// Teacher institutional access helper
+async function checkTeacherInstitutionalAccess(userId: string) {
+  try {
+    const teacher = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        school: {
+          select: {
+            id: true,
+            name: true,
+            status: true
+          }
+        }
+      }
+    });
+
+    if (!teacher?.school || teacher.school.status !== 'ACTIVE') {
+      return { hasAccess: false };
+    }
+
+    // Check for institutional entitlements
+    const institutionalEntitlement = await prisma.entitlement.findFirst({
+      where: {
+        userId: userId,
+        type: 'LICENSE',
+        isActive: true,
+        AND: [
+          {
+            OR: [
+              { expiresAt: null },
+              { expiresAt: { gt: new Date() } }
+            ]
+          }
+        ]
+      }
+    });
+
+    if (institutionalEntitlement) {
+      return {
+        hasAccess: true,
+        details: `Institutional access via ${teacher.school.name}`
+      };
+    }
+
+    return { hasAccess: false };
+  } catch (error) {
+    console.error('Error checking teacher institutional access:', error);
+    return { hasAccess: false };
+  }
+}
+
 /**
  * GET /api/library/books/[id]
  * 
@@ -40,11 +194,14 @@ export async function GET(
       )
     }
     
-    // Check user access level
-    let accessLevel = 'preview'
+    // Check comprehensive user access
+    const accessResult = await checkComprehensiveBookAccess(session?.user?.id, book.id, session?.user?.role);
+    let accessLevel = accessResult.hasAccess ? 'full' : 'preview'
+    
+    // Get additional user data
     let userSubscription = null
-    let userPurchase = null
     let userProgress = null
+    let userEntitlements: any[] = []
     
     if (session?.user?.id) {
       // Get user subscription
@@ -58,9 +215,6 @@ export async function GET(
         }
       })
       
-      // Check for individual purchase (placeholder for now)
-      // userPurchase = await prisma.order.findFirst({...})
-      
       // Get user reading progress
       userProgress = await prisma.readingProgress.findUnique({
         where: {
@@ -71,19 +225,23 @@ export async function GET(
         }
       })
       
-      // Determine access level
-      if (!book.isPremium) {
-        accessLevel = 'full'
-      } else if (userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE') {
-        accessLevel = 'full'
-      } else if (userPurchase) {
-        accessLevel = 'full'
-      }
-    } else {
-      // Non-authenticated users get full access to free books
-      if (!book.isPremium) {
-        accessLevel = 'full'
-      }
+      // Get user entitlements for this book
+      userEntitlements = await prisma.entitlement.findMany({
+        where: {
+          userId: session.user.id,
+          OR: [
+            { bookId: book.id },
+            { storyId: book.id }
+          ],
+          isActive: true
+        },
+        select: {
+          type: true,
+          grantReason: true,
+          expiresAt: true,
+          scope: true
+        }
+      })
     }
     
     // Prepare PDF access based on access level
@@ -140,7 +298,7 @@ export async function GET(
       orderBy: { viewCount: 'desc' }
     })
     
-    // Build response
+    // Build comprehensive response
     const response = {
       id: book.id,
       title: book.title,
@@ -164,6 +322,20 @@ export async function GET(
       coverImage: book.coverImage,
       samplePdf: book.samplePdf ? `/api/pdf/books/${book.id}/main.pdf` : `/api/pdf/books/${book.id}/main.pdf`,
       fullPdf: accessLevel === 'full' ? `/api/pdf/books/${book.id}/main.pdf` : null,
+      accessInfo: {
+        level: accessLevel,
+        hasAccess: accessResult.hasAccess,
+        reason: accessResult.reason,
+        details: accessResult.details,
+        canDownload: accessLevel === 'full',
+        canPrint: accessLevel === 'full',
+        entitlements: userEntitlements.map(ent => ({
+          type: ent.type,
+          reason: ent.grantReason,
+          expiresAt: ent.expiresAt,
+          scope: ent.scope
+        }))
+      },
       isPremium: book.isPremium,
       featured: book.featured,
       price: book.price,
@@ -193,7 +365,9 @@ export async function GET(
       // Additional fields for PDF handling
       bookId: book.id,
       fullPdfUrl: `/api/pdf/books/${book.id}/main.pdf`,
-      samplePdfUrl: `/api/pdf/books/${book.id}/main.pdf`
+      samplePdfUrl: `/api/pdf/books/${book.id}/main.pdf`,
+      frontCoverUrl: `/api/pdf/books/${book.id}/front.pdf`,
+      backCoverUrl: `/api/pdf/books/${book.id}/back.pdf`
     }
     
     return NextResponse.json(response)
