@@ -73,7 +73,7 @@ interface Story {
   pageLayout?: string;
   isPremium: boolean;
   featured: boolean;
-  price?: number;
+  price?: number | string;
   rating?: number;
   viewCount: number;
   likeCount: number;
@@ -361,7 +361,7 @@ export default function StoryPage() {
                   isSample={isSample}
                   isPremium={story.isPremium}
                   bookId={story.id}
-                  price={story.price}
+                  price={Number(story.price || 0)}
                   onPurchase={handlePurchase}
                   canAccessFull={canReadFull}
                   onClose={() => router.push('/library')}
@@ -679,13 +679,13 @@ export default function StoryPage() {
               </h3>
               
               <p className="text-gray-600 mb-4">
-                Get instant access to the complete book for just ${story.price || '4.99'}
+                Get instant access to the complete book for just ${Number(story.price || 0).toFixed(2)}
               </p>
               
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-between text-sm">
                   <span>Digital Book Access</span>
-                  <span className="font-medium">${story.price || '4.99'}</span>
+                  <span className="font-medium">${Number(story.price || 0).toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm text-gray-600 mt-1">
                   <span>Instant download</span>

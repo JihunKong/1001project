@@ -292,7 +292,7 @@ export default function BookDetailPage() {
         location: book.author.location || 'Unknown',
         story: book.summary || ''
       },
-      price: book.price || 0,
+      price: Number(book.price || 0),
       images: book.coverImage ? [book.coverImage] : [],
       description: book.summary || '',
       impact: {
@@ -796,7 +796,7 @@ export default function BookDetailPage() {
                 {book.isPremium && book.price && (
                   <div className="text-center">
                     <div className="text-2xl font-bold text-gray-900">
-                      ${(book.price || 0).toFixed(2)}
+                      ${Number(book.price || 0).toFixed(2)}
                     </div>
                     <div className="text-sm text-gray-600">One-time purchase</div>
                   </div>
@@ -840,7 +840,7 @@ export default function BookDetailPage() {
                             ) : (
                               <>
                                 <ShoppingCart className="w-5 h-5" />
-                                Purchase - ${(book.price || 0).toFixed(2)}
+                                Purchase - ${Number(book.price || 0).toFixed(2)}
                               </>
                             )}
                           </button>
