@@ -28,7 +28,9 @@ async function checkBookAccess(userId: string | undefined, bookId: string, filen
     }
 
     // 3. Sample PDF access - Allow sample access for premium books without authentication
+    console.log('PDF API Debug - checking sample access:', { bookId, filename, userId: !!userId });
     if (filename === 'sample.pdf') {
+      console.log('PDF API Debug - granting sample access');
       return { access: true, reason: userId ? 'sample_authenticated' : 'sample_preview' };
     }
 
