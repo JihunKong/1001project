@@ -21,14 +21,15 @@ async function checkBookAccess(userId: string | undefined, bookId: string, userR
     }
 
     // 2. Hardcoded free books (sample/preview books) - CHECK FIRST for reliability
+    // These books should be accessible to EVERYONE, including unauthenticated users
     const freeBooks = ['neema-01', 'neema-02', 'neema-03'];
     if (freeBooks.includes(bookId)) {
-      if (userId) {
-        return { access: true, reason: 'preview_book_authenticated' };
-      } else {
-        // Allow preview access for unauthenticated users to first 3 pages
-        return { access: true, reason: 'preview_access_unauthenticated' };
-      }
+      return { access: true, reason: userId ? 'free_book_authenticated' : 'free_book_preview' };
+    }
+
+    // For non-hardcoded books, we need to check authentication first
+    if (!userId) {
+      return { access: false, reason: 'authentication_required' };
     }
 
     // Get book details from database
@@ -43,20 +44,12 @@ async function checkBookAccess(userId: string | undefined, bookId: string, userR
     });
 
     if (!book) {
-      // If book not found in DB but is in hardcoded free list, still allow access
-      if (freeBooks.includes(bookId)) {
-        return { access: true, reason: 'preview_book_fallback' };
-      }
       return { access: false, reason: 'book_not_found' };
     }
 
     // 3. Free books are accessible to all authenticated users
-    if (!book.isPremium && userId) {
+    if (!book.isPremium) {
       return { access: true, reason: 'free_book_authenticated' };
-    }
-
-    if (!userId) {
-      return { access: false, reason: 'authentication_required' };
     }
 
     // 4. Check teacher institutional access
