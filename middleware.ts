@@ -103,7 +103,8 @@ export default withAuth(
             pathname.startsWith("/api/library/books") ||
             pathname.startsWith("/api/shop/products") ||
             pathname.startsWith("/api/shop/cart") ||
-            pathname.startsWith("/api/pdf")) {
+            pathname.startsWith("/api/pdf") ||
+            pathname.startsWith("/api/covers")) {
           return true;
         }
         
