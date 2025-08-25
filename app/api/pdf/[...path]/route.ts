@@ -325,6 +325,7 @@ export async function GET(
           error: errorMessage.title,
           message: errorMessage.description,
           bookId: bookId,
+          filename: filename, // Debug: include filename in response
           isPremium: book?.isPremium || false, // Use fallback if book not in DB
           accessReason: accessResult.reason,
           details: accessResult.details,
