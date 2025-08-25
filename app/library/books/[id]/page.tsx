@@ -508,7 +508,7 @@ export default function BookDetailPage() {
                       ))}
                     </div>
                     <span className="text-sm text-gray-600">
-                      {averageRating > 0 ? averageRating.toFixed(1) : 'No ratings yet'} 
+                      {averageRating > 0 ? Number(averageRating || 0).toFixed(1) : 'No ratings yet'} 
                       ({book.stats.reviews} review{book.stats.reviews !== 1 ? 's' : ''})
                     </span>
                   </div>

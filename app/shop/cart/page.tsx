@@ -155,23 +155,23 @@ export default function CartPage() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-600">
                     <span>{t('shop.cart.subtotal')}</span>
-                    <span className="font-medium">${subtotal.toFixed(2)}</span>
+                    <span className="font-medium">${Number(subtotal || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
                     <span>{t('shop.cart.shipping')}</span>
                     <span className="font-medium">
-                      {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                      {shipping === 0 ? 'FREE' : `$${Number(shipping || 0).toFixed(2)}`}
                     </span>
                   </div>
                   {shipping > 0 && (
                     <p className="text-xs text-orange-600">
-                      Add ${(50 - subtotal).toFixed(2)} more for free shipping!
+                      Add ${Number((50 - subtotal) || 0).toFixed(2)} more for free shipping!
                     </p>
                   )}
                   <div className="border-t pt-3">
                     <div className="flex justify-between text-lg font-semibold text-gray-900">
                       <span>{t('shop.cart.total')}</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span>${Number(total || 0).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

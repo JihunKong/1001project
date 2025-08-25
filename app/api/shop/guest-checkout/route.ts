@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
         <ul>
           <li><strong>Product:</strong> ${shopProduct.book?.title || shopProduct.title}</li>
           <li><strong>Quantity:</strong> ${quantity}</li>
-          <li><strong>Total:</strong> $${total.toFixed(2)}</li>
+          <li><strong>Total:</strong> $${Number(total || 0).toFixed(2)}</li>
           <li><strong>Order ID:</strong> ${order.id}</li>
         </ul>
         
