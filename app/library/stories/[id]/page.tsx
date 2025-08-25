@@ -20,7 +20,8 @@ import {
   Calendar,
   User,
   AlertCircle,
-  Lock
+  Lock,
+  ShoppingCart
 } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -260,7 +261,30 @@ export default function StoryPage() {
   }
 
   const canReadFull = story.accessLevel === 'full' && !isPreviewMode;
-  const pdfUrl = canReadFull ? story.fullPdf : story.samplePdf;
+  const isSampleMode = story.isPremium && (story.accessLevel !== 'full' || isPreviewMode);
+  
+  // Determine PDF URL and viewing mode
+  let pdfUrl: string | undefined;
+  let isSample = false;
+  
+  if (canReadFull && story.fullPdf) {
+    // User has full access and full PDF exists
+    pdfUrl = story.fullPdf;
+    isSample = false;
+  } else if (story.isPremium && story.samplePdf) {
+    // Premium book - show sample if available
+    pdfUrl = `/api/pdf/books/${story.id}/sample.pdf`;
+    isSample = true;
+  } else if (story.fullPdf && !story.isPremium) {
+    // Free book - show full PDF
+    pdfUrl = story.fullPdf;
+    isSample = false;
+  } else if (story.samplePdf) {
+    // Fallback to sample
+    pdfUrl = story.samplePdf;
+    isSample = true;
+  }
+
   const maxPages = isPreviewMode ? 10 : (story.accessLevel === 'full' ? undefined : 10);
 
   return (
@@ -334,6 +358,12 @@ export default function StoryPage() {
                   isAuthenticated={!!session}
                   maxPages={maxPages}
                   pageLayout={(story.pageLayout as 'single' | 'double') || 'single'}
+                  isSample={isSample}
+                  isPremium={story.isPremium}
+                  bookId={story.id}
+                  price={story.price}
+                  onPurchase={handlePurchase}
+                  canAccessFull={canReadFull}
                   onClose={() => router.push('/library')}
                 />
               </div>
@@ -630,6 +660,65 @@ export default function StoryPage() {
           </div>
         </div>
       </div>
+
+      {/* Purchase Modal */}
+      {showPurchaseModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+          >
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ShoppingCart className="w-8 h-8 text-blue-600" />
+              </div>
+              
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                Purchase "{story.title}"
+              </h3>
+              
+              <p className="text-gray-600 mb-4">
+                Get instant access to the complete book for just ${story.price || '4.99'}
+              </p>
+              
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Digital Book Access</span>
+                  <span className="font-medium">${story.price || '4.99'}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-gray-600 mt-1">
+                  <span>Instant download</span>
+                  <span>✓</span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <span>Lifetime access</span>
+                  <span>✓</span>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowPurchaseModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // TODO: Implement actual purchase flow
+                    setShowPurchaseModal(false);
+                    alert('Purchase functionality will be implemented soon!');
+                  }}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Purchase Now
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

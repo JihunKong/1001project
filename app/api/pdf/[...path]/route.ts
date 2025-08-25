@@ -13,7 +13,7 @@ type AccessResult = {
 };
 
 // Check comprehensive book access based on user, role, and entitlements
-async function checkBookAccess(userId: string | undefined, bookId: string, userRole?: string): Promise<AccessResult> {
+async function checkBookAccess(userId: string | undefined, bookId: string, filename: string, userRole?: string): Promise<AccessResult> {
   try {
     // 1. Admin users have full access
     if (userRole === 'ADMIN') {
@@ -25,6 +25,11 @@ async function checkBookAccess(userId: string | undefined, bookId: string, userR
     const freeBooks = ['neema-01', 'neema-02', 'neema-03'];
     if (freeBooks.includes(bookId)) {
       return { access: true, reason: userId ? 'free_book_authenticated' : 'free_book_preview' };
+    }
+
+    // 3. Sample PDF access - Allow sample access for premium books without authentication
+    if (filename === 'sample.pdf') {
+      return { access: true, reason: userId ? 'sample_authenticated' : 'sample_preview' };
     }
 
     // For non-hardcoded books, we need to check authentication first
@@ -308,7 +313,7 @@ export async function GET(
       }
       
       // Check comprehensive access control
-      const accessResult = await checkBookAccess(session?.user?.id, bookId, session?.user?.role);
+      const accessResult = await checkBookAccess(session?.user?.id, bookId, filename, session?.user?.role);
       
       if (!accessResult.access) {
         const statusCode = accessResult.reason === 'authentication_required' ? 401 : 403;

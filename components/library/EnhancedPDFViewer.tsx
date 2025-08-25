@@ -16,7 +16,11 @@ import {
   AlertCircle,
   BookOpen,
   Book,
-  FileText
+  FileText,
+  ShoppingCart,
+  Eye,
+  Crown,
+  Lock
 } from 'lucide-react';
 
 // Set up PDF.js worker
@@ -34,6 +38,12 @@ interface PDFViewerProps {
   maxPages?: number;
   pageLayout?: 'single' | 'double';
   isAuthenticated?: boolean;
+  isSample?: boolean;
+  isPremium?: boolean;
+  bookId?: string;
+  price?: number;
+  onPurchase?: (bookId: string) => void;
+  canAccessFull?: boolean;
 }
 
 export default function EnhancedPDFViewer({ 
@@ -43,7 +53,13 @@ export default function EnhancedPDFViewer({
   isDemo = false,
   maxPages = 10,
   pageLayout = 'single',
-  isAuthenticated = false
+  isAuthenticated = false,
+  isSample = false,
+  isPremium = false,
+  bookId,
+  price = 0,
+  onPurchase,
+  canAccessFull = false
 }: PDFViewerProps) {
   const router = useRouter();
   const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null);
@@ -396,7 +412,25 @@ export default function EnhancedPDFViewer({
         <div className="flex items-center gap-3">
           <BookOpen className="w-5 h-5 text-blue-600" />
           <h2 className="font-semibold text-gray-900 truncate">{title}</h2>
-          {(isDemo || !isAuthenticated) && (
+          
+          {/* Sample Mode Indicator */}
+          {isSample && isPremium && (
+            <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium">
+              <Eye className="w-3 h-3" />
+              Sample Preview
+            </div>
+          )}
+          
+          {/* Premium Book Indicator */}
+          {isPremium && !isSample && (
+            <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
+              <Crown className="w-3 h-3" />
+              Premium
+            </div>
+          )}
+          
+          {/* Legacy Demo/Preview indicators */}
+          {(isDemo || (!isAuthenticated && !isSample)) && (
             <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
               {isDemo ? `Demo Mode (Max ${maxPages} pages)` : `Preview (Max 10 pages)`}
             </span>
@@ -474,8 +508,20 @@ export default function EnhancedPDFViewer({
             <RotateCw className="w-4 h-4" />
           </button>
 
-          {/* Download (only if authenticated and not demo) */}
-          {!isDemo && isAuthenticated && (
+          {/* Purchase Button (for sample mode) */}
+          {isSample && isPremium && bookId && onPurchase && (
+            <button
+              onClick={() => onPurchase(bookId)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              title={`Buy full book for $${price}`}
+            >
+              <ShoppingCart className="w-4 h-4" />
+              Buy Full Book ${price}
+            </button>
+          )}
+
+          {/* Download (only if authenticated and not demo and not sample) */}
+          {!isDemo && isAuthenticated && !isSample && (
             <a
               href={pdfUrl}
               download={`${title}.pdf`}
@@ -553,7 +599,29 @@ export default function EnhancedPDFViewer({
       </div>
 
       {/* Warning Banner */}
-      {(isDemo || !isAuthenticated) && (
+      {(isSample && isPremium) && (
+        <div className="bg-purple-500 text-white px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 text-sm font-medium">
+              <Lock className="w-4 h-4" />
+              <span>📖 Sample Preview: This is a preview of the book</span>
+              <span>|</span>
+              <span>Purchase the full book to read the complete content!</span>
+            </div>
+            {bookId && onPurchase && (
+              <button
+                onClick={() => onPurchase(bookId)}
+                className="bg-white text-purple-600 px-4 py-1 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors"
+              >
+                Buy Now ${price}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* Legacy Warning Banner */}
+      {(isDemo || (!isAuthenticated && !isSample)) && (
         <div className="bg-yellow-400 text-black px-4 py-3">
           <div className="flex items-center justify-center gap-3 text-sm font-medium">
             <span>
