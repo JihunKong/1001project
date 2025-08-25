@@ -41,7 +41,7 @@ interface PDFViewerProps {
   isSample?: boolean;
   isPremium?: boolean;
   bookId?: string;
-  price?: number;
+  price?: number | string;
   onPurchase?: (bookId: string) => void;
   canAccessFull?: boolean;
 }
