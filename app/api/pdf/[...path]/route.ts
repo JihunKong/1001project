@@ -20,7 +20,18 @@ async function checkBookAccess(userId: string | undefined, bookId: string, userR
       return { access: true, reason: 'admin_access' };
     }
 
-    // Get book details
+    // 2. Hardcoded free books (sample/preview books) - CHECK FIRST for reliability
+    const freeBooks = ['neema-01', 'neema-02', 'neema-03'];
+    if (freeBooks.includes(bookId)) {
+      if (userId) {
+        return { access: true, reason: 'preview_book_authenticated' };
+      } else {
+        // Allow preview access for unauthenticated users to first 3 pages
+        return { access: true, reason: 'preview_access_unauthenticated' };
+      }
+    }
+
+    // Get book details from database
     const book = await prisma.story.findUnique({
       where: { id: bookId },
       select: {
@@ -32,18 +43,16 @@ async function checkBookAccess(userId: string | undefined, bookId: string, userR
     });
 
     if (!book) {
+      // If book not found in DB but is in hardcoded free list, still allow access
+      if (freeBooks.includes(bookId)) {
+        return { access: true, reason: 'preview_book_fallback' };
+      }
       return { access: false, reason: 'book_not_found' };
     }
 
-    // 2. Free books are accessible to all authenticated users
+    // 3. Free books are accessible to all authenticated users
     if (!book.isPremium && userId) {
       return { access: true, reason: 'free_book_authenticated' };
-    }
-
-    // 3. Hardcoded free books (sample/preview books)
-    const freeBooks = ['neema-01', 'neema-02', 'neema-03'];
-    if (freeBooks.includes(bookId) && userId) {
-      return { access: true, reason: 'preview_book' };
     }
 
     if (!userId) {
@@ -287,7 +296,11 @@ export async function GET(
         }
       });
       
-      if (!book) {
+      // Special handling for hardcoded free books - allow access even if not in DB
+      const hardcodedFreeBooks = ['neema-01', 'neema-02', 'neema-03'];
+      const isHardcodedFree = hardcodedFreeBooks.includes(bookId);
+      
+      if (!book && !isHardcodedFree) {
         return new NextResponse(JSON.stringify({
           error: 'Book not found',
           message: 'The requested book does not exist or is not published.',
@@ -312,7 +325,7 @@ export async function GET(
           error: errorMessage.title,
           message: errorMessage.description,
           bookId: bookId,
-          isPremium: book.isPremium,
+          isPremium: book?.isPremium || false, // Use fallback if book not in DB
           accessReason: accessResult.reason,
           details: accessResult.details,
           requiresAuth: !session?.user?.id,
@@ -348,7 +361,9 @@ export async function GET(
     }
     
     // Construct the full path to the PDF file
-    const pdfPath = path.join(process.cwd(), 'public', 'books', filePath);
+    // Note: filePath already includes 'books' as first segment, so join with 'public' only
+    const pdfPath = path.join(process.cwd(), 'public', filePath);
+    
     
     // Security check - ensure the path is within the books directory
     const publicPdfDir = path.join(process.cwd(), 'public', 'books');
@@ -408,6 +423,11 @@ function getAccessErrorMessage(reason: string, bookId: string, isAuthenticated: 
       return {
         title: 'System error',
         description: 'Unable to verify access permissions. Please try again.'
+      };
+    case 'preview_access_unauthenticated':
+      return {
+        title: 'Preview access granted',
+        description: 'You can view a preview of this book. Sign in for full access.'
       };
     default:
       return {
