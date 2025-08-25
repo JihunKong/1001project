@@ -89,7 +89,27 @@ export default function EnhancedPDFViewer({
         }
       } catch (err) {
         console.error('Error loading PDF:', err);
-        setError(`PDF loading failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        
+        // Enhanced error handling with specific messages
+        let errorMessage = 'PDF loading failed';
+        if (err instanceof Error) {
+          const message = err.message.toLowerCase();
+          if (message.includes('invalid root reference')) {
+            errorMessage = 'PDF file appears to be corrupted or missing. Please try refreshing the page or contact support if the issue persists.';
+          } else if (message.includes('network error') || message.includes('fetch')) {
+            errorMessage = 'Unable to load PDF due to network issues. Please check your connection and try again.';
+          } else if (message.includes('unexpected server response') && message.includes('404')) {
+            errorMessage = 'PDF file not found on server. The book may not be available yet.';
+          } else if (message.includes('unexpected server response') && message.includes('401')) {
+            errorMessage = 'Authentication required. Please sign in to access this content.';
+          } else if (message.includes('unexpected server response') && message.includes('403')) {
+            errorMessage = 'Access denied. This book may require a subscription or purchase.';
+          } else {
+            errorMessage = `PDF loading failed: ${err.message}`;
+          }
+        }
+        
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -289,26 +309,79 @@ export default function EnhancedPDFViewer({
   }
 
   if (error) {
+    const isCorruptedError = error.includes('corrupted or missing');
+    const isNetworkError = error.includes('network issues');
+    const isNotFoundError = error.includes('not found');
+    const isAuthError = error.includes('Authentication required') || error.includes('Access denied');
+
     return (
       <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <div className="bg-white rounded-lg p-8 max-w-lg w-full mx-4">
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Occurred</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {isAuthError ? 'Access Required' : 
+               isNotFoundError ? 'Book Not Available' :
+               isNetworkError ? 'Connection Issue' :
+               'PDF Loading Error'}
+            </h3>
             <p className="text-gray-600 mb-6">{error}</p>
+            
+            {/* Helpful suggestions based on error type */}
+            {isCorruptedError && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 text-sm text-yellow-800">
+                <p className="font-medium mb-1">What you can try:</p>
+                <ul className="text-left list-disc list-inside space-y-1">
+                  <li>Refresh the page and try again</li>
+                  <li>Check if other books load properly</li>
+                  <li>Contact support if the problem persists</li>
+                </ul>
+              </div>
+            )}
+            
+            {isNetworkError && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm text-blue-800">
+                <p className="font-medium mb-1">Connection troubleshooting:</p>
+                <ul className="text-left list-disc list-inside space-y-1">
+                  <li>Check your internet connection</li>
+                  <li>Try refreshing the page</li>
+                  <li>Wait a moment and try again</li>
+                </ul>
+              </div>
+            )}
+            
+            {isAuthError && (
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4 text-sm text-purple-800">
+                <p className="font-medium mb-1">To access this book:</p>
+                <ul className="text-left list-disc list-inside space-y-1">
+                  <li>Sign in to your account</li>
+                  <li>Purchase the book or subscribe</li>
+                  <li>Check if you have the required permissions</li>
+                </ul>
+              </div>
+            )}
+            
             <div className="flex gap-3">
               <button
                 onClick={onClose}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Close
+                {isAuthError ? 'Go Back' : 'Close'}
               </button>
               <button
                 onClick={() => window.location.reload()}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Retry
+                {isNetworkError ? 'Try Again' : 'Retry'}
               </button>
+              {isAuthError && (
+                <button
+                  onClick={() => window.location.href = '/login'}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
           </div>
         </div>
