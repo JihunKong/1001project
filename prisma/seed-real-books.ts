@@ -105,10 +105,22 @@ async function main() {
 
     console.log(`✅ Created ${createdBooks.length} book records`);
 
-    // 4. Create shop products for all books
+    // 4. Create shop products for books with uploaded PDFs
     console.log('🛍️ Creating shop products...');
+    
+    // List of books with actual PDF files on server (uploaded)
+    const booksWithPDFs = [
+      'angel-prayer', 'appreciation', 'fatuma', 'greedy-fisherman', 'martha-01',
+      'neema-01', 'neema-02', 'neema-03', 'never-give-up', 'second-chance',
+      'test4', 'who-is-real'
+    ];
+    
+    // Filter books to only those with uploaded PDFs
+    const booksForShop = createdBooks.filter(book => booksWithPDFs.includes(book.id));
+    console.log(`📚 Creating shop products for ${booksForShop.length} books with uploaded PDFs...`);
+    
     const shopProducts = await Promise.all(
-      createdBooks.map(async (book, index) => {
+      booksForShop.map(async (book, index) => {
         return prisma.shopProduct.create({
           data: {
             sku: `BOOK-${String(index + 1).padStart(3, '0')}`,
@@ -150,8 +162,8 @@ async function main() {
       }
     });
 
-    // Add reading progress for free books
-    const freeBooks = createdBooks.filter(book => !book.isPremium);
+    // Add reading progress for free books that have PDFs
+    const freeBooks = booksForShop.filter(book => !book.isPremium);
     for (const user of demoUsers) {
       for (const book of freeBooks.slice(0, 2)) { // First 2 free books
         await prisma.readingProgress.create({
@@ -167,9 +179,9 @@ async function main() {
       }
     }
 
-    // Add bookmarks
+    // Add bookmarks for books with PDFs
     for (const user of demoUsers) {
-      const bookmarkedBooks = createdBooks.slice(0, Math.floor(Math.random() * 3) + 2); // 2-4 bookmarks
+      const bookmarkedBooks = booksForShop.slice(0, Math.floor(Math.random() * 3) + 2); // 2-4 bookmarks
       for (const book of bookmarkedBooks) {
         await prisma.bookmark.create({
           data: {
@@ -192,7 +204,7 @@ async function main() {
     ];
 
     for (const user of demoUsers.slice(0, 2)) { // Only first 2 users leave reviews
-      for (const book of createdBooks.slice(0, 5)) { // First 5 books get reviews
+      for (const book of booksForShop.slice(0, 5)) { // First 5 books with PDFs get reviews
         if (Math.random() > 0.3) { // 70% chance of review
           const reviewData = reviewTexts[Math.floor(Math.random() * reviewTexts.length)];
           await prisma.review.create({
@@ -231,13 +243,14 @@ async function main() {
     console.log('');
     console.log('📊 Summary:');
     console.log(`  📚 Books created: ${createdBooks.length}`);
+    console.log(`  📁 Books with PDFs: ${booksForShop.length}`);
     console.log(`  🆓 Free books: ${createdBooks.filter(b => !b.isPremium).length}`);
     console.log(`  💎 Premium books: ${createdBooks.filter(b => b.isPremium).length}`);
     console.log(`  🛍️ Shop products: ${shopProducts.length}`);
     console.log(`  🌍 Languages: ${[...new Set(booksData.map(b => b.language))].join(', ')}`);
     console.log('');
     console.log('🎯 Free Preview Books (Demo):');
-    createdBooks.filter(b => !b.isPremium).forEach(book => {
+    booksForShop.filter(b => !b.isPremium).forEach(book => {
       console.log(`  - ${book.title} (${book.id})`);
     });
     console.log('');
