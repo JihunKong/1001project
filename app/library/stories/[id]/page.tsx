@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { resolveBookFiles } from '@/lib/book-files';
 
 const EnhancedPDFViewer = dynamic(
@@ -349,6 +350,44 @@ export default function StoryPage() {
 
           {/* Sidebar - Story Info */}
           <div className="space-y-6">
+            
+            {/* Book Cover */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-lg shadow-sm p-6"
+            >
+              <div className="flex justify-center">
+                <div className="relative w-48 h-64 group">
+                  <Image
+                    src={`/api/covers/${story.id}`}
+                    alt={`${story.title} cover`}
+                    fill
+                    className="rounded-lg shadow-md object-cover group-hover:shadow-lg transition-shadow"
+                    sizes="(max-width: 768px) 192px, 192px"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
+                </div>
+              </div>
+              
+              <div className="text-center mt-4">
+                <h2 className="font-semibold text-gray-900 text-lg mb-1">{story.title}</h2>
+                {story.subtitle && (
+                  <p className="text-sm text-gray-600 mb-2">{story.subtitle}</p>
+                )}
+                <p className="text-sm text-gray-500">
+                  By {story.author.name}
+                  {story.author.age && ` (Age ${story.author.age})`}
+                </p>
+                {story.isPremium && (
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    <Crown className="w-4 h-4 text-yellow-500" />
+                    <span className="text-sm font-medium text-yellow-600">Premium</span>
+                  </div>
+                )}
+              </div>
+            </motion.div>
             
             {/* Story Details */}
             <motion.div
