@@ -212,7 +212,7 @@ export default function Library() {
         {book.rating && (
           <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
             <Star className="w-3 h-3 text-yellow-500 fill-current" />
-            {book.rating?.toFixed(1)}
+            {Number(book.rating || 0).toFixed(1)}
           </div>
         )}
       </div>

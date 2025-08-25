@@ -54,7 +54,7 @@ interface Book {
   coverImage?: string;
   isPremium: boolean;
   featured: boolean;
-  price?: number;
+  price?: number | string;
   rating?: number;
   viewCount: number;
   accessLevel: 'preview' | 'full';
@@ -376,7 +376,7 @@ export default function BookDetailPage() {
   }
 
   const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 3);
-  const averageRating = book.rating || (reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0);
+  const averageRating = Number(book.rating || 0) || (reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0);
 
   return (
     <div className="min-h-screen bg-gray-50">

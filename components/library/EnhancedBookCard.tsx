@@ -189,7 +189,7 @@ export default function EnhancedBookCard({ book }: EnhancedBookCardProps) {
                         }`}
                       />
                     ))}
-                    <span className="text-xs text-gray-600 ml-1">{book.rating?.toFixed(1)}</span>
+                    <span className="text-xs text-gray-600 ml-1">{Number(book.rating || 0).toFixed(1)}</span>
                   </div>
                 )}
                 

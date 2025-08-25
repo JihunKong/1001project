@@ -467,7 +467,7 @@ export default function StoryPage() {
                 
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-500" />
-                  <span>{story.rating?.toFixed(1) || 'Not rated'}</span>
+                  <span>{story.rating ? Number(story.rating).toFixed(1) : 'Not rated'}</span>
                 </div>
                 
                 <div className="flex items-center gap-2">
