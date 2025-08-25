@@ -50,9 +50,18 @@ async function main() {
         const frontCoverUrl = bookData.frontCoverFile ? `/api/pdf/books/${bookData.id}/front.pdf` : null;
         const backCoverUrl = bookData.backCoverFile ? `/api/pdf/books/${bookData.id}/back.pdf` : null;
         
-        // Generate cover image path - use placeholder for missing files
-        const existingBooks = ['neema-01', 'neema-02', 'neema-03', 'second-chance', 'angel-prayer', 'martha-01'];
-        const coverImageUrl = existingBooks.includes(bookData.id) 
+        // Generate cover image path - ONLY use covers that actually exist on server
+        // Verified list of books with actual cover.png files on server (generated 2025-08-25)
+        const booksWithActualCovers = [
+          'a-gril-come-to-stanford', 'angel-prayer', 'appreciation', 'check-point-eng', 'check-point-span', 'fatuma',
+          'girl-with-a-hope-eng', 'greedy-fisherman', 'kakama-01', 'kakama-02', 'martha-01',
+          'martha-02', 'martha-03', 'mirror', 'my-life-eng', 'my-life-p-urh-pecha', 'my-life-span',
+          'neema-01', 'neema-02', 'neema-03', 'never-give-up', 'second-chance',
+          'steet-boy-part01-span', 'street-boy-part02-eng', 'test4', 'the-eyes-of-the-sun',
+          'the-indian-boy-s', 'the-story-of-a-thief-eng', 'the-three-boys-eng',
+          'the-three-boys-span', 'who-is-real'
+        ];
+        const coverImageUrl = booksWithActualCovers.includes(bookData.id) 
           ? `/books/${bookData.id}/cover.png` 
           : '/images/placeholder-book.jpg';
 
