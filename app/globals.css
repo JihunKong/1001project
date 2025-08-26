@@ -45,6 +45,23 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+/* Force text visibility for critical UI elements */
+.text-gray-900 {
+  color: #111827 !important;
+}
+
+.text-gray-600 {
+  color: #4B5563 !important;
+}
+
+.text-gray-700 {
+  color: #374151 !important;
+}
+
+.text-gray-800 {
+  color: #1F2937 !important;
+}
+
 /* Brand gradient text animation */
 @layer utilities {
   .gradient-text {
