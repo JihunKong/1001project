@@ -46,8 +46,10 @@ export async function GET(
     const pdfFrontCoverPath = path.join(booksDir, 'front.pdf');
     if (fs.existsSync(pdfFrontCoverPath)) {
       // For PDF covers, we redirect to the PDF API with front cover
+      // Use proper base URL for production
+      const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://1001stories.seedsofempowerment.org';
       const pdfUrl = `/api/pdf/books/${bookId}/front.pdf`;
-      return NextResponse.redirect(new URL(pdfUrl, request.url));
+      return NextResponse.redirect(new URL(pdfUrl, baseUrl));
     }
 
     // Try JPEG/JPG fallback
