@@ -96,7 +96,7 @@ export default function CartPage() {
         >
           <div className="max-w-md mx-auto text-center">
             <div className="bg-white rounded-full w-32 h-32 mx-auto mb-6 flex items-center justify-center">
-              <ShoppingCart className="w-16 h-16 text-gray-300" />
+              <ShoppingCart className="w-16 h-16 text-gray-400" />
             </div>
             <h2 className="text-2xl font-semibold text-gray-900 mb-2">
               {t('shop.cart.empty')}

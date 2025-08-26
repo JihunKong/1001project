@@ -319,7 +319,7 @@ export default function ShopPage() {
               </div>
             ) : (
               <div className="text-center py-16">
-                <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-600 mb-2">No products found</h3>
                 <p className="text-gray-500">Try adjusting your filters or search query</p>
               </div>

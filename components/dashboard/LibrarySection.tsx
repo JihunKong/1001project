@@ -190,7 +190,7 @@ export default function LibrarySection({
     return (
       <div className={`bg-white rounded-xl shadow-sm p-6 ${className}`}>
         <div className="text-center py-8">
-          <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">No stories yet</h3>
           <p className="text-gray-600 mb-4">Start building your library by exploring stories or subscribing to premium content.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
