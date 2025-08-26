@@ -75,10 +75,10 @@ const BookSpine = ({ book, index }: { book: Book; index: number }) => {
         {/* Book Title - Vertical Text */}
         <div className="absolute inset-0 flex flex-col justify-center items-center p-1">
           <div className="transform -rotate-90 whitespace-nowrap">
-            <div className="text-white text-xs font-bold leading-tight max-w-48 overflow-hidden text-ellipsis">
+            <div className="text-white text-xs font-bold leading-tight max-w-48 overflow-hidden text-ellipsis drop-shadow-lg" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>
               {book.title.substring(0, 20)}
             </div>
-            <div className="text-white/80 text-xs mt-1">
+            <div className="text-white/90 text-xs mt-1 drop-shadow-md" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>
               {book.author.name.split(' ')[0]}
             </div>
           </div>

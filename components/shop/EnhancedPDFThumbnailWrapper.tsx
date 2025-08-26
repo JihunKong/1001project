@@ -30,17 +30,27 @@ export default function EnhancedPDFThumbnailWrapper({
     const loadThumbnail = async () => {
       setIsLoading(true);
       
-      // Try PNG cover first
-      const pngCoverUrl = `/books/${bookId}/cover.png`;
-      try {
-        const response = await fetch(pngCoverUrl, { method: 'HEAD' });
-        if (response.ok) {
-          setThumbnailUrl(pngCoverUrl);
-          setIsLoading(false);
-          return;
+      // Try different image sources in order of preference
+      const imageUrls = [
+        `/books/${bookId}/cover.png`,
+        `/books/${bookId}/front.png`,
+        `/books/${bookId}/cover.jpg`,
+        `/books/${bookId}/front.pdf`,
+        `/api/covers/${bookId}`
+      ];
+      
+      for (const imageUrl of imageUrls) {
+        try {
+          const response = await fetch(imageUrl, { method: 'HEAD' });
+          if (response.ok) {
+            setThumbnailUrl(imageUrl);
+            setIsLoading(false);
+            return;
+          }
+        } catch (error) {
+          // Continue to next URL
+          continue;
         }
-      } catch (error) {
-        // Fallback to placeholder
       }
       
       setIsLoading(false);
@@ -80,7 +90,7 @@ export default function EnhancedPDFThumbnailWrapper({
     <div className={`flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 ${className}`} style={{ width, height }}>
       <div className="text-center">
         <BookOpen className="w-16 h-16 text-blue-300 mx-auto mb-2" />
-        <p className="text-xs text-gray-500 px-2">{title}</p>
+        <p className="text-xs text-gray-700 font-medium px-2">{title}</p>
       </div>
       {children}
     </div>

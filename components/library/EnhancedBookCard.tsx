@@ -185,7 +185,7 @@ export default function EnhancedBookCard({ book }: EnhancedBookCardProps) {
                         className={`w-3 h-3 ${
                           star <= (book.rating || 0)
                             ? 'text-yellow-400 fill-current'
-                            : 'text-gray-300'
+                            : 'text-gray-400'
                         }`}
                       />
                     ))}

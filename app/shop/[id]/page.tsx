@@ -154,7 +154,7 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+          <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-400" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Product Not Found</h2>
           <p className="text-gray-600 mb-4">{error || 'The product you are looking for does not exist.'}</p>
           <Link 

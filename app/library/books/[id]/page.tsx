@@ -502,7 +502,7 @@ export default function BookDetailPage() {
                           className={`w-5 h-5 ${
                             star <= averageRating
                               ? 'text-yellow-400 fill-current'
-                              : 'text-gray-300'
+                              : 'text-gray-400'
                           }`}
                         />
                       ))}
@@ -625,7 +625,7 @@ export default function BookDetailPage() {
                             className={`w-6 h-6 ${
                               star <= reviewForm.rating
                                 ? 'text-yellow-400 fill-current'
-                                : 'text-gray-300 hover:text-yellow-400'
+                                : 'text-gray-400 hover:text-yellow-400'
                             }`}
                           />
                         </button>
@@ -697,7 +697,7 @@ export default function BookDetailPage() {
                         className={`w-4 h-4 ${
                           star <= userReview.rating
                             ? 'text-yellow-400 fill-current'
-                            : 'text-gray-300'
+                            : 'text-gray-400'
                         }`}
                       />
                     ))}
@@ -737,7 +737,7 @@ export default function BookDetailPage() {
                               className={`w-4 h-4 ${
                                 star <= review.rating
                                   ? 'text-yellow-400 fill-current'
-                                  : 'text-gray-300'
+                                  : 'text-gray-400'
                               }`}
                             />
                           ))}
@@ -775,7 +775,7 @@ export default function BookDetailPage() {
 
               {reviews.length === 0 && (
                 <div className="text-center py-8">
-                  <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500">No reviews yet. Be the first to review this book!</p>
                 </div>
               )}
