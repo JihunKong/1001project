@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
+// PDF.js types - importing only types to avoid SSR issues
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { 
   ChevronLeft, 
@@ -23,10 +23,7 @@ import {
   Lock
 } from 'lucide-react';
 
-// Set up PDF.js worker
-if (typeof window !== 'undefined') {
-  GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
-}
+// PDF.js worker will be configured dynamically to avoid SSR issues
 
 type ViewMode = 'single' | 'spread';
 
@@ -90,7 +87,24 @@ export default function EnhancedPDFViewer({
       
       try {
         console.log('Loading PDF from:', pdfUrl);
-        const loadingTask = getDocument(pdfUrl);
+        
+        // Enhanced PDF.js initialization with better error handling
+        let pdfLib;
+        try {
+          // Try to get the PDF.js library
+          pdfLib = await import('pdfjs-dist');
+          
+          // Set worker source if not already set
+          if (typeof window !== 'undefined' && !pdfLib.GlobalWorkerOptions.workerSrc) {
+            pdfLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js?v=${pdfLib.version}`;
+          }
+          
+        } catch (importError) {
+          console.error('Error importing PDF.js:', importError);
+          throw new Error('PDF.js library failed to load. Please refresh the page and try again.');
+        }
+        
+        const loadingTask = pdfLib.getDocument(pdfUrl);
         const pdfDoc = await loadingTask.promise;
         
         setPdf(pdfDoc);
@@ -110,7 +124,9 @@ export default function EnhancedPDFViewer({
         let errorMessage = 'PDF loading failed';
         if (err instanceof Error) {
           const message = err.message.toLowerCase();
-          if (message.includes('invalid root reference')) {
+          if (message.includes('pdf.js library failed')) {
+            errorMessage = err.message;
+          } else if (message.includes('invalid root reference')) {
             errorMessage = 'PDF file appears to be corrupted or missing. Please try refreshing the page or contact support if the issue persists.';
           } else if (message.includes('network error') || message.includes('fetch')) {
             errorMessage = 'Unable to load PDF due to network issues. Please check your connection and try again.';
