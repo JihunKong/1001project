@@ -25,39 +25,36 @@ export default function EnhancedPDFThumbnailWrapper({
 }: EnhancedPDFThumbnailWrapperProps) {
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [failedUrls, setFailedUrls] = useState<Set<string>>(new Set());
+
+  const fallbackUrls = [
+    `/books/${bookId}/cover.png`,
+    `/books/${bookId}/front.png`,
+    `/books/${bookId}/cover.jpg`,
+    `/api/covers/${bookId}`
+  ];
 
   useEffect(() => {
-    const loadThumbnail = async () => {
-      setIsLoading(true);
-      
-      // Try different image sources in order of preference
-      const imageUrls = [
-        `/books/${bookId}/cover.png`,
-        `/books/${bookId}/front.png`,
-        `/books/${bookId}/cover.jpg`,
-        `/books/${bookId}/front.pdf`,
-        `/api/covers/${bookId}`
-      ];
-      
-      for (const imageUrl of imageUrls) {
-        try {
-          const response = await fetch(imageUrl, { method: 'HEAD' });
-          if (response.ok) {
-            setThumbnailUrl(imageUrl);
-            setIsLoading(false);
-            return;
-          }
-        } catch (error) {
-          // Continue to next URL
-          continue;
-        }
-      }
-      
-      setIsLoading(false);
-    };
-
-    loadThumbnail();
+    // Reset state for new bookId
+    setFailedUrls(new Set());
+    setThumbnailUrl(fallbackUrls[0]);
   }, [bookId]);
+
+  const handleImageError = () => {
+    const currentIndex = fallbackUrls.indexOf(thumbnailUrl);
+    const nextIndex = currentIndex + 1;
+    
+    // Mark current URL as failed
+    setFailedUrls(prev => new Set(prev).add(thumbnailUrl));
+    
+    // Try next URL if available
+    if (nextIndex < fallbackUrls.length) {
+      setThumbnailUrl(fallbackUrls[nextIndex]);
+    } else {
+      // All URLs failed, show fallback
+      setThumbnailUrl('');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -80,6 +77,7 @@ export default function EnhancedPDFThumbnailWrapper({
           sizes="(max-width: 768px) 50vw, 25vw"
           className="object-cover rounded"
           priority={false}
+          onError={handleImageError}
         />
         {children}
       </div>
