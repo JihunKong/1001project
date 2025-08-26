@@ -890,28 +890,28 @@ export default function BookDetailPage() {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Language</span>
-                  <span className="font-medium">{book.language}</span>
+                  <span className="font-medium text-gray-900">{book.language}</span>
                 </div>
                 {book.pageCount && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Pages</span>
-                    <span className="font-medium">{book.pageCount}</span>
+                    <span className="font-medium text-gray-900">{book.pageCount}</span>
                   </div>
                 )}
                 {book.readingLevel && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Reading Level</span>
-                    <span className="font-medium">{book.readingLevel}</span>
+                    <span className="font-medium text-gray-900">{book.readingLevel}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Reading Time</span>
-                  <span className="font-medium">{book.readingTime || 15} minutes</span>
+                  <span className="font-medium text-gray-900">{book.readingTime || 15} minutes</span>
                 </div>
                 {book.publishedDate && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Published</span>
-                    <span className="font-medium">
+                    <span className="font-medium text-gray-900">
                       {new Date(book.publishedDate).toLocaleDateString()}
                     </span>
                   </div>
