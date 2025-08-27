@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-// PDF.js types - importing only types to avoid SSR issues
 import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { 
   ChevronLeft, 
@@ -23,7 +22,8 @@ import {
   Lock
 } from 'lucide-react';
 
-// PDF.js worker will be configured dynamically to avoid SSR issues
+// Simple PDF.js worker configuration
+let workerConfigured = false;
 
 type ViewMode = 'single' | 'spread';
 
@@ -73,84 +73,127 @@ export default function EnhancedPDFViewer({
   const rightCanvasRef = useRef<HTMLCanvasElement>(null);
   const singleCanvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isMountedRef = useRef(true);
 
   // Calculate effective max pages (authentication + demo limitations)
   const effectiveMaxPages = isDemo 
     ? Math.min(maxPages, totalPages) 
     : (!isAuthenticated ? Math.min(10, totalPages) : totalPages);
 
-  // Load PDF document
+  // Component lifecycle and cleanup
   useEffect(() => {
-    const loadPDF = async () => {
-      setLoading(true);
-      setError('');
+    isMountedRef.current = true;
+    
+    return () => {
+      isMountedRef.current = false;
+      // Cancel any ongoing loading
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  // Simple PDF loading without complex deduplication
+  const loadPDF = useCallback(async (url: string) => {
+    if (!isMountedRef.current) return;
+    
+    // Cancel any previous loading
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    abortControllerRef.current = new AbortController();
+    
+    setLoading(true);
+    setError('');
+    setPdf(null);
+    
+    try {
+      console.log('Loading PDF from:', url);
       
-      try {
-        console.log('Loading PDF from:', pdfUrl);
+      if (typeof window === 'undefined') {
+        throw new Error('PDF viewer must be rendered on client side');
+      }
+
+      // Simple PDF.js loading
+      const pdfLib = await import('pdfjs-dist');
+      
+      // Configure worker once
+      if (!workerConfigured) {
+        pdfLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+        workerConfigured = true;
+        console.log('PDF.js worker configured');
+      }
         
-        // Enhanced PDF.js initialization with better error handling
-        let pdfLib;
-        try {
-          // Try to get the PDF.js library
-          pdfLib = await import('pdfjs-dist');
-          
-          // Set worker source if not already set
-          if (typeof window !== 'undefined' && !pdfLib.GlobalWorkerOptions.workerSrc) {
-            pdfLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js?v=${pdfLib.version}`;
-          }
-          
-        } catch (importError) {
-          console.error('Error importing PDF.js:', importError);
-          throw new Error('PDF.js library failed to load. Please refresh the page and try again.');
-        }
+      // Load PDF document
+      const loadingTask = pdfLib.getDocument({
+        url,
+        httpHeaders: {
+          'Cache-Control': 'no-cache',
+          'Accept': 'application/pdf,*/*'
+        },
+        withCredentials: true,
+      });
         
-        const loadingTask = pdfLib.getDocument(pdfUrl);
-        const pdfDoc = await loadingTask.promise;
+      const pdfDoc = await loadingTask.promise;
         
-        setPdf(pdfDoc);
-        setTotalPages(pdfDoc.numPages);
-        console.log('PDF loaded successfully, pages:', pdfDoc.numPages);
+      if (!isMountedRef.current) {
+        console.log('Component unmounted during PDF loading');
+        return;
+      }
         
-        // Render first page(s)
+      if (!pdfDoc || typeof pdfDoc.numPages !== 'number' || pdfDoc.numPages <= 0) {
+        throw new Error('Invalid PDF document');
+      }
+        
+      setPdf(pdfDoc);
+      setTotalPages(pdfDoc.numPages);
+      console.log('PDF loaded successfully, pages:', pdfDoc.numPages);
+        
+      // Render first page(s)
+      if (isMountedRef.current) {
         if (viewMode === 'spread') {
           await renderSpread(pdfDoc, 1);
         } else {
           await renderSinglePage(pdfDoc, 1);
         }
-      } catch (err) {
-        console.error('Error loading PDF:', err);
+      }
         
-        // Enhanced error handling with specific messages
-        let errorMessage = 'PDF loading failed';
-        if (err instanceof Error) {
-          const message = err.message.toLowerCase();
-          if (message.includes('pdf.js library failed')) {
-            errorMessage = err.message;
-          } else if (message.includes('invalid root reference')) {
-            errorMessage = 'PDF file appears to be corrupted or missing. Please try refreshing the page or contact support if the issue persists.';
-          } else if (message.includes('network error') || message.includes('fetch')) {
-            errorMessage = 'Unable to load PDF due to network issues. Please check your connection and try again.';
-          } else if (message.includes('unexpected server response') && message.includes('404')) {
-            errorMessage = 'PDF file not found on server. The book may not be available yet.';
-          } else if (message.includes('unexpected server response') && message.includes('401')) {
-            errorMessage = 'Authentication required. Please sign in to access this content.';
-          } else if (message.includes('unexpected server response') && message.includes('403')) {
-            errorMessage = 'Access denied. This book may require a subscription or purchase.';
-          } else {
-            errorMessage = `PDF loading failed: ${err.message}`;
-          }
+    } catch (err) {
+      if (!isMountedRef.current) return;
+        
+      console.error('Error loading PDF:', err);
+      
+      let errorMessage = 'Failed to load PDF';
+      if (err instanceof Error) {
+        const message = err.message.toLowerCase();
+        
+        if (message.includes('network') || message.includes('fetch')) {
+          errorMessage = 'Network error loading PDF. Please check your connection.';
+        } else if (message.includes('404')) {
+          errorMessage = 'PDF file not found.';
+        } else if (message.includes('401') || message.includes('403')) {
+          errorMessage = 'Access denied. Please sign in or check permissions.';
+        } else {
+          errorMessage = `PDF loading failed: ${err.message}`;
         }
+      }
         
-        setError(errorMessage);
-      } finally {
+      setError(errorMessage);
+    } finally {
+      if (isMountedRef.current) {
         setLoading(false);
       }
-    };
-
-    if (pdfUrl) {
-      loadPDF();
     }
-  }, [pdfUrl, viewMode]);
+  }, [viewMode]);
+
+  // Load PDF when URL changes
+  useEffect(() => {
+    if (pdfUrl && isMountedRef.current) {
+      loadPDF(pdfUrl);
+    }
+  }, [pdfUrl, loadPDF]);
 
   // Render single page
   const renderSinglePage = async (pdfDoc: PDFDocumentProxy, pageNum: number) => {
