@@ -3,12 +3,20 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { BookOpen, Loader2 } from 'lucide-react';
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs';
-
-// Set up PDF.js worker
-if (typeof window !== 'undefined') {
-  GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
-}
+// Use dynamic import to avoid SSR issues
+const loadPDFJS = async () => {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    // Set worker path
+    pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+    return pdfjs;
+  } catch (error) {
+    console.warn('Failed to load PDF.js:', error);
+    return null;
+  }
+};
 
 interface SimplePDFThumbnailProps {
   bookId: string;
@@ -73,8 +81,15 @@ export default function SimplePDFThumbnail({
       setError('');
 
       try {
+        // Load PDF.js dynamically
+        const pdfjs = await loadPDFJS();
+        if (!pdfjs) {
+          setError('PDF.js not available');
+          return;
+        }
+        
         // Load PDF
-        const loadingTask = getDocument(pdfUrl);
+        const loadingTask = pdfjs.getDocument(pdfUrl);
         const pdf = await loadingTask.promise;
         
         // Get first page

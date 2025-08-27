@@ -436,14 +436,14 @@ export default function BookDetailPage() {
               className="bg-white rounded-lg shadow-sm p-6 mb-6"
             >
               <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-64 flex-shrink-0">
-                  <div className="aspect-[2/3] bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg overflow-hidden">
+                <div className="w-full md:w-48 flex-shrink-0">
+                  <div className="w-full max-w-48 mx-auto aspect-[2/3] bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg overflow-hidden">
                     <SimplePDFThumbnail
                       bookId={book.id || book.bookId || ''}
                       title={book.title}
                       pdfUrl={book.pdfKey || book.fullPdf || book.samplePdf}
                       existingImage={book.coverImage}
-                      className="w-full h-full"
+                      className="w-full h-full object-cover"
                       alt={book.title}
                     />
                   </div>
