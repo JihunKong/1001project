@@ -196,17 +196,26 @@ const BookSpine = ({ book, index }: { book: Book; index: number }) => {
 };
 
 export default function BookshelfView({ books }: BookshelfViewProps) {
-  // Group books into shelves of varying sizes
-  const booksPerShelf = [8, 6, 7, 5, 8]; // Varied shelf lengths
+  // Group books into shelves with even distribution
+  const maxBooksPerShelf = 8;
   const shelves = [];
+  
+  // Calculate optimal shelf distribution
+  const totalBooks = books.length;
+  const numberOfShelves = Math.ceil(totalBooks / maxBooksPerShelf);
+  const booksPerShelf = Math.floor(totalBooks / numberOfShelves);
+  const extraBooks = totalBooks % numberOfShelves;
+  
   let bookIndex = 0;
   
-  for (let shelfIndex = 0; shelfIndex < Math.ceil(books.length / 8); shelfIndex++) {
-    const shelfSize = booksPerShelf[shelfIndex % booksPerShelf.length];
-    const shelfBooks = books.slice(bookIndex, bookIndex + shelfSize);
+  for (let shelfIndex = 0; shelfIndex < numberOfShelves; shelfIndex++) {
+    // Distribute extra books evenly across first shelves
+    const currentShelfSize = booksPerShelf + (shelfIndex < extraBooks ? 1 : 0);
+    const shelfBooks = books.slice(bookIndex, bookIndex + currentShelfSize);
+    
     if (shelfBooks.length > 0) {
       shelves.push(shelfBooks);
-      bookIndex += shelfSize;
+      bookIndex += currentShelfSize;
     }
   }
 
