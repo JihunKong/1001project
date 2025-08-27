@@ -24,7 +24,7 @@ import {
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useSubscription } from '@/lib/hooks/useContentAccess';
-import EnhancedPDFThumbnailWrapper from '@/components/shop/EnhancedPDFThumbnailWrapper';
+import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
 import SimpleBookCard from '@/components/library/SimpleBookCard';
 import BookshelfView from '@/components/library/BookshelfView';
 
@@ -184,18 +184,14 @@ export default function Library() {
     >
       <div className="relative">
         <div className="aspect-[2/3] bg-gradient-to-br from-blue-100 to-purple-100">
-          {book.pdfKey && book.bookId ? (
-            <EnhancedPDFThumbnailWrapper
-              bookId={book.bookId}
-              title={book.title}
-              className="w-full h-full"
-              alt={book.title}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <BookOpen className="w-16 h-16 text-blue-600 opacity-50" />
-            </div>
-          )}
+          <SimplePDFThumbnail
+            bookId={book.id || book.bookId || ''}
+            title={book.title}
+            pdfUrl={book.pdfKey || book.fullPdf || book.samplePdf}
+            existingImage={book.coverImage}
+            className="w-full h-full"
+            alt={book.title}
+          />
         </div>
         {book.isPremium && (
           <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full">

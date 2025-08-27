@@ -28,8 +28,17 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import EnhancedPDFThumbnailWrapper from '@/components/shop/EnhancedPDFThumbnailWrapper';
+import dynamic from 'next/dynamic';
 import useCartStore, { Product } from '@/lib/cart-store';
+
+const SimplePDFThumbnail = dynamic(() => import('@/components/library/SimplePDFThumbnail'), { 
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+      <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
+    </div>
+  )
+});
 
 interface Book {
   id: string;
@@ -428,18 +437,14 @@ export default function BookDetailPage() {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="aspect-[2/3] bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg overflow-hidden">
-                  {book.pdfKey && book.bookId ? (
-                    <EnhancedPDFThumbnailWrapper
-                      bookId={book.bookId}
-                      title={book.title}
-                      className="w-full h-full"
-                      alt={book.title}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <BookOpen className="w-16 h-16 text-blue-600 opacity-50" />
-                    </div>
-                  )}
+                  <SimplePDFThumbnail
+                    bookId={book.id || book.bookId || ''}
+                    title={book.title}
+                    pdfUrl={book.pdfKey || book.fullPdf || book.samplePdf}
+                    existingImage={book.coverImage}
+                    className="w-full h-full"
+                    alt={book.title}
+                  />
                 </div>
                 
                 <div className="space-y-4">
