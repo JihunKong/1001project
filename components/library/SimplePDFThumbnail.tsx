@@ -160,13 +160,13 @@ export default function SimplePDFThumbnail({
   // Show thumbnail if available
   if (thumbnailUrl) {
     return (
-      <div className="absolute inset-0 w-full h-full">
+      <div className={`relative w-full h-full ${className}`}>
         <Image
           src={thumbnailUrl}
           alt={alt || title}
           fill
           sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-cover"
+          className="object-cover rounded-lg"
           priority={false}
         />
       </div>
