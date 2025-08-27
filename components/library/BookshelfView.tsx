@@ -4,6 +4,16 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { BookOpen, Crown, Lock, Star } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const SimplePDFThumbnail = dynamic(() => import('./SimplePDFThumbnail'), { 
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+      <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
+    </div>
+  )
+});
 
 interface Book {
   id: string;
@@ -16,6 +26,10 @@ interface Book {
   category: string[];
   coverImage?: string;
   accessLevel: 'preview' | 'full';
+  pdfKey?: string;
+  fullPdf?: string;
+  samplePdf?: string;
+  bookId?: string;
 }
 
 interface BookshelfViewProps {
@@ -104,7 +118,7 @@ const BookSpine = ({ book, index }: { book: Book; index: number }) => {
       
       {/* Hover Card */}
       <motion.div
-        className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 w-64 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-20"
+        className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-4 w-80 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-20"
         initial={{ opacity: 0, y: 10, scale: 0.9 }}
         animate={{ 
           opacity: isHovered ? 1 : 0, 
@@ -119,47 +133,62 @@ const BookSpine = ({ book, index }: { book: Book; index: number }) => {
           <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white"></div>
         </div>
         
-        <div className="space-y-3">
-          <div>
-            <h4 className="font-bold text-gray-800 text-sm line-clamp-2">
-              {book.title}
-            </h4>
-            <p className="text-xs text-gray-600">by {book.author.name}</p>
+        <div className="flex gap-4">
+          {/* Thumbnail */}
+          <div className="w-20 h-28 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+            <SimplePDFThumbnail
+              bookId={book.id || book.bookId || ''}
+              title={book.title}
+              pdfUrl={book.pdfKey || book.fullPdf || book.samplePdf}
+              existingImage={book.coverImage}
+              className="w-full h-full"
+              alt={book.title}
+            />
           </div>
           
-          {/* Categories */}
-          <div className="flex flex-wrap gap-1">
-            {book.category.slice(0, 2).map((cat, i) => (
-              <span key={i} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
-                {cat}
-              </span>
-            ))}
+          {/* Content */}
+          <div className="flex-1 space-y-3">
+            <div>
+              <h4 className="font-bold text-gray-800 text-sm line-clamp-2">
+                {book.title}
+              </h4>
+              <p className="text-xs text-gray-600">by {book.author.name}</p>
+            </div>
+            
+            {/* Categories */}
+            <div className="flex flex-wrap gap-1">
+              {book.category.slice(0, 2).map((cat, i) => (
+                <span key={i} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+                  {cat}
+                </span>
+              ))}
+            </div>
+            
+            {/* Action Button */}
+            <Link href={`/library/books/${book.id}`}>
+              <motion.button
+                className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
+                  book.accessLevel === 'full'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {book.accessLevel === 'full' ? (
+                  <>
+                    <BookOpen className="w-4 h-4 inline mr-2" />
+                    Read Now
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4 inline mr-2" />
+                    Preview
+                  </>
+                )}
+              </motion.button>
+            </Link>
           </div>
-          
-          {/* Action Button */}
-          <Link href={`/library/stories/${book.id}`}>
-            <motion.button
-              className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
-                book.accessLevel === 'full'
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-yellow-500 hover:bg-yellow-600 text-white'
-              }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {book.accessLevel === 'full' ? (
-                <>
-                  <BookOpen className="w-4 h-4 inline mr-2" />
-                  Read Now
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4 inline mr-2" />
-                  Preview
-                </>
-              )}
-            </motion.button>
-          </Link>
         </div>
       </motion.div>
     </motion.div>

@@ -158,12 +158,11 @@ export default function SimplePDFThumbnail({
     );
   }
 
-  // Fallback placeholder
+  // Fallback placeholder with consistent BookOpen icon
   return (
     <div className={`flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 ${className}`}>
-      <div className="text-center">
-        <BookOpen className="w-16 h-16 text-blue-300 mx-auto mb-2" />
-        <p className="text-xs text-gray-500">{title}</p>
+      <div className="w-full h-full flex items-center justify-center">
+        <BookOpen className="w-16 h-16 text-blue-600 opacity-50" />
       </div>
     </div>
   );
