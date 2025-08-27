@@ -465,7 +465,7 @@ export default function BookDetailPage() {
                       </div>
                     </div>
                     
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-2 text-sm text-gray-700">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-gray-400" />
                         <span>
