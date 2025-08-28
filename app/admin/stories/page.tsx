@@ -29,6 +29,8 @@ import {
   Download,
   MoreHorizontal,
 } from 'lucide-react';
+import BulkPublishingPanel from '@/components/admin/BulkPublishingPanel';
+import AdvancedStoryFilter, { FilterValues } from '@/components/admin/AdvancedStoryFilter';
 
 interface Story {
   id: string;
@@ -93,6 +95,20 @@ export default function StoriesManagement() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  
+  // New advanced filter state
+  const [filters, setFilters] = useState<FilterValues>({
+    search: '',
+    isPublished: '',
+    language: '',
+    isPremium: '',
+    featured: '',
+    hasFullPdf: '',
+    dateFrom: '',
+    dateTo: '',
+    authorName: '',
+    category: '',
+  });
 
   // Redirect if not admin
   if (status === 'loading') {
@@ -218,15 +234,23 @@ export default function StoriesManagement() {
     pageCount: pagination.totalPages,
   });
 
-  // Fetch stories
-  const fetchStories = async (page = 1, limit = 10, search = '', filters = {}) => {
+  // Fetch stories with advanced filtering
+  const fetchStories = async (page = 1, limit = 10, customFilters?: Partial<FilterValues>) => {
     try {
       setLoading(true);
+      const activeFilters = customFilters || filters;
+      
+      // Build query parameters from active filters
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
-        ...(search && { search }),
-        ...filters,
+      });
+      
+      // Add non-empty filter values
+      Object.entries(activeFilters).forEach(([key, value]) => {
+        if (value && value.trim() !== '') {
+          params.set(key, value);
+        }
       });
 
       const response = await fetch(`/api/admin/stories?${params}`);
@@ -240,6 +264,16 @@ export default function StoriesManagement() {
     } finally {
       setLoading(false);
     }
+  };
+  
+  // Handle filter changes
+  const handleFiltersChange = (newFilters: FilterValues) => {
+    setFilters(newFilters);
+  };
+  
+  // Apply filters (trigger search)
+  const handleApplyFilters = () => {
+    fetchStories(1, pagination.limit, filters);
   };
 
   useEffect(() => {
@@ -343,57 +377,18 @@ export default function StoriesManagement() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search stories..."
-                value={globalFilter}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={
-                columnFilters.find((f) => f.id === 'isPublished')?.value as string || ''
-              }
-              onChange={(e) => {
-                const value = e.target.value;
-                setColumnFilters((prev) =>
-                  value
-                    ? [...prev.filter((f) => f.id !== 'isPublished'), { id: 'isPublished', value }]
-                    : prev.filter((f) => f.id !== 'isPublished')
-                );
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Stories</option>
-              <option value="true">Published</option>
-              <option value="false">Draft</option>
-            </select>
-            <select
-              value={
-                columnFilters.find((f) => f.id === 'language')?.value as string || ''
-              }
-              onChange={(e) => {
-                const value = e.target.value;
-                setColumnFilters((prev) =>
-                  value
-                    ? [...prev.filter((f) => f.id !== 'language'), { id: 'language', value }]
-                    : prev.filter((f) => f.id !== 'language')
-                );
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Languages</option>
-              <option value="en">English</option>
-              <option value="ko">Korean</option>
-              <option value="es">Spanish</option>
-            </select>
-          </div>
+        {/* Advanced Filters */}
+        <AdvancedStoryFilter
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          onApplyFilters={handleApplyFilters}
+          loading={loading}
+          totalCount={pagination.totalCount}
+        />
+
+        {/* Bulk Publishing Panel */}
+        <div className="mb-6">
+          <BulkPublishingPanel />
         </div>
 
         {/* Table */}

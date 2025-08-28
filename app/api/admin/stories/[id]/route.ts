@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { UserRole, StorySubmissionStatus, Priority } from '@prisma/client';
+import { UserRole, Priority } from '@prisma/client';
 import { z } from 'zod';
 
 const updateStorySchema = z.object({
@@ -10,16 +10,17 @@ const updateStorySchema = z.object({
   content: z.string().min(1).optional(),
   summary: z.string().optional(),
   language: z.string().min(2).max(5).optional(),
-  category: z.string().min(1).optional(),
-  ageGroup: z.string().min(1).optional(),
-  status: z.nativeEnum(StorySubmissionStatus).optional(),
-  priority: z.nativeEnum(Priority).optional(),
+  category: z.array(z.string()).optional(),
+  genres: z.array(z.string()).optional(),
+  subjects: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
-  dueDate: z.string().nullable().optional(),
-  assigneeId: z.string().nullable().optional(),
-  reviewNotes: z.string().optional(),
-  editorialNotes: z.string().optional(),
-  coverImageId: z.string().nullable().optional(),
+  authorName: z.string().optional(),
+  isPublished: z.boolean().optional(),
+  featured: z.boolean().optional(),
+  isPremium: z.boolean().optional(),
+  price: z.number().optional(),
+  coverImage: z.string().nullable().optional(),
+  fullPdf: z.string().nullable().optional(),
 });
 
 // GET /api/admin/stories/[id] - Get single story
@@ -36,7 +37,7 @@ export async function GET(
 
     const { id } = await params;
     
-    const story = await prisma.storySubmission.findUnique({
+    const story = await prisma.story.findUnique({
       where: { id },
       include: {
         author: {
@@ -44,18 +45,6 @@ export async function GET(
             id: true,
             name: true,
             email: true,
-          },
-        },
-        coverImage: true,
-        workflowHistory: {
-          orderBy: { createdAt: 'desc' },
-          include: {
-            performedBy: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
           },
         },
       },
@@ -91,10 +80,10 @@ export async function PUT(
     const body = await request.json();
     const validatedData = updateStorySchema.parse(body);
 
-    // Get current story to check for status changes
-    const currentStory = await prisma.storySubmission.findUnique({
+    // Get current story to verify it exists
+    const currentStory = await prisma.story.findUnique({
       where: { id },
-      select: { status: true },
+      select: { id: true },
     });
 
     if (!currentStory) {
@@ -103,12 +92,9 @@ export async function PUT(
 
     // Prepare update data
     const updateData: any = { ...validatedData };
-    if (validatedData.dueDate !== undefined) {
-      updateData.dueDate = validatedData.dueDate ? new Date(validatedData.dueDate) : null;
-    }
-
+    
     // Update story
-    const updatedStory = await prisma.storySubmission.update({
+    const updatedStory = await prisma.story.update({
       where: { id },
       data: updateData,
       include: {
@@ -119,22 +105,8 @@ export async function PUT(
             email: true,
           },
         },
-        coverImage: true,
       },
     });
-
-    // Create workflow history entry if status changed
-    if (validatedData.status && validatedData.status !== currentStory.status) {
-      await prisma.workflowHistory.create({
-        data: {
-          storySubmissionId: id,
-          fromStatus: currentStory.status,
-          toStatus: validatedData.status,
-          comment: validatedData.reviewNotes || `Status changed to ${validatedData.status}`,
-          performedById: session.user.id,
-        },
-      });
-    }
 
     return NextResponse.json(updatedStory);
   } catch (error) {
@@ -169,7 +141,7 @@ export async function DELETE(
     const { id } = await params;
 
     // Check if story exists
-    const story = await prisma.storySubmission.findUnique({
+    const story = await prisma.story.findUnique({
       where: { id },
     });
 
@@ -177,25 +149,29 @@ export async function DELETE(
       return NextResponse.json({ error: 'Story not found' }, { status: 404 });
     }
 
-    // Soft delete by updating status to REJECTED (or create a DELETED status)
-    await prisma.storySubmission.update({
+    // Hard delete the story (since this is published content)
+    await prisma.story.delete({
       where: { id },
-      data: {
-        status: StorySubmissionStatus.REJECTED,
-        reviewNotes: 'Story deleted by admin',
-      },
     });
 
-    // Create workflow history entry
-    await prisma.workflowHistory.create({
-      data: {
-        storySubmissionId: id,
-        fromStatus: story.status,
-        toStatus: StorySubmissionStatus.REJECTED,
-        comment: 'Story deleted by admin',
-        performedById: session.user.id,
-      },
-    });
+    // Log the deletion
+    try {
+      await prisma.activityLog.create({
+        data: {
+          userId: session.user.id,
+          action: 'DELETE_STORY',
+          entity: 'STORY',
+          entityId: id,
+          metadata: {
+            title: story.title,
+            authorName: story.authorName,
+            deletedAt: new Date().toISOString(),
+          },
+        },
+      });
+    } catch (e) {
+      console.log('ActivityLog creation failed, continuing without logging');
+    }
 
     return NextResponse.json({ message: 'Story deleted successfully' });
   } catch (error) {

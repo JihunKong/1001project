@@ -28,8 +28,8 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { resolveBookFiles } from '@/lib/book-files';
 
-const EnhancedPDFViewer = dynamic(
-  () => import('@/components/library/EnhancedPDFViewer'),
+const SafePDFViewer = dynamic(
+  () => import('@/components/library/SafePDFViewer'),
   { 
     ssr: false,
     loading: () => (
@@ -352,7 +352,7 @@ export default function StoryPage() {
           <div className="lg:col-span-2">
             {pdfUrl ? (
               <div className="bg-white rounded-lg overflow-hidden shadow-lg">
-                <EnhancedPDFViewer
+                <SafePDFViewer
                   pdfUrl={pdfUrl}
                   title={story.title}
                   isAuthenticated={!!session}

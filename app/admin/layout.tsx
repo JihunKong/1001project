@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
   BookOpen,
-  Upload,
   Image,
   Users,
   BarChart,
@@ -18,6 +17,7 @@ import {
   Menu,
   X,
   ShoppingCart,
+  Library,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -28,19 +28,14 @@ const navigation = [
     icon: LayoutDashboard,
   },
   {
-    name: 'Stories',
+    name: 'Digital Library',
     href: '/admin/stories',
-    icon: BookOpen,
+    icon: Library,
     children: [
       { name: 'All Stories', href: '/admin/stories' },
       { name: 'New Story', href: '/admin/stories/new' },
       { name: 'Bulk Import', href: '/admin/stories/bulk-import' },
     ],
-  },
-  {
-    name: 'Books',
-    href: '/admin/books',
-    icon: BookOpen,
   },
   {
     name: 'Shop',
@@ -78,7 +73,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true); // Desktop sidebar
-  const [expandedItems, setExpandedItems] = useState<string[]>(['Stories']);
+  const [expandedItems, setExpandedItems] = useState<string[]>(['Digital Library']);
 
   // Loading state
   if (status === 'loading') {

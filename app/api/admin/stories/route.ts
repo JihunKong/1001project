@@ -12,9 +12,17 @@ const storyQuerySchema = z.object({
   limit: z.string().optional().default('10'),
   search: z.string().max(100).optional(), // Limit search length
   status: z.enum(['PUBLISHED', 'DRAFT']).optional(),
+  isPublished: z.string().optional(), // 'true', 'false', or empty
   language: z.string().regex(/^[a-z]{2,5}$/).optional(), // Validate language format
+  isPremium: z.string().optional(), // 'true', 'false', or empty
+  featured: z.string().optional(), // 'true', 'false', or empty
+  hasFullPdf: z.string().optional(), // 'true', 'false', or empty
+  dateFrom: z.string().optional(), // ISO date string
+  dateTo: z.string().optional(), // ISO date string
+  authorName: z.string().max(100).optional(), // Author name filter
+  category: z.string().max(100).optional(), // Category filter
   assignee: z.string().uuid().optional(), // Validate UUID format
-  sortBy: z.enum(['createdAt', 'updatedAt', 'title', 'isPublished', 'featured']).optional().default('createdAt'),
+  sortBy: z.enum(['createdAt', 'updatedAt', 'title', 'isPublished', 'featured', 'authorName', 'publishedDate']).optional().default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
@@ -60,22 +68,23 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(validatedParams.limit);
     const skip = (page - 1) * limit;
 
-    // Build where clause
+    // Build where clause with advanced filtering
     const where: any = {};
     
+    // Text search across multiple fields
     if (validatedParams.search) {
       where.OR = [
         { title: { contains: validatedParams.search, mode: 'insensitive' } },
         { content: { contains: validatedParams.search, mode: 'insensitive' } },
         { authorName: { contains: validatedParams.search, mode: 'insensitive' } },
         { summary: { contains: validatedParams.search, mode: 'insensitive' } },
+        { tags: { has: validatedParams.search } }, // Search in tags array
       ];
     }
     
-    // Story model doesn't have status/priority - these are for StorySubmission workflow
-    // For Story model, we can filter by isPublished, featured, etc.
+    // Publication status filters
     if (validatedParams.status) {
-      // Map submission statuses to Story fields
+      // Map submission statuses to Story fields (backward compatibility)
       if (validatedParams.status === 'PUBLISHED') {
         where.isPublished = true;
       } else if (validatedParams.status === 'DRAFT') {
@@ -83,10 +92,61 @@ export async function GET(request: NextRequest) {
       }
     }
     
+    // Direct publication status filter (new advanced filter)
+    if (validatedParams.isPublished) {
+      where.isPublished = validatedParams.isPublished === 'true';
+    }
+    
+    // Language filter
     if (validatedParams.language) {
       where.language = validatedParams.language;
     }
     
+    // Premium status filter
+    if (validatedParams.isPremium) {
+      where.isPremium = validatedParams.isPremium === 'true';
+    }
+    
+    // Featured status filter
+    if (validatedParams.featured) {
+      where.featured = validatedParams.featured === 'true';
+    }
+    
+    // PDF availability filter
+    if (validatedParams.hasFullPdf) {
+      if (validatedParams.hasFullPdf === 'true') {
+        where.fullPdf = { not: null };
+      } else {
+        where.fullPdf = null;
+      }
+    }
+    
+    // Date range filters
+    if (validatedParams.dateFrom || validatedParams.dateTo) {
+      where.createdAt = {};
+      if (validatedParams.dateFrom) {
+        where.createdAt.gte = new Date(validatedParams.dateFrom);
+      }
+      if (validatedParams.dateTo) {
+        // Add 1 day and subtract 1ms to include the entire end date
+        const endDate = new Date(validatedParams.dateTo);
+        endDate.setDate(endDate.getDate() + 1);
+        endDate.setMilliseconds(endDate.getMilliseconds() - 1);
+        where.createdAt.lte = endDate;
+      }
+    }
+    
+    // Author name filter
+    if (validatedParams.authorName) {
+      where.authorName = { contains: validatedParams.authorName, mode: 'insensitive' };
+    }
+    
+    // Category filter (searches in category array)
+    if (validatedParams.category) {
+      where.category = { has: validatedParams.category };
+    }
+    
+    // Assignee filter (for workflow management)
     if (validatedParams.assignee) {
       where.assigneeId = validatedParams.assignee;
     }

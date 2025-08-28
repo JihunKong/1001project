@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
-import { UserRole, StorySubmissionStatus } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -20,9 +20,8 @@ import {
   AlertCircle,
   Download,
   MoreVertical,
+  Upload,
 } from 'lucide-react';
-
-type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
 interface Story {
   id: string;
@@ -30,54 +29,37 @@ interface Story {
   content: string;
   summary?: string;
   language: string;
-  category: string;
-  ageGroup: string;
-  status: StorySubmissionStatus;
-  priority?: Priority;
+  category: string[];
+  genres?: string[];
+  subjects?: string[];
   tags: string[];
   createdAt: string;
   updatedAt: string;
-  dueDate?: string;
-  reviewNotes?: string;
-  editorialNotes?: string;
+  publishedDate?: string;
+  isPublished: boolean;
+  featured: boolean;
+  isPremium: boolean;
+  fullPdf?: string;
+  coverImage?: string;
+  authorName: string;
   author: {
     id: string;
     name: string;
     email: string;
   };
-  coverImage?: {
-    id: string;
-    url: string;
-    thumbnailUrl: string;
-    altText?: string;
-  };
-  workflowHistory: Array<{
-    id: string;
-    fromStatus?: StorySubmissionStatus;
-    toStatus: StorySubmissionStatus;
-    comment: string;
-    createdAt: string;
-    performedBy: {
-      id: string;
-      name: string;
-    };
-  }>;
+  viewCount: number;
+  likeCount: number;
+  rating?: number;
 }
 
-const statusConfig = {
-  SUBMITTED: { label: 'Submitted', color: 'bg-gray-100 text-gray-800', icon: Clock },
-  IN_REVIEW: { label: 'In Review', color: 'bg-blue-100 text-blue-800', icon: Eye },
-  APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  PUBLISHED: { label: 'Published', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  REJECTED: { label: 'Rejected', color: 'bg-red-100 text-red-800', icon: AlertCircle },
-  DRAFT: { label: 'Draft', color: 'bg-gray-100 text-gray-800', icon: Edit },
+const publicationConfig = {
+  true: { label: 'Published', color: 'bg-green-100 text-green-800', icon: CheckCircle },
+  false: { label: 'Draft', color: 'bg-gray-100 text-gray-800', icon: Edit },
 };
 
-const priorityConfig = {
-  LOW: { label: 'Low', color: 'bg-gray-100 text-gray-800' },
-  MEDIUM: { label: 'Medium', color: 'bg-yellow-100 text-yellow-800' },
-  HIGH: { label: 'High', color: 'bg-orange-100 text-orange-800' },
-  URGENT: { label: 'Urgent', color: 'bg-red-100 text-red-800' },
+const featuredConfig = {
+  true: { label: 'Featured', color: 'bg-yellow-100 text-yellow-800' },
+  false: { label: 'Regular', color: 'bg-gray-100 text-gray-800' },
 };
 
 export default function StoryDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -151,8 +133,15 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
     }
   };
 
-  const handleStatusChange = async (newStatus: StorySubmissionStatus) => {
+  const handlePublicationToggle = async () => {
     if (!story || !storyId) return;
+
+    const newPublishedState = !story.isPublished;
+    const confirmMessage = newPublishedState 
+      ? 'Are you sure you want to publish this story? It will be visible to all users in the library.'
+      : 'Are you sure you want to unpublish this story? It will be removed from the library.';
+
+    if (!confirm(confirmMessage)) return;
 
     try {
       const response = await fetch(`/api/admin/stories/${storyId}`, {
@@ -161,17 +150,60 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          status: newStatus,
+          isPublished: newPublishedState,
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to update status');
+      if (!response.ok) throw new Error('Failed to update publication status');
 
       // Refresh the story data
       await fetchStory();
     } catch (error) {
-      console.error('Error updating status:', error);
-      alert('Failed to update status');
+      console.error('Error updating publication status:', error);
+      alert('Failed to update publication status');
+    }
+  };
+
+  const handleTogglePublication = async () => {
+    if (!story || !storyId) return;
+
+    const action = story.isPublished ? 'unpublish' : 'publish';
+    const confirmMessage = story.isPublished 
+      ? 'Are you sure you want to unpublish this story? It will be removed from the library.'
+      : 'Are you sure you want to publish this story? It will be visible to all users in the library.';
+
+    if (!confirm(confirmMessage)) return;
+
+    try {
+      const apiEndpoint = story.isPublished 
+        ? '/api/admin/stories/bulk-unpublish'
+        : '/api/admin/stories/bulk-publish';
+      
+      const requestBody = story.isPublished
+        ? { storyIds: [storyId], unpublishAll: false }
+        : { storyIds: [storyId], publishAll: false };
+
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) throw new Error(`Failed to ${action} story`);
+
+      const data = await response.json();
+      if (data.success) {
+        alert(data.message);
+        // Refresh the story data
+        await fetchStory();
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing story:`, error);
+      alert(`Failed to ${action} story`);
     }
   };
 
@@ -222,9 +254,6 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
     );
   }
 
-  const statusInfo = statusConfig[story.status];
-  const priorityInfo = story.priority ? priorityConfig[story.priority] : null;
-  const StatusIcon = statusInfo.icon;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -247,10 +276,35 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className={`px-3 py-1 text-sm font-medium rounded-full ${statusInfo.color}`}>
-                <StatusIcon className="w-4 h-4 inline mr-1" />
-                {statusInfo.label}
+              <span className={`px-3 py-1 text-sm font-medium rounded-full ${
+                story.isPublished 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-gray-100 text-gray-800'
+              }`}>
+                <CheckCircle className="w-4 h-4 inline mr-1" />
+                {story.isPublished ? 'Published' : 'Draft'}
               </span>
+              {/* Featured Status */}
+              <div className="flex items-center gap-2">
+                <span className={`px-3 py-1 text-sm font-medium rounded-full ${
+                  story.featured
+                    ? 'bg-yellow-100 text-yellow-800' 
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {story.featured ? '⭐ Featured' : '📄 Regular'}
+                </span>
+                <button
+                  onClick={handlePublicationToggle}
+                  className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                    story.isPublished
+                      ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                      : 'bg-green-100 text-green-800 hover:bg-green-200'
+                  }`}
+                >
+                  <Upload className="w-3 h-3 mr-1 inline" />
+                  {story.isPublished ? 'Unpublish' : 'Publish'}
+                </button>
+              </div>
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
@@ -302,8 +356,8 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
                 className="bg-white rounded-lg shadow-sm overflow-hidden"
               >
                 <img
-                  src={story.coverImage.url}
-                  alt={story.coverImage.altText || story.title}
+                  src={story.coverImage}
+                  alt={story.title}
                   className="w-full h-64 object-cover"
                 />
               </motion.div>
@@ -336,27 +390,25 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
               />
             </motion.div>
 
-            {/* Review Notes */}
-            {(story.reviewNotes || story.editorialNotes) && (
+            {/* Additional Info */}
+            {story.genres && story.genres.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
                 className="bg-white rounded-lg shadow-sm p-6"
               >
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">Notes</h2>
-                {story.reviewNotes && (
-                  <div className="mb-4">
-                    <h3 className="font-medium text-gray-900 mb-2">Review Notes</h3>
-                    <p className="text-gray-700">{story.reviewNotes}</p>
-                  </div>
-                )}
-                {story.editorialNotes && (
-                  <div>
-                    <h3 className="font-medium text-gray-900 mb-2">Editorial Notes</h3>
-                    <p className="text-gray-700">{story.editorialNotes}</p>
-                  </div>
-                )}
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Genres</h2>
+                <div className="flex flex-wrap gap-2">
+                  {story.genres.map((genre, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                    >
+                      {genre}
+                    </span>
+                  ))}
+                </div>
               </motion.div>
             )}
           </div>
@@ -374,15 +426,15 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
                 <div className="flex items-center gap-3">
                   <User className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="font-medium text-gray-900">{story.author.name}</div>
+                    <div className="font-medium text-gray-900">{story.authorName}</div>
                     <div className="text-sm text-gray-500">{story.author.email}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <BookOpen className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="font-medium text-gray-900">{story.category}</div>
-                    <div className="text-sm text-gray-500">Category</div>
+                    <div className="font-medium text-gray-900">{story.category.join(', ')}</div>
+                    <div className="text-sm text-gray-500">Categories</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -393,61 +445,51 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <Eye className="w-5 h-5 text-gray-400" />
                   <div>
-                    <div className="font-medium text-gray-900">{story.ageGroup}</div>
-                    <div className="text-sm text-gray-500">Age Group</div>
+                    <div className="font-medium text-gray-900">{story.viewCount}</div>
+                    <div className="text-sm text-gray-500">Views</div>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Priority & Status */}
+            {/* Publication & Status */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="bg-white rounded-lg shadow-sm p-6"
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Status & Priority</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Publication Status</h2>
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Current Status
-                  </label>
-                  <select
-                    value={story.status}
-                    onChange={(e) => handleStatusChange(e.target.value as StorySubmissionStatus)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    {Object.entries(statusConfig).map(([key, config]) => (
-                      <option key={key} value={key}>
-                        {config.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {priorityInfo && (
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-gray-400" />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Priority
-                    </label>
-                    <span className={`px-3 py-1 text-sm font-medium rounded-full ${priorityInfo.color}`}>
-                      {priorityInfo.label}
-                    </span>
-                  </div>
-                )}
-                {story.dueDate && (
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {new Date(story.dueDate).toLocaleDateString()}
-                      </div>
-                      <div className="text-sm text-gray-500">Due Date</div>
+                    <div className="font-medium text-gray-900">
+                      {story.isPublished ? 'Published' : 'Draft'}
                     </div>
+                    <div className="text-sm text-gray-500">Publication Status</div>
                   </div>
-                )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <Tag className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <div className="font-medium text-gray-900">
+                      {story.featured ? 'Featured' : 'Regular'}
+                    </div>
+                    <div className="text-sm text-gray-500">Story Type</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <div className="font-medium text-gray-900">
+                      {story.publishedDate ? new Date(story.publishedDate).toLocaleDateString() : 'Not published'}
+                    </div>
+                    <div className="text-sm text-gray-500">Published Date</div>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
@@ -474,32 +516,38 @@ export default function StoryDetail({ params }: { params: Promise<{ id: string }
               </motion.div>
             )}
 
-            {/* Workflow History */}
+            {/* Story Metrics */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="bg-white rounded-lg shadow-sm p-6"
             >
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Workflow History</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Story Metrics</h2>
               <div className="space-y-3">
-                {story.workflowHistory.map((entry, index) => (
-                  <div key={entry.id} className="flex gap-3">
-                    <div className="flex-shrink-0">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">
-                        {entry.fromStatus && `${statusConfig[entry.fromStatus].label} → `}
-                        {statusConfig[entry.toStatus].label}
-                      </p>
-                      <p className="text-sm text-gray-500">{entry.comment}</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        by {entry.performedBy.name} • {new Date(entry.createdAt).toLocaleDateString()}
-                      </p>
+                <div className="flex items-center gap-3">
+                  <Eye className="w-5 h-5 text-blue-500" />
+                  <div>
+                    <div className="font-medium text-gray-900">{story.viewCount}</div>
+                    <div className="text-sm text-gray-500">Total Views</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <div>
+                    <div className="font-medium text-gray-900">{story.likeCount}</div>
+                    <div className="text-sm text-gray-500">Likes</div>
+                  </div>
+                </div>
+                {story.rating && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 text-yellow-500">⭐</div>
+                    <div>
+                      <div className="font-medium text-gray-900">{story.rating.toFixed(1)}</div>
+                      <div className="text-sm text-gray-500">Rating</div>
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </motion.div>
           </div>
