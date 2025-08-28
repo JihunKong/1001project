@@ -47,17 +47,19 @@ interface User {
 
 interface UserStats {
   totalUsers: number;
+  totalCustomers: number;
   totalLearners: number;
   totalAdmins: number;
   totalVolunteers: number;
 }
 
 const roleConfig = {
-  ADMIN: { label: 'Admin', color: 'bg-purple-100 text-purple-800', icon: Shield },
+  CUSTOMER: { label: 'Customer', color: 'bg-indigo-100 text-indigo-800', icon: Users },
   LEARNER: { label: 'Learner', color: 'bg-blue-100 text-blue-800', icon: BookOpen },
-  VOLUNTEER: { label: 'Volunteer', color: 'bg-green-100 text-green-800', icon: Clock },
   TEACHER: { label: 'Teacher', color: 'bg-orange-100 text-orange-800', icon: CheckCircle },
   INSTITUTION: { label: 'Institution', color: 'bg-gray-100 text-gray-800', icon: AlertTriangle },
+  VOLUNTEER: { label: 'Volunteer', color: 'bg-green-100 text-green-800', icon: Clock },
+  ADMIN: { label: 'Admin', color: 'bg-purple-100 text-purple-800', icon: Shield },
 };
 
 export default function UsersPage() {
@@ -65,6 +67,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalUsers: 0,
+    totalCustomers: 0,
     totalLearners: 0,
     totalAdmins: 0,
     totalVolunteers: 0,
@@ -101,6 +104,7 @@ export default function UsersPage() {
         setUsers(data.users || []);
         setStats({
           totalUsers: data.users?.length || 0,
+          totalCustomers: data.users?.filter((u: User) => u.role === 'CUSTOMER').length || 0,
           totalLearners: data.users?.filter((u: User) => u.role === 'LEARNER').length || 0,
           totalAdmins: data.users?.filter((u: User) => u.role === 'ADMIN').length || 0,
           totalVolunteers: data.users?.filter((u: User) => u.role === 'VOLUNTEER').length || 0,
@@ -243,6 +247,7 @@ export default function UsersPage() {
 
   const statsDisplay = [
     { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'bg-blue-500' },
+    { label: 'Customers', value: stats.totalCustomers, icon: Users, color: 'bg-indigo-500' },
     { label: 'Learners', value: stats.totalLearners, icon: BookOpen, color: 'bg-green-500' },
     { label: 'Volunteers', value: stats.totalVolunteers, icon: Clock, color: 'bg-purple-500' },
     { label: 'Admins', value: stats.totalAdmins, icon: Shield, color: 'bg-red-500' },
@@ -334,9 +339,11 @@ export default function UsersPage() {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="ALL">All Roles</option>
+              <option value="CUSTOMER">Customers</option>
               <option value="LEARNER">Learners</option>
-              <option value="VOLUNTEER">Volunteers</option>
               <option value="TEACHER">Teachers</option>
+              <option value="INSTITUTION">Institutions</option>
+              <option value="VOLUNTEER">Volunteers</option>
               <option value="ADMIN">Admins</option>
             </select>
           </div>

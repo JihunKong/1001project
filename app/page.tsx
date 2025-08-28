@@ -146,8 +146,8 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="#roles" className="btn-primary group">
-                {t('hero.cta')}
+              <Link href="/signup" className="btn-primary group">
+                Get Started Now
                 <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link href="/demo" className="btn-secondary text-gray-700 dark:text-gray-200">
@@ -219,78 +219,42 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Role Selection Section */}
-      <section id="roles" className="py-24 relative">
+      {/* Get Started Section */}
+      <section id="get-started" className="py-24 relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/30 rounded-full">
-              <Target className="w-4 h-4" />
-              Choose Your Path
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded-full">
+              <Sparkles className="w-4 h-4" />
+              Join Our Community
             </div>
             <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-              {t('roles.title')}
+              Start Your Journey Today
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              {t('roles.subtitle')}
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-12">
+              Discover amazing stories from children around the world. Whether you're here to learn, teach, volunteer, or support our mission, your journey begins with a single step.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/signup" className="btn-primary group text-lg px-8 py-4">
+                Get Started - Free
+                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link href="/library" className="btn-secondary text-gray-700 dark:text-gray-200 text-lg px-8 py-4">
+                <BookOpen className="w-5 h-5 mr-2" />
+                Explore Stories First
+              </Link>
+            </div>
+            
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
+              Free to join • No commitment • Access granted instantly
             </p>
           </motion.div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            {roles.map((role, index) => (
-              <motion.div
-                key={role.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.15 }}
-                viewport={{ once: true }}
-                className="group relative"
-              >
-                <Link href={role.href}>
-                  <div className="glass-card glass-card-hover rounded-2xl p-6 sm:p-8 h-full relative overflow-hidden min-h-[280px] sm:min-h-[320px] touch-manipulation">
-                    {/* Gradient overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${role.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
-                    
-                    {/* Icon with role-specific color - Improved mobile touch target */}
-                    <div className="relative inline-flex items-center justify-center w-16 h-16 sm:w-16 sm:h-16 mb-4 sm:mb-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
-                      style={{ boxShadow: `0 10px 30px -10px ${role.shadowColor}` }}
-                    >
-                      <role.icon className={`w-8 h-8 sm:w-8 sm:h-8 ${role.iconColor}`} />
-                    </div>
-                    
-                    {/* Content - Responsive typography */}
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
-                      {role.title}
-                    </h3>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 leading-relaxed">
-                      {role.description}
-                    </p>
-                    
-                    {/* Features - Optimized for mobile */}
-                    <ul className="space-y-2 mb-4 sm:mb-6">
-                      {role.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                          <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />
-                          <span className="leading-tight">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    {/* CTA - Improved mobile touch target */}
-                    <div className={`flex items-center font-semibold bg-gradient-to-r ${role.gradient} bg-clip-text text-transparent group-hover:gap-3 transition-all duration-300 min-h-[44px] py-2`}>
-                      Get Started
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 text-gray-600 dark:text-gray-400 group-hover:translate-x-1 transition-transform flex-shrink-0" />
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
       

@@ -21,11 +21,12 @@ interface UserFormModalProps {
 }
 
 const roleOptions = [
+  { value: 'CUSTOMER', label: 'Customer', description: 'Default role for new users' },
   { value: 'LEARNER', label: 'Learner', description: 'Regular platform user' },
-  { value: 'VOLUNTEER', label: 'Volunteer', description: 'Content contributor' },
   { value: 'TEACHER', label: 'Teacher', description: 'Educator with special access' },
-  { value: 'ADMIN', label: 'Admin', description: 'Full system access' },
   { value: 'INSTITUTION', label: 'Institution', description: 'Organizational account' },
+  { value: 'VOLUNTEER', label: 'Volunteer', description: 'Content contributor' },
+  { value: 'ADMIN', label: 'Admin', description: 'Full system access' },
 ];
 
 export default function UserFormModal({
@@ -38,7 +39,7 @@ export default function UserFormModal({
   const [formData, setFormData] = useState({
     email: '',
     name: '',
-    role: 'LEARNER' as UserRole
+    role: 'CUSTOMER' as UserRole
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -55,7 +56,7 @@ export default function UserFormModal({
       setFormData({
         email: '',
         name: '',
-        role: 'LEARNER'
+        role: 'CUSTOMER'
       });
     }
     setErrors({});

@@ -1,0 +1,166 @@
+# Blue-Green Deployment Configuration for 1001 Stories
+# This configuration enables zero-downtime deployment by running parallel containers
+
+version: '3.8'
+
+services:
+  # Blue environment (current production)
+  app-blue:
+    build: .
+    container_name: 1001-stories-app-blue
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - EMAIL_SERVER_HOST=${EMAIL_SERVER_HOST}
+      - EMAIL_SERVER_PORT=${EMAIL_SERVER_PORT}
+      - EMAIL_SERVER_USER=${EMAIL_SERVER_USER}
+      - EMAIL_SERVER_PASSWORD=${EMAIL_SERVER_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+    volumes:
+      - ./public/uploads:/app/public/uploads
+      - ./public/books:/app/public/books
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "deployment.environment=blue"
+      - "deployment.version=current"
+
+  # Green environment (new version)
+  app-green:
+    build: .
+    container_name: 1001-stories-app-green
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - EMAIL_SERVER_HOST=${EMAIL_SERVER_HOST}
+      - EMAIL_SERVER_PORT=${EMAIL_SERVER_PORT}
+      - EMAIL_SERVER_USER=${EMAIL_SERVER_USER}
+      - EMAIL_SERVER_PASSWORD=${EMAIL_SERVER_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM}
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db
+    networks:
+      - app-network
+    volumes:
+      - ./public/uploads:/app/public/uploads
+      - ./public/books:/app/public/books
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "deployment.environment=green"
+      - "deployment.version=new"
+    profiles:
+      - "green"
+
+  # Database (shared between blue and green)
+  db:
+    image: postgres:15
+    container_name: 1001-stories-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Nginx with blue-green switching capability
+  nginx-blue-green:
+    image: nginx:alpine
+    container_name: 1001-stories-nginx-blue-green
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx-blue-green.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - app-blue
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/nginx-health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "deployment.role=load-balancer"
+
+  # Health monitor for deployment tracking
+  health-monitor:
+    image: alpine:latest
+    container_name: 1001-stories-health-monitor
+    command: |
+      sh -c "
+      while true; do
+        echo '[$(date)] Monitoring deployment health...'
+        
+        # Check blue environment
+        if wget -q --spider http://app-blue:3000/api/health; then
+          echo '[$(date)] Blue environment: HEALTHY'
+        else
+          echo '[$(date)] Blue environment: UNHEALTHY'
+        fi
+        
+        # Check green environment if running
+        if wget -q --spider http://app-green:3000/api/health 2>/dev/null; then
+          echo '[$(date)] Green environment: HEALTHY'
+        else
+          echo '[$(date)] Green environment: NOT RUNNING or UNHEALTHY'
+        fi
+        
+        # Check database
+        if nc -z db 5432; then
+          echo '[$(date)] Database: HEALTHY'
+        else
+          echo '[$(date)] Database: UNHEALTHY'
+        fi
+        
+        sleep 30
+      done
+      "
+    networks:
+      - app-network
+    profiles:
+      - "monitoring"
+
+volumes:
+  postgres_data:
+  nginx_logs:
+
+networks:
+  app-network:
+    driver: bridge

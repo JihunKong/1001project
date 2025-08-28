@@ -1,0 +1,240 @@
+version: '3.9'
+
+services:
+  app-staging:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 1001-stories-app-staging
+    restart: unless-stopped
+    ports:
+      - "3001:3000"  # Staging port to avoid conflict with production
+    env_file:
+      - .env.staging
+    environment:
+      - NODE_ENV=staging
+      - NEXTAUTH_URL=https://localhost:8080  # Staging SSL URL
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - DATABASE_URL=postgresql://${DB_USER:-staging_user}:${DB_PASSWORD:-staging_pass_123}@postgres-staging:5432/staging_db
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM:-staging@1001stories.org}
+      - EMAIL_SERVICE_ENABLED=${EMAIL_SERVICE_ENABLED:-false}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./prisma:/app/prisma
+      - ./public/books:/app/public/books
+      - ./staging-data:/app/staging-data  # Staging-specific data volume
+    networks:
+      - staging-network
+    depends_on:
+      postgres-staging:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=application"
+
+  nginx-staging:
+    image: nginx:alpine
+    container_name: 1001-stories-nginx-staging
+    restart: unless-stopped
+    ports:
+      - "8080:443"   # Staging HTTPS port
+      - "8081:80"    # Staging HTTP port (redirect to HTTPS)
+    volumes:
+      - ./nginx/staging.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl-staging:/etc/nginx/ssl:ro
+      - ./nginx/logs-staging:/var/log/nginx
+      - ./staging-assets:/usr/share/nginx/html/staging:ro  # Staging static assets
+    depends_on:
+      - app-staging
+    networks:
+      - staging-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=proxy"
+
+  postgres-staging:
+    image: postgres:15-alpine
+    container_name: 1001-stories-db-staging
+    restart: unless-stopped
+    ports:
+      - "5434:5432"  # Staging database port to avoid conflict
+    environment:
+      POSTGRES_DB: staging_db
+      POSTGRES_USER: ${DB_USER:-staging_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-staging_pass_123}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+      - ./staging-backups:/backups
+      - ./scripts/staging-init:/docker-entrypoint-initdb.d  # Staging-specific init scripts
+    networks:
+      - staging-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-staging_user} -d staging_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=database"
+
+  pgadmin-staging:
+    image: dpage/pgadmin4:latest
+    container_name: 1001-stories-pgadmin-staging
+    restart: unless-stopped
+    ports:
+      - "5051:80"  # Staging pgAdmin port
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-staging@1001stories.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-staging123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_staging_data:/var/lib/pgadmin
+      - ./staging-pgadmin-config:/var/lib/pgadmin/storage:rw
+    depends_on:
+      - postgres-staging
+    networks:
+      - staging-network
+    profiles:
+      - admin  # Only start when explicitly requested
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=admin-tool"
+
+  # Redis for staging session management and caching
+  redis-staging:
+    image: redis:7-alpine
+    container_name: 1001-stories-redis-staging
+    restart: unless-stopped
+    ports:
+      - "6380:6379"  # Staging Redis port
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-staging_redis_123}
+    volumes:
+      - redis_staging_data:/data
+      - ./staging-redis-config:/usr/local/etc/redis:ro
+    networks:
+      - staging-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=cache"
+
+  # Staging monitoring with Prometheus
+  prometheus-staging:
+    image: prom/prometheus:latest
+    container_name: 1001-stories-prometheus-staging
+    restart: unless-stopped
+    ports:
+      - "9091:9090"  # Staging Prometheus port
+    volumes:
+      - ./staging-monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_staging_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=7d'  # Shorter retention for staging
+      - '--web.enable-lifecycle'
+    networks:
+      - staging-network
+    profiles:
+      - monitoring
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=monitoring"
+
+  # Staging log aggregation with Grafana
+  grafana-staging:
+    image: grafana/grafana:latest
+    container_name: 1001-stories-grafana-staging
+    restart: unless-stopped
+    ports:
+      - "3001:3000"  # Note: This conflicts with app port, use different approach
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-staging123}
+      - GF_SERVER_DOMAIN=localhost:3002
+      - GF_SERVER_HTTP_PORT=3000
+    volumes:
+      - grafana_staging_data:/var/lib/grafana
+      - ./staging-monitoring/grafana:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus-staging
+    networks:
+      - staging-network
+    profiles:
+      - monitoring
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=visualization"
+
+networks:
+  staging-network:
+    driver: bridge
+    name: 1001-stories-staging
+    labels:
+      - "environment=staging"
+      - "project=1001-stories"
+
+volumes:
+  postgres_staging_data:
+    name: 1001-stories-postgres-staging
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=database"
+  
+  pgadmin_staging_data:
+    name: 1001-stories-pgadmin-staging
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=admin-tool"
+  
+  redis_staging_data:
+    name: 1001-stories-redis-staging
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=cache"
+  
+  prometheus_staging_data:
+    name: 1001-stories-prometheus-staging
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=monitoring"
+  
+  grafana_staging_data:
+    name: 1001-stories-grafana-staging
+    labels:
+      - "environment=staging"
+      - "service=1001-stories"
+      - "component=visualization"

@@ -24,7 +24,8 @@ model User {
   name            String?
   image           String?
   password        String?          // For admin/volunteer password login
-  role            UserRole         @default(LEARNER)
+  role            UserRole         @default(CUSTOMER)
+  tokenVersion    Int              @default(1) // JWT versioning for session invalidation
   schoolId        String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -99,6 +100,14 @@ model User {
   assignedVolunteerSubmissions VolunteerSubmission[] @relation("AssignedVolunteerSubmissions")
   publishedContent Publication[] @relation("PublishedContent")
   
+  // UX Research relations
+  feedback        UserFeedback[]   @relation("UserFeedback")
+  surveyResponses SurveyResponse[] @relation("SurveyResponses")
+  analytics       UserAnalytics[]  @relation("UserAnalytics")
+  abTestParticipations ABTestParticipant[] @relation("ABTestParticipants")
+  roleMigrations  RoleMigration[]  @relation("RoleMigrations")
+  featureUsage    FeatureUsage[]   @relation("FeatureUsage")
+  
   @@index([email])
   @@index([role])
   @@index([schoolId])
@@ -107,6 +116,7 @@ model User {
 
 // User roles
 enum UserRole {
+  CUSTOMER
   LEARNER
   TEACHER
   INSTITUTION
@@ -2850,3 +2860,379 @@ enum ShopProductStatus {
   ARCHIVED
   OUT_OF_STOCK
 }
+
+// ==========================================
+// USER FEEDBACK & UX RESEARCH SYSTEM
+// ==========================================
+
+// User feedback collection for role system changes and general UX
+model UserFeedback {
+  id              String           @id @default(cuid())
+  userId          String?          // Null for anonymous feedback
+  sessionId       String?          // Track anonymous sessions
+  email           String?          // Optional contact info
+  
+  // Feedback context
+  feedbackType    FeedbackType     @default(GENERAL)
+  category        FeedbackCategory @default(UX_FEEDBACK)
+  page            String?          // Page/route where feedback was given
+  userAgent       String?          // Browser/device info
+  viewport        String?          // Screen resolution
+  
+  // Feedback content
+  rating          Int?             // 1-5 star rating
+  title           String?
+  message         String           @db.Text
+  sentiment       SentimentType?   // Auto-analyzed sentiment
+  
+  // Contextual data
+  userRole        UserRole?        // User's current role
+  previousRole    UserRole?        // For migration feedback
+  migrationDate   DateTime?        // When role migration occurred
+  sessionDuration Int?             // Time spent before feedback (seconds)
+  
+  // UI/UX specific data
+  clickPath       Json?            // User's click journey
+  scrollBehavior  Json?            // Scroll patterns
+  timeOnPage      Int?             // Seconds on current page
+  exitIntent      Boolean          @default(false)
+  
+  // Issue tracking
+  bugReport       Boolean          @default(false)
+  reproducible    Boolean?         // Can bug be reproduced
+  severity        FeedbackSeverity @default(LOW)
+  screenshotUrl   String?          // Screenshot of issue
+  
+  // Response tracking
+  isResolved      Boolean          @default(false)
+  responseDate    DateTime?
+  respondedBy     String?
+  resolution      String?          @db.Text
+  
+  // Analytics
+  tags            String[]         // For categorization
+  priority        Priority         @default(LOW)
+  
+  user            User?            @relation("UserFeedback", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([feedbackType, category])
+  @@index([userRole, previousRole])
+  @@index([page, createdAt])
+  @@index([isResolved, priority])
+  @@map("user_feedback")
+}
+
+// Micro-surveys for specific user journey stages
+model MicroSurvey {
+  id              String           @id @default(cuid())
+  name            String
+  description     String?          @db.Text
+  
+  // Survey configuration
+  trigger         SurveyTrigger    @default(PAGE_LOAD)
+  targetPage      String?          // Specific page to show survey
+  targetRole      UserRole[]       // Target user roles
+  frequency       SurveyFrequency  @default(ONCE)
+  
+  // Display settings
+  displayType     SurveyDisplayType @default(MODAL)
+  position        String           @default("bottom-right")
+  delay           Int              @default(5000) // Milliseconds
+  
+  // Questions configuration
+  questions       Json             // Survey questions structure
+  
+  // Scheduling
+  startDate       DateTime
+  endDate         DateTime?
+  isActive        Boolean          @default(true)
+  
+  // Analytics
+  impressions     Int              @default(0)
+  responseCount   Int              @default(0)
+  completionRate  Float            @default(0)
+  
+  // Relations
+  responses       SurveyResponse[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([isActive, startDate])
+  @@index([targetPage, trigger])
+  @@map("micro_surveys")
+}
+
+// Individual survey responses
+model SurveyResponse {
+  id              String           @id @default(cuid())
+  surveyId        String
+  userId          String?
+  sessionId       String?
+  
+  // Response data
+  answers         Json             // Question-answer pairs
+  completionTime  Int              // Time to complete (seconds)
+  isComplete      Boolean          @default(true)
+  
+  // Context
+  userRole        UserRole?
+  page            String?
+  userAgent       String?
+  
+  survey          MicroSurvey      @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  user            User?            @relation("SurveyResponses", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  
+  @@index([surveyId, userId])
+  @@index([userRole, createdAt])
+  @@map("survey_responses")
+}
+
+// User behavior analytics for role system validation
+model UserAnalytics {
+  id              String           @id @default(cuid())
+  userId          String?
+  sessionId       String           @unique
+  
+  // User context
+  userRole        UserRole?
+  isNewUser       Boolean          @default(false)
+  migrationDate   DateTime?        // Role migration date
+  
+  // Session data
+  sessionStart    DateTime         @default(now())
+  sessionEnd      DateTime?
+  totalDuration   Int              @default(0) // Total session time
+  pageViews       Int              @default(0)
+  clickCount      Int              @default(0)
+  scrollDepth     Float            @default(0) // Average scroll depth
+  
+  // User journey
+  landingPage     String?
+  exitPage        String?
+  pageSequence    Json?            // Array of page visits with timestamps
+  
+  // Feature usage tracking
+  featuresUsed    String[]         // List of features accessed
+  actionsPerformed Json?           // Detailed action log
+  errorsEncountered String[]       // Error messages seen
+  
+  // Device and browser
+  userAgent       String?
+  deviceType      String?          // "desktop", "tablet", "mobile"
+  browserName     String?
+  operatingSystem String?
+  screenResolution String?
+  
+  // Engagement metrics
+  engagementScore Float            @default(0) // 0-100 calculated score
+  bounceRate      Boolean          @default(false) // Single page visit
+  returnVisitor   Boolean          @default(false)
+  
+  user            User?            @relation("UserAnalytics", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([userId, sessionStart])
+  @@index([userRole, migrationDate])
+  @@index([isNewUser, sessionStart])
+  @@map("user_analytics")
+}
+
+// A/B test tracking for role system changes
+model ABTestParticipant {
+  id              String           @id @default(cuid())
+  userId          String?
+  sessionId       String
+  
+  // Test configuration
+  testName        String           // "role_migration_v1", "onboarding_flow_v2"
+  variant         String           // "control", "treatment_a", "treatment_b"
+  
+  // Participant data
+  userRole        UserRole?
+  assignedAt      DateTime         @default(now())
+  
+  // Conversion tracking
+  primaryGoal     String?          // "signup_completion", "first_story_read"
+  goalAchieved    Boolean          @default(false)
+  goalAchievedAt  DateTime?
+  conversionValue Float?           // Quantified value of conversion
+  
+  // Secondary metrics
+  secondaryGoals  Json?            // Additional goals and their status
+  
+  user            User?            @relation("ABTestParticipants", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  
+  @@unique([testName, sessionId])
+  @@index([testName, variant])
+  @@index([goalAchieved, conversionValue])
+  @@map("ab_test_participants")
+}
+
+// Role migration tracking for specific UX research
+model RoleMigration {
+  id              String           @id @default(cuid())
+  userId          String
+  
+  // Migration details
+  fromRole        UserRole
+  toRole          UserRole
+  migrationType   MigrationType    @default(SYSTEM_MIGRATION)
+  migrationReason String?          @db.Text
+  
+  // Migration process tracking
+  initiatedAt     DateTime         @default(now())
+  completedAt     DateTime?
+  status          MigrationStatus  @default(IN_PROGRESS)
+  
+  // User experience during migration
+  notificationSent Boolean         @default(false)
+  userAcknowledged Boolean         @default(false)
+  helpDocViewed   Boolean          @default(false)
+  supportContacted Boolean         @default(false)
+  
+  // Post-migration feedback
+  satisfactionRating Int?          // 1-5 rating
+  feedbackProvided Boolean         @default(false)
+  issuesReported  String[]         // List of reported issues
+  
+  // Feature usage comparison
+  preFeatureUsage Json?            // Features used before migration
+  postFeatureUsage Json?           // Features used after migration
+  adaptationPeriod Int?            // Days to adapt to new role
+  
+  user            User             @relation("RoleMigrations", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([fromRole, toRole])
+  @@index([status, completedAt])
+  @@index([userId, initiatedAt])
+  @@map("role_migrations")
+}
+
+// Feature usage analytics
+model FeatureUsage {
+  id              String           @id @default(cuid())
+  userId          String?
+  sessionId       String?
+  
+  // Feature information
+  featureName     String           // "dashboard_overview", "story_library", "role_selector"
+  featureCategory String?          // "navigation", "content", "admin"
+  
+  // Usage details
+  accessCount     Int              @default(1)
+  totalTimeSpent  Int              @default(0) // Total seconds
+  avgTimePerAccess Float           @default(0)
+  lastAccessed    DateTime         @default(now())
+  
+  // User context
+  userRole        UserRole?
+  deviceType      String?
+  
+  // Success metrics
+  taskCompleted   Boolean          @default(false)
+  errorEncountered Boolean         @default(false)
+  helpSought      Boolean          @default(false)
+  
+  user            User?            @relation("FeatureUsage", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@unique([userId, sessionId, featureName])
+  @@index([featureName, userRole])
+  @@index([lastAccessed, userRole])
+  @@map("feature_usage")
+}
+
+// ==========================================
+// UX RESEARCH ENUMS
+// ==========================================
+
+enum FeedbackType {
+  GENERAL
+  BUG_REPORT
+  FEATURE_REQUEST
+  ROLE_MIGRATION
+  ONBOARDING
+  UI_UX_ISSUE
+  PERFORMANCE_ISSUE
+}
+
+enum FeedbackCategory {
+  UX_FEEDBACK
+  TECHNICAL_ISSUE
+  CONTENT_FEEDBACK
+  NAVIGATION_ISSUE
+  ACCESSIBILITY_ISSUE
+  MOBILE_EXPERIENCE
+  DESKTOP_EXPERIENCE
+}
+
+enum SentimentType {
+  VERY_NEGATIVE
+  NEGATIVE
+  NEUTRAL
+  POSITIVE
+  VERY_POSITIVE
+}
+
+enum FeedbackSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum SurveyTrigger {
+  PAGE_LOAD
+  TIME_DELAY
+  SCROLL_DEPTH
+  EXIT_INTENT
+  FEATURE_USE
+  MANUAL_TRIGGER
+}
+
+enum SurveyFrequency {
+  ONCE
+  DAILY
+  WEEKLY
+  PER_SESSION
+  ALWAYS
+}
+
+enum SurveyDisplayType {
+  MODAL
+  SLIDE_IN
+  BANNER
+  EMBED
+  FLOATING_BUTTON
+}
+
+enum MigrationType {
+  SYSTEM_MIGRATION
+  USER_REQUESTED
+  ADMIN_ASSIGNED
+  AUTOMATIC_UPGRADE
+}
+
+enum MigrationStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+  REVERSED
+}
+

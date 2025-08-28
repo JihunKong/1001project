@@ -136,22 +136,24 @@ export default function Header() {
 
   const getRoleLabel = (role: UserRole) => {
     const labels = {
-      [UserRole.ADMIN]: 'Administrator',
-      [UserRole.TEACHER]: 'Teacher',
+      [UserRole.CUSTOMER]: 'Customer',
       [UserRole.LEARNER]: 'Learner',
+      [UserRole.TEACHER]: 'Teacher',
       [UserRole.INSTITUTION]: 'Institution',
       [UserRole.VOLUNTEER]: 'Volunteer',
+      [UserRole.ADMIN]: 'Administrator',
     };
     return labels[role] || 'User';
   };
 
   const getRoleColor = (role: UserRole) => {
     const colors = {
-      [UserRole.ADMIN]: 'bg-red-100 text-red-800',
-      [UserRole.TEACHER]: 'bg-green-100 text-green-800',
+      [UserRole.CUSTOMER]: 'bg-indigo-100 text-indigo-800',
       [UserRole.LEARNER]: 'bg-blue-100 text-blue-800',
+      [UserRole.TEACHER]: 'bg-green-100 text-green-800',
       [UserRole.INSTITUTION]: 'bg-purple-100 text-purple-800',
       [UserRole.VOLUNTEER]: 'bg-pink-100 text-pink-800',
+      [UserRole.ADMIN]: 'bg-red-100 text-red-800',
     };
     return colors[role] || 'bg-gray-100 text-gray-800';
   };

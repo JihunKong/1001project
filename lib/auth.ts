@@ -194,17 +194,19 @@ export const authOptions: NextAuthOptions = {
       if (session?.user && token) {
         // Add user ID and role to session from token
         session.user.id = token.id as string
-        session.user.role = (token.role as UserRole) || UserRole.LEARNER
+        session.user.role = (token.role as UserRole) || UserRole.CUSTOMER
         session.user.emailVerified = token.emailVerified as Date | null
+        session.user.tokenVersion = token.tokenVersion as number
       }
       return session
     },
     
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id
-        token.role = (user as { role?: UserRole }).role || UserRole.LEARNER
+        token.role = (user as { role?: UserRole }).role || UserRole.CUSTOMER
         token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified
+        token.tokenVersion = (user as { tokenVersion?: number }).tokenVersion || 1
         
         // Set shorter expiry for admin/volunteer accounts (8 hours instead of 30 days)
         const userRole = (user as { role?: UserRole }).role;
@@ -212,6 +214,31 @@ export const authOptions: NextAuthOptions = {
           token.exp = Math.floor(Date.now() / 1000) + (8 * 60 * 60); // 8 hours
         }
       }
+      
+      // Refresh user data from database if needed (for role changes)
+      if (trigger === 'update' || (!user && token.id)) {
+        try {
+          const { prisma } = await import("@/lib/prisma");
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true, tokenVersion: true }
+          });
+          
+          if (dbUser) {
+            // If tokenVersion has changed, invalidate this token
+            if (dbUser.tokenVersion > (token.tokenVersion as number)) {
+              console.log(`Token version mismatch for user ${token.id}: ${token.tokenVersion} vs ${dbUser.tokenVersion}`);
+              return {}; // Return empty token to force logout
+            }
+            
+            token.role = dbUser.role;
+            token.tokenVersion = dbUser.tokenVersion;
+          }
+        } catch (error) {
+          console.error('Error refreshing user data in JWT callback:', error);
+        }
+      }
+      
       return token
     },
     
@@ -288,10 +315,12 @@ declare module "next-auth" {
       image?: string | null
       role: UserRole
       emailVerified: Date | null
+      tokenVersion: number
     }
   }
   
   interface User {
     role: UserRole
+    tokenVersion?: number
   }
 }

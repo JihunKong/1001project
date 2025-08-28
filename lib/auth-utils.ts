@@ -8,6 +8,7 @@ const roleHierarchy: Record<UserRole, number> = {
   [UserRole.TEACHER]: 60,
   [UserRole.VOLUNTEER]: 40,
   [UserRole.LEARNER]: 20,
+  [UserRole.CUSTOMER]: 10,
 };
 
 // Check if a user has a specific role
@@ -33,11 +34,12 @@ export function hasMinimumRole(session: Session | null, minimumRole: UserRole): 
 // Get the dashboard URL for a specific role
 export function getRoleDashboardUrl(role: UserRole): string {
   const dashboardUrls: Record<UserRole, string> = {
-    [UserRole.ADMIN]: '/admin',
-    [UserRole.TEACHER]: '/dashboard/teacher',
+    [UserRole.CUSTOMER]: '/dashboard',
     [UserRole.LEARNER]: '/dashboard/learner',
+    [UserRole.TEACHER]: '/dashboard/teacher',
     [UserRole.INSTITUTION]: '/dashboard/institution',
     [UserRole.VOLUNTEER]: '/dashboard/volunteer',
+    [UserRole.ADMIN]: '/admin',
   };
   
   return dashboardUrls[role] || '/dashboard';
@@ -48,14 +50,19 @@ export function getAccessibleRoutes(role: UserRole): string[] {
   const publicRoutes = ['/', '/about', '/contact', '/library', '/shop'];
   
   const roleRoutes: Record<UserRole, string[]> = {
-    [UserRole.ADMIN]: [
+    [UserRole.CUSTOMER]: [
       ...publicRoutes,
-      '/admin',
-      '/admin/**',
       '/dashboard',
-      '/dashboard/**',
       '/settings',
-      '/api/**',
+    ],
+    [UserRole.LEARNER]: [
+      ...publicRoutes,
+      '/dashboard',
+      '/dashboard/learner',
+      '/dashboard/learner/**',
+      '/my-learning',
+      '/my-learning/**',
+      '/settings',
     ],
     [UserRole.TEACHER]: [
       ...publicRoutes,
@@ -66,15 +73,6 @@ export function getAccessibleRoutes(role: UserRole): string[] {
       '/classes/**',
       '/students',
       '/students/**',
-      '/settings',
-    ],
-    [UserRole.LEARNER]: [
-      ...publicRoutes,
-      '/dashboard',
-      '/dashboard/learner',
-      '/dashboard/learner/**',
-      '/my-learning',
-      '/my-learning/**',
       '/settings',
     ],
     [UserRole.INSTITUTION]: [
@@ -98,6 +96,15 @@ export function getAccessibleRoutes(role: UserRole): string[] {
       '/projects',
       '/projects/**',
       '/settings',
+    ],
+    [UserRole.ADMIN]: [
+      ...publicRoutes,
+      '/admin',
+      '/admin/**',
+      '/dashboard',
+      '/dashboard/**',
+      '/settings',
+      '/api/**',
     ],
   };
   
@@ -184,11 +191,12 @@ export function getRolePermissions(role: UserRole): string[] {
 // Format role name for display
 export function formatRoleName(role: UserRole): string {
   const roleNames: Record<UserRole, string> = {
-    [UserRole.ADMIN]: 'Administrator',
-    [UserRole.TEACHER]: 'Teacher',
+    [UserRole.CUSTOMER]: 'Customer',
     [UserRole.LEARNER]: 'Learner',
+    [UserRole.TEACHER]: 'Teacher',
     [UserRole.INSTITUTION]: 'Institution',
     [UserRole.VOLUNTEER]: 'Volunteer',
+    [UserRole.ADMIN]: 'Administrator',
   };
   
   return roleNames[role] || 'User';
@@ -197,11 +205,12 @@ export function formatRoleName(role: UserRole): string {
 // Get role badge color classes
 export function getRoleBadgeColor(role: UserRole): string {
   const roleColors: Record<UserRole, string> = {
-    [UserRole.ADMIN]: 'bg-red-100 text-red-800 border-red-200',
-    [UserRole.TEACHER]: 'bg-green-100 text-green-800 border-green-200',
+    [UserRole.CUSTOMER]: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     [UserRole.LEARNER]: 'bg-blue-100 text-blue-800 border-blue-200',
+    [UserRole.TEACHER]: 'bg-green-100 text-green-800 border-green-200',
     [UserRole.INSTITUTION]: 'bg-purple-100 text-purple-800 border-purple-200',
     [UserRole.VOLUNTEER]: 'bg-pink-100 text-pink-800 border-pink-200',
+    [UserRole.ADMIN]: 'bg-red-100 text-red-800 border-red-200',
   };
   
   return roleColors[role] || 'bg-gray-100 text-gray-800 border-gray-200';

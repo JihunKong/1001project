@@ -1,199 +1,268 @@
--- Test database initialization script
--- This script sets up the test database with sample data for E2E testing
+-- Test Database Initialization Script
+-- Sets up test data and configurations for role system testing
 
--- Enable UUID extension
+-- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Create enum types
-CREATE TYPE user_role AS ENUM ('LEARNER', 'TEACHER', 'INSTITUTION', 'VOLUNTEER', 'ADMIN');
-CREATE TYPE story_status AS ENUM ('DRAFT', 'REVIEW', 'TRANSLATION', 'ILLUSTRATION', 'EDITING', 'PUBLISHED');
-CREATE TYPE payment_status AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED');
+-- Create test-specific functions for data generation
+CREATE OR REPLACE FUNCTION generate_test_user(
+    p_email TEXT,
+    p_role TEXT DEFAULT 'CUSTOMER',
+    p_name TEXT DEFAULT NULL
+) RETURNS UUID AS $$
+DECLARE
+    user_id UUID;
+BEGIN
+    INSERT INTO "User" (
+        id,
+        email,
+        name,
+        role,
+        "createdAt",
+        "updatedAt"
+    ) VALUES (
+        uuid_generate_v4(),
+        p_email,
+        COALESCE(p_name, 'Test User'),
+        p_role::"UserRole",
+        NOW(),
+        NOW()
+    ) RETURNING id INTO user_id;
+    
+    RETURN user_id;
+END;
+$$ LANGUAGE plpgsql;
 
--- Users table
-CREATE TABLE IF NOT EXISTS users (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    name VARCHAR(255),
-    password_hash VARCHAR(255),
-    role user_role DEFAULT 'LEARNER',
-    email_verified BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE,
-    profile_image VARCHAR(500),
-    locale VARCHAR(10) DEFAULT 'en',
-    demo_mode BOOLEAN DEFAULT FALSE
-);
+-- Function to create test orders
+CREATE OR REPLACE FUNCTION create_test_order(
+    p_user_id UUID,
+    p_product_id TEXT DEFAULT 'test-product',
+    p_amount DECIMAL DEFAULT 9.99,
+    p_status TEXT DEFAULT 'completed'
+) RETURNS UUID AS $$
+DECLARE
+    order_id UUID;
+BEGIN
+    INSERT INTO "Order" (
+        id,
+        "userId",
+        "productId",
+        amount,
+        status,
+        "createdAt",
+        "updatedAt"
+    ) VALUES (
+        uuid_generate_v4(),
+        p_user_id,
+        p_product_id,
+        p_amount,
+        p_status,
+        NOW(),
+        NOW()
+    ) RETURNING id INTO order_id;
+    
+    RETURN order_id;
+END;
+$$ LANGUAGE plpgsql;
 
--- Stories table
-CREATE TABLE IF NOT EXISTS stories (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    title VARCHAR(500) NOT NULL,
-    content TEXT,
-    author_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    status story_status DEFAULT 'DRAFT',
-    language VARCHAR(10) DEFAULT 'en',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    published_at TIMESTAMP,
-    view_count INTEGER DEFAULT 0,
-    is_featured BOOLEAN DEFAULT FALSE,
-    tags TEXT[],
-    cover_image VARCHAR(500)
-);
+-- Function to create test donations
+CREATE OR REPLACE FUNCTION create_test_donation(
+    p_user_id UUID,
+    p_amount DECIMAL DEFAULT 25.00,
+    p_program TEXT DEFAULT 'seeds-of-empowerment'
+) RETURNS UUID AS $$
+DECLARE
+    donation_id UUID;
+BEGIN
+    INSERT INTO "Donation" (
+        id,
+        "userId",
+        amount,
+        program,
+        "createdAt",
+        "updatedAt"
+    ) VALUES (
+        uuid_generate_v4(),
+        p_user_id,
+        p_amount,
+        p_program,
+        NOW(),
+        NOW()
+    ) RETURNING id INTO donation_id;
+    
+    RETURN donation_id;
+END;
+$$ LANGUAGE plpgsql;
 
--- Classes table (for teachers)
-CREATE TABLE IF NOT EXISTS classes (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    teacher_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    code VARCHAR(20) UNIQUE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE,
-    grade_level VARCHAR(50),
-    subject VARCHAR(100)
-);
+-- Function to create test stories
+CREATE OR REPLACE FUNCTION create_test_story(
+    p_title TEXT DEFAULT 'Test Story',
+    p_author TEXT DEFAULT 'Test Author',
+    p_published BOOLEAN DEFAULT true
+) RETURNS UUID AS $$
+DECLARE
+    story_id UUID;
+BEGIN
+    INSERT INTO "Story" (
+        id,
+        title,
+        author,
+        published,
+        "createdAt",
+        "updatedAt"
+    ) VALUES (
+        uuid_generate_v4(),
+        p_title,
+        p_author,
+        p_published,
+        NOW(),
+        NOW()
+    ) RETURNING id INTO story_id;
+    
+    RETURN story_id;
+END;
+$$ LANGUAGE plpgsql;
 
--- Class enrollments
-CREATE TABLE IF NOT EXISTS enrollments (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
-    student_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE,
-    UNIQUE(class_id, student_id)
-);
+-- Create base test users for different scenarios
+DO $$
+DECLARE
+    admin_user_id UUID;
+    customer_user_id UUID;
+    learner_user_id UUID;
+    test_story_id UUID;
+BEGIN
+    -- Create admin user
+    admin_user_id := generate_test_user(
+        'admin@test.1001stories.org',
+        'ADMIN',
+        'Test Admin User'
+    );
+    
+    -- Create customer user
+    customer_user_id := generate_test_user(
+        'customer@test.1001stories.org',
+        'CUSTOMER',
+        'Test Customer User'
+    );
+    
+    -- Create learner user (for migration testing)
+    learner_user_id := generate_test_user(
+        'learner@test.1001stories.org',
+        'LEARNER',
+        'Test Learner User'
+    );
+    
+    -- Create demo user
+    INSERT INTO "User" (
+        id,
+        email,
+        name,
+        role,
+        "createdAt",
+        "updatedAt"
+    ) VALUES (
+        uuid_generate_v4(),
+        'demo@1001stories.org',
+        'Demo User',
+        'CUSTOMER',
+        NOW(),
+        NOW()
+    );
+    
+    -- Create test orders for customer
+    PERFORM create_test_order(customer_user_id, 'book-1', 12.99, 'completed');
+    PERFORM create_test_order(customer_user_id, 'book-2', 8.99, 'completed');
+    PERFORM create_test_order(customer_user_id, 'book-3', 15.99, 'pending');
+    
+    -- Create test orders for learner (to test migration)
+    PERFORM create_test_order(learner_user_id, 'book-4', 11.99, 'completed');
+    PERFORM create_test_order(learner_user_id, 'book-5', 9.99, 'completed');
+    
+    -- Create test donations
+    PERFORM create_test_donation(customer_user_id, 50.00, 'seeds-of-empowerment');
+    PERFORM create_test_donation(learner_user_id, 25.00, 'seeds-of-empowerment');
+    
+    -- Create test stories
+    test_story_id := create_test_story('The Adventure Begins', 'Maria Santos', true);
+    PERFORM create_test_story('Journey to School', 'Ahmed Hassan', true);
+    PERFORM create_test_story('My Dream', 'Lin Wei', true);
+    PERFORM create_test_story('Hope in the Village', 'Priya Patel', true);
+    PERFORM create_test_story('Draft Story', 'Test Author', false);
+    
+    -- Log successful initialization
+    RAISE NOTICE 'Test database initialized successfully with:';
+    RAISE NOTICE '- Admin user: admin@test.1001stories.org';
+    RAISE NOTICE '- Customer user: customer@test.1001stories.org'; 
+    RAISE NOTICE '- Learner user: learner@test.1001stories.org';
+    RAISE NOTICE '- Demo user: demo@1001stories.org';
+    RAISE NOTICE '- 5 test orders created';
+    RAISE NOTICE '- 2 test donations created';
+    RAISE NOTICE '- 5 test stories created';
+END $$;
 
--- Institutions table
-CREATE TABLE IF NOT EXISTS institutions (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    admin_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_verified BOOLEAN DEFAULT FALSE,
-    country VARCHAR(100),
-    city VARCHAR(100),
-    website VARCHAR(500),
-    description TEXT
-);
+-- Create indexes for test performance
+CREATE INDEX IF NOT EXISTS idx_user_role_test ON "User"(role);
+CREATE INDEX IF NOT EXISTS idx_user_email_test ON "User"(email);
+CREATE INDEX IF NOT EXISTS idx_order_user_test ON "Order"("userId");
+CREATE INDEX IF NOT EXISTS idx_donation_user_test ON "Donation"("userId");
 
--- Volunteer projects
-CREATE TABLE IF NOT EXISTS volunteer_projects (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    institution_id UUID REFERENCES institutions(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    start_date DATE,
-    end_date DATE,
-    is_active BOOLEAN DEFAULT TRUE,
-    required_skills TEXT[],
-    location VARCHAR(255)
-);
+-- Function to clean up test data
+CREATE OR REPLACE FUNCTION cleanup_test_data(p_timestamp TEXT DEFAULT NULL) RETURNS JSON AS $$
+DECLARE
+    deleted_users INTEGER := 0;
+    deleted_orders INTEGER := 0;
+    deleted_donations INTEGER := 0;
+    deleted_stories INTEGER := 0;
+    cleanup_filter TEXT;
+BEGIN
+    IF p_timestamp IS NOT NULL THEN
+        cleanup_filter := '%' || p_timestamp || '%';
+    ELSE
+        cleanup_filter := '%test.1001stories.org%';
+    END IF;
+    
+    -- Delete orders first (foreign key dependency)
+    DELETE FROM "Order" o 
+    USING "User" u 
+    WHERE o."userId" = u.id 
+    AND (u.email LIKE cleanup_filter OR u.email LIKE '%test%');
+    
+    GET DIAGNOSTICS deleted_orders = ROW_COUNT;
+    
+    -- Delete donations
+    DELETE FROM "Donation" d 
+    USING "User" u 
+    WHERE d."userId" = u.id 
+    AND (u.email LIKE cleanup_filter OR u.email LIKE '%test%');
+    
+    GET DIAGNOSTICS deleted_donations = ROW_COUNT;
+    
+    -- Delete test stories
+    DELETE FROM "Story" 
+    WHERE title LIKE '%Test%' OR author LIKE '%Test%';
+    
+    GET DIAGNOSTICS deleted_stories = ROW_COUNT;
+    
+    -- Delete users
+    DELETE FROM "User" 
+    WHERE email LIKE cleanup_filter OR email LIKE '%test%';
+    
+    GET DIAGNOSTICS deleted_users = ROW_COUNT;
+    
+    RETURN json_build_object(
+        'deletedUsers', deleted_users,
+        'deletedOrders', deleted_orders,
+        'deletedDonations', deleted_donations,
+        'deletedStories', deleted_stories,
+        'timestamp', NOW()
+    );
+END;
+$$ LANGUAGE plpgsql;
 
--- Volunteer applications
-CREATE TABLE IF NOT EXISTS volunteer_applications (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    project_id UUID REFERENCES volunteer_projects(id) ON DELETE CASCADE,
-    volunteer_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    status VARCHAR(50) DEFAULT 'PENDING',
-    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    approved_at TIMESTAMP,
-    message TEXT,
-    UNIQUE(project_id, volunteer_id)
-);
-
--- Payment records
-CREATE TABLE IF NOT EXISTS payments (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    currency VARCHAR(3) DEFAULT 'USD',
-    status payment_status DEFAULT 'PENDING',
-    payment_method VARCHAR(50),
-    transaction_id VARCHAR(255) UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    description TEXT
-);
-
--- Sessions table for authentication
-CREATE TABLE IF NOT EXISTS sessions (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    token VARCHAR(500) UNIQUE NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ip_address VARCHAR(45),
-    user_agent TEXT
-);
-
--- Audit logs
-CREATE TABLE IF NOT EXISTS audit_logs (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-    action VARCHAR(100) NOT NULL,
-    entity_type VARCHAR(50),
-    entity_id UUID,
-    old_values JSONB,
-    new_values JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ip_address VARCHAR(45)
-);
-
--- Create indexes for performance
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_stories_author ON stories(author_id);
-CREATE INDEX idx_stories_status ON stories(status);
-CREATE INDEX idx_classes_teacher ON classes(teacher_id);
-CREATE INDEX idx_enrollments_student ON enrollments(student_id);
-CREATE INDEX idx_sessions_token ON sessions(token);
-CREATE INDEX idx_sessions_expires ON sessions(expires_at);
-CREATE INDEX idx_audit_logs_user ON audit_logs(user_id);
-CREATE INDEX idx_audit_logs_created ON audit_logs(created_at);
-
--- Insert test data
--- Test users with different roles (password: TestPass123!)
-INSERT INTO users (email, name, password_hash, role, email_verified, demo_mode) VALUES
-    ('admin@test.com', 'Test Admin', '$2a$10$YourHashedPasswordHere', 'ADMIN', true, false),
-    ('teacher@test.com', 'Test Teacher', '$2a$10$YourHashedPasswordHere', 'TEACHER', true, false),
-    ('learner@test.com', 'Test Learner', '$2a$10$YourHashedPasswordHere', 'LEARNER', true, false),
-    ('volunteer@test.com', 'Test Volunteer', '$2a$10$YourHashedPasswordHere', 'VOLUNTEER', true, false),
-    ('institution@test.com', 'Test Institution Admin', '$2a$10$YourHashedPasswordHere', 'INSTITUTION', true, false),
-    ('demo.learner@test.com', 'Demo Learner', '$2a$10$YourHashedPasswordHere', 'LEARNER', true, true),
-    ('demo.teacher@test.com', 'Demo Teacher', '$2a$10$YourHashedPasswordHere', 'TEACHER', true, true);
-
--- Test stories
-INSERT INTO stories (title, content, author_id, status, language) VALUES
-    ('The Adventure Begins', 'Once upon a time...', (SELECT id FROM users WHERE email = 'learner@test.com'), 'PUBLISHED', 'en'),
-    ('Learning Journey', 'In a small village...', (SELECT id FROM users WHERE email = 'teacher@test.com'), 'REVIEW', 'en'),
-    ('Korean Folk Tale', '옛날 옛적에...', (SELECT id FROM users WHERE email = 'volunteer@test.com'), 'PUBLISHED', 'ko');
-
--- Test classes
-INSERT INTO classes (name, teacher_id, code, grade_level, subject) VALUES
-    ('Math Class 101', (SELECT id FROM users WHERE email = 'teacher@test.com'), 'MATH101', 'Grade 5', 'Mathematics'),
-    ('English Literature', (SELECT id FROM users WHERE email = 'teacher@test.com'), 'ENG201', 'Grade 6', 'English');
-
--- Test institutions
-INSERT INTO institutions (name, admin_id, is_verified, country, city) VALUES
-    ('Global Learning Center', (SELECT id FROM users WHERE email = 'institution@test.com'), true, 'USA', 'New York'),
-    ('Community Education Hub', (SELECT id FROM users WHERE email = 'institution@test.com'), false, 'Korea', 'Seoul');
-
--- Test volunteer projects
-INSERT INTO volunteer_projects (title, description, institution_id, start_date, is_active) VALUES
-    ('Story Translation Project', 'Help translate stories for children', 
-     (SELECT id FROM institutions WHERE name = 'Global Learning Center'), 
-     CURRENT_DATE, true),
-    ('Illustration Workshop', 'Create illustrations for published stories', 
-     (SELECT id FROM institutions WHERE name = 'Community Education Hub'), 
-     CURRENT_DATE + INTERVAL '7 days', true);
-
--- Grant permissions
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO test_user;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO test_user;
-GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO test_user;
+-- Grant permissions for test functions
+GRANT EXECUTE ON FUNCTION generate_test_user(TEXT, TEXT, TEXT) TO PUBLIC;
+GRANT EXECUTE ON FUNCTION create_test_order(UUID, TEXT, DECIMAL, TEXT) TO PUBLIC;
+GRANT EXECUTE ON FUNCTION create_test_donation(UUID, DECIMAL, TEXT) TO PUBLIC;
+GRANT EXECUTE ON FUNCTION create_test_story(TEXT, TEXT, BOOLEAN) TO PUBLIC;
+GRANT EXECUTE ON FUNCTION cleanup_test_data(TEXT) TO PUBLIC;

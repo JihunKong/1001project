@@ -1,0 +1,45 @@
+{
+  "totalUsers": 1,
+  "roleDistribution": [
+    {
+      "role": "ADMIN",
+      "count": 1,
+      "percentage": 100,
+      "avgDaysSinceSignup": 0,
+      "activeInLast30Days": 1
+    }
+  ],
+  "signupPatterns": [
+    {
+      "month": "2025-08",
+      "role": "ADMIN",
+      "count": 1
+    }
+  ],
+  "geographicDistribution": [
+    {
+      "role": "ADMIN",
+      "location": "Unknown",
+      "count": 1
+    }
+  ],
+  "behaviorAnalysis": {
+    "storyReadingByRole": [
+      {
+        "role": "ADMIN",
+        "avgStoriesRead": 0,
+        "totalReadingTime": 0
+      }
+    ],
+    "featureUsageByRole": [
+      {
+        "role": "ADMIN",
+        "hasSubscription": 0,
+        "hasCompletedProfile": 0,
+        "hasReadStories": 0,
+        "hasCreatedContent": 1
+      }
+    ]
+  },
+  "transitionPatterns": []
+}

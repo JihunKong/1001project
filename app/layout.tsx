@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "@/styles/input-fix.css"; // Critical fix for input text visibility
 import I18nProvider from "@/components/providers/I18nProvider";
+import UXResearchProvider from "@/components/providers/UXResearchProvider";
 import AuthProvider from "@/components/auth/AuthProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -47,6 +48,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <AuthProvider>
           <I18nProvider>
+          <UXResearchProvider>
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow">
@@ -54,6 +56,7 @@ export default async function RootLayout({
             </main>
             <Footer />
           </div>
+          </UXResearchProvider>
         </I18nProvider>
         </AuthProvider>
       </body>

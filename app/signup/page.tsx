@@ -13,9 +13,6 @@ import {
   Chrome,
   Facebook,
   Apple,
-  GraduationCap,
-  School,
-  Heart,
   Check,
   Calendar,
   AlertTriangle,
@@ -25,8 +22,6 @@ import Link from 'next/link';
 import { isValidDateOfBirth, verifyAge, checkCOPPACompliance } from '@/lib/coppa';
 
 export default function SignUp() {
-  const [step, setStep] = useState(1); // 1: Role Selection, 2: Form
-  const [selectedRole, setSelectedRole] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -50,40 +45,6 @@ export default function SignUp() {
   } | null>(null);
   const [showParentalConsentInfo, setShowParentalConsentInfo] = useState(false);
 
-  const roles = [
-    {
-      id: 'learner',
-      title: 'Learner',
-      description: 'Access stories, improve your skills, and join learning communities',
-      icon: GraduationCap,
-      color: 'bg-blue-500',
-      benefits: ['Access to story library', 'Progress tracking', 'Community discussions']
-    },
-    {
-      id: 'teacher',
-      title: 'Teacher',
-      description: 'Manage classrooms, assign content, and track student progress',
-      icon: BookOpen,
-      color: 'bg-green-500',
-      benefits: ['Classroom management', 'Student analytics', 'Curriculum resources']
-    },
-    {
-      id: 'institution',
-      title: 'School/Institution',
-      description: 'Partner with us for programs and connect with volunteers',
-      icon: School,
-      color: 'bg-purple-500',
-      benefits: ['Program partnerships', 'Volunteer connections', 'Impact reports']
-    },
-    {
-      id: 'volunteer',
-      title: 'Volunteer',
-      description: 'Share your talents in translation, illustration, or teaching',
-      icon: Heart,
-      color: 'bg-red-500',
-      benefits: ['Flexible projects', 'Skill development', 'Global impact']
-    }
-  ];
 
   const socialLogins = [
     { name: 'Google', icon: Chrome, color: 'bg-red-500 hover:bg-red-600', provider: 'google' },
@@ -94,8 +55,6 @@ export default function SignUp() {
   const handleOAuthSignUp = async (provider: string) => {
     setIsLoading(true);
     try {
-      // Store the selected role in localStorage to use after OAuth callback
-      localStorage.setItem('pendingUserRole', selectedRole);
       await signIn(provider, { callbackUrl: '/dashboard' });
     } catch (error) {
       console.error(`${provider} sign up error:`, error);
@@ -103,11 +62,6 @@ export default function SignUp() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleRoleSelect = (roleId: string) => {
-    setSelectedRole(roleId);
-    setStep(2);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,7 +160,6 @@ export default function SignUp() {
         body: JSON.stringify({
           email: formData.email,
           name: `${formData.firstName} ${formData.lastName}`,
-          role: selectedRole,
           organization: formData.organization,
           subscribeNewsletter: formData.subscribeNewsletter,
           dateOfBirth: formData.dateOfBirth,
@@ -249,62 +202,6 @@ export default function SignUp() {
     }
   };
 
-  if (step === 1) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <Link href="/" className="inline-flex items-center space-x-2 mb-8">
-              <BookOpen className="h-10 w-10 text-blue-600" />
-              <span className="text-2xl font-bold gradient-text">1001 Stories</span>
-            </Link>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Role</h1>
-            <p className="text-xl text-gray-600">Select how you&apos;d like to engage with our platform</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {roles.map((role, index) => (
-              <motion.div
-                key={role.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                onClick={() => handleRoleSelect(role.id)}
-                className="cursor-pointer bg-white rounded-xl shadow-lg p-8 hover:shadow-xl hover:scale-105 transition-all group"
-              >
-                <div className={`inline-flex items-center justify-center w-16 h-16 mb-6 ${role.color} rounded-lg text-white group-hover:scale-110 transition-transform`}>
-                  <role.icon className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-                  {role.title}
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  {role.description}
-                </p>
-                <div className="space-y-2">
-                  {role.benefits.map(benefit => (
-                    <div key={benefit} className="flex items-center gap-2 text-sm text-gray-600">
-                      <Check className="w-4 h-4 text-green-500" />
-                      {benefit}
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 flex items-center text-blue-600 font-medium group-hover:text-blue-700">
-                  Get Started as {role.title}
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -324,14 +221,8 @@ export default function SignUp() {
             Create Your Account
           </h2>
           <p className="text-gray-600">
-            Signing up as: <span className="font-medium text-blue-600 capitalize">{selectedRole}</span>
+            Join our global community of learners, teachers, and storytellers.
           </p>
-          <button
-            onClick={() => setStep(1)}
-            className="text-sm text-blue-600 hover:text-blue-500 mt-2"
-          >
-            Change role
-          </button>
         </div>
 
         {/* Social Signup */}
@@ -435,28 +326,26 @@ export default function SignUp() {
               </div>
             </div>
 
-            {(selectedRole === 'teacher' || selectedRole === 'institution') && (
-              <div>
-                <label htmlFor="organization" className="block text-sm font-medium text-gray-700 mb-1">
-                  {selectedRole === 'teacher' ? 'School/Institution' : 'Organization Name'}
-                </label>
-                <input
-                  id="organization"
-                  name="organization"
-                  type="text"
-                  value={formData.organization}
-                  onChange={handleInputChange}
-                  className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
-                  style={{ 
-                    color: 'rgb(17, 24, 39)', 
-                    backgroundColor: 'rgb(255, 255, 255)',
-                    WebkitTextFillColor: 'rgb(17, 24, 39)',
-                    caretColor: 'rgb(17, 24, 39)'
-                  }}
-                  placeholder={selectedRole === 'teacher' ? 'Your school name' : 'Your organization name'}
-                />
-              </div>
-            )}
+            <div>
+              <label htmlFor="organization" className="block text-sm font-medium text-gray-700 mb-1">
+                Organization (Optional)
+              </label>
+              <input
+                id="organization"
+                name="organization"
+                type="text"
+                value={formData.organization}
+                onChange={handleInputChange}
+                className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white dark:bg-white dark:text-gray-900"
+                style={{ 
+                  color: 'rgb(17, 24, 39)', 
+                  backgroundColor: 'rgb(255, 255, 255)',
+                  WebkitTextFillColor: 'rgb(17, 24, 39)',
+                  caretColor: 'rgb(17, 24, 39)'
+                }}
+                placeholder="Your school, organization, or company"
+              />
+            </div>
 
             {/* Date of Birth Field */}
             <div>

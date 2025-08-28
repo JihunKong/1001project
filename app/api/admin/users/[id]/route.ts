@@ -9,7 +9,7 @@ import { z } from 'zod';
 const updateUserSchema = z.object({
   email: z.string().email('Invalid email address').optional(),
   name: z.string().min(1, 'Name is required').max(100, 'Name too long').optional(),
-  role: z.enum(['LEARNER', 'VOLUNTEER', 'TEACHER', 'ADMIN', 'INSTITUTION']).optional(),
+  role: z.enum(['CUSTOMER', 'LEARNER', 'TEACHER', 'INSTITUTION', 'VOLUNTEER', 'ADMIN']).optional(),
 });
 
 // GET /api/admin/users/[id] - Get single user
@@ -131,10 +131,21 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
       }
     }
 
+    // Check if role is being changed to increment tokenVersion for security
+    let updateData: any = { ...validatedData };
+    let roleChanged = false;
+    
+    if (validatedData.role && validatedData.role !== existingUser.role) {
+      // Role is being changed - increment tokenVersion to invalidate existing JWT tokens
+      updateData.tokenVersion = { increment: 1 };
+      roleChanged = true;
+      console.log(`Admin ${session.user.email} changed role of ${existingUser.email} from ${existingUser.role} to ${validatedData.role}`);
+    }
+
     // Update user
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: validatedData,
+      data: updateData,
       include: {
         profile: {
           select: {
@@ -152,8 +163,11 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
     });
 
     return NextResponse.json({
-      message: 'User updated successfully',
-      user: updatedUser
+      message: roleChanged 
+        ? 'User updated successfully. User will be logged out due to role change.' 
+        : 'User updated successfully',
+      user: updatedUser,
+      sessionInvalidated: roleChanged
     });
 
   } catch (error) {

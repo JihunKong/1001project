@@ -1,0 +1,38 @@
+# Playwright test runner container
+FROM mcr.microsoft.com/playwright:v1.54.2-jammy
+
+# Set working directory
+WORKDIR /app
+
+# Install additional system dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package files
+COPY package*.json ./
+
+# Install Node.js dependencies
+RUN npm ci
+
+# Copy playwright configuration and tests
+COPY playwright.config.staging.ts ./playwright.config.ts
+COPY tests ./tests/
+COPY .env.test ./
+
+# Install browsers and system dependencies
+RUN npx playwright install chromium firefox webkit --with-deps
+
+# Create directories for test outputs
+RUN mkdir -p /app/test-results /app/playwright-report
+
+# Set proper permissions
+RUN chown -R pwuser:pwuser /app
+
+# Switch to playwright user
+USER pwuser
+
+# Default command
+CMD ["npx", "playwright", "test"]

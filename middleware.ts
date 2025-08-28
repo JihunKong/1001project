@@ -24,50 +24,11 @@ export default withAuth(
       console.log("[Middleware] Path:", pathname, "Role:", token?.role);
     }
 
-    // Role-based dashboard redirects
-    if (pathname === "/dashboard" && token) {
+    // Admin-only access control
+    if (pathname.startsWith("/admin") && token) {
       const role = token.role;
-      let dashboardPath = "/dashboard/learner";
-      
-      switch (role) {
-        case "TEACHER":
-          dashboardPath = "/dashboard/teacher";
-          break;
-        case "INSTITUTION":
-          dashboardPath = "/dashboard/institution";
-          break;
-        case "VOLUNTEER":
-          dashboardPath = "/dashboard/volunteer";  // Changed from "/volunteer" to "/dashboard/volunteer"
-          break;
-        case "ADMIN":
-          dashboardPath = "/admin";
-          break;
-        default:
-          dashboardPath = "/dashboard/learner";
-      }
-      
-      console.log(`[Middleware] Redirecting from /dashboard to ${dashboardPath} for role ${role}`);
-      return NextResponse.redirect(new URL(dashboardPath, req.url));
-    }
-    
-    // Check access to specific dashboards
-    if (token) {
-      const role = token.role;
-      
-      if (pathname.startsWith("/dashboard/teacher") && role !== "TEACHER" && role !== "ADMIN") {
+      if (role !== "ADMIN") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
-      
-      if (pathname.startsWith("/dashboard/institution") && role !== "INSTITUTION" && role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
-      
-      if (pathname.startsWith("/dashboard/volunteer") && role !== "VOLUNTEER" && role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
-      
-      if (pathname.startsWith("/admin") && role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/", req.url));
       }
     }
 
