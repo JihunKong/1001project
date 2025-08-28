@@ -45,11 +45,25 @@ export const authOptions: NextAuthOptions = {
           
           // Prevent timing attacks - always check password even if user doesn't exist
           const dummyHash = '$2b$12$dummyhashtopreventtimingatks.abcdefghijklmnopqrstuvwxy';
-          const userHash = (user as any)?.password || dummyHash;
+          
+          // Define proper type interface to avoid 'any'
+          interface UserWithPassword {
+            id: string;
+            email: string;
+            name: string | null;
+            role: UserRole;
+            emailVerified: Date | null;
+            password?: string;
+          }
+          
+          const userWithPassword = user as UserWithPassword;
+          const userHash = userWithPassword?.password || dummyHash;
           const isValidPassword = await verifyPassword(credentials.password, userHash);
           
           // Only proceed if user exists, has password, and password is valid
-          if (!user || !(user as any).password || !isValidPassword) {
+          if (!user || !userWithPassword.password || !isValidPassword) {
+            // Add consistent delay to prevent timing attacks
+            await new Promise(resolve => setTimeout(resolve, Math.random() * 100 + 50));
             // Log failed attempt for security monitoring
             console.warn(`Failed login attempt for email: ${credentials.email}`);
             return null;

@@ -4,7 +4,7 @@ import { UserRole } from '@prisma/client';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { normalizeBookFolderName } from '@/lib/book-files';
 

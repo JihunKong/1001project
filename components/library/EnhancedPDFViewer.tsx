@@ -126,6 +126,39 @@ export default function EnhancedPDFViewer({
         console.log('PDF.js worker configured');
       }
         
+      // First, check if the URL returns a valid PDF response
+      const response = await fetch(url, {
+        method: 'HEAD',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Accept': 'application/pdf,*/*'
+        },
+        credentials: 'include',
+      });
+
+      // Handle HTTP errors before attempting PDF parsing
+      if (!response.ok) {
+        let errorMessage = 'Failed to load PDF';
+        
+        if (response.status === 401) {
+          errorMessage = 'Sign in required to access this content';
+        } else if (response.status === 403) {
+          errorMessage = 'Access denied. You may need to purchase this content.';
+        } else if (response.status === 404) {
+          errorMessage = 'PDF file not found';
+        } else {
+          errorMessage = `PDF loading failed (HTTP ${response.status})`;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      // Check if response is actually a PDF
+      const contentType = response.headers.get('content-type');
+      if (contentType && !contentType.includes('application/pdf')) {
+        throw new Error('The requested content is not a valid PDF file');
+      }
+
       // Load PDF document
       const loadingTask = pdfLib.getDocument({
         url,
@@ -167,17 +200,8 @@ export default function EnhancedPDFViewer({
       
       let errorMessage = 'Failed to load PDF';
       if (err instanceof Error) {
-        const message = err.message.toLowerCase();
-        
-        if (message.includes('network') || message.includes('fetch')) {
-          errorMessage = 'Network error loading PDF. Please check your connection.';
-        } else if (message.includes('404')) {
-          errorMessage = 'PDF file not found.';
-        } else if (message.includes('401') || message.includes('403')) {
-          errorMessage = 'Access denied. Please sign in or check permissions.';
-        } else {
-          errorMessage = `PDF loading failed: ${err.message}`;
-        }
+        // Use the error message as-is since we now handle HTTP errors above
+        errorMessage = err.message;
       }
         
       setError(errorMessage);
