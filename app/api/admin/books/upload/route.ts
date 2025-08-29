@@ -85,8 +85,8 @@ export async function POST(request: NextRequest) {
         metadata: { 
           fileName: mainPdf.name,
           fileSize: mainPdf.size,
-          detectedType: pdfValidation.detectedType,
-          error: pdfValidation.error 
+          detectedType: pdfValidation.detectedType || 'unknown',
+          error: pdfValidation.error || 'Validation failed'
         }
       });
       
