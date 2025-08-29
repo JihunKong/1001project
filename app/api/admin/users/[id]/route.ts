@@ -105,7 +105,8 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
       const emailTaken = await prisma.user.findFirst({
         where: {
           email: validatedData.email,
-          id: { not: id }
+          id: { not: id },
+          deletedAt: null
         }
       });
 
@@ -161,6 +162,23 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
         }
       }
     });
+
+    // Log role change in role_migrations table if role was changed
+    if (roleChanged && validatedData.role) {
+      await prisma.roleMigration.create({
+        data: {
+          userId: id,
+          fromRole: existingUser.role,
+          toRole: validatedData.role as any,
+          migrationType: 'ADMIN_ASSIGNED',
+          migrationReason: `Role change by admin ${session.user.email}`,
+          initiatedAt: new Date(),
+          completedAt: new Date(),
+          status: 'COMPLETED',
+          notificationSent: false
+        }
+      });
+    }
 
     return NextResponse.json({
       message: roleChanged 
