@@ -33,10 +33,12 @@ interface BookUploadData {
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   let uploadSuccess = false;
+  let session: any = null;
+  let mainPdf: File | null = null;
+  const userIp = request.headers.get('x-forwarded-for') || 'unknown';
   
   try {
-    const session = await getServerSession(authOptions);
-    const userIp = request.headers.get('x-forwarded-for') || 'unknown';
+    session = await getServerSession(authOptions);
 
     if (!session || session.user.role !== UserRole.ADMIN) {
       await logAuditEvent({
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     
     // Extract files
-    const mainPdf = formData.get('mainPdf') as File;
+    mainPdf = formData.get('mainPdf') as File;
     const frontCover = formData.get('frontCover') as File | null;
     const backCover = formData.get('backCover') as File | null;
 

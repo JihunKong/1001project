@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { UserRole } from '@prisma/client';
+import { UserRole, ProductType } from '@prisma/client';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
@@ -135,10 +135,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   let uploadSuccess = false;
+  let session: any = null;
+  const userIp = request.headers.get('x-forwarded-for') || 'unknown';
   
   try {
-    const session = await getServerSession(authOptions);
-    const userIp = request.headers.get('x-forwarded-for') || 'unknown';
+    session = await getServerSession(authOptions);
     
     if (!session || session.user.role !== UserRole.ADMIN) {
       await logAuditEvent({
@@ -262,25 +263,22 @@ export async function POST(request: NextRequest) {
       data: {
         id: productId,
         sku,
-        type: productData.type,
+        type: productData.type as ProductType,
         title: productData.title,
         description: productData.description,
         price: parseFloat(productData.price),
         currency: 'USD',
-        stock: parseInt(productData.stock) || 1,
         featured: productData.featured,
-        category: productData.category,
-        creator: {
-          name: productData.creatorName,
-          location: productData.creatorLocation,
-          age: productData.creatorAge ? parseInt(productData.creatorAge) : undefined,
-          story: productData.creatorStory,
+        categoryId: productData.category,
+        creatorName: productData.creatorName,
+        creatorLocation: productData.creatorLocation,
+        creatorAge: productData.creatorAge ? parseInt(productData.creatorAge) : undefined,
+        creatorStory: productData.creatorStory,
+        impactMetric: productData.impactMetric,
+        impactValue: productData.impactValue,
+        images: {
+          create: savedImages
         },
-        impact: {
-          metric: productData.impactMetric,
-          value: productData.impactValue,
-        },
-        images: savedImages,
       }
     });
 
@@ -314,12 +312,14 @@ export async function POST(request: NextRequest) {
         price: Number(product.price),
         currency: product.currency,
         type: product.type,
-        stock: product.stock,
         featured: product.featured,
-        category: product.category,
-        creator: product.creator,
-        impact: product.impact,
-        images: product.images,
+        categoryId: product.categoryId,
+        creatorName: product.creatorName,
+        creatorLocation: product.creatorLocation,
+        creatorAge: product.creatorAge,
+        creatorStory: product.creatorStory,
+        impactMetric: product.impactMetric,
+        impactValue: product.impactValue,
         createdAt: product.createdAt.toISOString(),
         updatedAt: product.updatedAt.toISOString(),
       },
