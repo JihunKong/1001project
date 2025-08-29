@@ -319,7 +319,8 @@ export async function POST(request: NextRequest) {
         title: story.title,
         authorName: story.authorName,
         fileSize: mainPdf.size,
-        hasCovers: { front: !!frontCover, back: !!backCover },
+        hasFrontCover: !!frontCover,
+        hasBackCover: !!backCover,
         duration: Date.now() - startTime
       }
     });
