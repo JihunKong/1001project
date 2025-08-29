@@ -20,6 +20,11 @@
     "test:cleanup": "docker-compose -f docker-compose.test.yml down -v",
     "test:report": "npx playwright show-report",
     "test:debug": "PWDEBUG=1 npx playwright test",
+    "test:upload": "npx playwright test --config=playwright.config.upload.ts",
+    "test:upload:headed": "npx playwright test --config=playwright.config.upload.ts --headed",
+    "test:upload:debug": "npx playwright test --config=playwright.config.upload.ts --debug",
+    "test:upload:docker": "docker-compose -f docker-compose.upload-test.yml run --rm playwright",
+    "test:upload:local": "./scripts/run-upload-tests.sh",
     "rls:apply": "./scripts/apply-rls.sh",
     "rls:test": "npx tsx scripts/test-rls.ts",
     "rls:status": "psql $DATABASE_URL -c 'SELECT * FROM check_rls_status();'"

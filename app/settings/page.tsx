@@ -17,7 +17,9 @@ import {
   Trash2,
   AlertTriangle,
   RotateCcw,
-  UserX
+  UserX,
+  ShoppingBag,
+  BookOpen
 } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -262,11 +264,55 @@ export default function SettingsPage() {
           </div>
         </motion.div>
 
-        {/* Data Export Section */}
+        {/* Purchase History Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="bg-white rounded-xl shadow-sm p-6 mb-8"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <ShoppingBag className="w-6 h-6 text-green-600" />
+              <h2 className="text-xl font-semibold text-gray-900">Purchase History</h2>
+            </div>
+            <Link
+              href="/library/orders"
+              className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+            >
+              View All →
+            </Link>
+          </div>
+          
+          <div className="mb-6">
+            <p className="text-gray-600 mb-4">
+              View your complete purchase history, order details, and download receipts for your digital book purchases.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/library/orders"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <ShoppingBag className="w-4 h-4" />
+              View Purchase History
+            </Link>
+            <Link
+              href="/library"
+              className="flex items-center gap-2 px-4 py-2 text-green-600 border border-green-600 rounded-lg hover:bg-green-50 transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              My Library
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Data Export Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
           className="bg-white rounded-xl shadow-sm p-6"
         >
           <div className="flex items-center gap-3 mb-4">

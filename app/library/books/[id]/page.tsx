@@ -852,7 +852,7 @@ export default function BookDetailPage() {
                             )}
                           </button>
                           <Link 
-                            href="/shop/subscription"
+                            href="/pricing"
                             className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium"
                           >
                             <Crown className="w-5 h-5" />

@@ -19,7 +19,8 @@ import {
   Loader2,
   Grid3X3,
   Library as LibraryIcon,
-  Eye
+  Eye,
+  ShoppingBag
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -319,6 +320,17 @@ export default function Library() {
               <Filter className="w-5 h-5" />
               Filters
             </button>
+            
+            {/* Purchase History Button */}
+            {session && (
+              <Link
+                href="/library/orders"
+                className="flex items-center gap-2 px-4 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <ShoppingBag className="w-5 h-5" />
+                My Orders
+              </Link>
+            )}
             
             {/* View Mode Toggle */}
             <div className="flex items-center bg-gray-100 rounded-lg p-1">

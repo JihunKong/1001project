@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useDropzone } from 'react-dropzone';
+import { useSecureFetch } from '@/lib/csrf-context';
 import {
   Upload,
   BookOpen,
@@ -54,6 +55,7 @@ export default function BookUploadForm({
   title = 'Upload New Book',
   description = 'Upload main PDF and optional cover files with book metadata'
 }: BookUploadFormProps) {
+  const secureFetch = useSecureFetch();
   
   const [formData, setFormData] = useState<BookFormData>({
     title: '',
@@ -132,7 +134,7 @@ export default function BookUploadForm({
         submitFormData.append(key, value.toString());
       });
 
-      const response = await fetch('/api/admin/books/upload', {
+      const response = await secureFetch('/api/admin/books/upload', {
         method: 'POST',
         body: submitFormData,
       });

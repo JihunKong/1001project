@@ -9,7 +9,7 @@ SERVER_IP="3.128.143.122"
 SERVER_USER="ubuntu"
 PEM_FILE="/Users/jihunkong/Downloads/1001project.pem"
 REPO_URL="https://github.com/JihunKong/1001project.git"
-DEPLOY_PATH="/opt/1001-stories"
+DEPLOY_PATH="/home/ubuntu/1001-stories"
 DOMAIN="1001stories.seedsofempowerment.org"
 
 # Color codes for output
@@ -54,14 +54,14 @@ deploy_to_server() {
         echo -e "${YELLOW}Connected to server${NC}"
         
         # Check if deployment directory exists
-        if [ ! -d "/opt/1001-stories" ]; then
+        if [ ! -d "/home/ubuntu/1001-stories" ]; then
             echo "Creating deployment directory..."
-            sudo mkdir -p /opt/1001-stories
-            sudo chown -R $USER:$USER /opt/1001-stories
+            mkdir -p /home/ubuntu/1001-stories
+            chown -R $USER:$USER /home/ubuntu/1001-stories
         fi
         
         # Navigate to deployment directory
-        cd /opt/1001-stories
+        cd /home/ubuntu/1001-stories
         
         # Check if git repo exists
         if [ ! -d ".git" ]; then
@@ -75,7 +75,9 @@ deploy_to_server() {
             fi
             
             echo "Pulling latest changes..."
-            git pull origin main
+            git fetch origin
+            git checkout feature/role-system-v2
+            git pull origin feature/role-system-v2
             
             echo "Restoring uploaded files..."
             LATEST_BACKUP=$(ls -t /tmp/books-backup-* 2>/dev/null | head -n1)
@@ -134,7 +136,7 @@ rollback() {
     echo -e "\n${RED}Rolling back deployment...${NC}"
     
     ssh -i "$PEM_FILE" "$SERVER_USER@$SERVER_IP" << 'ENDSSH'
-        cd /opt/1001-stories
+        cd /home/ubuntu/1001-stories
         git checkout HEAD~1
         docker-compose down
         docker-compose up -d
@@ -147,7 +149,7 @@ show_logs() {
     echo -e "\n${YELLOW}Showing application logs...${NC}"
     
     ssh -i "$PEM_FILE" "$SERVER_USER@$SERVER_IP" << 'ENDSSH'
-        cd /opt/1001-stories
+        cd /home/ubuntu/1001-stories
         docker-compose logs --tail=50 app
 ENDSSH
 }
@@ -157,7 +159,7 @@ setup_ssl() {
     echo -e "\n${YELLOW}Setting up SSL certificates...${NC}"
     
     ssh -i "$PEM_FILE" "$SERVER_USER@$SERVER_IP" << 'ENDSSH'
-        cd /opt/1001-stories
+        cd /home/ubuntu/1001-stories
         
         # Make SSL script executable
         chmod +x scripts/setup-ssl.sh

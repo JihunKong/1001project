@@ -329,7 +329,7 @@ export async function GET(
           requiresAuth: !session?.user?.id,
           redirectTo: !session?.user?.id ? '/login' : '/shop',
           purchaseUrl: `/shop/books/${bookId}`,
-          subscriptionUrl: '/shop/subscription',
+          subscriptionUrl: '/pricing',
           actions: getAccessActions(accessResult.reason, session?.user?.role)
         }), { 
           status: statusCode,

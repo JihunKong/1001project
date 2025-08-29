@@ -7,6 +7,8 @@ import { existsSync } from 'fs';
 import { prisma } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { normalizeBookFolderName } from '@/lib/book-files';
+import { validateFileSignature, sanitizeFilename, validateFileSize } from '@/lib/file-validation';
+import { logAuditEvent } from '@/lib/security/headers';
 
 // Configure the API to handle large files (100MB)
 export const maxDuration = 300; // 5 minutes
@@ -29,10 +31,25 @@ interface BookUploadData {
 }
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  let uploadSuccess = false;
+  
   try {
     const session = await getServerSession(authOptions);
+    const userIp = request.headers.get('x-forwarded-for') || 'unknown';
 
     if (!session || session.user.role !== UserRole.ADMIN) {
+      await logAuditEvent({
+        timestamp: new Date(),
+        userId: session?.user?.id,
+        action: 'UNAUTHORIZED_BOOK_UPLOAD',
+        resource: '/api/admin/books/upload',
+        ip: userIp,
+        userAgent: request.headers.get('user-agent') || '',
+        success: false,
+        metadata: { reason: 'Not admin user' }
+      });
+      
       return NextResponse.json(
         { error: 'Unauthorized - Admin access required' },
         { status: 401 }
@@ -46,34 +63,84 @@ export async function POST(request: NextRequest) {
     const frontCover = formData.get('frontCover') as File | null;
     const backCover = formData.get('backCover') as File | null;
 
-    // Validate main PDF
-    if (!mainPdf || mainPdf.type !== 'application/pdf') {
+    // Validate main PDF file presence
+    if (!mainPdf) {
       return NextResponse.json(
         { error: 'Main PDF file is required' },
         { status: 400 }
       );
     }
 
-    // Validate file sizes
-    if (mainPdf.size > 100 * 1024 * 1024) { // 100MB
+    // Enhanced PDF validation with signature checking
+    const pdfValidation = await validateFileSignature(mainPdf, ['pdf']);
+    if (!pdfValidation.isValid) {
+      await logAuditEvent({
+        timestamp: new Date(),
+        userId: session.user.id,
+        action: 'INVALID_PDF_UPLOAD',
+        resource: '/api/admin/books/upload',
+        ip: userIp,
+        userAgent: request.headers.get('user-agent') || '',
+        success: false,
+        metadata: { 
+          fileName: mainPdf.name,
+          fileSize: mainPdf.size,
+          detectedType: pdfValidation.detectedType,
+          error: pdfValidation.error 
+        }
+      });
+      
       return NextResponse.json(
-        { error: 'Main PDF file size cannot exceed 100MB' },
+        { error: `Invalid PDF file: ${pdfValidation.error}` },
         { status: 400 }
       );
     }
 
-    if (frontCover && frontCover.size > 10 * 1024 * 1024) { // 10MB
+    // Validate PDF file size
+    const pdfSizeValidation = validateFileSize(mainPdf, 100 * 1024 * 1024);
+    if (!pdfSizeValidation.isValid) {
       return NextResponse.json(
-        { error: 'Front cover file size cannot exceed 10MB' },
+        { error: pdfSizeValidation.error },
         { status: 400 }
       );
     }
 
-    if (backCover && backCover.size > 10 * 1024 * 1024) { // 10MB
-      return NextResponse.json(
-        { error: 'Back cover file size cannot exceed 10MB' },
-        { status: 400 }
-      );
+    // Validate front cover image if provided
+    if (frontCover) {
+      const frontCoverValidation = await validateFileSignature(frontCover, ['png', 'jpg', 'jpeg', 'webp']);
+      if (!frontCoverValidation.isValid) {
+        return NextResponse.json(
+          { error: `Invalid front cover image: ${frontCoverValidation.error}` },
+          { status: 400 }
+        );
+      }
+      
+      const frontCoverSizeValidation = validateFileSize(frontCover, 10 * 1024 * 1024);
+      if (!frontCoverSizeValidation.isValid) {
+        return NextResponse.json(
+          { error: `Front cover: ${frontCoverSizeValidation.error}` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate back cover image if provided
+    if (backCover) {
+      const backCoverValidation = await validateFileSignature(backCover, ['png', 'jpg', 'jpeg', 'webp']);
+      if (!backCoverValidation.isValid) {
+        return NextResponse.json(
+          { error: `Invalid back cover image: ${backCoverValidation.error}` },
+          { status: 400 }
+        );
+      }
+      
+      const backCoverSizeValidation = validateFileSize(backCover, 10 * 1024 * 1024);
+      if (!backCoverSizeValidation.isValid) {
+        return NextResponse.json(
+          { error: `Back cover: ${backCoverSizeValidation.error}` },
+          { status: 400 }
+        );
+      }
     }
 
     // Extract and validate form data
@@ -142,21 +209,24 @@ export async function POST(request: NextRequest) {
       await mkdir(bookDir, { recursive: true });
     }
 
-    // Save files
-    const mainPdfPath = join(bookDir, 'main.pdf');
+    // Save files with sanitized names
+    const sanitizedMainPdfName = sanitizeFilename('main.pdf');
+    const mainPdfPath = join(bookDir, sanitizedMainPdfName);
     const mainPdfBuffer = Buffer.from(await mainPdf.arrayBuffer());
     await writeFile(mainPdfPath, mainPdfBuffer);
 
     let frontCoverPath: string | null = null;
     if (frontCover) {
-      frontCoverPath = join(bookDir, 'cover.pdf');
+      const sanitizedCoverName = sanitizeFilename('cover.pdf');
+      frontCoverPath = join(bookDir, sanitizedCoverName);
       const frontCoverBuffer = Buffer.from(await frontCover.arrayBuffer());
       await writeFile(frontCoverPath, frontCoverBuffer);
     }
 
     let backCoverPath: string | null = null;
     if (backCover) {
-      backCoverPath = join(bookDir, 'back.pdf');
+      const sanitizedBackName = sanitizeFilename('back.pdf');
+      backCoverPath = join(bookDir, sanitizedBackName);
       const backCoverBuffer = Buffer.from(await backCover.arrayBuffer());
       await writeFile(backCoverPath, backCoverBuffer);
     }
@@ -234,6 +304,26 @@ export async function POST(request: NextRequest) {
     // For now, we'll just log that thumbnail generation is needed
     console.log(`Thumbnail generation needed for book: ${bookId}, page: ${bookData.thumbnailPage}`);
 
+    // Log successful upload
+    uploadSuccess = true;
+    await logAuditEvent({
+      timestamp: new Date(),
+      userId: session.user.id,
+      action: 'BOOK_UPLOAD_SUCCESS',
+      resource: '/api/admin/books/upload',
+      ip: userIp,
+      userAgent: request.headers.get('user-agent') || '',
+      success: true,
+      metadata: {
+        bookId: story.id,
+        title: story.title,
+        authorName: story.authorName,
+        fileSize: mainPdf.size,
+        hasCovers: { front: !!frontCover, back: !!backCover },
+        duration: Date.now() - startTime
+      }
+    });
+
     return NextResponse.json({
       success: true,
       message: 'Book uploaded successfully',
@@ -265,6 +355,24 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error uploading book:', error);
+    
+    // Log upload failure
+    if (!uploadSuccess) {
+      await logAuditEvent({
+        timestamp: new Date(),
+        userId: session?.user?.id,
+        action: 'BOOK_UPLOAD_FAILURE',
+        resource: '/api/admin/books/upload',
+        ip: userIp,
+        userAgent: request.headers.get('user-agent') || '',
+        success: false,
+        metadata: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          duration: Date.now() - startTime,
+          fileSize: mainPdf?.size || 0
+        }
+      });
+    }
     
     // More detailed error handling
     if (error instanceof Error) {

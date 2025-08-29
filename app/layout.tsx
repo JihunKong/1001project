@@ -5,6 +5,7 @@ import "@/styles/input-fix.css"; // Critical fix for input text visibility
 import I18nProvider from "@/components/providers/I18nProvider";
 import UXResearchProvider from "@/components/providers/UXResearchProvider";
 import AuthProvider from "@/components/auth/AuthProvider";
+import { CSRFProvider } from "@/lib/csrf-context";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getServerLocale } from "@/lib/language-server";
@@ -47,17 +48,19 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <AuthProvider>
-          <I18nProvider>
-          <UXResearchProvider>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-grow">
-                {children}
-            </main>
-            <Footer />
-          </div>
-          </UXResearchProvider>
-        </I18nProvider>
+          <CSRFProvider>
+            <I18nProvider>
+            <UXResearchProvider>
+              <div className="flex flex-col min-h-screen">
+                <Header />
+                <main className="flex-grow">
+                  {children}
+              </main>
+              <Footer />
+            </div>
+            </UXResearchProvider>
+          </I18nProvider>
+          </CSRFProvider>
         </AuthProvider>
       </body>
     </html>

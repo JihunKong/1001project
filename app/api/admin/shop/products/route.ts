@@ -3,6 +3,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
+import { existsSync } from 'fs';
+import { validateFileSignature, sanitizeFilename, validateFileSize } from '@/lib/file-validation';
+import { logAuditEvent } from '@/lib/security/headers';
 
 // GET /api/admin/shop/products - List all products
 export async function GET(request: NextRequest) {
@@ -126,99 +131,182 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/admin/shop/products - Create new product
+// POST /api/admin/shop/products - Create new product with image upload
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  let uploadSuccess = false;
+  
   try {
     const session = await getServerSession(authOptions);
+    const userIp = request.headers.get('x-forwarded-for') || 'unknown';
     
     if (!session || session.user.role !== UserRole.ADMIN) {
+      await logAuditEvent({
+        timestamp: new Date(),
+        userId: session?.user?.id,
+        action: 'UNAUTHORIZED_PRODUCT_CREATION',
+        resource: '/api/admin/shop/products',
+        ip: userIp,
+        userAgent: request.headers.get('user-agent') || '',
+        success: false,
+        metadata: { reason: 'Not admin user' }
+      });
+      
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const {
-      title,
-      description,
-      price,
-      currency = 'USD',
-      type,
-      status = 'DRAFT',
-      categoryId,
-      tags = [],
-      featured = false,
-      // Generate SKU from title if not provided
-      sku = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') + '-' + Date.now(),
-    } = body;
+    const formData = await request.formData();
+    
+    // Extract product data
+    const productData = {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
+      price: formData.get('price') as string,
+      category: JSON.parse(formData.get('category') as string || '[]'),
+      type: formData.get('type') as string,
+      stock: formData.get('stock') as string,
+      featured: formData.get('featured') === 'true',
+      creatorName: formData.get('creatorName') as string,
+      creatorLocation: formData.get('creatorLocation') as string,
+      creatorAge: formData.get('creatorAge') as string,
+      creatorStory: formData.get('creatorStory') as string,
+      impactMetric: formData.get('impactMetric') as string,
+      impactValue: formData.get('impactValue') as string,
+    };
 
     // Validate required fields
-    if (!title || !description || !price || !type || !categoryId) {
+    if (!productData.title || !productData.description || !productData.price || !productData.type) {
       return NextResponse.json(
-        { error: 'Title, description, price, type, and category are required' },
+        { error: 'Title, description, price, and type are required' },
         { status: 400 }
       );
     }
 
-    // Check if category exists
-    const categoryExists = await prisma.category.findUnique({
-      where: { id: categoryId }
-    });
-
-    if (!categoryExists) {
+    if (!productData.creatorName || !productData.creatorLocation || !productData.creatorStory) {
       return NextResponse.json(
-        { error: 'Category not found' },
+        { error: 'Creator information is required' },
         { status: 400 }
       );
     }
 
-    // Check if SKU already exists
-    const existingSku = await prisma.product.findUnique({
-      where: { sku }
-    });
+    // Extract and validate images
+    const imageFiles: File[] = [];
+    let imageIndex = 0;
+    while (formData.get(`image_${imageIndex}`)) {
+      const imageFile = formData.get(`image_${imageIndex}`) as File;
+      if (imageFile && imageFile.size > 0) {
+        imageFiles.push(imageFile);
+      }
+      imageIndex++;
+    }
 
-    if (existingSku) {
+    if (imageFiles.length === 0) {
       return NextResponse.json(
-        { error: 'SKU already exists' },
+        { error: 'At least one product image is required' },
         { status: 400 }
       );
     }
 
-    // Create new product
+    // Validate all images
+    for (let i = 0; i < imageFiles.length; i++) {
+      const image = imageFiles[i];
+      
+      // Validate file signature
+      const signatureValidation = await validateFileSignature(image, ['png', 'jpg', 'jpeg', 'webp']);
+      if (!signatureValidation.isValid) {
+        return NextResponse.json(
+          { error: `Invalid image file (${i + 1}): ${signatureValidation.error}` },
+          { status: 400 }
+        );
+      }
+
+      // Validate file size (10MB limit)
+      const sizeValidation = validateFileSize(image, 10 * 1024 * 1024);
+      if (!sizeValidation.isValid) {
+        return NextResponse.json(
+          { error: `Image ${i + 1}: ${sizeValidation.error}` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Generate unique product ID and SKU
+    const productId = `${productData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 20)}-${Date.now()}`;
+    const sku = `${productData.type.toUpperCase()}-${Date.now()}`;
+
+    // Create product directory
+    const productDir = join(process.cwd(), 'public', 'products', productId);
+    if (!existsSync(productDir)) {
+      await mkdir(productDir, { recursive: true });
+    }
+
+    // Save images and collect their paths
+    const savedImages = [];
+    for (let i = 0; i < imageFiles.length; i++) {
+      const image = imageFiles[i];
+      const sanitizedName = sanitizeFilename(`image_${i + 1}.${image.name.split('.').pop()}`);
+      const imagePath = join(productDir, sanitizedName);
+      const imageBuffer = Buffer.from(await image.arrayBuffer());
+      
+      await writeFile(imagePath, imageBuffer);
+      
+      savedImages.push({
+        url: `/products/${productId}/${sanitizedName}`,
+        alt: `${productData.title} - Image ${i + 1}`,
+        position: i
+      });
+    }
+
+    // Create product in database
     const product = await prisma.product.create({
       data: {
+        id: productId,
         sku,
-        type,
-        title,
-        description,
-        price,
-        currency,
-        status,
-        featured,
-        categoryId,
-        tags,
-      },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
+        type: productData.type,
+        title: productData.title,
+        description: productData.description,
+        price: parseFloat(productData.price),
+        currency: 'USD',
+        stock: parseInt(productData.stock) || 1,
+        featured: productData.featured,
+        category: productData.category,
+        creator: {
+          name: productData.creatorName,
+          location: productData.creatorLocation,
+          age: productData.creatorAge ? parseInt(productData.creatorAge) : undefined,
+          story: productData.creatorStory,
         },
-        images: {
-          select: {
-            id: true,
-            url: true,
-            alt: true,
-            position: true,
-          },
-          orderBy: { position: 'asc' },
+        impact: {
+          metric: productData.impactMetric,
+          value: productData.impactValue,
         },
-      },
+        images: savedImages,
+      }
+    });
+
+    // Log successful creation
+    uploadSuccess = true;
+    await logAuditEvent({
+      timestamp: new Date(),
+      userId: session.user.id,
+      action: 'PRODUCT_CREATION_SUCCESS',
+      resource: '/api/admin/shop/products',
+      ip: userIp,
+      userAgent: request.headers.get('user-agent') || '',
+      success: true,
+      metadata: {
+        productId: product.id,
+        title: product.title,
+        type: product.type,
+        imageCount: savedImages.length,
+        duration: Date.now() - startTime
+      }
     });
 
     return NextResponse.json({
       success: true,
       message: 'Product created successfully',
+      productId: product.id,
       product: {
         id: product.id,
         title: product.title,
@@ -226,21 +314,37 @@ export async function POST(request: NextRequest) {
         price: Number(product.price),
         currency: product.currency,
         type: product.type,
-        status: product.status,
+        stock: product.stock,
         featured: product.featured,
+        category: product.category,
+        creator: product.creator,
+        impact: product.impact,
+        images: product.images,
         createdAt: product.createdAt.toISOString(),
         updatedAt: product.updatedAt.toISOString(),
-        category: product.category,
-        images: product.images?.map(image => ({
-          id: image.id,
-          url: image.url,
-          alt: image.alt,
-        })),
       },
     }, { status: 201 });
 
   } catch (error) {
     console.error('Error creating product:', error);
+    
+    // Log creation failure
+    if (!uploadSuccess) {
+      await logAuditEvent({
+        timestamp: new Date(),
+        userId: session?.user?.id,
+        action: 'PRODUCT_CREATION_FAILURE',
+        resource: '/api/admin/shop/products',
+        ip: userIp,
+        userAgent: request.headers.get('user-agent') || '',
+        success: false,
+        metadata: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          duration: Date.now() - startTime
+        }
+      });
+    }
+    
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

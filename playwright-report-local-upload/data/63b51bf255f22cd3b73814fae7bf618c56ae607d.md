@@ -1,0 +1,104 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - navigation:
+    - link "1001 Stories":
+      - /url: /
+    - link "Home":
+      - /url: /
+    - link "Library":
+      - /url: /library
+    - link "Shop":
+      - /url: /shop
+    - link "Volunteer":
+      - /url: /volunteer
+    - link "About":
+      - /url: /about
+    - button "Select language":
+      - text: 🇺🇸 English
+      - img
+    - link:
+      - /url: /shop/cart
+    - link "Login":
+      - /url: /login
+    - link "Sign Up":
+      - /url: /signup
+- main:
+  - link "1001 Stories":
+    - /url: /
+  - heading "Welcome back!" [level=2]
+  - paragraph: Sign in to continue your learning journey
+  - button "Continue with Google"
+  - button "Continue with Facebook"
+  - button "Continue with Apple"
+  - text: Or sign in with email
+  - button "Magic Link"
+  - button "Password"
+  - text: Email Address
+  - textbox "Email Address"
+  - button "Send Magic Link" [disabled]
+  - paragraph: We'll send you a magic link to sign in without a password. Check your email after clicking the button above.
+  - paragraph:
+    - text: Don't have an account?
+    - link "Sign up for free":
+      - /url: /signup
+  - heading "Try Demo Accounts" [level=4]
+  - text: Instant Access
+  - paragraph: Click any account below for instant demo access - no email required!
+  - button "📚 Learner learner@demo.1001stories.org":
+    - text: 📚 Learner
+    - paragraph: learner@demo.1001stories.org
+  - button "👩‍🏫 Teacher teacher@demo.1001stories.org":
+    - text: 👩‍🏫 Teacher
+    - paragraph: teacher@demo.1001stories.org
+  - button "💝 Volunteer volunteer@demo.1001stories.org":
+    - text: 💝 Volunteer
+    - paragraph: volunteer@demo.1001stories.org
+- contentinfo:
+  - link "1001 Stories":
+    - /url: /
+  - paragraph: Empowering young voices and inspiring the world through stories.
+  - link:
+    - /url: "#"
+  - link:
+    - /url: "#"
+  - link:
+    - /url: "#"
+  - link:
+    - /url: "#"
+  - heading "About Us" [level=3]
+  - list:
+    - listitem:
+      - link "Our Mission":
+        - /url: /mission
+    - listitem:
+      - link "Our Team":
+        - /url: /team
+    - listitem:
+      - link "Partners":
+        - /url: /partners
+  - heading "Programs" [level=3]
+  - list:
+    - listitem:
+      - link "ESL Program":
+        - /url: /programs/esl
+    - listitem:
+      - link "Mentorship":
+        - /url: /programs/mentorship
+    - listitem:
+      - link "Workshops":
+        - /url: /programs/workshops
+  - heading "Contact" [level=3]
+  - link "info@1001stories.org":
+    - /url: mailto:info@1001stories.org
+  - link "Contact Form":
+    - /url: /contact
+  - paragraph: © 2024 1001 Stories. All rights reserved.
+  - link "Privacy Policy":
+    - /url: /privacy
+  - link "Terms of Service":
+    - /url: /terms
+- button "Give feedback"
+- alert
+```

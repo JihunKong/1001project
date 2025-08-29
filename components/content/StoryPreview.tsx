@@ -273,7 +273,7 @@ export default function StoryPreview({
                   )}
                   
                   <Link
-                    href="/signup"
+                    href="/pricing"
                     className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
                     <Zap className="w-4 h-4" />
@@ -327,7 +327,7 @@ export default function StoryPreview({
                   )}
                   
                   <Link
-                    href="/signup"
+                    href="/pricing"
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
                     <Zap className="w-4 h-4" />
