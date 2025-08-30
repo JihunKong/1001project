@@ -1,0 +1,114 @@
+# Prometheus 설정 파일
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: '1001stories-production'
+    environment: 'production'
+
+# Alertmanager 설정
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# 알림 규칙 로드
+rule_files:
+  - "rules/*.yml"
+
+# 스크래핑 작업 설정
+scrape_configs:
+  # Prometheus 자체 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+
+  # 1001 Stories 메인 애플리케이션
+  - job_name: '1001stories-app'
+    static_configs:
+      - targets: ['1001stories.seedsofempowerment.org:443']
+    metrics_path: '/api/metrics'
+    scheme: 'https'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Node Exporter - 시스템 메트릭
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node_exporter:9100']
+    scrape_interval: 15s
+
+  # cAdvisor - 컨테이너 메트릭
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+
+  # Blackbox Exporter - HTTP 프로브
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://1001stories.seedsofempowerment.org
+        - https://1001stories.seedsofempowerment.org/api/health
+        - https://1001stories.seedsofempowerment.org/login
+        - https://1001stories.seedsofempowerment.org/signup
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox_exporter:9115
+
+  # SSL 인증서 만료 모니터링
+  - job_name: 'blackbox-ssl'
+    metrics_path: /probe
+    params:
+      module: [tcp_connect]
+    static_configs:
+      - targets:
+        - 1001stories.seedsofempowerment.org:443
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox_exporter:9115
+
+  # 데이터베이스 모니터링 (PostgreSQL Exporter가 설정된 경우)
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres_exporter:9187']
+    scrape_interval: 15s
+
+  # Grafana 모니터링
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Nginx 메트릭 (nginx-prometheus-exporter 사용)
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx_exporter:9113']
+    scrape_interval: 15s
+
+# 원격 저장소 설정 (선택사항 - Prometheus Cloud 서비스 사용시)
+# remote_write:
+#   - url: "https://your-prometheus-remote-write-endpoint"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"
+
+# 로그 레벨 및 기타 설정
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
