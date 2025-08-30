@@ -1,0 +1,73 @@
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Stage 2: Builder
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Environment variables for build
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Build application
+RUN npm run build
+
+# Stage 3: Runner with PM2
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Install PM2 globally and required tools
+RUN npm install -g pm2 && \
+    apk add --no-cache bash curl openssl certbot wget
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy public assets and locales
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/locales ./locales
+
+# Copy standalone build (includes server.js)
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy PM2 configuration and scripts
+COPY --chown=nextjs:nodejs ecosystem.config.js ./
+COPY --chown=nextjs:nodejs scripts/ ./scripts/
+
+# Create log directories
+RUN mkdir -p /app/logs /app/.pm2 && \
+    chown -R nextjs:nodejs /app/logs /app/.pm2
+
+# Make scripts executable
+RUN chmod +x /app/scripts/*.sh
+
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD pm2 ping || exit 1
+
+# Start with PM2
+CMD ["pm2-runtime", "start", "ecosystem.config.js", "--env", "production"]
