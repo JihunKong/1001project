@@ -59,7 +59,12 @@ const CSP_DIRECTIVES = {
 
 // Generate CSP string
 function generateCSP(isDevelopment: boolean): string {
-  const directives = { ...CSP_DIRECTIVES };
+  const directives: Record<string, string[]> = {};
+  
+  // Copy all directives as mutable arrays
+  Object.entries(CSP_DIRECTIVES).forEach(([key, values]) => {
+    directives[key] = [...values];
+  });
   
   // Relax CSP for development only
   if (isDevelopment) {
