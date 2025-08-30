@@ -142,9 +142,14 @@ export default function Library() {
       if (selectedLanguage !== 'all') params.set('language', selectedLanguage);
       if (selectedAge !== 'all') params.set('ageGroup', selectedAge);
       
-      const response = await fetch(`/api/library/books?${params}`);
+      const url = `/api/library/books?${params}`;
+      console.log('📚 Fetching books from:', url);
+      
+      const response = await fetch(url);
+      console.log('📡 Response status:', response.status, response.statusText);
       
       if (!response.ok) {
+        console.error('❌ Response not OK:', response.status, response.statusText);
         // Handle different error cases
         if (response.status === 401) {
           throw new Error('AUTHENTICATION_REQUIRED');
@@ -156,10 +161,16 @@ export default function Library() {
       }
       
       const data: BooksResponse = await response.json();
+      console.log('📖 Received data:', data);
+      console.log('📚 Books array:', data.books);
+      console.log('📊 Pagination:', data.pagination);
+      
       setBooks(data.books || []);
       setPagination(data.pagination);
+      console.log('✅ State updated - books count:', data.books?.length || 0);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'FETCH_ERROR';
+      console.error('🚨 Error fetching books:', err);
       setError(errorMessage);
     } finally {
       setLoading(false);
