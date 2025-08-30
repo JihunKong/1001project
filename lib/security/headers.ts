@@ -54,21 +54,19 @@ const CSP_DIRECTIVES = {
   'object-src': ["'none'"],
   'worker-src': ["'self'", 'blob:'],
   'manifest-src': ["'self'"],
-};
+  'upgrade-insecure-requests': [], // Add this directive for production
+} as const;
 
 // Generate CSP string
 function generateCSP(isDevelopment: boolean): string {
   const directives = { ...CSP_DIRECTIVES };
   
-  // Add upgrade-insecure-requests for better security
-  if (!isDevelopment) {
-    directives['upgrade-insecure-requests'] = [];
-  }
-  
   // Relax CSP for development only
   if (isDevelopment) {
     directives['script-src'].push("'unsafe-eval'");
     directives['connect-src'].push('ws://localhost:*', 'http://localhost:*');
+    // Remove upgrade-insecure-requests for development
+    delete directives['upgrade-insecure-requests'];
   }
   
   return Object.entries(directives)
