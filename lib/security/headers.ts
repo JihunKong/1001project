@@ -12,7 +12,6 @@ const CSP_DIRECTIVES = {
   'script-src': [
     "'self'",
     "'unsafe-inline'", // Required for Next.js
-    "'unsafe-eval'", // Required for development
     'https://cdn.jsdelivr.net',
     'https://www.googletagmanager.com',
     'https://www.google-analytics.com',
@@ -61,14 +60,19 @@ const CSP_DIRECTIVES = {
 function generateCSP(isDevelopment: boolean): string {
   const directives = { ...CSP_DIRECTIVES };
   
-  // Relax CSP for development
+  // Add upgrade-insecure-requests for better security
+  if (!isDevelopment) {
+    directives['upgrade-insecure-requests'] = [];
+  }
+  
+  // Relax CSP for development only
   if (isDevelopment) {
     directives['script-src'].push("'unsafe-eval'");
     directives['connect-src'].push('ws://localhost:*', 'http://localhost:*');
   }
   
   return Object.entries(directives)
-    .map(([key, values]) => `${key} ${values.join(' ')}`)
+    .map(([key, values]) => key === 'upgrade-insecure-requests' ? key : `${key} ${values.join(' ')}`)
     .join('; ');
 }
 
