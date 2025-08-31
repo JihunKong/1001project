@@ -30,6 +30,11 @@ export const authOptions: NextAuthOptions = {
   adapter,
   secret: process.env.NEXTAUTH_SECRET || 'hTBi5+Y349RiOMKCBoWfNu57t8ZuEmyCreI3V2NpKhs=',
   
+  // Disable CSRF check for testing if environment variable is set
+  ...(process.env.DISABLE_CSRF_CHECK === 'true' && {
+    csrfCheck: false,
+  }),
+  
   providers: [
     // Admin/Staff Credentials Provider for password login
     CredentialsProvider({
