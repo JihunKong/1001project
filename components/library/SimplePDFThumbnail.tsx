@@ -63,6 +63,7 @@ export default function SimplePDFThumbnail({
           }
         }
       } catch (error) {
+        // Silently fail and use fallback
         if (process.env.NODE_ENV === 'development') {
           console.log(`PNG fetch error for ${bookId}:`, error);
         }
@@ -159,6 +160,20 @@ export default function SimplePDFThumbnail({
 
   // Show thumbnail if available
   if (thumbnailUrl) {
+    // Use regular img tag for data URLs to avoid Next.js Image optimization issues
+    if (thumbnailUrl.startsWith('data:')) {
+      return (
+        <div className={`relative w-full h-full ${className}`}>
+          <img
+            src={thumbnailUrl}
+            alt={alt || title}
+            className="w-full h-full object-cover rounded-lg"
+          />
+        </div>
+      );
+    }
+    
+    // For regular URLs, use Next.js Image with error handling
     return (
       <div className={`relative w-full h-full ${className}`}>
         <Image
@@ -168,6 +183,10 @@ export default function SimplePDFThumbnail({
           sizes="(max-width: 768px) 50vw, 25vw"
           className="object-cover rounded-lg"
           priority={false}
+          onError={() => {
+            // If image fails to load, clear it to show fallback
+            setThumbnailUrl('');
+          }}
         />
       </div>
     );

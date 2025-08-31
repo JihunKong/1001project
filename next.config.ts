@@ -3,7 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'standalone',
   images: {
-    domains: ['1001stories.seedsofempowerment.org', 'seedsofempowerment.org'],
+    domains: ['1001stories.seedsofempowerment.org', 'seedsofempowerment.org', 'localhost'],
+    unoptimized: true, // Disable image optimization to prevent errors with missing images
   },
   eslint: {
     ignoreDuringBuilds: true,
