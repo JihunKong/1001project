@@ -28,6 +28,7 @@ console.log('[NextAuth Debug] Adapter methods:', adapter ? Object.keys(adapter) 
 
 export const authOptions: NextAuthOptions = {
   adapter,
+  secret: process.env.NEXTAUTH_SECRET || 'hTBi5+Y349RiOMKCBoWfNu57t8ZuEmyCreI3V2NpKhs=',
   
   providers: [
     // Admin/Staff Credentials Provider for password login
