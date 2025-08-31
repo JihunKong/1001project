@@ -2,10 +2,7 @@ version: '3.9'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.pm2
-    image: 1001-stories:latest
+    image: 1001-stories:pm2
     container_name: 1001-stories-app
     restart: unless-stopped
     expose:
@@ -15,19 +12,14 @@ services:
       - .env.production
     environment:
       - NODE_ENV=production
-      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://1001stories.seedsofempowerment.org}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - DATABASE_URL=postgresql://${DB_USER:-stories_user}:${DB_PASSWORD:-DV0erv2Db3cJtsXZHKmUK7Twx}@postgres:5432/stories_db
-      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
-      - SMTP_PORT=${SMTP_PORT:-587}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - EMAIL_FROM=${EMAIL_FROM:-noreply@1001stories.org}
-      - EMAIL_SERVICE_ENABLED=${EMAIL_SERVICE_ENABLED}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - MONITORING_WEBHOOK=${MONITORING_WEBHOOK}
-      - ALERT_WEBHOOK=${ALERT_WEBHOOK}
-      - PM2_INSTANCES=${PM2_INSTANCES:-max}
+      - NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
+      - NEXTAUTH_SECRET=hTBi5+Y349RiOMKCBoWfNu57t8ZuEmyCreI3V2NpKhs=
+      - DATABASE_URL=postgresql://stories_user:DV0erv2Db3cJtsXZHKmUK7Twx@postgres:5432/stories_db
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - EMAIL_FROM=noreply@1001stories.org
+      - EMAIL_SERVICE_ENABLED=false
+      - PM2_INSTANCES=max
     volumes:
       - ./uploads:/app/uploads
       - ./prisma:/app/prisma

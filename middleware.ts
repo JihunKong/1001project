@@ -197,7 +197,8 @@ export default withAuth(
             pathname.startsWith("/api/shop/products") ||
             pathname.startsWith("/api/shop/cart") ||
             pathname.startsWith("/api/pdf") ||
-            pathname.startsWith("/api/covers")) {
+            pathname.startsWith("/api/covers") ||
+            pathname.startsWith("/api/surveys")) {
           return true;
         }
         

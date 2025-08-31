@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Public endpoint - no authentication required
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
-    // For now, return empty array to prevent the HTML error
-    // This will be populated when the microSurvey feature is fully implemented
-    return NextResponse.json([])
+    // Set CORS headers to allow public access
+    const response = NextResponse.json([])
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Cache-Control', 'no-store')
+    
+    return response
     
   } catch (error) {
     console.error('Error fetching surveys:', error)

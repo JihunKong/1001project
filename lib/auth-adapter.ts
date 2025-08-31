@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { executeWithRLSBypass } from "@/lib/prisma"
+import { executeWithRLSBypass, prisma } from "@/lib/prisma"
 import type { Adapter, AdapterUser, AdapterAccount, AdapterSession, VerificationToken } from "next-auth/adapters"
 
 /**
@@ -7,7 +7,12 @@ import type { Adapter, AdapterUser, AdapterAccount, AdapterSession, Verification
  * This wraps the PrismaAdapter and overrides key methods to use RLS bypass
  */
 export function createRLSBypassAdapter(): Adapter {
-  const baseAdapter = PrismaAdapter({} as any) // We'll override the methods anyway
+  console.log('[Adapter Debug] Creating RLS bypass adapter');
+  console.log('[Adapter Debug] Prisma client available:', !!prisma);
+  
+  const baseAdapter = PrismaAdapter(prisma)
+  console.log('[Adapter Debug] Base adapter created:', !!baseAdapter);
+  console.log('[Adapter Debug] Base adapter methods:', baseAdapter ? Object.keys(baseAdapter) : 'N/A');
   
   return {
     ...baseAdapter,

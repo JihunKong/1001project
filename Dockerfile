@@ -24,6 +24,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Generate Prisma Client
 RUN npx prisma generate
 
+# Reinstall sharp for Alpine Linux musl
+RUN npm uninstall sharp && npm install --platform=linuxmusl --arch=x64 sharp
+
 # Build application
 RUN npm run build
 

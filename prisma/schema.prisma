@@ -2511,6 +2511,11 @@ model Book {
   pageCount       Int?
   previewPages    Int              @default(10)  // Number of pages available for preview
   
+  // Thumbnail storage and management
+  thumbnails      Json?            // {"frontCover": "/thumbnails/book1/front-page-1.png", "backCover": "/thumbnails/book1/back-page-1.png", "pages": ["/thumbnails/book1/page-1.png", ...]}
+  thumbnailGeneratedAt DateTime?   // When thumbnails were last generated
+  thumbnailConfig Json?            // {"frontCover": {"width": 400, "height": 533, "quality": 90}, "backCover": {}, "pages": {"maxPages": 20}}
+  
   // DRM and access control
   drm             Json?            // {"watermark":true,"downloadAllowed":false,"printAllowed":false}
   downloadAllowed Boolean          @default(false)
@@ -2547,6 +2552,7 @@ model Book {
   @@index([isPremium])
   @@index([language])
   @@index([visibility])
+  @@index([thumbnailGeneratedAt])
   @@map("books")
 }
 

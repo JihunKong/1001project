@@ -20,8 +20,14 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return await bcrypt.compare(password, hash);
 }
 
+// Create adapter instance
+const adapter = createRLSBypassAdapter();
+console.log('[NextAuth Debug] Adapter created:', adapter ? 'Yes' : 'No');
+console.log('[NextAuth Debug] Adapter type:', typeof adapter);
+console.log('[NextAuth Debug] Adapter methods:', adapter ? Object.keys(adapter) : 'N/A');
+
 export const authOptions: NextAuthOptions = {
-  adapter: createRLSBypassAdapter(),
+  adapter,
   
   providers: [
     // Admin/Staff Credentials Provider for password login

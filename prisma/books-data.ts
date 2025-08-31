@@ -1,5 +1,76 @@
 // Auto-generated book seed data
-import { BookMetadata } from '../scripts/create-book-data';
+interface BookMetadata {
+  id: string;
+  title: string;
+  subtitle?: string;
+  summary?: string;
+  authorName: string;
+  authorAlias?: string;
+  authorAge?: number;
+  authorLocation?: string;
+  language?: string;
+  ageRange?: string;
+  category?: string[];
+  genres?: string[];
+  subjects?: string[];
+  description?: string;
+  price?: number;
+  premiumPrice?: number;
+  isbn?: string;
+  publicationDate?: string;
+  pageCount?: number;
+  readingLevel?: string;
+  coverType?: string;
+  illustrator?: string;
+  translator?: string;
+  publisher?: string;
+  edition?: string;
+  series?: string;
+  volume?: number;
+  awards?: string[];
+  endorsements?: string[];
+  tags: string[];
+  isPremium?: boolean;
+  mainPdfFile?: string;
+  frontCoverFile?: string;
+  backCoverFile?: string;
+  originalFolder?: string;
+  samplePages?: number[];
+  teachingGuideAvailable?: boolean;
+  audioVersionAvailable?: boolean;
+  videoVersionAvailable?: boolean;
+  interactiveFeatures?: string[];
+  accessibility?: string[];
+  copyrightYear?: number;
+  rightsAvailable?: string[];
+  fundingSupported?: boolean;
+  donationRecipient?: string;
+  impactMetrics?: {
+    readersReached?: number;
+    communitiesServed?: number;
+    educationalImpact?: string;
+  };
+  culturalContext?: string;
+  contentWarnings?: string[];
+  lexileScore?: number;
+  guidedReadingLevel?: string;
+  acceleratedReaderLevel?: number;
+  keywords?: string[];
+  pdfFileName?: string;
+  coverFileName?: string;
+  backCoverFileName?: string;
+  sampleFileName?: string;
+  hasDigitalRights?: boolean;
+  hasPrintRights?: boolean;
+  availableFormats?: string[];
+  relatedBooks?: string[];
+  bundleOptions?: string[];
+  specialOffers?: {
+    type: string;
+    discount: number;
+    validUntil: string;
+  }[];
+}
 
 export const booksData: BookMetadata[] = [
   {
@@ -36,7 +107,6 @@ export const booksData: BookMetadata[] = [
     "pageCount": 24,
     "mainPdfFile": "01_Neema part one_Edit_0716.pdf",
     "frontCoverFile": "Neema 01 _ Front.pdf",
-    "backCoverFile": null,
     "originalFolder": "01_ Neema_01"
   },
   {
@@ -454,7 +524,6 @@ export const booksData: BookMetadata[] = [
     "pageCount": 20,
     "mainPdfFile": "04_Kakam and rebels_Part one_Edit_0717.pdf",
     "frontCoverFile": "Kakam and rebels_01_front_A.pdf",
-    "backCoverFile": null,
     "originalFolder": "13 _ Kakama _01"
   },
   {
@@ -701,8 +770,6 @@ export const booksData: BookMetadata[] = [
     "isPremium": true,
     "pageCount": 20,
     "mainPdfFile": "The street boy_part 02_Span.pdf",
-    "frontCoverFile": null,
-    "backCoverFile": null,
     "originalFolder": "21. Street boy_part 02_Span Folder"
   },
   {
@@ -949,8 +1016,6 @@ export const booksData: BookMetadata[] = [
     "isPremium": true,
     "pageCount": 20,
     "mainPdfFile": "The street boy_part 01_ENG.pdf",
-    "frontCoverFile": null,
-    "backCoverFile": null,
     "originalFolder": "29. Street boy_part 01_ENG Folder"
   },
   {

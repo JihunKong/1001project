@@ -275,36 +275,108 @@ export async function POST(request: NextRequest) {
       .map(tag => tag.trim())
       .filter(tag => tag.length > 0);
 
-    // Create story record in database
-    const story = await prisma.story.create({
+    // Create book record in database
+    const book = await prisma.book.create({
       data: {
         id: bookId,
         title: bookData.title,
-        content: `Book content available in PDF format: /books/${bookId}/main.pdf`,
         summary: bookData.summary,
+        authorName: bookData.authorName,
         language: bookData.language,
         category: bookData.category ? [bookData.category] : ['General'],
         genres: bookData.ageGroup ? [bookData.ageGroup] : [],
         subjects: [],
-        isPublished: true,
         tags: tagList,
-        authorId: author.id,
-        authorName: bookData.authorName,
-        price: bookData.price ? parseFloat(bookData.price) : null,
-        isbn: bookData.isbn || null,
-        publishedDate: bookData.publicationDate ? new Date(bookData.publicationDate) : null,
-        fullPdf: `/books/${bookId}/main.pdf`,
-        coverImage: frontCover ? `/books/${bookId}/cover.pdf` : null,
-        viewCount: 0,
-        likeCount: 0,
+        isPublished: true,
         isPremium: !!bookData.price && parseFloat(bookData.price) > 0,
-        featured: false
+        price: bookData.price ? parseFloat(bookData.price) : null,
+        currency: 'USD',
+        pdfKey: `/books/${bookId}/main.pdf`,
+        pdfFrontCover: frontCover ? `/books/${bookId}/front.pdf` : null,
+        pdfBackCover: backCover ? `/books/${bookId}/back.pdf` : null,
+        previewPages: bookData.previewPageLimit,
+        coverImage: frontCover ? `/books/${bookId}/front.pdf` : null,
+        downloadAllowed: false,
+        printAllowed: false
       }
     });
 
-    // Generate thumbnail if needed (this would be done with a background job in production)
-    // For now, we'll just log that thumbnail generation is needed
-    console.log(`Thumbnail generation needed for book: ${bookId}, page: ${bookData.thumbnailPage}`);
+    // Generate thumbnails after successful upload
+    try {
+      const thumbnailPromises = [];
+
+      // Generate front cover thumbnail if available
+      if (frontCover) {
+        thumbnailPromises.push(
+          fetch(`${process.env.NEXTAUTH_URL}/api/thumbnails/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              bookId: bookId,
+              type: 'cover_front',
+              pageNumber: 1,
+              force: true
+            })
+          })
+        );
+      }
+
+      // Generate back cover thumbnail if available
+      if (backCover) {
+        thumbnailPromises.push(
+          fetch(`${process.env.NEXTAUTH_URL}/api/thumbnails/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              bookId: bookId,
+              type: 'cover_back',
+              pageNumber: 1,
+              force: true
+            })
+          })
+        );
+      }
+
+      // Generate main book thumbnail from specified page
+      thumbnailPromises.push(
+        fetch(`${process.env.NEXTAUTH_URL}/api/thumbnails/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bookId: bookId,
+            type: 'book_content',
+            pageNumber: bookData.thumbnailPage,
+            force: true
+          })
+        })
+      );
+
+      // Wait for all thumbnail generations (don't fail upload if thumbnails fail)
+      const results = await Promise.allSettled(thumbnailPromises);
+      const successfulThumbnails = results.filter(r => r.status === 'fulfilled');
+      
+      console.log(`Generated ${successfulThumbnails.length}/${thumbnailPromises.length} thumbnails for book: ${bookId}`);
+
+      // Update book with thumbnail information
+      const thumbnailPaths: any = {};
+      if (frontCover) thumbnailPaths.frontCover = `/thumbnails/${bookId}/cover_front-page-1.png`;
+      if (backCover) thumbnailPaths.backCover = `/thumbnails/${bookId}/cover_back-page-1.png`;
+      thumbnailPaths.mainPage = `/thumbnails/${bookId}/book_content-page-${bookData.thumbnailPage}.png`;
+
+      // Update book with thumbnail paths when schema is ready
+      // await prisma.book.update({
+      //   where: { id: bookId },
+      //   data: {
+      //     thumbnails: thumbnailPaths,
+      //     thumbnailGeneratedAt: new Date(),
+      //     coverImage: frontCover ? thumbnailPaths.frontCover : thumbnailPaths.mainPage
+      //   }
+      // });
+
+    } catch (thumbnailError) {
+      // Log but don't fail the upload if thumbnail generation fails
+      console.error('Error generating thumbnails:', thumbnailError);
+    }
 
     // Log successful upload
     uploadSuccess = true;
@@ -317,9 +389,9 @@ export async function POST(request: NextRequest) {
       userAgent: request.headers.get('user-agent') || '',
       success: true,
       metadata: {
-        bookId: story.id,
-        title: story.title,
-        authorName: story.authorName,
+        bookId: book.id,
+        title: book.title,
+        authorName: book.authorName,
         fileSize: mainPdf.size,
         hasFrontCover: !!frontCover,
         hasBackCover: !!backCover,
@@ -330,11 +402,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Book uploaded successfully',
-      bookId: story.id,
-      story: {
-        id: story.id,
-        title: story.title,
-        summary: story.summary,
+      bookId: book.id,
+      book: {
+        id: book.id,
+        title: book.title,
+        summary: book.summary,
         author: {
           id: author.id,
           name: author.name,
@@ -342,16 +414,18 @@ export async function POST(request: NextRequest) {
         },
         files: {
           main: `/books/${bookId}/main.pdf`,
-          frontCover: frontCover ? `/books/${bookId}/cover.pdf` : null,
+          frontCover: frontCover ? `/books/${bookId}/front.pdf` : null,
           backCover: backCover ? `/books/${bookId}/back.pdf` : null,
         },
+        // thumbnails: book.thumbnails, // Will be added when schema is ready
         metadata: {
-          authorName: story.authorName,
-          language: story.language,
-          category: story.category,
-          isbn: story.isbn,
-          publishedDate: story.publishedDate,
-          tags: story.tags,
+          authorName: book.authorName,
+          language: book.language,
+          category: book.category,
+          tags: book.tags,
+          isPremium: book.isPremium,
+          price: book.price,
+          previewPages: book.previewPages
         },
       }
     }, { status: 201 });
@@ -454,29 +528,43 @@ export async function GET(request: NextRequest) {
 
     // Get books with their files
     const [books, totalCount] = await Promise.all([
-      prisma.story.findMany({
+      prisma.book.findMany({
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: {
-          author: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            }
-          }
+        select: {
+          id: true,
+          title: true,
+          authorName: true,
+          summary: true,
+          language: true,
+          category: true,
+          tags: true,
+          isPremium: true,
+          price: true,
+          currency: true,
+          pdfKey: true,
+          pdfFrontCover: true,
+          pdfBackCover: true,
+          coverImage: true,
+          // thumbnails: true,
+          // thumbnailGeneratedAt: true,
+          previewPages: true,
+          isPublished: true,
+          viewCount: true,
+          createdAt: true,
+          updatedAt: true
         },
         where: {
-          // Only include stories that have PDF files
-          fullPdf: {
+          // Only include books that have PDF files
+          pdfKey: {
             not: null
           }
         }
       }),
-      prisma.story.count({
+      prisma.book.count({
         where: {
-          fullPdf: {
+          pdfKey: {
             not: null
           }
         }
@@ -489,9 +577,9 @@ export async function GET(request: NextRequest) {
       books: books.map(book => ({
         ...book,
         files: {
-          main: book.fullPdf || null,
-          frontCover: book.coverImage || null,
-          backCover: null, // Back cover not implemented yet
+          main: book.pdfKey || null,
+          frontCover: book.pdfFrontCover || null,
+          backCover: book.pdfBackCover || null,
         }
       })),
       pagination: {
