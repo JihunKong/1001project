@@ -9,7 +9,7 @@ SERVER_IP="3.128.143.122"
 SERVER_USER="ubuntu"
 PEM_FILE="/Users/jihunkong/Downloads/1001project.pem"
 REPO_URL="https://github.com/JihunKong/1001project.git"
-DEPLOY_PATH="/home/ubuntu/1001-stories"
+DEPLOY_PATH="/home/ubuntu/1001project"
 DOMAIN="1001stories.seedsofempowerment.org"
 
 # Color codes for output
