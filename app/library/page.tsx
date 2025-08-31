@@ -34,11 +34,9 @@ interface Book {
   title: string
   subtitle?: string
   summary?: string
-  author: {
-    name: string
-    age?: number
-    location?: string
-  }
+  authorName: string  // Changed from nested author object
+  authorAge?: number
+  authorLocation?: string
   language: string
   category: string[]
   tags: string[]
@@ -46,14 +44,15 @@ interface Book {
   readingTime?: number
   coverImage?: string
   isPremium: boolean
-  isFeatured: boolean
+  isFeatured?: boolean
+  featured?: boolean  // API returns 'featured' not 'isFeatured'
   price?: number
   rating?: number
-  accessLevel: 'preview' | 'full'
-  stats: {
-    readers: number
-    bookmarks: number
-  }
+  accessLevel?: 'preview' | 'full'
+  viewCount?: number
+  downloadCount?: number
+  createdAt?: string
+  hasAccess?: boolean
   // PDF-specific fields
   bookId?: string
   pdfKey?: string
@@ -211,7 +210,7 @@ export default function Library() {
             Premium
           </div>
         )}
-        {book.isFeatured && (
+        {(book.featured || book.isFeatured) && (
           <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
             <Star className="w-3 h-3" />
             Featured
@@ -228,7 +227,7 @@ export default function Library() {
       <div className="p-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
           <Globe className="w-4 h-4" />
-          {book.author.location || 'Unknown'}
+          {book.authorLocation || 'Unknown'}
           <span>•</span>
           <Clock className="w-4 h-4" />
           {book.readingTime || 5} min
@@ -239,7 +238,7 @@ export default function Library() {
         </h3>
         
         <div className="text-sm text-gray-600 mb-3">
-          By {book.author.name}{book.author.age ? `, age ${book.author.age}` : ''}
+          By {book.authorName}{book.authorAge ? `, age ${book.authorAge}` : ''}
         </div>
         
         <p className="text-gray-600 text-sm mb-4 line-clamp-3">

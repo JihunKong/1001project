@@ -20,24 +20,21 @@ interface Book {
   id: string;
   title: string;
   subtitle?: string;
-  author: {
-    name: string;
-    age?: number;
-    location?: string;
-  };
+  authorName: string;  // Changed from nested author object
+  authorAge?: number;
+  authorLocation?: string;
   language: string;
   category: string[];
   ageRange?: string;
   readingTime?: number;
   coverImage?: string;
   isPremium: boolean;
-  isFeatured: boolean;
+  isFeatured?: boolean;
+  featured?: boolean;  // API returns 'featured' not 'isFeatured'
   rating?: number;
-  accessLevel: 'preview' | 'full';
-  stats: {
-    readers: number;
-    bookmarks: number;
-  };
+  accessLevel?: 'preview' | 'full';
+  viewCount?: number;
+  downloadCount?: number;
   pdfKey?: string;
   pdfFrontCover?: string;
   pdfBackCover?: string;
@@ -111,7 +108,7 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
           )}
           
           {/* Featured Badge */}
-          {book.isFeatured && (
+          {(book.featured || book.isFeatured) && (
             <div className="absolute left-2 top-2 z-20">
               <span className="inline-flex items-center gap-1 rounded-full bg-red-500/90 px-2.5 py-1 text-xs font-semibold text-white shadow-md">
                 <Star className="h-3 w-3" />
@@ -126,7 +123,7 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
               {book.title}
             </div>
             <div className="line-clamp-1 text-xs text-white/90">
-              {book.author.name}
+              {book.authorName}
             </div>
           </div>
         </div>

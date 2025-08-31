@@ -18,14 +18,13 @@ const SimplePDFThumbnail = dynamic(() => import('./SimplePDFThumbnail'), {
 interface Book {
   id: string;
   title: string;
-  author: {
-    name: string;
-  };
+  authorName: string;  // Changed from nested author object
   isPremium: boolean;
-  isFeatured: boolean;
+  isFeatured?: boolean;
+  featured?: boolean;  // API returns 'featured' not 'isFeatured'
   category: string[];
   coverImage?: string;
-  accessLevel: 'preview' | 'full';
+  accessLevel?: 'preview' | 'full';
   pdfKey?: string;
   fullPdf?: string;
   samplePdf?: string;
@@ -93,7 +92,7 @@ const BookSpine = ({ book, index }: { book: Book; index: number }) => {
               {book.title.substring(0, 20)}
             </div>
             <div className="text-white/90 text-xs mt-1 drop-shadow-md" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.8)'}}>
-              {book.author.name.split(' ')[0]}
+              {book.authorName.split(' ')[0]}
             </div>
           </div>
         </div>
@@ -152,7 +151,7 @@ const BookSpine = ({ book, index }: { book: Book; index: number }) => {
               <h4 className="font-bold text-gray-800 text-sm line-clamp-2">
                 {book.title}
               </h4>
-              <p className="text-xs text-gray-600">by {book.author.name}</p>
+              <p className="text-xs text-gray-600">by {book.authorName}</p>
             </div>
             
             {/* Categories */}
