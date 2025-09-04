@@ -1,0 +1,357 @@
+// ==========================================
+// USER AUTHENTICATION & PROFILE SUBSYSTEM
+// ==========================================
+// This subsystem handles user authentication, profiles, subscriptions,
+// and GDPR compliance including user deletion requests.
+
+Table users {
+  id String [primary key]
+  email String [unique, not null]
+  emailVerified DateTime
+  name String
+  image String
+  password String // For admin/volunteer password login
+  role UserRole [default: 'CUSTOMER']
+  tokenVersion Int [default: 1] // JWT versioning for session invalidation
+  schoolId String
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  // GDPR Deletion fields
+  deletedAt DateTime
+  deletionRequestId String
+  
+  // Indexes
+  indexes {
+    email
+    role
+    schoolId
+  }
+}
+
+// NextAuth Account model (for OAuth providers)
+Table accounts {
+  id String [primary key]
+  userId String [not null]
+  type String [not null]
+  provider String [not null]
+  providerAccountId String [not null]
+  refresh_token String
+  access_token String
+  expires_at Int
+  token_type String
+  scope String
+  id_token String
+  session_state String
+  
+  indexes {
+    (provider, providerAccountId) [unique]
+  }
+}
+
+// NextAuth Session model
+Table sessions {
+  id String [primary key]
+  sessionToken String [unique, not null]
+  userId String [not null]
+  expires DateTime [not null]
+}
+
+// NextAuth Verification Token model (for email verification)
+Table verification_tokens {
+  identifier String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+  
+  indexes {
+    (identifier, token) [unique]
+  }
+}
+
+// User profile with extended information
+Table profiles {
+  id String [primary key]
+  userId String [unique, not null]
+  firstName String
+  lastName String
+  organization String
+  bio String
+  location String
+  phone String
+  dateOfBirth DateTime
+  language String [default: 'en']
+  timezone String [default: 'UTC']
+  
+  // COPPA Compliance Fields
+  isMinor Boolean [default: false]
+  ageVerificationStatus AgeVerificationStatus [default: 'PENDING']
+  parentalConsentRequired Boolean [default: false]
+  parentalConsentStatus ParentalConsentStatus [default: 'NOT_REQUIRED']
+  parentalConsentDate DateTime
+  parentEmail String
+  parentName String
+  coppaCompliant Boolean [default: false]
+  
+  // For teachers/institutions
+  teachingLevel String
+  subjects String[]
+  studentCount Int
+  
+  // For volunteers
+  skills String[]
+  availability String
+  experience String
+  
+  // Preferences
+  emailNotifications Boolean [default: true]
+  pushNotifications Boolean [default: true]
+  newsletter Boolean [default: true]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+// Subscription model for premium features
+Table subscriptions {
+  id String [primary key]
+  userId String [unique, not null]
+  plan SubscriptionPlan [default: 'FREE']
+  status SubscriptionStatus [default: 'ACTIVE']
+  
+  // Subscription details
+  startDate DateTime [default: `now()`]
+  endDate DateTime
+  cancelledAt DateTime
+  
+  // Payment information
+  stripeCustomerId String [unique]
+  stripeSubscriptionId String [unique]
+  stripePriceId String
+  
+  // Features
+  maxStudents Int [default: 30]
+  maxDownloads Int [default: 10]
+  canAccessPremium Boolean [default: false]
+  canDownloadPDF Boolean [default: false]
+  canCreateClasses Boolean [default: false]
+  unlimitedReading Boolean [default: false]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+// User deletion requests tracking (GDPR Article 17)
+Table user_deletion_requests {
+  id String [primary key]
+  userId String [unique, not null]
+  status DeletionStatus [default: 'PENDING']
+  deletionReason String
+  
+  // COPPA compliance for minors
+  parentalConsentRequired Boolean [default: false]
+  parentalConsentVerified Boolean [default: false]
+  parentConfirmationToken String [unique]
+  parentConfirmationSentAt DateTime
+  parentConfirmationExpiry DateTime
+  
+  // Soft delete timing
+  softDeletedAt DateTime
+  hardDeletedAt DateTime
+  recoveryDeadline DateTime
+  
+  // Request metadata
+  requestSource String [default: 'self_service'] // "self_service", "parental", "admin"
+  ipAddress String
+  userAgent String
+  additionalContext Json
+  
+  // Processing status
+  reviewRequired Boolean [default: false]
+  reviewedBy String
+  reviewedAt DateTime
+  reviewNotes String
+  
+  // Final confirmation
+  finalConfirmationToken String [unique]
+  finalConfirmationSentAt DateTime
+  finalConfirmationExpiry DateTime
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    status
+    softDeletedAt
+    recoveryDeadline
+  }
+}
+
+// Comprehensive audit logging for deletion operations
+Table deletion_audit_logs {
+  id String [primary key]
+  deletionRequestId String [not null]
+  
+  // Action details
+  action DeletionAction [not null]
+  performedBy String // User ID who performed action
+  performedByRole UserRole
+  performedByType ActorType [default: 'SYSTEM']
+  
+  // Data affected
+  tableName String
+  recordId String
+  recordCount Int
+  
+  // Action details
+  previousStatus DeletionStatus
+  newStatus DeletionStatus
+  actionDetails String
+  metadata Json
+  
+  // Technical details
+  ipAddress String
+  userAgent String
+  sessionId String
+  
+  // Data processing
+  dataAnonymized Boolean [default: false]
+  anonymizedFields String[]
+  dataBackedUp Boolean [default: false]
+  backupLocation String
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    deletionRequestId
+    action
+    (tableName, recordId)
+  }
+}
+
+// Anonymization tracking for retained data
+Table anonymization_logs {
+  id String [primary key]
+  tableName String [not null]
+  recordId String [not null]
+  
+  // Anonymization details
+  anonymizedFields Json // {"email": "user_123@anonymized.local", "name": "[ANONYMIZED]"}
+  retainedFields Json // Fields kept for legitimate interest
+  anonymizationMethod String // "hash", "pseudonym", "removal", "generalization"
+  
+  // Legal basis for retention
+  retentionReason String
+  retentionPeriod String // "7_years", "indefinite", etc.
+  legalBasis String // "legitimate_interest", "legal_obligation", etc.
+  
+  // Processing metadata
+  processedBy String // User/system that performed anonymization
+  processingJobId String
+  
+  // Verification
+  verificationHash String // Hash to verify data integrity
+  reversible Boolean [default: false]
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    (tableName, recordId) [unique]
+    tableName
+    createdAt
+  }
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+Enum UserRole {
+  CUSTOMER
+  LEARNER
+  TEACHER
+  INSTITUTION
+  VOLUNTEER
+  ADMIN
+}
+
+Enum SubscriptionPlan {
+  FREE
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+Enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PAST_DUE
+  TRIALING
+}
+
+Enum AgeVerificationStatus {
+  PENDING
+  VERIFIED_ADULT
+  VERIFIED_MINOR
+  FAILED
+}
+
+Enum ParentalConsentStatus {
+  NOT_REQUIRED
+  PENDING
+  GRANTED
+  DENIED
+  EXPIRED
+}
+
+Enum DeletionStatus {
+  PENDING
+  PARENTAL_CONSENT_REQUIRED
+  PARENTAL_CONSENT_PENDING
+  REVIEW_REQUIRED
+  CONFIRMED
+  SOFT_DELETED
+  HARD_DELETED
+  CANCELLED
+  RECOVERED
+  FAILED
+}
+
+Enum DeletionAction {
+  REQUEST_CREATED
+  PARENTAL_CONSENT_SENT
+  PARENTAL_CONSENT_GRANTED
+  PARENTAL_CONSENT_DENIED
+  REVIEW_ASSIGNED
+  REVIEW_APPROVED
+  REVIEW_REJECTED
+  FINAL_CONFIRMATION_SENT
+  FINAL_CONFIRMATION_RECEIVED
+  SOFT_DELETE_EXECUTED
+  HARD_DELETE_EXECUTED
+  DATA_ANONYMIZED
+  DATA_BACKED_UP
+  ACCOUNT_RECOVERED
+  REQUEST_CANCELLED
+  SYSTEM_ERROR
+  CLEANUP_COMPLETED
+}
+
+Enum ActorType {
+  USER
+  PARENT
+  ADMIN
+  SYSTEM
+  AUTOMATED
+}
+
+// ==========================================
+// RELATIONSHIPS
+// ==========================================
+
+Ref: accounts.userId > users.id
+Ref: sessions.userId > users.id
+Ref: profiles.userId - users.id
+Ref: subscriptions.userId - users.id
+Ref: user_deletion_requests.userId - users.id
+Ref: deletion_audit_logs.deletionRequestId > user_deletion_requests.id

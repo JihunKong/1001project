@@ -1,0 +1,329 @@
+// ==========================================
+// EDUCATIONAL SYSTEM SUBSYSTEM
+// ==========================================
+// This subsystem handles schools, classes, assignments, enrollments,
+// submissions, lesson progress, and educational resource management.
+
+// Educational institutions
+Table schools {
+  id String [primary key]
+  name String [not null]
+  type SchoolType [not null]
+  address Json [not null]
+  country String [not null]
+  phone String
+  email String
+  website String
+  principalName String
+  studentCount Int [default: 0]
+  teacherCount Int [default: 0]
+  establishedYear Int
+  accreditation String[]
+  partneredAt DateTime [default: `now()`]
+  status SchoolStatus [default: 'PENDING']
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+// Educational classes/courses
+Table classes {
+  id String [primary key]
+  code String [unique, not null]
+  name String [not null]
+  description String
+  teacherId String [not null]
+  schoolId String
+  subject String [not null]
+  gradeLevel String [not null]
+  schedule Json [not null] // Class schedule
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  maxStudents Int [default: 30]
+  isActive Boolean [default: true]
+  settings Json // Class settings
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    teacherId
+    schoolId
+  }
+}
+
+// Student-class relationships
+Table class_enrollments {
+  id String [primary key]
+  classId String [not null]
+  studentId String [not null]
+  enrolledAt DateTime [default: `now()`]
+  status EnrollmentStatus [default: 'ACTIVE']
+  grade String
+  attendance Float [default: 100]
+  progress Float [default: 0]
+  
+  indexes {
+    (classId, studentId) [unique]
+    studentId
+    classId
+  }
+}
+
+// Class assignments and homework
+Table assignments {
+  id String [primary key]
+  classId String [not null]
+  title String [not null]
+  description String [not null]
+  type AssignmentType [not null]
+  dueDate DateTime [not null]
+  points Int [default: 100]
+  resources String[]
+  requirements Json [not null]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    classId
+    dueDate
+  }
+}
+
+// Student assignment submissions
+Table submissions {
+  id String [primary key]
+  assignmentId String [not null]
+  studentId String [not null]
+  submittedAt DateTime [default: `now()`]
+  content String
+  attachments String[]
+  grade Float
+  feedback String
+  status SubmissionStatus [default: 'DRAFT']
+  
+  indexes {
+    (assignmentId, studentId) [unique]
+    studentId
+  }
+}
+
+// Course lessons/modules
+Table lessons {
+  id String [primary key]
+  classId String [not null]
+  lessonNumber Int [not null]
+  title String [not null]
+  objectives String[] [not null]
+  content String [not null]
+  resources Json [not null] // Lesson materials
+  duration Int [not null] // Estimated minutes
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (classId, lessonNumber) [unique]
+  }
+}
+
+// Student lesson completion
+Table lesson_progress {
+  id String [primary key]
+  lessonId String [not null]
+  studentId String [not null]
+  startedAt DateTime [default: `now()`]
+  completedAt DateTime
+  timeSpent Int [default: 0] // Minutes
+  score Float
+  
+  indexes {
+    (lessonId, studentId) [unique]
+    studentId
+  }
+}
+
+// Class resources (materials, documents)
+Table class_resources {
+  id String [primary key]
+  classId String [not null]
+  title String [not null]
+  description String
+  type ResourceType [not null]
+  url String [not null]
+  size Int // File size in bytes
+  
+  createdAt DateTime [default: `now()`]
+}
+
+// Class announcements
+Table class_announcements {
+  id String [primary key]
+  classId String [not null]
+  title String [not null]
+  content String [not null]
+  priority AnnouncementPriority [default: 'NORMAL']
+  
+  createdAt DateTime [default: `now()`]
+}
+
+// School financial management
+Table budgets {
+  id String [primary key]
+  schoolId String [not null]
+  year Int [not null]
+  totalBudget Decimal [not null]
+  allocatedBudget Decimal [default: 0]
+  spentBudget Decimal [default: 0]
+  categories Json [not null]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (schoolId, year) [unique]
+  }
+}
+
+// Budget line items
+Table budget_items {
+  id String [primary key]
+  budgetId String [not null]
+  category String [not null]
+  description String [not null]
+  amount Decimal [not null]
+  spent Decimal [default: 0]
+  vendor String
+  approvedBy String
+  approvedAt DateTime
+  
+  createdAt DateTime [default: `now()`]
+}
+
+// School educational resources
+Table school_resources {
+  id String [primary key]
+  schoolId String [not null]
+  type SchoolResourceType [not null]
+  name String [not null]
+  quantity Int [default: 1]
+  condition String
+  location String
+  purchaseDate DateTime
+  value Decimal
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+// School-volunteer assignments
+Table school_volunteers {
+  id String [primary key]
+  schoolId String [not null]
+  volunteerId String [not null]
+  role String [not null]
+  startDate DateTime [not null]
+  endDate DateTime
+  isActive Boolean [default: true]
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    (schoolId, volunteerId) [unique]
+  }
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+Enum SchoolType {
+  PRIMARY
+  SECONDARY
+  HIGH_SCHOOL
+  UNIVERSITY
+  VOCATIONAL
+  SPECIAL_EDUCATION
+}
+
+Enum SchoolStatus {
+  ACTIVE
+  PENDING
+  INACTIVE
+  SUSPENDED
+}
+
+Enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+  SUSPENDED
+}
+
+Enum AssignmentType {
+  READING
+  WRITING
+  PROJECT
+  QUIZ
+  PRESENTATION
+  GROUP_WORK
+}
+
+Enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+  GRADED
+  RETURNED
+  LATE
+}
+
+Enum ResourceType {
+  DOCUMENT
+  VIDEO
+  AUDIO
+  IMAGE
+  LINK
+  PRESENTATION
+}
+
+Enum AnnouncementPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+Enum SchoolResourceType {
+  BOOK
+  COMPUTER
+  TABLET
+  SUPPLIES
+  EQUIPMENT
+  FURNITURE
+  SOFTWARE
+}
+
+// ==========================================
+// RELATIONSHIPS
+// ==========================================
+
+// Note: User relationships are handled in the user-auth subsystem
+// These references assume the User table exists in the main schema
+
+Ref: classes.teacherId > users.id
+Ref: classes.schoolId > schools.id
+Ref: class_enrollments.classId > classes.id
+Ref: class_enrollments.studentId > users.id
+Ref: assignments.classId > classes.id
+Ref: submissions.assignmentId > assignments.id
+Ref: submissions.studentId > users.id
+Ref: lessons.classId > classes.id
+Ref: lesson_progress.lessonId > lessons.id
+Ref: lesson_progress.studentId > users.id
+Ref: class_resources.classId > classes.id
+Ref: class_announcements.classId > classes.id
+Ref: budgets.schoolId > schools.id
+Ref: budget_items.budgetId > budgets.id
+Ref: school_resources.schoolId > schools.id
+Ref: school_volunteers.schoolId > schools.id

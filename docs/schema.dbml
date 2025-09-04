@@ -1,0 +1,2620 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table users {
+  id String [pk]
+  email String [unique, not null]
+  emailVerified DateTime
+  name String
+  image String
+  password String
+  role UserRole [not null, default: 'CUSTOMER']
+  tokenVersion Int [not null, default: 1]
+  schoolId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  deletionRequestId String
+  accounts accounts [not null]
+  sessions sessions [not null]
+  profile profiles
+  subscription subscriptions
+  school schools
+  deletionRequest user_deletion_requests
+  cart carts
+  orders orders [not null]
+  reviews reviews [not null]
+  enrollments class_enrollments [not null]
+  submissions submissions [not null]
+  lessonProgress lesson_progress [not null]
+  teachingClasses classes [not null]
+  stories stories [not null]
+  storySubmissions story_submissions [not null]
+  translations translations [not null]
+  illustrations illustrations [not null]
+  readingProgress reading_progress [not null]
+  bookmarks bookmarks [not null]
+  readingLists reading_lists [not null]
+  volunteerProfile volunteer_profiles
+  volunteerApplications volunteer_applications [not null]
+  volunteerHours volunteer_hours [not null]
+  volunteerCertificates volunteer_certificates [not null]
+  coordinatingProjects volunteer_projects [not null]
+  createdQuests quests [not null]
+  reviewedEvidence volunteer_evidence [not null]
+  issuedPoints volunteer_points [not null]
+  fulfilledRewards volunteer_redemptions [not null]
+  questReviews quest_reviews [not null]
+  donations donations [not null]
+  recurringDonations recurring_donations [not null]
+  notifications notifications [not null]
+  activityLogs activity_logs [not null]
+  uploadedMedia media_files [not null]
+  workflowActions workflow_history [not null]
+  bulkImports bulk_imports [not null]
+  onboardingProgress onboarding_progress
+  sampleContentAccess sample_content_access [not null]
+  entitlements entitlements [not null]
+  volunteerSubmissions volunteer_submissions [not null]
+  reviewedVolunteerSubmissions volunteer_submissions [not null]
+  assignedVolunteerSubmissions volunteer_submissions [not null]
+  publishedContent publications [not null]
+  feedback user_feedback [not null]
+  surveyResponses survey_responses [not null]
+  analytics user_analytics [not null]
+  abTestParticipations ab_test_participants [not null]
+  roleMigrations role_migrations [not null]
+  featureUsage feature_usage [not null]
+}
+
+Table profiles {
+  id String [pk]
+  userId String [unique, not null]
+  firstName String
+  lastName String
+  organization String
+  bio String
+  location String
+  phone String
+  dateOfBirth DateTime
+  language String [not null, default: 'en']
+  timezone String [not null, default: 'UTC']
+  isMinor Boolean [not null, default: false]
+  ageVerificationStatus AgeVerificationStatus [not null, default: 'PENDING']
+  parentalConsentRequired Boolean [not null, default: false]
+  parentalConsentStatus ParentalConsentStatus [not null, default: 'NOT_REQUIRED']
+  parentalConsentDate DateTime
+  parentEmail String
+  parentName String
+  coppaCompliant Boolean [not null, default: false]
+  teachingLevel String
+  subjects String[] [not null]
+  studentCount Int
+  skills String[] [not null]
+  availability String
+  experience String
+  emailNotifications Boolean [not null, default: true]
+  pushNotifications Boolean [not null, default: true]
+  newsletter Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+}
+
+Table accounts {
+  id String [pk]
+  userId String [not null]
+  type String [not null]
+  provider String [not null]
+  providerAccountId String [not null]
+  refresh_token String
+  access_token String
+  expires_at Int
+  token_type String
+  scope String
+  id_token String
+  session_state String
+  user users [not null]
+
+  indexes {
+    (provider, providerAccountId) [unique]
+  }
+}
+
+Table sessions {
+  id String [pk]
+  sessionToken String [unique, not null]
+  userId String [not null]
+  expires DateTime [not null]
+  user users [not null]
+}
+
+Table verification_tokens {
+  identifier String [not null]
+  token String [unique, not null]
+  expires DateTime [not null]
+
+  indexes {
+    (identifier, token) [unique]
+  }
+}
+
+Table subscriptions {
+  id String [pk]
+  userId String [unique, not null]
+  plan SubscriptionPlan [not null, default: 'FREE']
+  status SubscriptionStatus [not null, default: 'ACTIVE']
+  startDate DateTime [default: `now()`, not null]
+  endDate DateTime
+  cancelledAt DateTime
+  stripeCustomerId String [unique]
+  stripeSubscriptionId String [unique]
+  stripePriceId String
+  maxStudents Int [not null, default: 30]
+  maxDownloads Int [not null, default: 10]
+  canAccessPremium Boolean [not null, default: false]
+  canDownloadPDF Boolean [not null, default: false]
+  canCreateClasses Boolean [not null, default: false]
+  unlimitedReading Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user users [not null]
+  entitlements entitlements [not null]
+}
+
+Table categories {
+  id String [pk]
+  name String [not null]
+  slug String [unique, not null]
+  description String
+  parentId String
+  image String
+  order Int [not null, default: 0]
+  isActive Boolean [not null, default: true]
+  parent categories
+  children categories [not null]
+  products products [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table products {
+  id String [pk]
+  sku String [unique, not null]
+  type ProductType [not null]
+  title String [not null]
+  description String [not null]
+  price Decimal [not null]
+  compareAtPrice Decimal
+  cost Decimal
+  currency String [not null, default: 'USD']
+  weight Float
+  status ProductStatus [not null, default: 'DRAFT']
+  featured Boolean [not null, default: false]
+  creatorId String
+  creatorName String
+  creatorAge Int
+  creatorLocation String
+  creatorStory String
+  categoryId String [not null]
+  tags String[] [not null]
+  impactMetric String
+  impactValue String
+  digitalFileUrl String
+  downloadLimit Int
+  metaTitle String
+  metaDescription String
+  category categories [not null]
+  variants product_variants [not null]
+  images product_images [not null]
+  inventory inventory [not null]
+  cartItems cart_items [not null]
+  orderItems order_items [not null]
+  reviews reviews [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table product_variants {
+  id String [pk]
+  productId String [not null]
+  title String [not null]
+  sku String [unique, not null]
+  price Decimal [not null]
+  compareAtPrice Decimal
+  inventoryQuantity Int [not null, default: 0]
+  weight Float
+  attributes Json [not null]
+  position Int [not null, default: 0]
+  product products [not null]
+  inventory inventory [not null]
+  cartItems cart_items [not null]
+  orderItems order_items [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table product_images {
+  id String [pk]
+  productId String [not null]
+  url String [not null]
+  alt String
+  position Int [not null, default: 0]
+  product products [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table inventory {
+  id String [pk]
+  productId String [not null]
+  variantId String
+  quantity Int [not null, default: 0]
+  reserved Int [not null, default: 0]
+  location String [not null, default: 'main']
+  reorderPoint Int [not null, default: 10]
+  reorderQuantity Int [not null, default: 50]
+  product products [not null]
+  variant product_variants
+  updatedAt DateTime [not null]
+
+  indexes {
+    (productId, variantId, location) [unique]
+  }
+}
+
+Table carts {
+  id String [pk]
+  userId String [unique]
+  sessionId String
+  items cart_items [not null]
+  expiresAt DateTime [not null]
+  user users
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table cart_items {
+  id String [pk]
+  cartId String [not null]
+  productId String [not null]
+  variantId String
+  quantity Int [not null, default: 1]
+  price Decimal [not null]
+  cart carts [not null]
+  product products [not null]
+  variant product_variants
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (cartId, productId, variantId) [unique]
+  }
+}
+
+Table orders {
+  id String [pk]
+  orderNumber String [unique, not null]
+  userId String
+  email String [not null]
+  phone String
+  subtotal Decimal [not null]
+  tax Decimal [not null, default: 0]
+  shipping Decimal [not null, default: 0]
+  discount Decimal [not null, default: 0]
+  total Decimal [not null]
+  currency String [not null, default: 'USD']
+  status OrderStatus [not null, default: 'PENDING']
+  paymentStatus PaymentStatus [not null, default: 'PENDING']
+  fulfillmentStatus FulfillmentStatus [not null, default: 'UNFULFILLED']
+  paymentMethod String
+  stripePaymentId String
+  shippingAddress Json
+  billingAddress Json
+  shippingMethod String
+  trackingNumber String
+  notes String
+  tags String[] [not null]
+  user users
+  items order_items [not null]
+  entitlements entitlements [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table order_items {
+  id String [pk]
+  orderId String [not null]
+  productId String [not null]
+  variantId String
+  title String [not null]
+  variantTitle String
+  quantity Int [not null]
+  price Decimal [not null]
+  total Decimal [not null]
+  fulfillmentStatus String
+  order orders [not null]
+  product products [not null]
+  variant product_variants
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table stories {
+  id String [pk]
+  isbn String [unique]
+  title String [not null]
+  subtitle String
+  content String [not null]
+  summary String
+  authorId String [not null]
+  authorName String [not null]
+  coAuthors String[] [not null]
+  authorAge Int
+  authorLocation String
+  illustratorId String
+  publishedDate DateTime
+  publisher String
+  language String [not null, default: 'en']
+  pageCount Int
+  readingLevel String
+  readingTime Int
+  category String[] [not null]
+  genres String[] [not null]
+  subjects String[] [not null]
+  tags String[] [not null]
+  coverImage String
+  illustrations String[] [not null]
+  samplePdf String
+  fullPdf String
+  epubFile String
+  audioFile String
+  isPremium Boolean [not null, default: false]
+  isPublished Boolean [not null, default: false]
+  featured Boolean [not null, default: false]
+  price Decimal
+  viewCount Int [not null, default: 0]
+  likeCount Int [not null, default: 0]
+  rating Float
+  author users [not null]
+  chapters chapters [not null]
+  readingProgress reading_progress [not null]
+  bookmarks bookmarks [not null]
+  reviews reviews [not null]
+  translations translations [not null]
+  sampleAccesses sample_content_access [not null]
+  entitlements entitlements [not null]
+  publications publications [not null]
+  shopProducts shop_products [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table chapters {
+  id String [pk]
+  storyId String [not null]
+  chapterNumber Int [not null]
+  title String [not null]
+  content String [not null]
+  audioUrl String
+  illustrations String[] [not null]
+  readingTime Int
+  story stories [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (storyId, chapterNumber) [unique]
+  }
+}
+
+Table reading_progress {
+  id String [pk]
+  userId String [not null]
+  storyId String [not null]
+  currentChapter Int [not null, default: 1]
+  currentPage Int
+  totalPages Int
+  currentPosition String
+  percentComplete Float [not null, default: 0]
+  totalReadingTime Int [not null, default: 0]
+  lastReadAt DateTime [default: `now()`, not null]
+  startedAt DateTime [default: `now()`, not null]
+  completedAt DateTime
+  isCompleted Boolean [not null, default: false]
+  notes String[] [not null]
+  user users [not null]
+  story stories [not null]
+
+  indexes {
+    (userId, storyId) [unique]
+  }
+}
+
+Table bookmarks {
+  id String [pk]
+  userId String [not null]
+  storyId String [not null]
+  chapterId Int
+  position String
+  note String
+  color String
+  user users [not null]
+  story stories [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, storyId) [unique]
+  }
+}
+
+Table reading_lists {
+  id String [pk]
+  userId String [not null]
+  name String [not null]
+  description String
+  isPublic Boolean [not null, default: false]
+  storyIds String[] [not null]
+  user users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table classes {
+  id String [pk]
+  code String [unique, not null]
+  name String [not null]
+  description String
+  teacherId String [not null]
+  schoolId String
+  subject String [not null]
+  gradeLevel String [not null]
+  schedule Json [not null]
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  maxStudents Int [not null, default: 30]
+  isActive Boolean [not null, default: true]
+  settings Json [not null]
+  teacher users [not null]
+  school schools
+  enrollments class_enrollments [not null]
+  assignments assignments [not null]
+  lessons lessons [not null]
+  resources class_resources [not null]
+  announcements class_announcements [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table class_enrollments {
+  id String [pk]
+  classId String [not null]
+  studentId String [not null]
+  enrolledAt DateTime [default: `now()`, not null]
+  status EnrollmentStatus [not null, default: 'ACTIVE']
+  grade String
+  attendance Float [not null, default: 100]
+  progress Float [not null, default: 0]
+  class classes [not null]
+  student users [not null]
+
+  indexes {
+    (classId, studentId) [unique]
+  }
+}
+
+Table assignments {
+  id String [pk]
+  classId String [not null]
+  title String [not null]
+  description String [not null]
+  type AssignmentType [not null]
+  dueDate DateTime [not null]
+  points Int [not null, default: 100]
+  resources String[] [not null]
+  requirements Json [not null]
+  class classes [not null]
+  submissions submissions [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table submissions {
+  id String [pk]
+  assignmentId String [not null]
+  studentId String [not null]
+  submittedAt DateTime [default: `now()`, not null]
+  content String
+  attachments String[] [not null]
+  grade Float
+  feedback String
+  status SubmissionStatus [not null, default: 'DRAFT']
+  assignment assignments [not null]
+  student users [not null]
+
+  indexes {
+    (assignmentId, studentId) [unique]
+  }
+}
+
+Table lessons {
+  id String [pk]
+  classId String [not null]
+  lessonNumber Int [not null]
+  title String [not null]
+  objectives String[] [not null]
+  content String [not null]
+  resources Json [not null]
+  duration Int [not null]
+  class classes [not null]
+  progress lesson_progress [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (classId, lessonNumber) [unique]
+  }
+}
+
+Table lesson_progress {
+  id String [pk]
+  lessonId String [not null]
+  studentId String [not null]
+  startedAt DateTime [default: `now()`, not null]
+  completedAt DateTime
+  timeSpent Int [not null, default: 0]
+  score Float
+  lesson lessons [not null]
+  student users [not null]
+
+  indexes {
+    (lessonId, studentId) [unique]
+  }
+}
+
+Table class_resources {
+  id String [pk]
+  classId String [not null]
+  title String [not null]
+  description String
+  type ResourceType [not null]
+  url String [not null]
+  size Int
+  class classes [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table class_announcements {
+  id String [pk]
+  classId String [not null]
+  title String [not null]
+  content String [not null]
+  priority AnnouncementPriority [not null, default: 'NORMAL']
+  class classes [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table schools {
+  id String [pk]
+  name String [not null]
+  type SchoolType [not null]
+  address Json [not null]
+  country String [not null]
+  phone String
+  email String
+  website String
+  principalName String
+  studentCount Int [not null, default: 0]
+  teacherCount Int [not null, default: 0]
+  establishedYear Int
+  accreditation String[] [not null]
+  partneredAt DateTime [default: `now()`, not null]
+  status SchoolStatus [not null, default: 'PENDING']
+  users users [not null]
+  classes classes [not null]
+  budgets budgets [not null]
+  resources school_resources [not null]
+  volunteerAssignments school_volunteers [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table budgets {
+  id String [pk]
+  schoolId String [not null]
+  year Int [not null]
+  totalBudget Decimal [not null]
+  allocatedBudget Decimal [not null, default: 0]
+  spentBudget Decimal [not null, default: 0]
+  categories Json [not null]
+  school schools [not null]
+  items budget_items [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (schoolId, year) [unique]
+  }
+}
+
+Table budget_items {
+  id String [pk]
+  budgetId String [not null]
+  category String [not null]
+  description String [not null]
+  amount Decimal [not null]
+  spent Decimal [not null, default: 0]
+  vendor String
+  approvedBy String
+  approvedAt DateTime
+  budget budgets [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table school_resources {
+  id String [pk]
+  schoolId String [not null]
+  type SchoolResourceType [not null]
+  name String [not null]
+  quantity Int [not null, default: 1]
+  condition String
+  location String
+  purchaseDate DateTime
+  value Decimal
+  school schools [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table school_volunteers {
+  id String [pk]
+  schoolId String [not null]
+  volunteerId String [not null]
+  role String [not null]
+  startDate DateTime [not null]
+  endDate DateTime
+  isActive Boolean [not null, default: true]
+  school schools [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (schoolId, volunteerId) [unique]
+  }
+}
+
+Table volunteer_projects {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  type VolunteerType [not null]
+  skills String[] [not null]
+  location String [not null]
+  timeCommitment String [not null]
+  startDate DateTime [not null]
+  endDate DateTime
+  maxVolunteers Int [not null]
+  currentVolunteers Int [not null, default: 0]
+  status ProjectStatus [not null, default: 'OPEN']
+  impact String [not null]
+  coordinatorId String [not null]
+  coordinator users [not null]
+  applications volunteer_applications [not null]
+  hours volunteer_hours [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table volunteer_applications {
+  id String [pk]
+  projectId String
+  questId String
+  volunteerId String [not null]
+  volunteerUserId String [not null]
+  motivation String [not null]
+  experience String [not null]
+  availability String [not null]
+  coverLetter String
+  status ApplicationStatus [not null, default: 'PENDING']
+  reviewedBy String
+  reviewedAt DateTime
+  notes String
+  rejectionReason String
+  matchScore Float
+  isRecommended Boolean [not null, default: false]
+  selectionReason String
+  project volunteer_projects
+  quest quests
+  volunteer users [not null]
+  volunteerProfile volunteer_profiles [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (projectId, volunteerId) [unique]
+    (questId, volunteerId) [unique]
+  }
+}
+
+Table volunteer_hours {
+  id String [pk]
+  volunteerId String [not null]
+  projectId String [not null]
+  date DateTime [not null]
+  hours Float [not null]
+  activity String [not null]
+  impact String
+  verified Boolean [not null, default: false]
+  verifiedBy String
+  verifiedAt DateTime
+  volunteer users [not null]
+  project volunteer_projects [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table volunteer_certificates {
+  id String [pk]
+  volunteerId String [not null]
+  type CertificateType [not null]
+  title String [not null]
+  description String [not null]
+  hoursContributed Float [not null]
+  projectCount Int [not null]
+  issuedDate DateTime [default: `now()`, not null]
+  certificateUrl String
+  volunteer users [not null]
+}
+
+Table donations {
+  id String [pk]
+  donorId String
+  campaignId String
+  amount Decimal [not null]
+  currency String [not null, default: 'USD']
+  type DonationType [not null, default: 'ONE_TIME']
+  paymentMethod String
+  stripePaymentId String
+  anonymous Boolean [not null, default: false]
+  donorName String
+  donorEmail String [not null]
+  message String
+  taxDeductible Boolean [not null, default: true]
+  receiptUrl String
+  status DonationStatus [not null, default: 'PENDING']
+  donor users
+  campaign donation_campaigns
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table donation_campaigns {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  goal Decimal [not null]
+  raised Decimal [not null, default: 0]
+  currency String [not null, default: 'USD']
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  category String [not null]
+  beneficiary String [not null]
+  impactStatement String [not null]
+  images String[] [not null]
+  videoUrl String
+  status CampaignStatus [not null, default: 'DRAFT']
+  featured Boolean [not null, default: false]
+  donations donations [not null]
+  updates campaign_updates [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table campaign_updates {
+  id String [pk]
+  campaignId String [not null]
+  title String [not null]
+  content String [not null]
+  images String[] [not null]
+  campaign donation_campaigns [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table recurring_donations {
+  id String [pk]
+  donorId String [not null]
+  amount Decimal [not null]
+  currency String [not null, default: 'USD']
+  frequency DonationFrequency [not null, default: 'MONTHLY']
+  dayOfMonth Int
+  stripeSubscriptionId String [unique]
+  status RecurringStatus [not null, default: 'ACTIVE']
+  startDate DateTime [default: `now()`, not null]
+  pausedAt DateTime
+  cancelledAt DateTime
+  totalContributed Decimal [not null, default: 0]
+  lastPaymentDate DateTime
+  nextPaymentDate DateTime
+  donor users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table story_submissions {
+  id String [pk]
+  authorId String [not null]
+  title String [not null]
+  content String [not null]
+  summary String
+  language String [not null]
+  category String [not null]
+  ageGroup String [not null]
+  status StorySubmissionStatus [not null, default: 'DRAFT']
+  priority Priority [not null, default: 'MEDIUM']
+  reviewerId String
+  assigneeId String
+  dueDate DateTime
+  reviewNotes String
+  editorialNotes String
+  publishDate DateTime
+  compensation Decimal
+  tags String[] [not null]
+  coverImageId String
+  attachments String[] [not null]
+  author users [not null]
+  coverImage media_files
+  workflowHistory workflow_history [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table translations {
+  id String [pk]
+  storyId String [not null]
+  translatorId String [not null]
+  fromLanguage String [not null]
+  toLanguage String [not null]
+  title String [not null]
+  content String [not null]
+  status TranslationStatus [not null, default: 'IN_PROGRESS']
+  qualityScore Float
+  reviewerId String
+  reviewNotes String
+  story stories [not null]
+  translator users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (storyId, toLanguage) [unique]
+  }
+}
+
+Table illustrations {
+  id String [pk]
+  storyId String [not null]
+  artistId String [not null]
+  title String [not null]
+  description String
+  fileUrl String [not null]
+  thumbnailUrl String
+  position Int
+  status IllustrationStatus [not null, default: 'DRAFT']
+  compensation Decimal
+  license String [not null]
+  artist users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table reviews {
+  id String [pk]
+  userId String [not null]
+  contentType ContentType [not null]
+  contentId String [not null]
+  rating Int [not null]
+  title String
+  comment String
+  helpful Int [not null, default: 0]
+  verified Boolean [not null, default: false]
+  user users [not null]
+  product products
+  story stories
+  book books
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (userId, contentType, contentId) [unique]
+  }
+}
+
+Table notifications {
+  id String [pk]
+  userId String [not null]
+  type NotificationType [not null]
+  title String [not null]
+  message String [not null]
+  data Json
+  read Boolean [not null, default: false]
+  readAt DateTime
+  user users [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table activity_logs {
+  id String [pk]
+  userId String [not null]
+  action String [not null]
+  entity String [not null]
+  entityId String [not null]
+  metadata Json
+  ipAddress String
+  userAgent String
+  user users [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table media_files {
+  id String [pk]
+  filename String [not null]
+  originalName String [not null]
+  mimeType String [not null]
+  size Int [not null]
+  url String [not null]
+  thumbnailUrl String
+  altText String
+  description String
+  width Int
+  height Int
+  format String
+  folder String [not null, default: '/']
+  tags String[] [not null]
+  uploadedById String [not null]
+  uploadedBy users [not null]
+  storySubmissions story_submissions [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table workflow_history {
+  id String [pk]
+  storySubmissionId String [not null]
+  fromStatus StorySubmissionStatus
+  toStatus StorySubmissionStatus [not null]
+  comment String
+  performedById String [not null]
+  metadata Json
+  storySubmission story_submissions [not null]
+  performedBy users [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table bulk_imports {
+  id String [pk]
+  filename String [not null]
+  originalName String [not null]
+  fileUrl String [not null]
+  type ImportType [not null]
+  status ImportStatus [not null, default: 'PENDING']
+  totalRows Int [not null, default: 0]
+  processedRows Int [not null, default: 0]
+  successfulRows Int [not null, default: 0]
+  errorRows Int [not null, default: 0]
+  errors Json
+  summary Json
+  uploadedById String [not null]
+  uploadedBy users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table onboarding_progress {
+  id String [pk]
+  userId String [unique, not null]
+  currentStep OnboardingStep [not null, default: 'WELCOME']
+  completionRate Float [not null, default: 0]
+  samplesViewed Int [not null, default: 0]
+  tutorialCompleted Boolean [not null, default: false]
+  lastActivity DateTime [default: `now()`, not null]
+  isCompleted Boolean [not null, default: false]
+  user users [not null]
+  activities onboarding_activities [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table onboarding_activities {
+  id String [pk]
+  progressId String [not null]
+  activityType ActivityType [not null]
+  contentId String
+  timeSpent Int [not null, default: 0]
+  isCompleted Boolean [not null, default: false]
+  interactionData Json
+  progress onboarding_progress [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table sample_content_access {
+  id String [pk]
+  userId String [not null]
+  storyId String [not null]
+  viewCount Int [not null, default: 0]
+  totalTimeSpent Int [not null, default: 0]
+  lastAccessed DateTime [default: `now()`, not null]
+  user users [not null]
+  story stories [not null]
+
+  indexes {
+    (userId, storyId) [unique]
+  }
+}
+
+Table welcome_messages {
+  id String [pk]
+  messageType WelcomeType [not null]
+  language String [not null, default: 'ko']
+  content String [not null]
+  isActive Boolean [not null, default: true]
+  priority Int [not null, default: 1]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table volunteer_profiles {
+  id String [pk]
+  userId String [unique, not null]
+  languages String[] [not null]
+  languageLevels Json [not null]
+  skills String[] [not null]
+  qualifications String[] [not null]
+  experience String
+  portfolio String
+  timezone String [not null, default: 'UTC']
+  availableSlots Json [not null]
+  maxHoursPerWeek Int [not null, default: 10]
+  remoteOnly Boolean [not null, default: true]
+  preferredTypes VolunteerType[] [not null]
+  verificationStatus VerificationStatus [not null, default: 'PENDING']
+  backgroundCheck Boolean [not null, default: false]
+  documentUrl String
+  verifiedAt DateTime
+  verifiedById String
+  totalHours Float [not null, default: 0]
+  totalPoints Int [not null, default: 0]
+  currentLevel VolunteerLevel [not null, default: 'BRONZE']
+  rating Float [not null, default: 5]
+  reliability Float [not null, default: 100]
+  isMentor Boolean [not null, default: false]
+  mentorLevel MentorLevel
+  canAcceptMentees Boolean [not null, default: false]
+  maxMentees Int [not null, default: 0]
+  user users [not null]
+  applications volunteer_applications [not null]
+  assignments quest_assignments [not null]
+  evidenceRecords volunteer_evidence [not null]
+  pointHistory volunteer_points [not null]
+  redemptions volunteer_redemptions [not null]
+  mentorships mentor_relations [not null]
+  mentorees mentor_relations [not null]
+  matchScores volunteer_matches [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table quests {
+  id String [pk]
+  title String [not null]
+  description String [not null]
+  type VolunteerType [not null]
+  category QuestCategory [not null, default: 'EDUCATION']
+  difficulty DifficultyLevel [not null, default: 'BEGINNER']
+  requiredSkills String[] [not null]
+  requiredLanguages String[] [not null]
+  minimumLevel VolunteerLevel [not null, default: 'BRONZE']
+  experienceRequired Boolean [not null, default: false]
+  startDate DateTime [not null]
+  endDate DateTime
+  duration Int [not null]
+  isRecurring Boolean [not null, default: false]
+  recurringPattern String
+  timezone String [not null, default: 'UTC']
+  timeSlots Json [not null]
+  maxVolunteers Int [not null, default: 1]
+  currentVolunteers Int [not null, default: 0]
+  urgency UrgencyLevel [not null, default: 'MEDIUM']
+  priority Int [not null, default: 1]
+  pointsReward Int [not null, default: 10]
+  additionalRewards String[] [not null]
+  location String [not null, default: 'Remote']
+  materials String[] [not null]
+  targetAudience String
+  expectedImpact String
+  creatorId String [not null]
+  createdByRole UserRole [not null, default: 'ADMIN']
+  approvalRequired Boolean [not null, default: false]
+  isApproved Boolean [not null, default: true]
+  approvedById String
+  approvedAt DateTime
+  status QuestStatus [not null, default: 'OPEN']
+  isActive Boolean [not null, default: true]
+  isFeatured Boolean [not null, default: false]
+  creator users [not null]
+  applications volunteer_applications [not null]
+  assignments quest_assignments [not null]
+  evidenceRecords volunteer_evidence [not null]
+  reviews quest_reviews [not null]
+  matches volunteer_matches [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table quest_assignments {
+  id String [pk]
+  questId String [not null]
+  volunteerId String [not null]
+  assignedAt DateTime [default: `now()`, not null]
+  startedAt DateTime
+  completedAt DateTime
+  status AssignmentStatus [not null, default: 'ASSIGNED']
+  hoursLogged Float [not null, default: 0]
+  progressPercent Int [not null, default: 0]
+  qualityScore Float
+  volunteerNotes String
+  supervisorNotes String
+  finalFeedback String
+  rating Int
+  quest quests [not null]
+  volunteer volunteer_profiles [not null]
+  evidenceRecords volunteer_evidence [not null]
+
+  indexes {
+    (questId, volunteerId) [unique]
+  }
+}
+
+Table volunteer_evidence {
+  id String [pk]
+  assignmentId String [not null]
+  volunteerId String [not null]
+  questId String [not null]
+  type EvidenceType [not null]
+  title String [not null]
+  description String
+  fileUrls String[] [not null]
+  metadata Json
+  status EvidenceStatus [not null, default: 'PENDING']
+  submittedAt DateTime [default: `now()`, not null]
+  reviewedAt DateTime
+  reviewerId String
+  reviewNotes String
+  hoursSubmitted Float [not null]
+  hoursApproved Float [not null, default: 0]
+  pointsAwarded Int [not null, default: 0]
+  autoVerified Boolean [not null, default: false]
+  verificationScore Float
+  assignment quest_assignments [not null]
+  volunteer volunteer_profiles [not null]
+  quest quests [not null]
+  reviewer users
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table volunteer_points {
+  id String [pk]
+  volunteerId String [not null]
+  type PointTransactionType [not null]
+  amount Int [not null]
+  reason String [not null]
+  description String
+  referenceId String
+  referenceType String
+  balanceAfter Int [not null]
+  metadata Json
+  issuedById String
+  volunteer volunteer_profiles [not null]
+  issuedBy users
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table volunteer_rewards {
+  id String [pk]
+  name String [not null]
+  description String [not null]
+  type RewardType [not null]
+  category RewardCategory [not null, default: 'DIGITAL']
+  pointsCost Int [not null]
+  levelRequired VolunteerLevel [not null, default: 'BRONZE']
+  maxRedemptions Int
+  currentRedemptions Int [not null, default: 0]
+  value String
+  imageUrl String
+  terms String
+  isActive Boolean [not null, default: true]
+  validFrom DateTime [default: `now()`, not null]
+  validUntil DateTime
+  redemptions volunteer_redemptions [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table volunteer_redemptions {
+  id String [pk]
+  volunteerId String [not null]
+  rewardId String [not null]
+  pointsUsed Int [not null]
+  status RedemptionStatus [not null, default: 'PENDING']
+  fulfilledAt DateTime
+  fulfilledById String
+  fulfillmentNotes String
+  trackingInfo String
+  deliveryMethod String
+  recipientEmail String
+  shippingAddress Json
+  volunteer volunteer_profiles [not null]
+  reward volunteer_rewards [not null]
+  fulfilledBy users
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table mentor_relations {
+  id String [pk]
+  mentorId String [not null]
+  menteeId String [not null]
+  status MentorshipStatus [not null, default: 'ACTIVE']
+  startDate DateTime [default: `now()`, not null]
+  endDate DateTime
+  goals String[] [not null]
+  progress Json
+  meetingSchedule String
+  lastMeeting DateTime
+  nextMeeting DateTime
+  mentorNotes String
+  menteeNotes String
+  adminNotes String
+  mentor volunteer_profiles [not null]
+  mentee volunteer_profiles [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (mentorId, menteeId) [unique]
+  }
+}
+
+Table volunteer_matches {
+  id String [pk]
+  volunteerId String [not null]
+  questId String [not null]
+  overallScore Float [not null]
+  languageScore Float [not null, default: 0]
+  skillScore Float [not null, default: 0]
+  availabilityScore Float [not null, default: 0]
+  experienceScore Float [not null, default: 0]
+  locationScore Float [not null, default: 0]
+  reasons String[] [not null]
+  concerns String[] [not null]
+  confidence Float [not null, default: 0]
+  isRecommended Boolean [not null, default: false]
+  wasSelected Boolean [not null, default: false]
+  selectionReason String
+  volunteer volunteer_profiles [not null]
+  quest quests [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (volunteerId, questId) [unique]
+  }
+}
+
+Table quest_reviews {
+  id String [pk]
+  questId String [not null]
+  reviewerId String [not null]
+  reviewerRole UserRole [not null]
+  rating Int [not null]
+  title String
+  content String [not null]
+  difficultyRating Int
+  clarityRating Int
+  supportRating Int
+  wouldRecommend Boolean [not null, default: true]
+  improvementSuggestions String
+  quest quests [not null]
+  reviewer users [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table user_deletion_requests {
+  id String [pk]
+  userId String [unique, not null]
+  status DeletionStatus [not null, default: 'PENDING']
+  deletionReason String
+  parentalConsentRequired Boolean [not null, default: false]
+  parentalConsentVerified Boolean [not null, default: false]
+  parentConfirmationToken String [unique]
+  parentConfirmationSentAt DateTime
+  parentConfirmationExpiry DateTime
+  softDeletedAt DateTime
+  hardDeletedAt DateTime
+  recoveryDeadline DateTime
+  requestSource String [not null, default: 'self_service']
+  ipAddress String
+  userAgent String
+  additionalContext Json
+  reviewRequired Boolean [not null, default: false]
+  reviewedBy String
+  reviewedAt DateTime
+  reviewNotes String
+  finalConfirmationToken String [unique]
+  finalConfirmationSentAt DateTime
+  finalConfirmationExpiry DateTime
+  user users [not null]
+  auditLogs deletion_audit_logs [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table deletion_audit_logs {
+  id String [pk]
+  deletionRequestId String [not null]
+  action DeletionAction [not null]
+  performedBy String
+  performedByRole UserRole
+  performedByType ActorType [not null, default: 'SYSTEM']
+  tableName String
+  recordId String
+  recordCount Int
+  previousStatus DeletionStatus
+  newStatus DeletionStatus
+  actionDetails String
+  metadata Json
+  ipAddress String
+  userAgent String
+  sessionId String
+  dataAnonymized Boolean [not null, default: false]
+  anonymizedFields String[] [not null]
+  dataBackedUp Boolean [not null, default: false]
+  backupLocation String
+  deletionRequest user_deletion_requests [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table anonymization_logs {
+  id String [pk]
+  tableName String [not null]
+  recordId String [not null]
+  anonymizedFields Json [not null]
+  retainedFields Json
+  anonymizationMethod String [not null]
+  retentionReason String
+  retentionPeriod String
+  legalBasis String
+  processedBy String
+  processingJobId String
+  verificationHash String
+  reversible Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (tableName, recordId) [unique]
+  }
+}
+
+Table books {
+  id String [pk]
+  title String [not null]
+  subtitle String
+  summary String
+  authorName String [not null]
+  authorAlias String
+  authorAge Int
+  authorLocation String
+  coAuthors String[] [not null]
+  language String [not null, default: 'en']
+  ageRange String
+  readingLevel String
+  category String[] [not null]
+  genres String[] [not null]
+  subjects String[] [not null]
+  tags String[] [not null]
+  coverImage String
+  pdfKey String
+  pdfFrontCover String
+  pdfBackCover String
+  pageLayout String [not null, default: 'single']
+  pageCount Int
+  previewPages Int [not null, default: 10]
+  thumbnails Json
+  thumbnailGeneratedAt DateTime
+  thumbnailConfig Json
+  drm Json
+  downloadAllowed Boolean [not null, default: false]
+  printAllowed Boolean [not null, default: false]
+  isPublished Boolean [not null, default: false]
+  publishedAt DateTime
+  featured Boolean [not null, default: false]
+  isPremium Boolean [not null, default: false]
+  price Decimal
+  currency String [not null, default: 'USD']
+  visibility BookVisibility [not null, default: 'PUBLIC']
+  viewCount Int [not null, default: 0]
+  downloadCount Int [not null, default: 0]
+  rating Float
+  entitlements entitlements [not null]
+  publications publications [not null]
+  shopProducts shop_products [not null]
+  reviews reviews [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table volunteer_submissions {
+  id String [pk]
+  volunteerId String [not null]
+  projectId String
+  type VolunteerSubmissionType [not null, default: 'PDF_UPLOAD']
+  pdfRef String
+  originalName String
+  fileSize Int
+  title String [not null]
+  authorAlias String [not null]
+  language String [not null, default: 'en']
+  ageRange String
+  category String[] [not null]
+  tags String[] [not null]
+  summary String [not null]
+  visibility ContentVisibility [not null, default: 'PUBLIC']
+  targetAudience String
+  copyrightConfirmed Boolean [not null, default: false]
+  portraitRightsConfirmed Boolean [not null, default: false]
+  originalWork Boolean [not null, default: true]
+  licenseType String
+  status VolunteerSubmissionStatus [not null, default: 'SUBMITTED']
+  priority Priority [not null, default: 'MEDIUM']
+  reviewerId String
+  assigneeId String
+  dueDate DateTime
+  reviewNotes String
+  rejectionReason String
+  publishDate DateTime
+  compensation Decimal
+  volunteer users [not null]
+  reviewer users
+  assignee users
+  publications publications [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table entitlements {
+  id String [pk]
+  userId String
+  email String
+  bookId String
+  storyId String
+  orderId String
+  subscriptionId String
+  licenseId String
+  grantReason String
+  type EntitlementType [not null, default: 'PURCHASE']
+  scope EntitlementScope [not null, default: 'BOOK']
+  grantedAt DateTime [default: `now()`, not null]
+  expiresAt DateTime
+  isActive Boolean [not null, default: true]
+  activatedAt DateTime
+  lastAccessedAt DateTime
+  accessCount Int [not null, default: 0]
+  downloadCount Int [not null, default: 0]
+  maxDownloads Int
+  ipRestrictions String[] [not null]
+  user users
+  book books
+  story stories
+  order orders
+  subscription subscriptions
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table publications {
+  id String [pk]
+  bookId String
+  storyId String
+  submissionId String
+  visibility ContentVisibility [not null, default: 'PUBLIC']
+  isPremium Boolean [not null, default: false]
+  unlockPolicy UnlockPolicy [not null, default: 'PURCHASE']
+  price Decimal
+  currency String [not null, default: 'USD']
+  version Int [not null, default: 1]
+  changelog String
+  status PublicationStatus [not null, default: 'DRAFT']
+  publishedAt DateTime
+  publishedBy String [not null]
+  featured Boolean [not null, default: false]
+  category String[] [not null]
+  tags String[] [not null]
+  sortOrder Int [not null, default: 0]
+  book books
+  story stories
+  submission volunteer_submissions
+  publisher users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table shop_products {
+  id String [pk]
+  sku String [unique, not null]
+  type ShopProductType [not null, default: 'DIGITAL_BOOK']
+  title String [not null]
+  description String [not null]
+  shortDescription String
+  price Decimal [not null]
+  compareAtPrice Decimal
+  currency String [not null, default: 'USD']
+  bookId String
+  storyId String
+  downloadLimit Int
+  accessDuration Int
+  bundleItems String[] [not null]
+  bundleDiscount Decimal
+  category String[] [not null]
+  tags String[] [not null]
+  featured Boolean [not null, default: false]
+  images String[] [not null]
+  thumbnailUrl String
+  demoUrl String
+  creatorName String
+  creatorAge Int
+  creatorLocation String
+  creatorStory String
+  impactMetric String
+  impactValue String
+  status ShopProductStatus [not null, default: 'ACTIVE']
+  availableFrom DateTime
+  availableUntil DateTime
+  maxQuantity Int
+  metaTitle String
+  metaDescription String
+  marketingTags String[] [not null]
+  book books
+  story stories
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table user_feedback {
+  id String [pk]
+  userId String
+  sessionId String
+  email String
+  feedbackType FeedbackType [not null, default: 'GENERAL']
+  category FeedbackCategory [not null, default: 'UX_FEEDBACK']
+  page String
+  userAgent String
+  viewport String
+  rating Int
+  title String
+  message String [not null]
+  sentiment SentimentType
+  userRole UserRole
+  previousRole UserRole
+  migrationDate DateTime
+  sessionDuration Int
+  clickPath Json
+  scrollBehavior Json
+  timeOnPage Int
+  exitIntent Boolean [not null, default: false]
+  bugReport Boolean [not null, default: false]
+  reproducible Boolean
+  severity FeedbackSeverity [not null, default: 'LOW']
+  screenshotUrl String
+  isResolved Boolean [not null, default: false]
+  responseDate DateTime
+  respondedBy String
+  resolution String
+  tags String[] [not null]
+  priority Priority [not null, default: 'LOW']
+  user users
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table micro_surveys {
+  id String [pk]
+  name String [not null]
+  description String
+  trigger SurveyTrigger [not null, default: 'PAGE_LOAD']
+  targetPage String
+  targetRole UserRole[] [not null]
+  frequency SurveyFrequency [not null, default: 'ONCE']
+  displayType SurveyDisplayType [not null, default: 'MODAL']
+  position String [not null, default: 'bottom-right']
+  delay Int [not null, default: 5000]
+  questions Json [not null]
+  startDate DateTime [not null]
+  endDate DateTime
+  isActive Boolean [not null, default: true]
+  impressions Int [not null, default: 0]
+  responseCount Int [not null, default: 0]
+  completionRate Float [not null, default: 0]
+  responses survey_responses [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table survey_responses {
+  id String [pk]
+  surveyId String [not null]
+  userId String
+  sessionId String
+  answers Json [not null]
+  completionTime Int [not null]
+  isComplete Boolean [not null, default: true]
+  userRole UserRole
+  page String
+  userAgent String
+  survey micro_surveys [not null]
+  user users
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table user_analytics {
+  id String [pk]
+  userId String
+  sessionId String [unique, not null]
+  userRole UserRole
+  isNewUser Boolean [not null, default: false]
+  migrationDate DateTime
+  sessionStart DateTime [default: `now()`, not null]
+  sessionEnd DateTime
+  totalDuration Int [not null, default: 0]
+  pageViews Int [not null, default: 0]
+  clickCount Int [not null, default: 0]
+  scrollDepth Float [not null, default: 0]
+  landingPage String
+  exitPage String
+  pageSequence Json
+  featuresUsed String[] [not null]
+  actionsPerformed Json
+  errorsEncountered String[] [not null]
+  userAgent String
+  deviceType String
+  browserName String
+  operatingSystem String
+  screenResolution String
+  engagementScore Float [not null, default: 0]
+  bounceRate Boolean [not null, default: false]
+  returnVisitor Boolean [not null, default: false]
+  user users
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table ab_test_participants {
+  id String [pk]
+  userId String
+  sessionId String [not null]
+  testName String [not null]
+  variant String [not null]
+  userRole UserRole
+  assignedAt DateTime [default: `now()`, not null]
+  primaryGoal String
+  goalAchieved Boolean [not null, default: false]
+  goalAchievedAt DateTime
+  conversionValue Float
+  secondaryGoals Json
+  user users
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (testName, sessionId) [unique]
+  }
+}
+
+Table role_migrations {
+  id String [pk]
+  userId String [not null]
+  fromRole UserRole [not null]
+  toRole UserRole [not null]
+  migrationType MigrationType [not null, default: 'SYSTEM_MIGRATION']
+  migrationReason String
+  initiatedAt DateTime [default: `now()`, not null]
+  completedAt DateTime
+  status MigrationStatus [not null, default: 'IN_PROGRESS']
+  notificationSent Boolean [not null, default: false]
+  userAcknowledged Boolean [not null, default: false]
+  helpDocViewed Boolean [not null, default: false]
+  supportContacted Boolean [not null, default: false]
+  satisfactionRating Int
+  feedbackProvided Boolean [not null, default: false]
+  issuesReported String[] [not null]
+  preFeatureUsage Json
+  postFeatureUsage Json
+  adaptationPeriod Int
+  user users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table feature_usage {
+  id String [pk]
+  userId String
+  sessionId String
+  featureName String [not null]
+  featureCategory String
+  accessCount Int [not null, default: 1]
+  totalTimeSpent Int [not null, default: 0]
+  avgTimePerAccess Float [not null, default: 0]
+  lastAccessed DateTime [default: `now()`, not null]
+  userRole UserRole
+  deviceType String
+  taskCompleted Boolean [not null, default: false]
+  errorEncountered Boolean [not null, default: false]
+  helpSought Boolean [not null, default: false]
+  user users
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, sessionId, featureName) [unique]
+  }
+}
+
+Enum UserRole {
+  CUSTOMER
+  LEARNER
+  TEACHER
+  INSTITUTION
+  VOLUNTEER
+  ADMIN
+}
+
+Enum SubscriptionPlan {
+  FREE
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+Enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PAST_DUE
+  TRIALING
+}
+
+Enum ProductType {
+  PHYSICAL_BOOK
+  DIGITAL_BOOK
+  MERCHANDISE
+  ARTWORK
+  DONATION_ITEM
+}
+
+Enum ProductStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVED
+}
+
+Enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+Enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+Enum FulfillmentStatus {
+  UNFULFILLED
+  PARTIALLY_FULFILLED
+  FULFILLED
+  CANCELLED
+}
+
+Enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  DROPPED
+  SUSPENDED
+}
+
+Enum AssignmentType {
+  READING
+  WRITING
+  PROJECT
+  QUIZ
+  PRESENTATION
+  GROUP_WORK
+}
+
+Enum SubmissionStatus {
+  DRAFT
+  SUBMITTED
+  GRADED
+  RETURNED
+  LATE
+}
+
+Enum ResourceType {
+  DOCUMENT
+  VIDEO
+  AUDIO
+  IMAGE
+  LINK
+  PRESENTATION
+}
+
+Enum AnnouncementPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+Enum SchoolType {
+  PRIMARY
+  SECONDARY
+  HIGH_SCHOOL
+  UNIVERSITY
+  VOCATIONAL
+  SPECIAL_EDUCATION
+}
+
+Enum SchoolStatus {
+  ACTIVE
+  PENDING
+  INACTIVE
+  SUSPENDED
+}
+
+Enum SchoolResourceType {
+  BOOK
+  COMPUTER
+  TABLET
+  SUPPLIES
+  EQUIPMENT
+  FURNITURE
+  SOFTWARE
+}
+
+Enum VolunteerType {
+  TRANSLATION
+  ILLUSTRATION
+  TEACHING
+  CONTENT_CREATION
+  TECHNICAL
+  ADMINISTRATIVE
+  FUNDRAISING
+  OTHER
+}
+
+Enum ProjectStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+Enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+Enum CertificateType {
+  PARTICIPATION
+  ACHIEVEMENT
+  MILESTONE
+  EXCELLENCE
+  LEADERSHIP
+}
+
+Enum DonationType {
+  ONE_TIME
+  RECURRING
+  PLEDGE
+}
+
+Enum DonationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+Enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  PAUSED
+}
+
+Enum DonationFrequency {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+Enum RecurringStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  FAILED
+}
+
+Enum StorySubmissionStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  REJECTED
+}
+
+Enum TranslationStatus {
+  IN_PROGRESS
+  REVIEW
+  APPROVED
+  PUBLISHED
+  REJECTED
+}
+
+Enum IllustrationStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  PUBLISHED
+  REJECTED
+}
+
+Enum ContentType {
+  BOOK
+  PRODUCT
+  STORY
+  COURSE
+}
+
+Enum NotificationType {
+  SYSTEM
+  ORDER
+  ASSIGNMENT
+  CLASS
+  DONATION
+  VOLUNTEER
+  ACHIEVEMENT
+}
+
+Enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+Enum ImportType {
+  STORIES
+  TRANSLATIONS
+  USERS
+  MEDIA
+}
+
+Enum ImportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+Enum OnboardingStep {
+  WELCOME
+  TUTORIAL
+  SAMPLE_STORIES
+  PREPARATION
+  COMMUNITY
+  COMPLETED
+}
+
+Enum ActivityType {
+  STORY_VIEW
+  TUTORIAL_STEP
+  COMMUNITY_POST
+  PREPARATION_TASK
+  BADGE_EARNED
+}
+
+Enum WelcomeType {
+  BRIEF
+  FRIENDLY
+  FORMAL
+  APPROVAL_PENDING
+  APPROVAL_APPROVED
+  APPROVAL_REJECTED
+  RESUBMISSION_REQUIRED
+}
+
+Enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+Enum VolunteerLevel {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+Enum MentorLevel {
+  JUNIOR_MENTOR
+  SENIOR_MENTOR
+  LEAD_MENTOR
+  MASTER_MENTOR
+}
+
+Enum QuestCategory {
+  EDUCATION
+  TRANSLATION
+  CONTENT_CREATION
+  COMMUNITY
+  TECHNICAL
+  ADMINISTRATIVE
+  SPECIAL_EVENTS
+}
+
+Enum QuestStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  PAUSED
+}
+
+Enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+Enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+Enum AssignmentStatus {
+  ASSIGNED
+  STARTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+Enum EvidenceType {
+  TIME_LOG
+  PHOTO
+  VIDEO
+  DOCUMENT
+  LINK
+  SCREENSHOT
+  RECORDING
+  OTHER
+}
+
+Enum EvidenceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_REVISION
+}
+
+Enum PointTransactionType {
+  EARNED_QUEST
+  EARNED_BONUS
+  EARNED_REFERRAL
+  SPENT_REWARD
+  PENALTY
+  ADJUSTMENT
+  REFUND
+}
+
+Enum RewardType {
+  DIGITAL_GOOD
+  PHYSICAL_GOOD
+  EXPERIENCE
+  RECOGNITION
+  ACCESS_PRIVILEGE
+  DONATION
+  CREDIT
+}
+
+Enum RewardCategory {
+  DIGITAL
+  PHYSICAL
+  EXPERIENCE
+  EDUCATION
+  RECOGNITION
+}
+
+Enum RedemptionStatus {
+  PENDING
+  PROCESSING
+  FULFILLED
+  CANCELLED
+  FAILED
+}
+
+Enum MentorshipStatus {
+  REQUESTED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+Enum AgeVerificationStatus {
+  PENDING
+  VERIFIED_ADULT
+  VERIFIED_MINOR
+  FAILED
+}
+
+Enum ParentalConsentStatus {
+  NOT_REQUIRED
+  PENDING
+  GRANTED
+  DENIED
+  EXPIRED
+}
+
+Enum DeletionStatus {
+  PENDING
+  PARENTAL_CONSENT_REQUIRED
+  PARENTAL_CONSENT_PENDING
+  REVIEW_REQUIRED
+  CONFIRMED
+  SOFT_DELETED
+  HARD_DELETED
+  CANCELLED
+  RECOVERED
+  FAILED
+}
+
+Enum DeletionAction {
+  REQUEST_CREATED
+  PARENTAL_CONSENT_SENT
+  PARENTAL_CONSENT_GRANTED
+  PARENTAL_CONSENT_DENIED
+  REVIEW_ASSIGNED
+  REVIEW_APPROVED
+  REVIEW_REJECTED
+  FINAL_CONFIRMATION_SENT
+  FINAL_CONFIRMATION_RECEIVED
+  SOFT_DELETE_EXECUTED
+  HARD_DELETE_EXECUTED
+  DATA_ANONYMIZED
+  DATA_BACKED_UP
+  ACCOUNT_RECOVERED
+  REQUEST_CANCELLED
+  SYSTEM_ERROR
+  CLEANUP_COMPLETED
+}
+
+Enum ActorType {
+  USER
+  PARENT
+  ADMIN
+  SYSTEM
+  AUTOMATED
+}
+
+Enum BookVisibility {
+  PUBLIC
+  RESTRICTED
+  CLASSROOM
+  PRIVATE
+}
+
+Enum VolunteerSubmissionType {
+  PDF_UPLOAD
+  TEXT_ASSISTANCE
+  TRANSLATION
+  ILLUSTRATION
+}
+
+Enum ContentVisibility {
+  PUBLIC
+  RESTRICTED
+  CLASSROOM
+  PRIVATE
+}
+
+Enum VolunteerSubmissionStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  NEEDS_CHANGES
+  APPROVED
+  REJECTED
+  PUBLISHED
+}
+
+Enum EntitlementType {
+  PURCHASE
+  SUBSCRIPTION
+  LICENSE
+  PROMOTIONAL
+  FREE_ACCESS
+  TRIAL
+}
+
+Enum EntitlementScope {
+  BOOK
+  CATEGORY
+  UNLIMITED
+  BUNDLE
+}
+
+Enum PublicationStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+  WITHDRAWN
+}
+
+Enum UnlockPolicy {
+  FREE
+  PURCHASE
+  SUBSCRIPTION
+  CLASSROOM_LICENSE
+  INSTITUTIONAL
+}
+
+Enum ShopProductType {
+  DIGITAL_BOOK
+  BOOK_BUNDLE
+  SUBSCRIPTION
+  CLASSROOM_LICENSE
+  DONATION_ITEM
+  MERCHANDISE
+}
+
+Enum ShopProductStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+  OUT_OF_STOCK
+}
+
+Enum FeedbackType {
+  GENERAL
+  BUG_REPORT
+  FEATURE_REQUEST
+  ROLE_MIGRATION
+  ONBOARDING
+  UI_UX_ISSUE
+  PERFORMANCE_ISSUE
+}
+
+Enum FeedbackCategory {
+  UX_FEEDBACK
+  TECHNICAL_ISSUE
+  CONTENT_FEEDBACK
+  NAVIGATION_ISSUE
+  ACCESSIBILITY_ISSUE
+  MOBILE_EXPERIENCE
+  DESKTOP_EXPERIENCE
+}
+
+Enum SentimentType {
+  VERY_NEGATIVE
+  NEGATIVE
+  NEUTRAL
+  POSITIVE
+  VERY_POSITIVE
+}
+
+Enum FeedbackSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+Enum SurveyTrigger {
+  PAGE_LOAD
+  TIME_DELAY
+  SCROLL_DEPTH
+  EXIT_INTENT
+  FEATURE_USE
+  MANUAL_TRIGGER
+}
+
+Enum SurveyFrequency {
+  ONCE
+  DAILY
+  WEEKLY
+  PER_SESSION
+  ALWAYS
+}
+
+Enum SurveyDisplayType {
+  MODAL
+  SLIDE_IN
+  BANNER
+  EMBED
+  FLOATING_BUTTON
+}
+
+Enum MigrationType {
+  SYSTEM_MIGRATION
+  USER_REQUESTED
+  ADMIN_ASSIGNED
+  AUTOMATIC_UPGRADE
+}
+
+Enum MigrationStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+  REVERSED
+}
+
+Ref: users.schoolId > schools.id
+
+Ref: profiles.userId - users.id [delete: Cascade]
+
+Ref: accounts.userId > users.id [delete: Cascade]
+
+Ref: sessions.userId > users.id [delete: Cascade]
+
+Ref: subscriptions.userId - users.id [delete: Cascade]
+
+Ref: categories.parentId - categories.id
+
+Ref: products.categoryId > categories.id
+
+Ref: product_variants.productId > products.id [delete: Cascade]
+
+Ref: product_images.productId > products.id [delete: Cascade]
+
+Ref: inventory.productId > products.id [delete: Cascade]
+
+Ref: inventory.variantId > product_variants.id [delete: Cascade]
+
+Ref: carts.userId - users.id [delete: Cascade]
+
+Ref: cart_items.cartId > carts.id [delete: Cascade]
+
+Ref: cart_items.productId > products.id
+
+Ref: cart_items.variantId > product_variants.id
+
+Ref: orders.userId > users.id
+
+Ref: order_items.orderId > orders.id [delete: Cascade]
+
+Ref: order_items.productId > products.id
+
+Ref: order_items.variantId > product_variants.id
+
+Ref: stories.authorId > users.id
+
+Ref: chapters.storyId > stories.id [delete: Cascade]
+
+Ref: reading_progress.userId > users.id [delete: Cascade]
+
+Ref: reading_progress.storyId > stories.id [delete: Cascade]
+
+Ref: bookmarks.userId > users.id [delete: Cascade]
+
+Ref: bookmarks.storyId > stories.id [delete: Cascade]
+
+Ref: reading_lists.userId > users.id [delete: Cascade]
+
+Ref: classes.teacherId > users.id
+
+Ref: classes.schoolId > schools.id
+
+Ref: class_enrollments.classId > classes.id [delete: Cascade]
+
+Ref: class_enrollments.studentId > users.id [delete: Cascade]
+
+Ref: assignments.classId > classes.id [delete: Cascade]
+
+Ref: submissions.assignmentId > assignments.id [delete: Cascade]
+
+Ref: submissions.studentId > users.id [delete: Cascade]
+
+Ref: lessons.classId > classes.id [delete: Cascade]
+
+Ref: lesson_progress.lessonId > lessons.id [delete: Cascade]
+
+Ref: lesson_progress.studentId > users.id [delete: Cascade]
+
+Ref: class_resources.classId > classes.id [delete: Cascade]
+
+Ref: class_announcements.classId > classes.id [delete: Cascade]
+
+Ref: budgets.schoolId > schools.id [delete: Cascade]
+
+Ref: budget_items.budgetId > budgets.id [delete: Cascade]
+
+Ref: school_resources.schoolId > schools.id [delete: Cascade]
+
+Ref: school_volunteers.schoolId > schools.id [delete: Cascade]
+
+Ref: volunteer_projects.coordinatorId > users.id
+
+Ref: volunteer_applications.projectId > volunteer_projects.id [delete: Cascade]
+
+Ref: volunteer_applications.questId > quests.id [delete: Cascade]
+
+Ref: volunteer_applications.volunteerUserId > users.id [delete: Cascade]
+
+Ref: volunteer_applications.volunteerId > volunteer_profiles.id [delete: Cascade]
+
+Ref: volunteer_hours.volunteerId > users.id [delete: Cascade]
+
+Ref: volunteer_hours.projectId > volunteer_projects.id [delete: Cascade]
+
+Ref: volunteer_certificates.volunteerId > users.id [delete: Cascade]
+
+Ref: donations.donorId > users.id
+
+Ref: donations.campaignId > donation_campaigns.id
+
+Ref: campaign_updates.campaignId > donation_campaigns.id [delete: Cascade]
+
+Ref: recurring_donations.donorId > users.id [delete: Cascade]
+
+Ref: story_submissions.authorId > users.id [delete: Cascade]
+
+Ref: story_submissions.coverImageId > media_files.id
+
+Ref: translations.storyId > stories.id [delete: Cascade]
+
+Ref: translations.translatorId > users.id
+
+Ref: illustrations.artistId > users.id
+
+Ref: reviews.userId > users.id [delete: Cascade]
+
+Ref: reviews.contentId > products.id [delete: Cascade]
+
+Ref: reviews.contentId > stories.id [delete: Cascade]
+
+Ref: reviews.contentId > books.id [delete: Cascade]
+
+Ref: notifications.userId > users.id [delete: Cascade]
+
+Ref: activity_logs.userId > users.id [delete: Cascade]
+
+Ref: media_files.uploadedById > users.id
+
+Ref: workflow_history.storySubmissionId > story_submissions.id [delete: Cascade]
+
+Ref: workflow_history.performedById > users.id
+
+Ref: bulk_imports.uploadedById > users.id
+
+Ref: onboarding_progress.userId - users.id [delete: Cascade]
+
+Ref: onboarding_activities.progressId > onboarding_progress.id [delete: Cascade]
+
+Ref: sample_content_access.userId > users.id [delete: Cascade]
+
+Ref: sample_content_access.storyId > stories.id
+
+Ref: volunteer_profiles.userId - users.id [delete: Cascade]
+
+Ref: quests.creatorId > users.id
+
+Ref: quest_assignments.questId > quests.id [delete: Cascade]
+
+Ref: quest_assignments.volunteerId > volunteer_profiles.id [delete: Cascade]
+
+Ref: volunteer_evidence.assignmentId > quest_assignments.id [delete: Cascade]
+
+Ref: volunteer_evidence.volunteerId > volunteer_profiles.id [delete: Cascade]
+
+Ref: volunteer_evidence.questId > quests.id [delete: Cascade]
+
+Ref: volunteer_evidence.reviewerId > users.id
+
+Ref: volunteer_points.volunteerId > volunteer_profiles.id [delete: Cascade]
+
+Ref: volunteer_points.issuedById > users.id
+
+Ref: volunteer_redemptions.volunteerId > volunteer_profiles.id [delete: Cascade]
+
+Ref: volunteer_redemptions.rewardId > volunteer_rewards.id [delete: Cascade]
+
+Ref: volunteer_redemptions.fulfilledById > users.id
+
+Ref: mentor_relations.mentorId > volunteer_profiles.id [delete: Cascade]
+
+Ref: mentor_relations.menteeId > volunteer_profiles.id [delete: Cascade]
+
+Ref: volunteer_matches.volunteerId > volunteer_profiles.id [delete: Cascade]
+
+Ref: volunteer_matches.questId > quests.id [delete: Cascade]
+
+Ref: quest_reviews.questId > quests.id [delete: Cascade]
+
+Ref: quest_reviews.reviewerId > users.id [delete: Cascade]
+
+Ref: user_deletion_requests.userId - users.id [delete: Cascade]
+
+Ref: deletion_audit_logs.deletionRequestId > user_deletion_requests.id [delete: Cascade]
+
+Ref: volunteer_submissions.volunteerId > users.id [delete: Cascade]
+
+Ref: volunteer_submissions.reviewerId > users.id [delete: Cascade]
+
+Ref: volunteer_submissions.assigneeId > users.id [delete: Cascade]
+
+Ref: entitlements.userId > users.id [delete: Cascade]
+
+Ref: entitlements.bookId > books.id [delete: Cascade]
+
+Ref: entitlements.storyId > stories.id [delete: Cascade]
+
+Ref: entitlements.orderId > orders.id
+
+Ref: entitlements.subscriptionId > subscriptions.id
+
+Ref: publications.bookId > books.id [delete: Cascade]
+
+Ref: publications.storyId > stories.id [delete: Cascade]
+
+Ref: publications.submissionId > volunteer_submissions.id
+
+Ref: publications.publishedBy > users.id
+
+Ref: shop_products.bookId > books.id
+
+Ref: shop_products.storyId > stories.id
+
+Ref: user_feedback.userId > users.id [delete: Cascade]
+
+Ref: survey_responses.surveyId > micro_surveys.id [delete: Cascade]
+
+Ref: survey_responses.userId > users.id [delete: Cascade]
+
+Ref: user_analytics.userId > users.id [delete: Cascade]
+
+Ref: ab_test_participants.userId > users.id [delete: Cascade]
+
+Ref: role_migrations.userId > users.id [delete: Cascade]
+
+Ref: feature_usage.userId > users.id [delete: Cascade]
