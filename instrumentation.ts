@@ -1,14 +1,12 @@
 /**
  * Next.js Instrumentation
  * This file runs when the Next.js server starts
- * Perfect place to initialize environment variables from SSM
  */
 
-import { initializeEnvironment } from './lib/init-env';
-
 export async function register() {
-  // Initialize environment variables from SSM if in production
+  // Environment variables are now loaded directly from .env files
+  // AWS SSM integration has been removed for simplicity
   if (process.env.NEXT_RUNTIME === 'nodejs') {
-    await initializeEnvironment();
+    console.log('[ENV] Using environment variables from .env files');
   }
 }

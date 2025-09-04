@@ -11,20 +11,10 @@ services:
     expose:
       - "3000"
     env_file:
-      - .env.production
+      - .env
     environment:
       - NODE_ENV=production
-      - NEXTAUTH_URL=${NEXTAUTH_URL:-https://1001stories.seedsofempowerment.org}
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - DISABLE_CSRF_CHECK=${DISABLE_CSRF_CHECK:-false}
       - DATABASE_URL=postgresql://${DB_USER:-stories_user}:${DB_PASSWORD:-stories_password_123}@postgres:5432/stories_db
-      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
-      - SMTP_PORT=${SMTP_PORT:-587}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - EMAIL_FROM=${EMAIL_FROM:-noreply@1001stories.org}
-      - EMAIL_SERVICE_ENABLED=${EMAIL_SERVICE_ENABLED}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
     volumes:
       - ./uploads:/app/uploads
       - ./prisma:/app/prisma
