@@ -2,9 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  experimental: {
-    instrumentationHook: true,
-  },
   images: {
     domains: ['1001stories.seedsofempowerment.org', 'seedsofempowerment.org', 'localhost'],
     unoptimized: true, // Disable image optimization to prevent errors with missing images

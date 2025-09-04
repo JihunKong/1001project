@@ -43,15 +43,45 @@ export default function UniversalDashboard() {
               </h1>
               <p className="text-gray-600">Your personal learning dashboard</p>
             </div>
-            {user.role === 'ADMIN' && (
-              <Link 
-                href="/admin" 
-                className="inline-flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
-              >
-                <Crown className="w-4 h-4" />
-                Admin Panel
-              </Link>
-            )}
+{/* Role-specific Dashboard Links */}
+            <div className="flex gap-2">
+              {user.role === 'VOLUNTEER' && (
+                <Link 
+                  href="/dashboard/volunteer" 
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+                >
+                  <Users className="w-4 h-4" />
+                  Volunteer Dashboard
+                </Link>
+              )}
+              {user.role === 'EDITOR' && (
+                <Link 
+                  href="/dashboard/editor" 
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Editor Dashboard
+                </Link>
+              )}
+              {user.role === 'PUBLISHER' && (
+                <Link 
+                  href="/dashboard/publisher" 
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  Publisher Dashboard
+                </Link>
+              )}
+              {user.role === 'ADMIN' && (
+                <Link 
+                  href="/admin" 
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                >
+                  <Crown className="w-4 h-4" />
+                  Admin Panel
+                </Link>
+              )}
+            </div>
           </div>
         </motion.div>
         

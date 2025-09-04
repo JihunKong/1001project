@@ -19,11 +19,8 @@ Table users {
   accounts accounts [not null]
   sessions sessions [not null]
   profile profiles
-  subscription subscriptions
   school schools
   deletionRequest user_deletion_requests
-  cart carts
-  orders orders [not null]
   reviews reviews [not null]
   enrollments class_enrollments [not null]
   submissions submissions [not null]
@@ -138,205 +135,6 @@ Table verification_tokens {
   indexes {
     (identifier, token) [unique]
   }
-}
-
-Table subscriptions {
-  id String [pk]
-  userId String [unique, not null]
-  plan SubscriptionPlan [not null, default: 'FREE']
-  status SubscriptionStatus [not null, default: 'ACTIVE']
-  startDate DateTime [default: `now()`, not null]
-  endDate DateTime
-  cancelledAt DateTime
-  stripeCustomerId String [unique]
-  stripeSubscriptionId String [unique]
-  stripePriceId String
-  maxStudents Int [not null, default: 30]
-  maxDownloads Int [not null, default: 10]
-  canAccessPremium Boolean [not null, default: false]
-  canDownloadPDF Boolean [not null, default: false]
-  canCreateClasses Boolean [not null, default: false]
-  unlimitedReading Boolean [not null, default: false]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  user users [not null]
-  entitlements entitlements [not null]
-}
-
-Table categories {
-  id String [pk]
-  name String [not null]
-  slug String [unique, not null]
-  description String
-  parentId String
-  image String
-  order Int [not null, default: 0]
-  isActive Boolean [not null, default: true]
-  parent categories
-  children categories [not null]
-  products products [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-}
-
-Table products {
-  id String [pk]
-  sku String [unique, not null]
-  type ProductType [not null]
-  title String [not null]
-  description String [not null]
-  price Decimal [not null]
-  compareAtPrice Decimal
-  cost Decimal
-  currency String [not null, default: 'USD']
-  weight Float
-  status ProductStatus [not null, default: 'DRAFT']
-  featured Boolean [not null, default: false]
-  creatorId String
-  creatorName String
-  creatorAge Int
-  creatorLocation String
-  creatorStory String
-  categoryId String [not null]
-  tags String[] [not null]
-  impactMetric String
-  impactValue String
-  digitalFileUrl String
-  downloadLimit Int
-  metaTitle String
-  metaDescription String
-  category categories [not null]
-  variants product_variants [not null]
-  images product_images [not null]
-  inventory inventory [not null]
-  cartItems cart_items [not null]
-  orderItems order_items [not null]
-  reviews reviews [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-}
-
-Table product_variants {
-  id String [pk]
-  productId String [not null]
-  title String [not null]
-  sku String [unique, not null]
-  price Decimal [not null]
-  compareAtPrice Decimal
-  inventoryQuantity Int [not null, default: 0]
-  weight Float
-  attributes Json [not null]
-  position Int [not null, default: 0]
-  product products [not null]
-  inventory inventory [not null]
-  cartItems cart_items [not null]
-  orderItems order_items [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-}
-
-Table product_images {
-  id String [pk]
-  productId String [not null]
-  url String [not null]
-  alt String
-  position Int [not null, default: 0]
-  product products [not null]
-  createdAt DateTime [default: `now()`, not null]
-}
-
-Table inventory {
-  id String [pk]
-  productId String [not null]
-  variantId String
-  quantity Int [not null, default: 0]
-  reserved Int [not null, default: 0]
-  location String [not null, default: 'main']
-  reorderPoint Int [not null, default: 10]
-  reorderQuantity Int [not null, default: 50]
-  product products [not null]
-  variant product_variants
-  updatedAt DateTime [not null]
-
-  indexes {
-    (productId, variantId, location) [unique]
-  }
-}
-
-Table carts {
-  id String [pk]
-  userId String [unique]
-  sessionId String
-  items cart_items [not null]
-  expiresAt DateTime [not null]
-  user users
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-}
-
-Table cart_items {
-  id String [pk]
-  cartId String [not null]
-  productId String [not null]
-  variantId String
-  quantity Int [not null, default: 1]
-  price Decimal [not null]
-  cart carts [not null]
-  product products [not null]
-  variant product_variants
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-
-  indexes {
-    (cartId, productId, variantId) [unique]
-  }
-}
-
-Table orders {
-  id String [pk]
-  orderNumber String [unique, not null]
-  userId String
-  email String [not null]
-  phone String
-  subtotal Decimal [not null]
-  tax Decimal [not null, default: 0]
-  shipping Decimal [not null, default: 0]
-  discount Decimal [not null, default: 0]
-  total Decimal [not null]
-  currency String [not null, default: 'USD']
-  status OrderStatus [not null, default: 'PENDING']
-  paymentStatus PaymentStatus [not null, default: 'PENDING']
-  fulfillmentStatus FulfillmentStatus [not null, default: 'UNFULFILLED']
-  paymentMethod String
-  stripePaymentId String
-  shippingAddress Json
-  billingAddress Json
-  shippingMethod String
-  trackingNumber String
-  notes String
-  tags String[] [not null]
-  user users
-  items order_items [not null]
-  entitlements entitlements [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-}
-
-Table order_items {
-  id String [pk]
-  orderId String [not null]
-  productId String [not null]
-  variantId String
-  title String [not null]
-  variantTitle String
-  quantity Int [not null]
-  price Decimal [not null]
-  total Decimal [not null]
-  fulfillmentStatus String
-  order orders [not null]
-  product products [not null]
-  variant product_variants
-  createdAt DateTime [default: `now()`, not null]
 }
 
 Table stories {
@@ -915,7 +713,6 @@ Table reviews {
   helpful Int [not null, default: 0]
   verified Boolean [not null, default: false]
   user users [not null]
-  product products
   story stories
   book books
   createdAt DateTime [default: `now()`, not null]
@@ -1493,8 +1290,6 @@ Table entitlements {
   email String
   bookId String
   storyId String
-  orderId String
-  subscriptionId String
   licenseId String
   grantReason String
   type EntitlementType [not null, default: 'PURCHASE']
@@ -1511,8 +1306,6 @@ Table entitlements {
   user users
   book books
   story stories
-  order orders
-  subscription subscriptions
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -1769,60 +1562,9 @@ Enum UserRole {
   TEACHER
   INSTITUTION
   VOLUNTEER
+  EDITOR
+  PUBLISHER
   ADMIN
-}
-
-Enum SubscriptionPlan {
-  FREE
-  BASIC
-  PREMIUM
-  ENTERPRISE
-}
-
-Enum SubscriptionStatus {
-  ACTIVE
-  CANCELLED
-  EXPIRED
-  PAST_DUE
-  TRIALING
-}
-
-Enum ProductType {
-  PHYSICAL_BOOK
-  DIGITAL_BOOK
-  MERCHANDISE
-  ARTWORK
-  DONATION_ITEM
-}
-
-Enum ProductStatus {
-  ACTIVE
-  DRAFT
-  ARCHIVED
-}
-
-Enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  REFUNDED
-}
-
-Enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
-  REFUNDED
-  PARTIALLY_REFUNDED
-}
-
-Enum FulfillmentStatus {
-  UNFULFILLED
-  PARTIALLY_FULFILLED
-  FULFILLED
-  CANCELLED
 }
 
 Enum EnrollmentStatus {
@@ -1965,6 +1707,7 @@ Enum StorySubmissionStatus {
   DRAFT
   SUBMITTED
   IN_REVIEW
+  EDITING
   APPROVED
   PUBLISHED
   REJECTED
@@ -2397,36 +2140,6 @@ Ref: accounts.userId > users.id [delete: Cascade]
 
 Ref: sessions.userId > users.id [delete: Cascade]
 
-Ref: subscriptions.userId - users.id [delete: Cascade]
-
-Ref: categories.parentId - categories.id
-
-Ref: products.categoryId > categories.id
-
-Ref: product_variants.productId > products.id [delete: Cascade]
-
-Ref: product_images.productId > products.id [delete: Cascade]
-
-Ref: inventory.productId > products.id [delete: Cascade]
-
-Ref: inventory.variantId > product_variants.id [delete: Cascade]
-
-Ref: carts.userId - users.id [delete: Cascade]
-
-Ref: cart_items.cartId > carts.id [delete: Cascade]
-
-Ref: cart_items.productId > products.id
-
-Ref: cart_items.variantId > product_variants.id
-
-Ref: orders.userId > users.id
-
-Ref: order_items.orderId > orders.id [delete: Cascade]
-
-Ref: order_items.productId > products.id
-
-Ref: order_items.variantId > product_variants.id
-
 Ref: stories.authorId > users.id
 
 Ref: chapters.storyId > stories.id [delete: Cascade]
@@ -2509,8 +2222,6 @@ Ref: illustrations.artistId > users.id
 
 Ref: reviews.userId > users.id [delete: Cascade]
 
-Ref: reviews.contentId > products.id [delete: Cascade]
-
 Ref: reviews.contentId > stories.id [delete: Cascade]
 
 Ref: reviews.contentId > books.id [delete: Cascade]
@@ -2588,10 +2299,6 @@ Ref: entitlements.userId > users.id [delete: Cascade]
 Ref: entitlements.bookId > books.id [delete: Cascade]
 
 Ref: entitlements.storyId > stories.id [delete: Cascade]
-
-Ref: entitlements.orderId > orders.id
-
-Ref: entitlements.subscriptionId > subscriptions.id
 
 Ref: publications.bookId > books.id [delete: Cascade]
 

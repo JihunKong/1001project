@@ -53,26 +53,7 @@ export async function POST(
       )
     }
 
-    // Check user access (premium content requires subscription/purchase)
-    if (story.isPremium) {
-      const userSubscription = await prisma.subscription.findUnique({
-        where: { userId: session.user.id },
-        select: {
-          canAccessPremium: true,
-          status: true
-        }
-      })
-
-      // TODO: Check individual purchases from Order/Entitlement models
-      const hasAccess = userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE'
-      
-      if (!hasAccess) {
-        return NextResponse.json(
-          { error: 'Access denied. Premium content requires subscription.' },
-          { status: 403 }
-        )
-      }
-    }
+    // All stories are free in this version
 
     // Upsert reading progress
     const readingProgress = await prisma.readingProgress.upsert({

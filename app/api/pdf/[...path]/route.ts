@@ -113,28 +113,13 @@ async function checkBookAccess(userId: string | undefined, bookId: string, filen
     }
 
     // 6. Check subscription access
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId: userId },
-      select: {
-        status: true,
-        canAccessPremium: true,
-        plan: true
-      }
-    });
+    // Subscription disabled - all books are free
 
-    if (subscription?.canAccessPremium && subscription.status === 'ACTIVE') {
-      return { 
-        access: true, 
-        reason: 'subscription_access',
-        details: `${subscription.plan} subscription`
-      };
-    }
-
-    // 7. No access found
+    // All PDFs are free in this version
     return { 
-      access: false, 
-      reason: 'no_access',
-      details: book.isPremium ? 'Premium book requires purchase or subscription' : 'Authentication required'
+      access: true, 
+      reason: 'free_access',
+      details: 'All PDFs are free'
     };
 
   } catch (error) {
@@ -219,43 +204,8 @@ async function checkTeacherInstitutionalAccess(userId: string, bookId: string): 
 // Create entitlement from completed order
 async function createEntitlementFromOrder(orderId: string) {
   try {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        items: {
-          include: {
-            product: {
-              select: {
-                id: true,
-                type: true
-              }
-            }
-          }
-        }
-      }
-    });
-
-    if (!order || order.paymentStatus !== 'PAID') {
-      return;
-    }
-
-    // Create entitlements for digital book purchases
-    for (const item of order.items) {
-      if (item.product.type === 'DIGITAL_BOOK') {
-        await prisma.entitlement.create({
-          data: {
-            userId: order.userId!,
-            storyId: item.productId, // Assuming productId maps to story ID
-            orderId: order.id,
-            type: 'PURCHASE',
-            scope: 'BOOK',
-            grantReason: 'purchase',
-            grantedAt: new Date(),
-            isActive: true
-          }
-        });
-      }
-    }
+    // Order functionality disabled - all books are free
+    return;
   } catch (error) {
     console.error('Error creating entitlement from order:', error);
   }

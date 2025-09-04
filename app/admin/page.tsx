@@ -53,6 +53,7 @@ interface DashboardStats {
 const statusConfig = {
   SUBMITTED: { label: '접수', color: 'bg-gray-100 text-gray-800', icon: Clock },
   IN_REVIEW: { label: '검수', color: 'bg-blue-100 text-blue-800', icon: CheckCircle },
+  EDITING: { label: '편집중', color: 'bg-purple-100 text-purple-800', icon: Edit },
   APPROVED: { label: '승인', color: 'bg-green-100 text-green-800', icon: CheckCircle },
   PUBLISHED: { label: '출판', color: 'bg-green-100 text-green-800', icon: CheckCircle },
   REJECTED: { label: '반려', color: 'bg-red-100 text-red-800', icon: AlertCircle },
@@ -213,7 +214,7 @@ export default function AdminDashboard() {
 
         {/* Kanban Board */}
         <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 overflow-x-auto pb-4">
-          {(loading ? [] : ['DRAFT', 'SUBMITTED', 'IN_REVIEW', 'APPROVED', 'PUBLISHED', 'REJECTED'] as StorySubmissionStatus[]).map((status) => {
+          {(loading ? [] : ['DRAFT', 'SUBMITTED', 'IN_REVIEW', 'EDITING', 'APPROVED', 'PUBLISHED', 'REJECTED'] as StorySubmissionStatus[]).map((status) => {
             const config = statusConfig[status];
             const StatusIcon = config.icon;
             const statusStories = getStoriesByStatus(status);

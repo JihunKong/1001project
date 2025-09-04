@@ -77,6 +77,16 @@ const roleConfig = {
     icon: CheckCircle,
     color: 'bg-yellow-100 text-yellow-800'
   },
+  EDITOR: {
+    label: 'Editor',
+    icon: BookOpen,
+    color: 'bg-purple-100 text-purple-800'
+  },
+  PUBLISHER: {
+    label: 'Publisher',
+    icon: CheckCircle,
+    color: 'bg-emerald-100 text-emerald-800'
+  },
   ADMIN: {
     label: 'Administrator',
     icon: Crown,

@@ -54,6 +54,7 @@
     "next-auth": "^4.24.11",
     "next-i18next": "^15.4.2",
     "nodemailer": "^6.10.1",
+    "openai": "^5.19.1",
     "papaparse": "^5.4.0",
     "pdfjs-dist": "^5.4.54",
     "pg": "^8.16.3",

@@ -64,7 +64,9 @@ const roleConfig = {
   TEACHER: { label: 'Teacher', color: 'bg-orange-100 text-orange-800', icon: CheckCircle },
   INSTITUTION: { label: 'Institution', color: 'bg-gray-100 text-gray-800', icon: AlertTriangle },
   VOLUNTEER: { label: 'Volunteer', color: 'bg-green-100 text-green-800', icon: Clock },
-  ADMIN: { label: 'Admin', color: 'bg-purple-100 text-purple-800', icon: Shield },
+  EDITOR: { label: 'Editor', color: 'bg-purple-100 text-purple-800', icon: BookOpen },
+  PUBLISHER: { label: 'Publisher', color: 'bg-emerald-100 text-emerald-800', icon: CheckCircle },
+  ADMIN: { label: 'Admin', color: 'bg-red-100 text-red-800', icon: Shield },
 };
 
 export default function UsersPage() {

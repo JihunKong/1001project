@@ -11,16 +11,13 @@ import {
   Globe,
   Star,
   Play,
-  Lock,
-  Crown,
   ArrowRight,
   Users,
   Clock,
   Loader2,
   Grid3X3,
   Library as LibraryIcon,
-  Eye,
-  ShoppingBag
+  Eye
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -204,12 +201,6 @@ export default function Library() {
             alt={book.title}
           />
         </div>
-        {book.isPremium && (
-          <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full">
-            <Crown className="w-3 h-3" />
-            Premium
-          </div>
-        )}
         {(book.featured || book.isFeatured) && (
           <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
             <Star className="w-3 h-3" />
@@ -332,15 +323,6 @@ export default function Library() {
             </button>
             
             {/* Purchase History Button */}
-            {session && (
-              <Link
-                href="/library/orders"
-                className="flex items-center gap-2 px-4 py-3 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <ShoppingBag className="w-5 h-5" />
-                My Orders
-              </Link>
-            )}
             
             {/* View Mode Toggle */}
             <div className="flex items-center bg-gray-100 rounded-lg p-1">
@@ -449,8 +431,8 @@ export default function Library() {
                   Free
                 </div>
                 <div className="flex items-center gap-1">
-                  <Crown className="w-4 h-4 text-yellow-500" />
-                  Premium
+                  📚
+                  Free
                 </div>
               </div>
             </div>
@@ -472,10 +454,11 @@ export default function Library() {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link 
-                      href="/shop"
+                      href="/library"
                       className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                      onClick={() => window.location.reload()}
                     >
-                      📚 Browse Books
+                      📚 Explore All Books
                     </Link>
                     <Link 
                       href="/demo/library"
@@ -485,9 +468,9 @@ export default function Library() {
                     </Link>
                   </div>
                   <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
-                    <div className="flex items-center gap-2 text-yellow-800 mb-2">
-                      <Crown className="w-5 h-5" />
-                      <span className="font-medium">Free Preview Available!</span>
+                    <div className="flex items-center gap-2 text-green-800 mb-2">
+                      📚
+                      <span className="font-medium">Free Access Available!</span>
                     </div>
                     <p className="text-sm text-yellow-700">
                       Try our demo account to preview sample books before purchasing.
@@ -595,8 +578,8 @@ export default function Library() {
         </div>
       </section>
 
-      {/* Premium CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      {/* Free Library CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-green-600 to-blue-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -605,28 +588,27 @@ export default function Library() {
             viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto"
           >
-            <Crown className="w-16 h-16 text-yellow-300 mx-auto mb-6" />
+            <BookOpen className="w-16 h-16 text-green-300 mx-auto mb-6" />
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-              Unlock Premium Stories
+              Free Stories For Everyone
             </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Get access to our complete library of stories while supporting scholarships 
-              and educational programs for young authors worldwide.
+            <p className="text-xl text-green-100 mb-8">
+              Our entire library is completely free! Enjoy unlimited access to inspiring stories from children around the world while supporting educational programs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-blue-600 bg-white rounded-full hover:bg-gray-50 transition-all transform hover:scale-105"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-green-600 bg-white rounded-full hover:bg-gray-50 transition-all transform hover:scale-105"
               >
                 <Users className="w-5 h-5" />
-                Start Free Trial
+                Join Our Community
               </Link>
               <Link
                 href="/donate"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-white bg-transparent border-2 border-white rounded-full hover:bg-white hover:text-blue-600 transition-all transform hover:scale-105"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-white bg-transparent border-2 border-white rounded-full hover:bg-white hover:text-green-600 transition-all transform hover:scale-105"
               >
                 <Heart className="w-5 h-5" />
-                Learn About Seeds of Empowerment
+                Support Our Mission
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>

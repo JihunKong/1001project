@@ -76,28 +76,14 @@ async function checkComprehensiveBookAccess(userId: string | undefined, bookId: 
       };
     }
 
-    // Subscription access
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId: userId },
-      select: {
-        status: true,
-        canAccessPremium: true,
-        plan: true
-      }
-    });
+    // Subscription access - disabled, all books are free
+    const subscription = null;
 
-    if (subscription?.canAccessPremium && subscription.status === 'ACTIVE') {
-      return { 
-        hasAccess: true, 
-        reason: 'subscription', 
-        details: `${subscription.plan} subscription` 
-      };
-    }
-
+    // All books are free in this version
     return { 
-      hasAccess: false, 
-      reason: 'no_access', 
-      details: book.isPremium ? 'Premium content requires purchase or subscription' : 'Authentication required'
+      hasAccess: true, 
+      reason: 'free', 
+      details: 'All books are free' 
     };
 
   } catch (error) {
@@ -204,16 +190,8 @@ export async function GET(
     let userEntitlements: any[] = []
     
     if (session?.user?.id) {
-      // Get user subscription
-      userSubscription = await prisma.subscription.findUnique({
-        where: { userId: session.user.id },
-        select: {
-          plan: true,
-          status: true,
-          canAccessPremium: true,
-          unlimitedReading: true
-        }
-      })
+      // Get user subscription - disabled, all books are free
+      userSubscription = null;
       
       // Get user reading progress
       userProgress = await prisma.readingProgress.findUnique({

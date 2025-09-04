@@ -76,16 +76,8 @@ export async function GET(
     let userProgress = null
     
     if (session?.user?.id) {
-      // Get user subscription
-      userSubscription = await prisma.subscription.findUnique({
-        where: { userId: session.user.id },
-        select: {
-          plan: true,
-          status: true,
-          canAccessPremium: true,
-          unlimitedReading: true
-        }
-      })
+      // Get user subscription - disabled, all books are free
+      userSubscription = null;
       
       // Check for individual purchase (placeholder for now)
       // userPurchase = await prisma.order.findFirst({...})
@@ -100,19 +92,11 @@ export async function GET(
         }
       })
       
-      // Determine access level
-      if (!story.isPremium) {
-        accessLevel = 'full'
-      } else if (userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE') {
-        accessLevel = 'full'
-      } else if (userPurchase) {
-        accessLevel = 'full'
-      }
+      // All stories are free - full access
+      accessLevel = 'full'
     } else {
-      // Non-authenticated users get full access to free stories
-      if (!story.isPremium) {
-        accessLevel = 'full'
-      }
+      // Non-authenticated users also get full access since everything is free
+      accessLevel = 'full'
     }
     
     // Prepare content based on access level

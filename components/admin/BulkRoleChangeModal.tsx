@@ -62,6 +62,18 @@ const roleConfig = {
     color: 'bg-yellow-100 text-yellow-800',
     description: 'Content contributor and community helper'
   },
+  EDITOR: {
+    label: 'Editor',
+    icon: BookOpen,
+    color: 'bg-purple-100 text-purple-800',
+    description: 'Review and edit story submissions'
+  },
+  PUBLISHER: {
+    label: 'Publisher',
+    icon: CheckCircle,
+    color: 'bg-emerald-100 text-emerald-800',
+    description: 'Approve stories for publication'
+  },
   ADMIN: {
     label: 'Administrator',
     icon: Crown,

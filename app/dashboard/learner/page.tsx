@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import LibrarySection from '@/components/dashboard/LibrarySection';
+import AIBriefing from '@/components/dashboard/AIBriefing';
 
 export default function LearnerDashboard() {
   const { t } = useTranslation('common');
@@ -81,6 +82,16 @@ export default function LearnerDashboard() {
           <p className="text-gray-600">Welcome back, {learnerData.name}!</p>
         </motion.div>
         
+        {/* AI Briefing */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mb-8"
+        >
+          <AIBriefing dashboardType="learner" />
+        </motion.div>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <motion.div

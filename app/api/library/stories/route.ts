@@ -107,16 +107,8 @@ export async function GET(request: NextRequest) {
     let userPurchases: string[] = []
     
     if (session?.user?.id) {
-      // Get user subscription status
-      userSubscription = await prisma.subscription.findUnique({
-        where: { userId: session.user.id },
-        select: {
-          plan: true,
-          status: true,
-          canAccessPremium: true,
-          unlimitedReading: true
-        }
-      })
+      // Get user subscription status - disabled, all books are free
+      userSubscription = null;
       
       // Get user purchases (placeholder - need to implement Order model queries)
       userPurchases = []
@@ -127,18 +119,8 @@ export async function GET(request: NextRequest) {
       let accessLevel = 'preview'
       
       // Determine access level
-      if (!story.isPremium) {
-        accessLevel = 'full'
-      } else if (session?.user?.id) {
-        // Check if user has subscription access
-        if (userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE') {
-          accessLevel = 'full'
-        }
-        // Check if user purchased this story
-        else if (userPurchases.includes(story.id)) {
-          accessLevel = 'full'
-        }
-      }
+      // All books are free - full access for everyone
+      accessLevel = 'full'
       
       return {
         id: story.id,

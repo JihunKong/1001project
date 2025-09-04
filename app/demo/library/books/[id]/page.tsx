@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import PDFThumbnailImageWrapper from '@/components/shop/PDFThumbnailImageWrapper';
+import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
 import dynamic from 'next/dynamic';
 
 // Dynamically import PDFViewer to avoid SSR issues
@@ -201,12 +201,13 @@ export default function DemoBookDetail() {
                   </div>
                 )}
                 
-                <PDFThumbnailImageWrapper
+                <SimplePDFThumbnail
                   pdfUrl={book.pdfKey}
                   bookId={book.id}
                   title={book.title}
-                  fallbackImage={book.coverImage}
+                  existingImage={book.coverImage}
                   className="w-full h-full object-cover"
+                  alt={book.title}
                 />
               </motion.div>
 
@@ -368,12 +369,13 @@ export default function DemoBookDetail() {
                 >
                   <div className="flex gap-4">
                     <div className="relative w-16 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                      <PDFThumbnailImageWrapper
+                      <SimplePDFThumbnail
                         pdfUrl={relatedBook.pdfKey}
                         bookId={relatedBook.id}
                         title={relatedBook.title}
-                        fallbackImage={relatedBook.coverImage}
+                        existingImage={relatedBook.coverImage}
                         className="w-full h-full object-cover"
+                        alt={relatedBook.title}
                       />
                       {relatedBook.isPremium && (
                         <Crown className="absolute top-1 right-1 w-3 h-3 text-yellow-500" />

@@ -12,8 +12,6 @@ import {
   Heart, 
   Users, 
   Home, 
-  ShoppingBag, 
-  ShoppingCart,
   User,
   LogOut,
   Settings,
@@ -24,7 +22,6 @@ import {
   ChevronDown
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
-import useCartStore from '@/lib/cart-store';
 import { UserRole } from '@prisma/client';
 
 export default function Header() {
@@ -34,7 +31,6 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const cartItems = useCartStore((state) => state.getTotalItems());
   
   // Avoid hydration mismatch
   useEffect(() => {
@@ -58,7 +54,6 @@ export default function Header() {
   const baseNavigation = [
     { name: t('navigation.home'), href: '/', icon: Home },
     { name: t('navigation.library'), href: '/library', icon: BookOpen },
-    { name: t('navigation.shop'), href: '/shop', icon: ShoppingBag },
   ];
 
   // Add onboarding zone for users who need approval
@@ -141,6 +136,8 @@ export default function Header() {
       [UserRole.TEACHER]: 'Teacher',
       [UserRole.INSTITUTION]: 'Institution',
       [UserRole.VOLUNTEER]: 'Volunteer',
+      [UserRole.EDITOR]: 'Editor',
+      [UserRole.PUBLISHER]: 'Publisher',
       [UserRole.ADMIN]: 'Administrator',
     };
     return labels[role] || 'User';
@@ -153,6 +150,8 @@ export default function Header() {
       [UserRole.TEACHER]: 'bg-green-100 text-green-800',
       [UserRole.INSTITUTION]: 'bg-purple-100 text-purple-800',
       [UserRole.VOLUNTEER]: 'bg-pink-100 text-pink-800',
+      [UserRole.EDITOR]: 'bg-orange-100 text-orange-800',
+      [UserRole.PUBLISHER]: 'bg-emerald-100 text-emerald-800',
       [UserRole.ADMIN]: 'bg-red-100 text-red-800',
     };
     return colors[role] || 'bg-gray-100 text-gray-800';
@@ -186,15 +185,6 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <LanguageSwitcher />
             
-            {/* Shopping Cart */}
-            <Link href="/shop/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
-              <ShoppingCart className="w-6 h-6" />
-              {mounted && cartItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItems}
-                </span>
-              )}
-            </Link>
             
             {/* User Menu or Auth Buttons */}
             {status === 'loading' ? (

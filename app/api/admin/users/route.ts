@@ -58,16 +58,9 @@ export async function GET(request: NextRequest) {
               lastName: true
             }
           },
-          subscription: {
-            select: {
-              status: true,
-              plan: true
-            }
-          },
           _count: {
             select: {
-              stories: true,
-              orders: true
+              stories: true
             }
           }
         },
@@ -145,8 +138,7 @@ export async function POST(request: NextRequest) {
         },
         _count: {
           select: {
-            stories: true,
-            orders: true
+            stories: true
           }
         }
       }

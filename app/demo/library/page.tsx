@@ -16,7 +16,7 @@ import {
   Star
 } from 'lucide-react';
 import Link from 'next/link';
-import PDFThumbnailImageWrapper from '@/components/shop/PDFThumbnailImageWrapper';
+import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
 
 interface DemoBook {
   id: string;
@@ -246,12 +246,13 @@ export default function DemoLibrary() {
                     </div>
                   )}
                   
-                  <PDFThumbnailImageWrapper
+                  <SimplePDFThumbnail
                     pdfUrl={book.pdfKey}
                     bookId={book.id}
                     title={book.title}
-                    fallbackImage={book.coverImage}
+                    existingImage={book.coverImage}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    alt={book.title}
                   />
                   
                   {/* Overlay */}

@@ -36,16 +36,9 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
             lastName: true
           }
         },
-        subscription: {
-          select: {
-            status: true,
-            plan: true
-          }
-        },
         _count: {
           select: {
-            stories: true,
-            orders: true
+            stories: true
           }
         }
       }
@@ -156,8 +149,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
         },
         _count: {
           select: {
-            stories: true,
-            orders: true
+            stories: true
           }
         }
       }

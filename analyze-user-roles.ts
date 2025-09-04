@@ -31,7 +31,6 @@ interface UserRoleAnalysis {
     }>;
     featureUsageByRole: Array<{
       role: UserRole;
-      hasSubscription: number;
       hasCompletedProfile: number;
       hasReadStories: number;
       hasCreatedContent: number;
@@ -161,12 +160,10 @@ async function analyzeUserRoles(): Promise<UserRoleAnalysis> {
   const featureUsage = await prisma.user.findMany({
     select: {
       role: true,
-      subscription: { select: { plan: true } },
       profile: { select: { bio: true, organization: true } },
       readingProgress: { select: { id: true } },
       stories: { select: { id: true } },
-      storySubmissions: { select: { id: true } },
-      volunteerSubmissions: { select: { id: true } }
+      storySubmissions: { select: { id: true } }
     },
     where: { deletedAt: null }
   });
@@ -175,7 +172,6 @@ async function analyzeUserRoles(): Promise<UserRoleAnalysis> {
     if (!acc[user.role]) {
       acc[user.role] = {
         total: 0,
-        hasSubscription: 0,
         hasCompletedProfile: 0,
         hasReadStories: 0,
         hasCreatedContent: 0
@@ -183,9 +179,7 @@ async function analyzeUserRoles(): Promise<UserRoleAnalysis> {
     }
     acc[user.role].total += 1;
     
-    if (user.subscription && user.subscription.plan !== 'FREE') {
-      acc[user.role].hasSubscription += 1;
-    }
+    // Note: Subscription tracking disabled - all users have free access
     
     if (user.profile && (user.profile.bio || user.profile.organization)) {
       acc[user.role].hasCompletedProfile += 1;
@@ -196,15 +190,13 @@ async function analyzeUserRoles(): Promise<UserRoleAnalysis> {
     }
     
     if ((user.stories && user.stories.length > 0) || 
-        (user.storySubmissions && user.storySubmissions.length > 0) ||
-        (user.volunteerSubmissions && user.volunteerSubmissions.length > 0)) {
+        (user.storySubmissions && user.storySubmissions.length > 0)) {
       acc[user.role].hasCreatedContent += 1;
     }
     
     return acc;
   }, {} as Record<UserRole, {
     total: number;
-    hasSubscription: number;
     hasCompletedProfile: number;
     hasReadStories: number;
     hasCreatedContent: number;
@@ -243,7 +235,6 @@ async function analyzeUserRoles(): Promise<UserRoleAnalysis> {
       })),
       featureUsageByRole: Object.entries(featureUsageByRole).map(([role, data]) => ({
         role: role as UserRole,
-        hasSubscription: data.hasSubscription,
         hasCompletedProfile: data.hasCompletedProfile,
         hasReadStories: data.hasReadStories,
         hasCreatedContent: data.hasCreatedContent
@@ -317,7 +308,6 @@ async function generateReport(analysis: UserRoleAnalysis) {
   analysis.behaviorAnalysis.featureUsageByRole.forEach(usage => {
     const roleTotal = analysis.roleDistribution.find(r => r.role === usage.role)?.count || 1;
     console.log(`${usage.role}:`);
-    console.log(`  └─ Has subscription: ${usage.hasSubscription}/${roleTotal} (${Math.round((usage.hasSubscription/roleTotal)*100)}%)`);
     console.log(`  └─ Completed profile: ${usage.hasCompletedProfile}/${roleTotal} (${Math.round((usage.hasCompletedProfile/roleTotal)*100)}%)`);
     console.log(`  └─ Has read stories: ${usage.hasReadStories}/${roleTotal} (${Math.round((usage.hasReadStories/roleTotal)*100)}%)`);
     console.log(`  └─ Created content: ${usage.hasCreatedContent}/${roleTotal} (${Math.round((usage.hasCreatedContent/roleTotal)*100)}%)`);

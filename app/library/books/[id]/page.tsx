@@ -12,12 +12,9 @@ import {
   Heart,
   Share2,
   Play,
-  Lock,
-  Crown,
   Globe,
   User,
   AlertCircle,
-  ShoppingCart,
   Eye,
   Download,
   Calendar,
@@ -29,7 +26,6 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import useCartStore, { Product } from '@/lib/cart-store';
 
 const SimplePDFThumbnail = dynamic(() => import('@/components/library/SimplePDFThumbnail'), { 
   ssr: false,
@@ -38,6 +34,11 @@ const SimplePDFThumbnail = dynamic(() => import('@/components/library/SimplePDFT
       <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
     </div>
   )
+});
+
+const SafePDFViewer = dynamic(() => import('@/components/library/SafePDFViewer'), {
+  ssr: false,
+  loading: () => null
 });
 
 interface Book {
@@ -126,10 +127,7 @@ export default function BookDetailPage() {
     title: '',
     comment: ''
   });
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-
-  const addToCart = useCartStore((state) => state.addItem);
-  const getItemQuantity = useCartStore((state) => state.getItemQuantity);
+  const [showPDFViewer, setShowPDFViewer] = useState(false);
 
   useEffect(() => {
     if (bookId) {
@@ -282,51 +280,6 @@ export default function BookDetailPage() {
     }
   };
 
-  const handlePurchase = () => {
-    if (!session?.user?.id) {
-      router.push('/login');
-      return;
-    }
-    
-    if (!book) return;
-    
-    // Convert book to cart product format
-    const product: Product = {
-      id: book.id,
-      type: 'digital_book',
-      title: book.title,
-      creator: {
-        name: book.author.name,
-        age: book.author.age,
-        location: book.author.location || 'Unknown',
-        story: book.summary || ''
-      },
-      price: Number(book.price || 0),
-      images: book.coverImage ? [book.coverImage] : [],
-      description: book.summary || '',
-      impact: {
-        metric: 'children reached',
-        value: book.stats.readers.toString()
-      },
-      stock: 999, // Digital books have unlimited stock
-      category: book.category,
-      featured: book.featured,
-      bookId: book.id,
-      pdfKey: book.pdfKey,
-      pdfFrontCover: book.pdfFrontCover,
-      pdfBackCover: book.pdfBackCover,
-      pageLayout: book.pageLayout,
-      coverImage: book.coverImage
-    };
-    
-    setIsAddingToCart(true);
-    addToCart(product, 1);
-    
-    setTimeout(() => {
-      setIsAddingToCart(false);
-      router.push('/shop/cart');
-    }, 1000);
-  };
 
   const handlePreview = () => {
     router.push(`/library/stories/${bookId}?preview=true`);
@@ -334,6 +287,10 @@ export default function BookDetailPage() {
 
   const handleReadFull = () => {
     router.push(`/library/stories/${bookId}`);
+  };
+
+  const handleOpenPDF = () => {
+    setShowPDFViewer(true);
   };
 
   if (loading) {
@@ -452,9 +409,6 @@ export default function BookDetailPage() {
                 <div className="flex-1 space-y-4">
                   <div>
                     <div className="flex items-start gap-3 mb-2">
-                      {book.isPremium && (
-                        <Crown className="w-5 h-5 text-yellow-500 mt-1" />
-                      )}
                       <div className="flex-1">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
                           {book.title}
@@ -799,89 +753,42 @@ export default function BookDetailPage() {
               className="bg-white rounded-lg shadow-sm p-6"
             >
               <div className="space-y-4">
-                {/* Price */}
-                {book.isPremium && book.price && (
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900">
-                      ${Number(book.price || 0).toFixed(2)}
-                    </div>
-                    <div className="text-sm text-gray-600">One-time purchase</div>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
+                {/* Action Buttons - All books are now free */}
                 <div className="space-y-3">
-                  {book.accessLevel === 'full' ? (
-                    <button
-                      onClick={handleReadFull}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                    >
-                      <BookOpen className="w-5 h-5" />
-                      Read Full Book
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={handlePreview}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                      >
-                        <Play className="w-5 h-5" />
-                        Preview ({book.previewPages || 5} pages)
-                      </button>
-                      {book.isPremium && (
-                        <div className="space-y-2">
-                          <button
-                            onClick={handlePurchase}
-                            disabled={isAddingToCart}
-                            className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors font-medium ${
-                              isAddingToCart
-                                ? 'bg-green-600 text-white'
-                                : 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                            }`}
-                          >
-                            {isAddingToCart ? (
-                              <>
-                                <ShoppingCart className="w-5 h-5" />
-                                Added to Cart!
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingCart className="w-5 h-5" />
-                                Purchase - ${Number(book.price || 0).toFixed(2)}
-                              </>
-                            )}
-                          </button>
-                          <Link 
-                            href="/pricing"
-                            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors font-medium"
-                          >
-                            <Crown className="w-5 h-5" />
-                            Get Unlimited Access
-                          </Link>
-                        </div>
-                      )}
-                    </>
-                  )}
+                  <button
+                    onClick={handleOpenPDF}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    <BookOpen className="w-5 h-5" />
+                    Open PDF - FREE
+                  </button>
+                  
+                  <button
+                    onClick={handleReadFull}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                  >
+                    <Eye className="w-5 h-5" />
+                    Read Online
+                  </button>
+                  
+                  <button
+                    onClick={handlePreview}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                  >
+                    <Play className="w-5 h-5" />
+                    Preview Book
+                  </button>
                 </div>
 
-                {/* Access Level Indicator */}
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  {book.accessLevel === 'full' ? (
-                    <div className="flex items-center gap-2 text-green-600 text-sm">
-                      <BookOpen className="w-4 h-4" />
-                      Full access granted
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-yellow-600 text-sm">
-                        <Eye className="w-4 h-4" />
-                        Preview access only
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        Read the first {book.previewPages || 10} pages for free
-                      </div>
-                    </div>
-                  )}
+                {/* Free Access Indicator */}
+                <div className="p-3 bg-green-50 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-600 text-sm">
+                    <BookOpen className="w-4 h-4" />
+                    Free access to all content
+                  </div>
+                  <div className="text-xs text-green-700 mt-1">
+                    All books in our library are completely free to read
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -954,11 +861,8 @@ export default function BookDetailPage() {
                             By {relatedBook.authorName}
                           </p>
                           <div className="flex items-center gap-2 mt-1">
-                            {relatedBook.isPremium && (
-                              <Crown className="w-3 h-3 text-yellow-500" />
-                            )}
                             <span className="text-xs text-gray-500">
-                              {relatedBook.readingTime} min
+                              {relatedBook.readingTime} min - FREE
                             </span>
                           </div>
                         </div>
@@ -971,6 +875,18 @@ export default function BookDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* PDF Viewer Modal */}
+      {showPDFViewer && book && (book.pdfKey || book.fullPdf || book.samplePdf) && (
+        <SafePDFViewer
+          pdfUrl={book.pdfKey || book.fullPdf || book.samplePdf || ''}
+          title={book.title}
+          onClose={() => setShowPDFViewer(false)}
+          isAuthenticated={!!session}
+          canAccessFull={true}
+          bookId={book.id}
+        />
+      )}
     </div>
   );
 }
