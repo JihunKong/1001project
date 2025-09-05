@@ -8,7 +8,7 @@
 SERVER_IP="3.128.143.122"
 SERVER_USER="ubuntu"
 PEM_FILE="/Users/jihunkong/Downloads/1001project.pem"
-REPO_URL="https://github.com/JihunKong/1001project.git"
+REPO_URL="https://github.com/SeedsofEmpowerment/1001storie_online.git"
 DEPLOY_PATH="/home/ubuntu/1001project"
 DOMAIN="1001stories.seedsofempowerment.org"
 
@@ -66,7 +66,7 @@ deploy_to_server() {
         # Check if git repo exists
         if [ ! -d ".git" ]; then
             echo "Cloning repository..."
-            git clone https://github.com/JihunKong/1001project.git .
+            git clone https://github.com/SeedsofEmpowerment/1001storie_online.git .
         else
             echo "Backing up uploaded files..."
             if [ -d "public/books" ]; then

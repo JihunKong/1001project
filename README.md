@@ -27,7 +27,7 @@ Empower young voices and inspire the world through stories that bridge cultures,
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/JihunKong/1001project.git
+git clone https://github.com/SeedsofEmpowerment/1001storie_online.git
 cd 1001-stories
 ```
 
@@ -222,7 +222,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/JihunKong/1001project/issues)
+- **Issues**: [GitHub Issues](https://github.com/SeedsofEmpowerment/1001storie_online/issues)
 - **Email**: info@1001stories.org
 - **Documentation**: See CLAUDE.md for detailed technical documentation
 
