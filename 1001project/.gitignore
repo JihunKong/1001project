@@ -1,0 +1,112 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+!.env.local.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# docker
+docker-compose.override.yml
+
+# nginx
+nginx/ssl/
+nginx/logs/
+
+# uploads
+uploads/.env.local
+
+# PDF files and books content
+*.PDF
+*.pdf
+/public/books/
+
+# sensitive files
+test-email.js
+*.backup
+*.bak
+.env.secrets
+
+# server sync files
+*.server
+
+# AWS and deployment files
+*.pem
+*.key
+aws-config.json
+deployment-secrets.txt
+server-config.json
+
+# SSL and certificate files
+ssl/
+*.crt
+*.csr
+fullchain.pem
+privkey.pem
+
+# Docker Compose overrides and SSL setup
+docker-compose.local.yml
+docker-compose.dev.yml
+docker-compose.test.yml
+docker-compose.ssl.yml
+docker-compose.override.yml
+
+# Test files and temporary files
+test-rls-*.js
+test-rls-*.sql
+test-*.sql
+*.log
+server.log
+test-email.js
+
+# Backup files
+backups/
+*.sql.gz
+*.tar.gz
+*.backup
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+Desktop.ini

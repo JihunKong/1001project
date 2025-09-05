@@ -1,0 +1,110 @@
+/* CRITICAL INPUT TEXT VISIBILITY FIX */
+/* This file ensures input text is always visible */
+
+/* Force all text inputs to have dark text on white background */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+textarea,
+select {
+  color: rgb(17, 24, 39) !important; /* gray-900 */
+  background-color: rgb(255, 255, 255) !important; /* white */
+  -webkit-text-fill-color: rgb(17, 24, 39) !important;
+  opacity: 1 !important;
+  caret-color: rgb(17, 24, 39) !important;
+}
+
+/* Ensure text remains visible during typing */
+input:not(:placeholder-shown),
+textarea:not(:placeholder-shown) {
+  color: rgb(17, 24, 39) !important;
+  -webkit-text-fill-color: rgb(17, 24, 39) !important;
+}
+
+/* Fix for autofill styles */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:active {
+  -webkit-text-fill-color: rgb(17, 24, 39) !important;
+  -webkit-box-shadow: 0 0 0 1000px rgb(255, 255, 255) inset !important;
+  box-shadow: 0 0 0 1000px rgb(255, 255, 255) inset !important;
+  background-color: rgb(255, 255, 255) !important;
+  color: rgb(17, 24, 39) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Placeholder text should be lighter but visible */
+input::placeholder,
+textarea::placeholder {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+  -webkit-text-fill-color: rgb(156, 163, 175) !important;
+  opacity: 1 !important;
+}
+
+/* Focus state maintains dark text */
+input:focus,
+textarea:focus,
+select:focus {
+  color: rgb(17, 24, 39) !important;
+  background-color: rgb(255, 255, 255) !important;
+  -webkit-text-fill-color: rgb(17, 24, 39) !important;
+}
+
+/* Selection highlight */
+input::selection,
+textarea::selection {
+  background-color: rgb(59, 130, 246) !important; /* blue-500 */
+  color: rgb(255, 255, 255) !important;
+}
+
+/* Dark mode override - keep inputs light for readability */
+@media (prefers-color-scheme: dark) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"],
+  textarea,
+  select {
+    color: rgb(17, 24, 39) !important;
+    background-color: rgb(255, 255, 255) !important;
+    -webkit-text-fill-color: rgb(17, 24, 39) !important;
+    border-color: rgb(209, 213, 219) !important; /* gray-300 */
+  }
+  
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: rgb(17, 24, 39) !important;
+    -webkit-box-shadow: 0 0 0 1000px rgb(255, 255, 255) inset !important;
+    background-color: rgb(255, 255, 255) !important;
+  }
+}
+
+/* Disabled inputs should be clearly visible as disabled */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  color: rgb(107, 114, 128) !important; /* gray-500 */
+  background-color: rgb(243, 244, 246) !important; /* gray-100 */
+  -webkit-text-fill-color: rgb(107, 114, 128) !important;
+  cursor: not-allowed !important;
+}
