@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
     
     // Get access information for all books
     const bookIds = books.map(book => book.id)
-    const batchAccessResults = currentUserId ? await checkBatchBookAccess(bookIds, currentUserId) : {}
+    const batchAccessResults = currentUserId ? await checkBatchBookAccess({ userId: currentUserId, bookIds }) : {}
     
     // Transform books with access information
     const booksWithAccess = books.map(book => ({

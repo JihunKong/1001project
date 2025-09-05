@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies with legacy peer deps to avoid conflicts
+RUN npm ci --legacy-peer-deps
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
@@ -19,13 +19,14 @@ COPY . .
 
 # Environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 # Don't set NODE_ENV=production during build to allow Tailwind to scan files properly
 
-# Generate Prisma Client
-RUN npx prisma generate
+# Generate Prisma Client (only the client, skip other generators)
+RUN npx prisma generate --generator client
 
-# Reinstall sharp for Alpine Linux musl
-RUN npm uninstall sharp && npm install --platform=linuxmusl --arch=x64 sharp
+# Reinstall sharp for Alpine Linux musl ARM64
+RUN npm install --os=linux --libc=musl --cpu=arm64 sharp --legacy-peer-deps
 
 # Build application
 RUN npm run build

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCw, Download, Share2, BookmarkPlus, Eye, Lock, AlertCircle, Loader2, Grid, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { BookAccess, BookAccessResult } from '@/lib/book-access';
+import { BookAccess, AccessLevel } from '@/lib/book-access';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
@@ -14,7 +14,7 @@ interface PDFReaderProps {
   pdfUrl: string;
   title: string;
   authorName: string;
-  accessResult: BookAccessResult;
+  accessResult: AccessLevel;
   className?: string;
   onPageChange?: (page: number) => void;
   onAccessUpgrade?: () => void;

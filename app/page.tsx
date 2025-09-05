@@ -104,13 +104,20 @@ export default function Home() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-900/50 dark:to-gray-900">
-      {/* Hero Section with animated background */}
+      {/* Hero Section with hero image background */}
       <section className="relative overflow-hidden py-24 sm:py-32 lg:py-40">
-        {/* Animated gradient background - simplified */}
+        {/* Hero background image */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-indigo-950/20 dark:to-purple-950/20" />
-          <div className="blob blob-indigo w-96 h-96 top-0 left-0 animate-delay-100 opacity-30" />
-          <div className="blob blob-blue w-96 h-96 bottom-0 right-0 animate-delay-300 opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-yellow-50/30 to-white" />
+          <div 
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=1920&h=1080&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+          <div className="absolute inset-0 bg-white/90" />
         </div>
         
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
@@ -136,7 +143,7 @@ export default function Home() {
               <span className="block text-gray-900 dark:text-white mb-2">
                 Empower Young Voices
               </span>
-              <span className="gradient-text text-6xl sm:text-7xl lg:text-8xl">
+              <span className="text-brand-primary text-6xl sm:text-7xl lg:text-8xl font-bold">
                 Inspire the World
               </span>
             </h1>
@@ -146,17 +153,13 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/signup" className="btn-primary group">
-                Get Started Now
+              <Link href="/signup" className="btn-brand-primary group">
+                Join Our Community
                 <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link href="/demo" className="btn-secondary text-gray-700 dark:text-gray-200">
-                <Play className="w-5 h-5 mr-2" />
-                Try Demo
-              </Link>
-              <Link href="/library" className="btn-secondary text-gray-700 dark:text-gray-200">
+              <Link href="/library" className="btn-brand-secondary">
                 <BookOpen className="w-5 h-5 mr-2" />
-                Explore Library
+                Explore Stories
               </Link>
             </div>
           </motion.div>
@@ -206,7 +209,7 @@ export default function Home() {
                   className="text-center"
                 >
                   <stat.icon className="w-8 h-8 mx-auto mb-3 text-indigo-500" />
-                  <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+                  <div className="text-3xl sm:text-4xl font-bold text-brand-primary mb-2">
                     {stat.value}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -241,13 +244,13 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/signup" className="btn-primary group text-lg px-8 py-4">
-                Get Started - Free
+              <Link href="/signup" className="btn-brand-primary group text-lg px-8 py-4">
+                Start Your Journey
                 <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link href="/library" className="btn-secondary text-gray-700 dark:text-gray-200 text-lg px-8 py-4">
+              <Link href="/library" className="btn-brand-secondary text-lg px-8 py-4">
                 <BookOpen className="w-5 h-5 mr-2" />
-                Explore Stories First
+                Explore Stories
               </Link>
             </div>
             
@@ -279,7 +282,7 @@ export default function Home() {
             </div>
             
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-              <span className="gradient-text">Plant Seeds of Hope</span>
+              <span className="text-brand-primary">Plant Seeds of Hope</span>
             </h2>
             
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
@@ -288,12 +291,12 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/donate" className="btn-primary group">
+              <Link href="/donate" className="btn-brand-primary group">
                 <Heart className="w-5 h-5 mr-2" />
                 Support Our Mission
                 <Rocket className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
               </Link>
-              <Link href="/volunteer" className="btn-secondary text-gray-700 dark:text-gray-200">
+              <Link href="/volunteer" className="btn-brand-secondary">
                 <Users className="w-5 h-5 mr-2" />
                 Become a Volunteer
               </Link>

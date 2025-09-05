@@ -59,7 +59,6 @@ export async function getOrCreateDemoUser(email: string) {
       where: { email: mappedEmail },
       include: {
         profile: true,
-        subscription: true,
       },
     });
 
@@ -90,21 +89,9 @@ export async function getOrCreateDemoUser(email: string) {
             language: 'en',
           },
         },
-        subscription: {
-          create: {
-            plan: 'FREE',
-            status: 'ACTIVE',
-            maxStudents: 30,
-            maxDownloads: 10,
-            canAccessPremium: false,
-            canDownloadPDF: false,
-            canCreateClasses: role === UserRole.TEACHER || role === UserRole.INSTITUTION,
-          },
-        },
       },
       include: {
         profile: true,
-        subscription: true,
       },
     });
 

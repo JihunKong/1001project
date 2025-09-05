@@ -50,7 +50,6 @@ export async function validateDeletionRequest(userId: string): Promise<DeletionV
     include: {
       profile: true,
       deletionRequest: true,
-      orders: { where: { status: { in: ['PENDING', 'PROCESSING'] } } },
       recurringDonations: { where: { status: 'ACTIVE' } },
       volunteerProfile: {
         include: {
@@ -81,7 +80,8 @@ export async function validateDeletionRequest(userId: string): Promise<DeletionV
   }
 
   // Check for active financial transactions
-  if (user.orders && user.orders.length > 0) {
+  // Orders check removed - no longer using e-commerce
+  if (false) {
     blockers.push('Active orders must be completed or cancelled first')
   }
 

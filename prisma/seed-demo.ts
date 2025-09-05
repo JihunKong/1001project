@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
+import { PrismaClient, UserRole } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -62,26 +62,10 @@ async function seedDemoAccounts() {
             },
           },
           
-          // Create subscription based on role
-          subscription: {
-            create: {
-              plan: account.role === UserRole.TEACHER || account.role === UserRole.INSTITUTION 
-                ? SubscriptionPlan.PREMIUM 
-                : SubscriptionPlan.FREE,
-              status: SubscriptionStatus.ACTIVE,
-              maxStudents: account.role === UserRole.TEACHER ? 100 : 30,
-              maxDownloads: account.role === UserRole.TEACHER ? 999 : 10,
-              canAccessPremium: account.role !== UserRole.LEARNER,
-              canDownloadPDF: account.role !== UserRole.LEARNER,
-              canCreateClasses: account.role === UserRole.TEACHER || account.role === UserRole.INSTITUTION,
-              startDate: new Date(),
-              endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
-            },
-          },
+          // Subscription removed - all content is free now
         },
         include: {
           profile: true,
-          subscription: true,
         },
       });
 

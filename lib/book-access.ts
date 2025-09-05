@@ -1,456 +1,319 @@
-import { prisma } from '@/lib/prisma'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-
 /**
- * Book Access Control System
+ * Book Access Control Module
  * 
- * Manages access to PDF books based on user subscription, purchases, and preview limits.
- * This is specifically designed for the Book model (not Story model).
+ * Manages access to PDF books in the free library system.
+ * All books are now freely accessible to authenticated users.
  */
 
+import { prisma } from './prisma'
+
 export enum BookAccess {
-  PREVIEW = 'preview',       // Limited pages free
-  PURCHASED = 'purchased',   // One-time purchase
-  SUBSCRIBED = 'subscribed', // Active subscription
-  RESTRICTED = 'restricted', // No access
-  FREE = 'free'              // Free book, full access
+  NONE = 'none', // No access
+  FREE = 'free', // Free access (full)
+  PREVIEW = 'preview', // Preview access only
+  PURCHASED = 'purchased', // Has purchased (legacy)
+  SUBSCRIBED = 'subscribed' // Full access (now same as FREE)
 }
 
-export interface BookAccessResult {
+export interface AccessLevel {
   level: BookAccess
   canReadFull: boolean
   canDownload: boolean
   canPrint: boolean
   previewPages: number
-  totalPages: number | null
+  totalPages?: number
   message?: string
   upgradeOptions?: {
     purchase?: {
       price: number
       currency: string
     }
-    subscription?: {
-      plan: string
-      price: number
-      currency: string
-    }
   }
 }
 
-export interface BookPreviewInfo {
-  allowedPages: number[]  // Array of page numbers user can access
-  isComplete: boolean
-  totalPages: number | null
-  remainingPages: number
-  watermark?: string
+export interface BookAccessOptions {
+  userId?: string
+  bookId: string
+  checkPurchase?: boolean
+  checkOwnership?: boolean
+}
+
+export interface BatchAccessOptions {
+  userId?: string
+  bookIds: string[]
+}
+
+export interface BatchAccessResult {
+  [bookId: string]: AccessLevel
 }
 
 /**
- * Check user's access level for a specific book
+ * Check access level for a single book
+ * All authenticated users now have full access to all books
  */
-export async function checkBookAccess(
-  bookId: string, 
-  userId?: string
-): Promise<BookAccessResult> {
+export async function checkBookAccess({
+  userId,
+  bookId,
+}: BookAccessOptions): Promise<AccessLevel> {
   try {
     // Get book details
-    const book = await prisma.book.findFirst({
-      where: {
-        id: bookId,
-        isPublished: true
-      },
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
       select: {
         id: true,
         title: true,
-        isPremium: true,
         price: true,
         currency: true,
-        previewPages: true,
-        pageCount: true,
         downloadAllowed: true,
         printAllowed: true,
-        drm: true
+        previewPages: true,
+        pageCount: true
       }
     })
     
     if (!book) {
       return {
-        level: BookAccess.RESTRICTED,
+        level: BookAccess.NONE,
         canReadFull: false,
         canDownload: false,
         canPrint: false,
         previewPages: 0,
-        totalPages: null,
-        message: 'Book not found or unavailable'
+        totalPages: 0,
+        message: 'Book not found'
       }
     }
     
-    // Free books are always accessible
-    if (!book.isPremium) {
-      return {
-        level: BookAccess.FREE,
-        canReadFull: true,
-        canDownload: book.downloadAllowed,
-        canPrint: book.printAllowed,
-        previewPages: book.pageCount || 999,
-        totalPages: book.pageCount
-      }
-    }
-    
-    // For premium books, check user access
+    // Non-authenticated users get preview only
     if (!userId) {
       return {
         level: BookAccess.PREVIEW,
         canReadFull: false,
         canDownload: false,
         canPrint: false,
-        previewPages: book.previewPages || 10,
-        totalPages: book.pageCount,
-        message: 'Preview available. Sign up to read the full book.',
-        upgradeOptions: {
-          purchase: book.price ? {
-            price: Number(book.price),
-            currency: book.currency
-          } : undefined,
-          subscription: {
-            plan: 'basic',
-            price: 9.99,
-            currency: 'USD'
-          }
-        }
+        previewPages: book.previewPages || 5,
+        totalPages: book.pageCount || undefined || undefined,
+        message: 'Sign in to read the full book for free'
       }
     }
     
-    // Check user's subscription
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId },
-      select: {
-        status: true,
-        canAccessPremium: true,
-        canDownloadPDF: true,
-        unlimitedReading: true
-      }
-    })
-    
-    if (subscription?.status === 'ACTIVE' && subscription.canAccessPremium) {
-      return {
-        level: BookAccess.SUBSCRIBED,
-        canReadFull: true,
-        canDownload: subscription.canDownloadPDF && book.downloadAllowed,
-        canPrint: book.printAllowed,
-        previewPages: book.pageCount || 999,
-        totalPages: book.pageCount
-      }
-    }
-    
-    // Check if user has purchased this book
-    const purchase = await prisma.order.findFirst({
-      where: {
-        userId,
-        status: { in: ['DELIVERED', 'PROCESSING'] },
-        items: {
-          some: {
-            productId: bookId
-          }
-        }
-      }
-    })
-    
-    if (purchase) {
-      return {
-        level: BookAccess.PURCHASED,
-        canReadFull: true,
-        canDownload: book.downloadAllowed,
-        canPrint: book.printAllowed,
-        previewPages: book.pageCount || 999,
-        totalPages: book.pageCount
-      }
-    }
-    
-    // Default to preview for authenticated users
+    // All books are now free to access in the library
+    // Return full access for all authenticated users
     return {
-      level: BookAccess.PREVIEW,
-      canReadFull: false,
-      canDownload: false,
-      canPrint: false,
-      previewPages: book.previewPages || 10,
-      totalPages: book.pageCount,
-      message: 'Preview available. Purchase or subscribe to read the full book.',
-      upgradeOptions: {
-        purchase: book.price ? {
-          price: Number(book.price),
-          currency: book.currency
-        } : undefined,
-        subscription: {
-          plan: 'basic',
-          price: 9.99,
-          currency: 'USD'
-        }
-      }
+      level: BookAccess.FREE,
+      canReadFull: true,
+      canDownload: book.downloadAllowed,
+      canPrint: book.printAllowed,
+      previewPages: book.pageCount || 999,
+      totalPages: book.pageCount || undefined
     }
     
   } catch (error) {
     console.error('Error checking book access:', error)
     return {
-      level: BookAccess.RESTRICTED,
+      level: BookAccess.NONE,
       canReadFull: false,
       canDownload: false,
       canPrint: false,
       previewPages: 0,
-      totalPages: null,
-      message: 'Error checking access permissions'
+      totalPages: 0,
+      message: 'Error checking access'
     }
   }
 }
 
 /**
- * Get preview information for a book
+ * Check if a user can access a book (simplified check)
+ * All authenticated users can access all books
  */
-export function getBookPreview(
-  accessLevel: BookAccess,
-  previewPages: number = 10,
-  totalPages: number | null = null
-): BookPreviewInfo {
-  if (accessLevel === BookAccess.FREE || 
-      accessLevel === BookAccess.SUBSCRIBED || 
-      accessLevel === BookAccess.PURCHASED) {
-    
-    const pages = totalPages ? Array.from({ length: totalPages }, (_, i) => i + 1) : [];
-    
-    return {
-      allowedPages: pages,
-      isComplete: true,
-      totalPages,
-      remainingPages: 0
-    }
-  }
+export async function canAccessBook(
+  userId: string | undefined,
+  bookId: string
+): Promise<boolean> {
+  if (!userId) return false
   
-  if (accessLevel === BookAccess.PREVIEW) {
-    const allowedPages = Array.from({ length: previewPages }, (_, i) => i + 1);
-    const remainingPages = totalPages ? Math.max(0, totalPages - previewPages) : 0;
-    
-    return {
-      allowedPages,
-      isComplete: false,
-      totalPages,
-      remainingPages,
-      watermark: 'PREVIEW - Purchase to read full book'
-    }
-  }
-  
-  return {
-    allowedPages: [],
-    isComplete: false,
-    totalPages,
-    remainingPages: totalPages || 0
-  }
-}
-
-/**
- * Check if a specific page number is accessible to the user
- */
-export function canAccessPage(
-  pageNumber: number,
-  accessResult: BookAccessResult
-): { canAccess: boolean; reason?: string } {
-  if (accessResult.level === BookAccess.RESTRICTED) {
-    return { canAccess: false, reason: 'No access to this book' };
-  }
-  
-  if (accessResult.level === BookAccess.FREE || 
-      accessResult.level === BookAccess.SUBSCRIBED || 
-      accessResult.level === BookAccess.PURCHASED) {
-    return { canAccess: true };
-  }
-  
-  if (accessResult.level === BookAccess.PREVIEW) {
-    if (pageNumber <= accessResult.previewPages) {
-      return { canAccess: true };
-    } else {
-      return { 
-        canAccess: false, 
-        reason: `Page ${pageNumber} requires purchase. Preview includes pages 1-${accessResult.previewPages}.` 
-      };
-    }
-  }
-  
-  return { canAccess: false, reason: 'Unknown access level' };
-}
-
-/**
- * Get book thumbnails with access control
- */
-export async function getBookThumbnails(
-  bookId: string,
-  userId?: string
-): Promise<{
-  thumbnails: any;
-  canViewThumbnails: boolean;
-  accessLevel: BookAccess;
-}> {
+  // All authenticated users can access all books
   const book = await prisma.book.findUnique({
     where: { id: bookId },
+    select: { id: true }
+  })
+  
+  return !!book
+}
+
+/**
+ * Check if a user can download a book
+ * Authenticated users can download if the book allows it
+ */
+export async function canDownloadBook(
+  userId: string | undefined,
+  bookId: string
+): Promise<boolean> {
+  if (!userId) return false
+  
+  const book = await prisma.book.findUnique({
+    where: { id: bookId },
+    select: { downloadAllowed: true }
+  })
+  
+  return book?.downloadAllowed ?? false
+}
+
+/**
+ * Get all accessible books for a user
+ * All books are accessible for authenticated users
+ */
+export async function getAccessibleBooks(userId: string | undefined) {
+  // For non-authenticated users, return empty list or preview-only books
+  if (!userId) {
+    return await prisma.book.findMany({
+      where: {
+        OR: [
+          { previewPages: { gt: 0 } }
+        ]
+      },
+      select: {
+        id: true,
+        title: true,
+        authorName: true,
+        coverImage: true,
+        summary: true,
+        pageCount: true
+      }
+    })
+  }
+  
+  // For authenticated users, return all books
+  return await prisma.book.findMany({
     select: {
       id: true,
-      // thumbnails: true, // Will be added when schema is ready
-      isPremium: true
+      title: true,
+      authorName: true,
+      coverImage: true,
+      summary: true,
+      downloadAllowed: true,
+      printAllowed: true,
+      pageCount: true,
+      category: true,
+      ageRange: true,
+      language: true,
+      publishedAt: true
     }
-  });
-
-  if (!book) {
-    return {
-      thumbnails: null,
-      canViewThumbnails: false,
-      accessLevel: BookAccess.RESTRICTED
-    };
-  }
-
-  const accessResult = await checkBookAccess(bookId, userId);
-  
-  // Even for preview users, we show thumbnails to encourage engagement
-  const canViewThumbnails = accessResult.level !== BookAccess.RESTRICTED;
-  
-  return {
-    thumbnails: null, // book.thumbnails, // Will be added when schema is ready
-    canViewThumbnails,
-    accessLevel: accessResult.level
-  };
+  })
 }
 
 /**
- * Track book access attempts for analytics
+ * Record book access/reading activity
  */
-export async function trackBookAccess(
+export async function recordBookAccess(
+  userId: string,
   bookId: string,
-  userId: string | null,
-  accessType: 'view' | 'download' | 'preview' | 'purchase_attempt',
-  metadata: {
-    pageNumber?: number
-    source?: string
-    userAgent?: string
-    sessionId?: string
-  } = {}
-): Promise<void> {
+  action: 'view' | 'download' | 'print' = 'view'
+) {
   try {
-    const baseData = {
-      bookId,
-      accessType,
-      ...metadata,
-      timestamp: new Date()
-    }
-    
-    if (userId) {
-      // Track for authenticated users
-      await prisma.activityLog.create({
-        data: {
+    // Record the access in UserReadingProgress
+    await prisma.readingProgress.upsert({
+      where: {
+        userId_storyId: {
           userId,
-          action: `BOOK_${accessType.toUpperCase()}`,
-          entity: 'BOOK',
-          entityId: bookId,
-          metadata: baseData
+          storyId: bookId
         }
-      })
-    } else {
-      // Track for anonymous users
-      console.log('Anonymous book access tracking:', baseData)
-    }
+      },
+      update: {
+        lastReadAt: new Date(),
+        totalReadingTime: { increment: 1 }
+      },
+      create: {
+        userId,
+        storyId: bookId,
+        currentPage: 1,
+        totalPages: 0,
+        percentComplete: 0,
+        lastReadAt: new Date(),
+        totalReadingTime: 1
+      }
+    })
+    
+    console.log(`Recorded ${action} access for book ${bookId} by user ${userId}`)
   } catch (error) {
-    console.error('Error tracking book access:', error)
+    console.error('Error recording book access:', error)
   }
 }
 
 /**
- * Check if user has reached book access limits (anti-abuse)
+ * Get user's reading history
  */
-export async function checkBookAccessLimits(
-  userId: string | null,
-  sessionId: string | null
-): Promise<{ exceeded: boolean; remaining: number; resetTime: Date }> {
-  const hourlyLimit = 20 // Max 20 book previews per hour for anonymous users
-  const now = new Date()
-  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
-  
-  try {
-    let accessCount = 0
-    
-    if (userId) {
-      accessCount = await prisma.activityLog.count({
-        where: {
-          userId,
-          action: { in: ['BOOK_VIEW', 'BOOK_PREVIEW'] },
-          createdAt: {
-            gte: oneHourAgo
-          }
+export async function getUserReadingHistory(userId: string) {
+  return await prisma.readingProgress.findMany({
+    where: { userId },
+    include: {
+      story: {
+        select: {
+          id: true,
+          title: true,
+          authorName: true,
+          coverImage: true,
+          category: true
         }
-      })
-    } else {
-      // For anonymous users, implement session-based tracking
-      // This would require Redis or another solution for production
-      accessCount = 0
+      }
+    },
+    orderBy: {
+      lastReadAt: 'desc'
     }
-    
-    const exceeded = accessCount >= hourlyLimit
-    const remaining = Math.max(0, hourlyLimit - accessCount)
-    const resetTime = new Date(now.getTime() + 60 * 60 * 1000)
-    
-    return {
-      exceeded,
-      remaining,
-      resetTime
-    }
-    
-  } catch (error) {
-    console.error('Error checking book access limits:', error)
-    return {
-      exceeded: false,
-      remaining: hourlyLimit,
-      resetTime: new Date(now.getTime() + 60 * 60 * 1000)
-    }
-  }
+  })
 }
 
 /**
- * Helper function to get current user session and book access info
+ * Update reading progress
  */
-export async function getCurrentUserBookAccess(bookId: string): Promise<{
-  userId: string | null
-  bookAccess: BookAccessResult
-  thumbnails: any
-}> {
-  const session = await getServerSession(authOptions)
-  const userId = session?.user?.id || null
+export async function updateReadingProgress(
+  userId: string,
+  bookId: string,
+  currentPage: number,
+  totalPages?: number
+) {
+  const progress = totalPages ? Math.round((currentPage / totalPages) * 100) : 0
   
-  const [bookAccess, thumbnailData] = await Promise.all([
-    checkBookAccess(bookId, userId || undefined),
-    getBookThumbnails(bookId, userId || undefined)
-  ])
-  
-  return {
-    userId,
-    bookAccess,
-    thumbnails: thumbnailData.thumbnails
-  }
+  return await prisma.readingProgress.upsert({
+    where: {
+      userId_storyId: {
+        userId,
+        storyId: bookId
+      }
+    },
+    update: {
+      currentPage,
+      totalPages: totalPages || 0,
+      percentComplete: progress,
+      lastReadAt: new Date()
+    },
+    create: {
+      userId,
+      storyId: bookId,
+      currentPage,
+      totalPages: totalPages || 0,
+      percentComplete: progress,
+      lastReadAt: new Date(),
+      totalReadingTime: 1
+    }
+  })
 }
 
 /**
- * Batch check access for multiple books (for library views)
+ * Check access for multiple books at once
+ * All authenticated users get full access to all books
  */
-export async function checkBatchBookAccess(
-  bookIds: string[],
-  userId?: string
-): Promise<Record<string, BookAccessResult>> {
-  const results: Record<string, BookAccessResult> = {}
-  
-  // Get all books in one query
+export async function checkBatchBookAccess({
+  userId,
+  bookIds
+}: BatchAccessOptions): Promise<BatchAccessResult> {
+  // Get all requested books
   const books = await prisma.book.findMany({
     where: {
-      id: { in: bookIds },
-      isPublished: true
+      id: { in: bookIds }
     },
     select: {
       id: true,
-      isPremium: true,
+      title: true,
       price: true,
       currency: true,
       previewPages: true,
@@ -460,127 +323,88 @@ export async function checkBatchBookAccess(
     }
   })
   
-  // Get user's subscription if authenticated
-  let subscription = null
-  if (userId) {
-    subscription = await prisma.subscription.findUnique({
-      where: { userId },
-      select: {
-        status: true,
-        canAccessPremium: true,
-        canDownloadPDF: true
-      }
-    })
-  }
+  // Process each book - all are now free to access
+  const results: BatchAccessResult = {}
   
-  // Get user's purchases if authenticated
-  let purchasedBookIds: string[] = []
-  if (userId) {
-    const orders = await prisma.order.findMany({
-      where: {
-        userId,
-        status: { in: ['DELIVERED', 'PROCESSING'] }
-      },
-      include: {
-        items: {
-          select: { productId: true }
-        }
-      }
-    })
-    
-    purchasedBookIds = orders.flatMap(order => 
-      order.items.map(item => item.productId).filter(Boolean)
-    )
-  }
-  
-  // Process each book
   for (const book of books) {
-    // Free books
-    if (!book.isPremium) {
+    // All books are free for authenticated users
+    if (userId) {
       results[book.id] = {
         level: BookAccess.FREE,
         canReadFull: true,
         canDownload: book.downloadAllowed,
         canPrint: book.printAllowed,
         previewPages: book.pageCount || 999,
-        totalPages: book.pageCount
+        totalPages: book.pageCount || undefined
       }
-      continue
-    }
-    
-    // No user - preview only
-    if (!userId) {
+    } else {
+      // Non-authenticated users get preview only
       results[book.id] = {
         level: BookAccess.PREVIEW,
         canReadFull: false,
         canDownload: false,
         canPrint: false,
-        previewPages: book.previewPages || 10,
-        totalPages: book.pageCount,
-        message: 'Preview available. Sign up to read the full book.',
-        upgradeOptions: {
-          purchase: book.price ? {
-            price: Number(book.price),
-            currency: book.currency
-          } : undefined,
-          subscription: {
-            plan: 'basic',
-            price: 9.99,
-            currency: 'USD'
-          }
-        }
-      }
-      continue
-    }
-    
-    // Check subscription
-    if (subscription?.status === 'ACTIVE' && subscription.canAccessPremium) {
-      results[book.id] = {
-        level: BookAccess.SUBSCRIBED,
-        canReadFull: true,
-        canDownload: subscription.canDownloadPDF && book.downloadAllowed,
-        canPrint: book.printAllowed,
-        previewPages: book.pageCount || 999,
-        totalPages: book.pageCount
-      }
-      continue
-    }
-    
-    // Check purchase
-    if (purchasedBookIds.includes(book.id)) {
-      results[book.id] = {
-        level: BookAccess.PURCHASED,
-        canReadFull: true,
-        canDownload: book.downloadAllowed,
-        canPrint: book.printAllowed,
-        previewPages: book.pageCount || 999,
-        totalPages: book.pageCount
-      }
-      continue
-    }
-    
-    // Default to preview for authenticated users
-    results[book.id] = {
-      level: BookAccess.PREVIEW,
-      canReadFull: false,
-      canDownload: false,
-      canPrint: false,
-      previewPages: book.previewPages || 10,
-      totalPages: book.pageCount,
-      message: 'Preview available. Purchase or subscribe to read the full book.',
-      upgradeOptions: {
-        purchase: book.price ? {
-          price: Number(book.price),
-          currency: book.currency
-        } : undefined,
-        subscription: {
-          plan: 'basic',
-          price: 9.99,
-          currency: 'USD'
-        }
+        previewPages: book.previewPages || 5,
+        totalPages: book.pageCount || undefined || undefined,
+        message: 'Sign in to read the full book for free'
       }
     }
   }
   
   return results
+}
+
+/**
+ * Get preview content for a book
+ */
+export async function getBookPreview(bookId: string, maxPages: number = 5) {
+  const book = await prisma.book.findUnique({
+    where: { id: bookId },
+    select: {
+      id: true,
+      title: true,
+      authorName: true,
+      summary: true,
+      coverImage: true,
+      previewPages: true,
+      pageCount: true
+    }
+  })
+  
+  if (!book) {
+    throw new Error('Book not found')
+  }
+  
+  const previewPages = Math.min(
+    book.previewPages || maxPages,
+    book.pageCount || maxPages
+  )
+  
+  return {
+    ...book,
+    previewPages,
+    isPreview: true
+  }
+}
+
+/**
+ * Check if content requires premium access (legacy - now always returns false)
+ */
+export async function requiresPremiumAccess(bookId: string): Promise<boolean> {
+  // All books are free now
+  return false
+}
+
+export default {
+  checkBookAccess,
+  canAccessBook,
+  canDownloadBook,
+  getAccessibleBooks,
+  recordBookAccess,
+  getUserReadingHistory,
+  updateReadingProgress,
+  checkBatchBookAccess,
+  getBookPreview,
+  requiresPremiumAccess,
+  BookAccess
 }

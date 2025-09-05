@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat, Raleway } from "next/font/google";
 import "./globals.css";
 import "@/styles/input-fix.css"; // Critical fix for input text visibility
 import I18nProvider from "@/components/providers/I18nProvider";
@@ -10,9 +10,16 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getServerLocale } from "@/lib/language-server";
 
-const inter = Inter({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-montserrat",
+  weight: ["400", "500", "600", "700"],
+});
+
+const raleway = Raleway({
+  subsets: ["latin"],
+  variable: "--font-raleway",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -46,7 +53,7 @@ export default async function RootLayout({
   
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${montserrat.variable} ${raleway.variable} font-sans antialiased`}>
         <AuthProvider>
           <CSRFProvider>
             <I18nProvider>

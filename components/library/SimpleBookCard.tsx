@@ -28,7 +28,7 @@ interface Book {
   ageRange?: string;
   readingTime?: number;
   coverImage?: string;
-  isPremium: boolean;
+  // isPremium: boolean; // Removed - all books are free now
   isFeatured?: boolean;
   featured?: boolean;  // API returns 'featured' not 'isFeatured'
   rating?: number;
@@ -97,15 +97,13 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/60 to-transparent"></div>
           </div>
 
-          {/* Premium Badge */}
-          {book.isPremium && (
-            <div className="absolute right-2 top-2 z-20">
-              <span className="inline-flex items-center gap-1 rounded-full bg-yellow-400/90 px-2.5 py-1 text-xs font-semibold text-black shadow-md">
-                <Crown className="h-3 w-3" />
-                Premium
-              </span>
-            </div>
-          )}
+          {/* Free Badge */}
+          <div className="absolute right-2 top-2 z-20">
+            <span className="inline-flex items-center gap-1 rounded-full bg-green-500/90 px-2.5 py-1 text-xs font-semibold text-white shadow-md">
+              <BookOpen className="h-3 w-3" />
+              Free
+            </span>
+          </div>
           
           {/* Featured Badge */}
           {(book.featured || book.isFeatured) && (

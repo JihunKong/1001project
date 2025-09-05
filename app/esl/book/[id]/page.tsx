@@ -189,7 +189,7 @@ export default function ESLBookPage() {
           bookContext: {
             title: book?.title,
             text: extractedText.substring(0, 3000), // Limit context size
-            userAge: session?.user?.profile?.age || 18
+            userAge: 18 // Default age for now
           },
           chatHistory: messages.slice(-5) // Last 5 messages for context
         }),

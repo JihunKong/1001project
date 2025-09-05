@@ -15,16 +15,12 @@ import {
   Users,
   Clock,
   Loader2,
-  Grid3X3,
-  Library as LibraryIcon,
   Eye
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useSubscription } from '@/lib/hooks/useContentAccess';
 import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
 import SimpleBookCard from '@/components/library/SimpleBookCard';
-import BookshelfView from '@/components/library/BookshelfView';
 
 interface Book {
   id: string
@@ -40,10 +36,10 @@ interface Book {
   ageRange?: string
   readingTime?: number
   coverImage?: string
-  isPremium: boolean
+  // isPremium: boolean // Removed - all books are free now
   isFeatured?: boolean
   featured?: boolean  // API returns 'featured' not 'isFeatured'
-  price?: number
+  // price?: number // Removed - all books are free now
   rating?: number
   accessLevel?: 'preview' | 'full'
   viewCount?: number
@@ -83,7 +79,6 @@ export default function Library() {
     return translations[key] || key;
   };
   const { data: session } = useSession();
-  const { subscription } = useSubscription();
   
   const [books, setBooks] = useState<Book[]>([]);
   const [pagination, setPagination] = useState<any>(null);
@@ -96,7 +91,6 @@ export default function Library() {
   const [selectedAge, setSelectedAge] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'cards' | 'bookshelf'>('cards');
   
   // Static filter options (could be fetched from API in the future)
   const filters = {
@@ -322,33 +316,6 @@ export default function Library() {
               Filters
             </button>
             
-            {/* Purchase History Button */}
-            
-            {/* View Mode Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('cards')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
-                  viewMode === 'cards'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-                Cards
-              </button>
-              <button
-                onClick={() => setViewMode('bookshelf')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
-                  viewMode === 'bookshelf'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <LibraryIcon className="w-4 h-4" />
-                Bookshelf
-              </button>
-            </div>
           </div>
 
           {/* Filter Options */}
@@ -522,17 +489,11 @@ export default function Library() {
               <p className="text-gray-600">Try adjusting your search terms or filters.</p>
             </div>
           ) : (
-            <>
-              {viewMode === 'cards' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {books.map((book, index) => (
-                    <SimpleBookCard key={book.id} book={book} />
-                  ))}
-                </div>
-              ) : (
-                <BookshelfView books={books} />
-              )}
-            </>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {books.map((book, index) => (
+                <SimpleBookCard key={book.id} book={book} />
+              ))}
+            </div>
           )}
           
           {/* Pagination Controls */}

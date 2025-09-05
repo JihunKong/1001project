@@ -4,6 +4,8 @@ import { Session } from 'next-auth';
 // Role hierarchy - higher roles have access to lower role features
 const roleHierarchy: Record<UserRole, number> = {
   [UserRole.ADMIN]: 100,
+  [UserRole.PUBLISHER]: 90,
+  [UserRole.EDITOR]: 85,
   [UserRole.INSTITUTION]: 80,
   [UserRole.TEACHER]: 60,
   [UserRole.VOLUNTEER]: 40,
@@ -39,6 +41,8 @@ export function getRoleDashboardUrl(role: UserRole): string {
     [UserRole.TEACHER]: '/dashboard/teacher',
     [UserRole.INSTITUTION]: '/dashboard/institution',
     [UserRole.VOLUNTEER]: '/dashboard/volunteer',
+    [UserRole.EDITOR]: '/dashboard/editor',
+    [UserRole.PUBLISHER]: '/dashboard/publisher',
     [UserRole.ADMIN]: '/admin',
   };
   
@@ -62,6 +66,8 @@ export function getAccessibleRoutes(role: UserRole): string[] {
       '/dashboard/learner/**',
       '/my-learning',
       '/my-learning/**',
+      '/esl',
+      '/esl/**',
       '/settings',
     ],
     [UserRole.TEACHER]: [
@@ -73,6 +79,8 @@ export function getAccessibleRoutes(role: UserRole): string[] {
       '/classes/**',
       '/students',
       '/students/**',
+      '/esl',
+      '/esl/**',
       '/settings',
     ],
     [UserRole.INSTITUTION]: [
@@ -95,6 +103,26 @@ export function getAccessibleRoutes(role: UserRole): string[] {
       '/volunteer/**',
       '/projects',
       '/projects/**',
+      '/settings',
+    ],
+    [UserRole.EDITOR]: [
+      ...publicRoutes,
+      '/dashboard',
+      '/dashboard/editor',
+      '/dashboard/editor/**',
+      '/admin/submissions',
+      '/admin/submissions/**',
+      '/settings',
+    ],
+    [UserRole.PUBLISHER]: [
+      ...publicRoutes,
+      '/dashboard',
+      '/dashboard/publisher',
+      '/dashboard/publisher/**',
+      '/admin/submissions',
+      '/admin/submissions/**',
+      '/admin/stories',
+      '/admin/stories/**',
       '/settings',
     ],
     [UserRole.ADMIN]: [
@@ -196,6 +224,8 @@ export function formatRoleName(role: UserRole): string {
     [UserRole.TEACHER]: 'Teacher',
     [UserRole.INSTITUTION]: 'Institution',
     [UserRole.VOLUNTEER]: 'Volunteer',
+    [UserRole.EDITOR]: 'Editor',
+    [UserRole.PUBLISHER]: 'Publisher',
     [UserRole.ADMIN]: 'Administrator',
   };
   
@@ -210,6 +240,8 @@ export function getRoleBadgeColor(role: UserRole): string {
     [UserRole.TEACHER]: 'bg-green-100 text-green-800 border-green-200',
     [UserRole.INSTITUTION]: 'bg-purple-100 text-purple-800 border-purple-200',
     [UserRole.VOLUNTEER]: 'bg-pink-100 text-pink-800 border-pink-200',
+    [UserRole.EDITOR]: 'bg-orange-100 text-orange-800 border-orange-200',
+    [UserRole.PUBLISHER]: 'bg-yellow-100 text-yellow-800 border-yellow-200',
     [UserRole.ADMIN]: 'bg-red-100 text-red-800 border-red-200',
   };
   
