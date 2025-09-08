@@ -96,13 +96,13 @@ interface Book {
 interface Review {
   id: string;
   userId: string;
-  user: {
-    name: string;
-    image?: string;
-  };
+  user?: {
+    name?: string | null;
+    image?: string | null;
+  } | null;
   rating: number;
-  title?: string;
-  comment?: string;
+  title?: string | null;
+  comment?: string | null;
   helpful: number;
   verified: boolean;
   createdAt: string;
@@ -423,15 +423,15 @@ export default function BookDetailPage() {
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-gray-400" />
                         <span>
-                          By {book.author.name}
-                          {book.author.age && `, age ${book.author.age}`}
+                          By {book.authorName}
+                          {book.authorAge && `, age ${book.authorAge}`}
                         </span>
                       </div>
                       
-                      {book.author.location && (
+                      {book.authorLocation && (
                         <div className="flex items-center gap-2">
                           <Globe className="w-4 h-4 text-gray-400" />
-                          <span>{book.author.location}</span>
+                          <span>{book.authorLocation}</span>
                         </div>
                       )}
                       
@@ -470,7 +470,7 @@ export default function BookDetailPage() {
                     </div>
                     <span className="text-sm text-gray-600">
                       {averageRating > 0 ? Number(averageRating || 0).toFixed(1) : 'No ratings yet'} 
-                      ({book.stats.reviews} review{book.stats.reviews !== 1 ? 's' : ''})
+                      ({reviews.length} review{reviews.length !== 1 ? 's' : ''})
                     </span>
                   </div>
 
@@ -478,16 +478,14 @@ export default function BookDetailPage() {
                   <div className="flex gap-6 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
                       <Eye className="w-4 h-4" />
-                      {book.viewCount.toLocaleString()} views
+                      {book.viewCount || 0} views
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      {book.stats.readers} readers
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Bookmark className="w-4 h-4" />
-                      {book.stats.bookmarks} bookmarks
-                    </div>
+                    {bookmarked && (
+                      <div className="flex items-center gap-1">
+                        <Bookmark className="w-4 h-4" />
+                        Bookmarked
+                      </div>
+                    )}
                   </div>
 
                   {/* Categories and Tags */}
@@ -683,7 +681,7 @@ export default function BookDetailPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-gray-900">
-                            {review.user.name}
+                            {review.user?.name || 'Anonymous'}
                           </span>
                           {review.verified && (
                             <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
@@ -753,32 +751,14 @@ export default function BookDetailPage() {
               className="bg-white rounded-lg shadow-sm p-6"
             >
               <div className="space-y-4">
-                {/* Action Buttons - All books are now free */}
-                <div className="space-y-3">
-                  <button
-                    onClick={handleOpenPDF}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  >
-                    <BookOpen className="w-5 h-5" />
-                    Open PDF - FREE
-                  </button>
-                  
-                  <button
-                    onClick={handleReadFull}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                  >
-                    <Eye className="w-5 h-5" />
-                    Read Online
-                  </button>
-                  
-                  <button
-                    onClick={handlePreview}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
-                  >
-                    <Play className="w-5 h-5" />
-                    Preview Book
-                  </button>
-                </div>
+                {/* Single Read Button - All books are free */}
+                <button
+                  onClick={handleOpenPDF}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
+                >
+                  <BookOpen className="w-5 h-5" />
+                  Read Book
+                </button>
 
                 {/* Free Access Indicator */}
                 <div className="p-3 bg-green-50 rounded-lg">

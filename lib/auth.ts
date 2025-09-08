@@ -36,6 +36,76 @@ export const authOptions: NextAuthOptions = {
   }),
   
   providers: [
+    // Test Mode Credentials Provider (only active in test mode)
+    ...(process.env.TEST_MODE_ENABLED === 'true' && process.env.ALLOW_PASSWORD_LOGIN === 'true' ? [
+      CredentialsProvider({
+        id: "test-edu",
+        name: "Test Password Login",
+        credentials: {
+          email: { label: "Email", type: "email" },
+          password: { label: "Password", type: "password" }
+        },
+        async authorize(credentials) {
+          if (!credentials?.email || !credentials?.password) return null;
+          
+          console.log(`[TEST MODE] Login attempt for: ${credentials.email}`);
+          
+          try {
+            const { prisma } = await import("@/lib/prisma");
+            
+            // Find user with password
+            const user = await prisma.user.findUnique({
+              where: { email: credentials.email.toLowerCase() }
+            });
+            
+            if (!user) {
+              console.log(`[TEST MODE] User not found: ${credentials.email}`);
+              return null;
+            }
+            
+            // Define proper type interface
+            interface UserWithPassword {
+              id: string;
+              email: string;
+              name: string | null;
+              role: UserRole;
+              emailVerified: Date | null;
+              password?: string;
+            }
+            
+            const userWithPassword = user as UserWithPassword;
+            
+            // Check if user has a password
+            if (!userWithPassword.password) {
+              console.log(`[TEST MODE] User has no password: ${credentials.email}`);
+              return null;
+            }
+            
+            // Verify password
+            const isValidPassword = await verifyPassword(credentials.password, userWithPassword.password);
+            
+            if (!isValidPassword) {
+              console.log(`[TEST MODE] Invalid password for: ${credentials.email}`);
+              return null;
+            }
+            
+            console.log(`[TEST MODE] Successful login for ${user.role}: ${user.email}`);
+            
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role,
+              emailVerified: user.emailVerified,
+            };
+          } catch (error) {
+            console.error("[TEST MODE] Authentication error:", error);
+            return null;
+          }
+        }
+      })
+    ] : []),
+    
     // Admin/Staff Credentials Provider for password login
     CredentialsProvider({
       id: "credentials",
@@ -81,8 +151,9 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
           
-          // Only allow ADMIN and VOLUNTEER roles to use password login
-          if (user.role !== UserRole.ADMIN && user.role !== UserRole.VOLUNTEER) {
+          // Only allow ADMIN and VOLUNTEER roles to use password login in production
+          if (process.env.TEST_MODE_ENABLED !== 'true' && 
+              user.role !== UserRole.ADMIN && user.role !== UserRole.VOLUNTEER) {
             console.warn(`Unauthorized password login attempt for role: ${user.role}`);
             return null;
           }

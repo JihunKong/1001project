@@ -63,6 +63,24 @@ Table users {
   abTestParticipations ab_test_participants [not null]
   roleMigrations role_migrations [not null]
   featureUsage feature_usage [not null]
+  userContentInteractions user_content_interactions [not null]
+  contentSubmissions contents [not null]
+  contentReviews contents [not null]
+  assignedReviews content_reviews [not null]
+  reviewsToComplete content_reviews [not null]
+  bookSubmissions book_submissions [not null]
+  bookReviews book_submissions [not null]
+  bookCoordination book_submissions [not null]
+  bookAdminApprovals book_submissions [not null]
+  learningProgress learning_progress [not null]
+  vocabulary vocabulary [not null]
+  userStats user_stats
+  quizAttempts quiz_attempts [not null]
+  bookClubsCreated book_clubs [not null]
+  bookClubMemberships book_club_members [not null]
+  bookClubPosts book_club_posts [not null]
+  achievements user_achievements [not null]
+  learningSessions learning_sessions [not null]
 }
 
 Table profiles {
@@ -1203,6 +1221,7 @@ Table books {
   title String [not null]
   subtitle String
   summary String
+  content String
   authorName String [not null]
   authorAlias String
   authorAge Int
@@ -1242,6 +1261,12 @@ Table books {
   publications publications [not null]
   shopProducts shop_products [not null]
   reviews reviews [not null]
+  bookSubmission book_submissions
+  learningProgress learning_progress [not null]
+  vocabulary vocabulary [not null]
+  quizzes quizzes [not null]
+  bookClubs book_clubs [not null]
+  learningSessions learning_sessions [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -1554,6 +1579,301 @@ Table feature_usage {
   indexes {
     (userId, sessionId, featureName) [unique]
   }
+}
+
+Table user_content_interactions {
+  id String [pk]
+  userId String [not null]
+  contentId String [not null]
+  contentType String [not null]
+  completed Boolean [not null, default: false]
+  progress Float [not null, default: 0]
+  timeSpent Int [not null, default: 0]
+  rating Int
+  quizScore Float
+  vocabulary String[] [not null]
+  notes String
+  user users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, contentId) [unique]
+  }
+}
+
+Table contents {
+  id String [pk]
+  title String [not null]
+  authorName String [not null]
+  content String [not null]
+  pdfUrl String
+  type ContentType [not null]
+  language String [not null, default: 'en']
+  categories String[] [not null]
+  tags String[] [not null]
+  readingLevel String
+  wordCount Int [not null, default: 0]
+  estimatedReadTime Int [not null, default: 0]
+  status ContentStatus [not null, default: 'DRAFT']
+  destinations String[] [not null]
+  submittedById String [not null]
+  reviewerId String
+  submittedBy users [not null]
+  reviewer users
+  contentReviews content_reviews [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  publishedAt DateTime
+}
+
+Table content_reviews {
+  id String [pk]
+  contentId String [not null]
+  reviewerId String
+  assignedTo String
+  status ContentReviewStatus [not null, default: 'PENDING']
+  feedback String
+  rating Int
+  corrections Json
+  grammarCheck Boolean [not null, default: false]
+  ageAppropriate Boolean [not null, default: false]
+  culturalCheck Boolean [not null, default: false]
+  educationalValue Boolean [not null, default: false]
+  content contents [not null]
+  reviewer users
+  assignee users
+  createdAt DateTime [default: `now()`, not null]
+  completedAt DateTime
+}
+
+Table book_submissions {
+  id String [pk]
+  title String [not null]
+  authorName String [not null]
+  authorAge Int
+  authorLocation String
+  summary String
+  language String [not null, default: 'en']
+  ageRange String
+  readingLevel String
+  categories String[] [not null]
+  tags String[] [not null]
+  format String [not null]
+  filePath String [not null]
+  coverImagePath String
+  pageCount Int
+  wordCount Int
+  status BookSubmissionStatus [not null, default: 'DRAFT']
+  submittedById String [not null]
+  reviewedById String
+  coordinatorId String
+  adminId String
+  reviewNotes String
+  coordinatorNotes String
+  adminNotes String
+  rejectionReason String
+  submittedBy users [not null]
+  reviewedBy users
+  coordinator users
+  admin users
+  publishedBookId String [unique]
+  publishedBook books
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  reviewedAt DateTime
+  coordinatorApprovedAt DateTime
+  adminApprovedAt DateTime
+  publishedAt DateTime
+}
+
+Table learning_progress {
+  id String [pk]
+  userId String [not null]
+  bookId String [not null]
+  pagesRead Int [not null, default: 0]
+  totalPages Int [not null, default: 0]
+  readingTime Int [not null, default: 0]
+  lastPageRead Int [not null, default: 0]
+  startedAt DateTime [default: `now()`, not null]
+  completedAt DateTime
+  isCompleted Boolean [not null, default: false]
+  metrics Json
+  user users [not null]
+  book books [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, bookId) [unique]
+  }
+}
+
+Table vocabulary {
+  id String [pk]
+  userId String [not null]
+  word String [not null]
+  definition String [not null]
+  translations Json
+  pronunciation String
+  partOfSpeech String
+  contexts Json[] [not null]
+  bookId String
+  masteryLevel Int [not null, default: 0]
+  timesSeen Int [not null, default: 1]
+  timesCorrect Int [not null, default: 0]
+  lastSeen DateTime [default: `now()`, not null]
+  user users [not null]
+  book books
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, word) [unique]
+  }
+}
+
+Table user_stats {
+  id String [pk]
+  userId String [unique, not null]
+  level Int [not null, default: 1]
+  xp Int [not null, default: 0]
+  totalReadingTime Int [not null, default: 0]
+  booksCompleted Int [not null, default: 0]
+  wordsLearned Int [not null, default: 0]
+  currentStreak Int [not null, default: 0]
+  longestStreak Int [not null, default: 0]
+  lastActiveDate DateTime [default: `now()`, not null]
+  user users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table quizzes {
+  id String [pk]
+  bookId String [not null]
+  title String [not null]
+  description String
+  type String [not null, default: 'COMPREHENSION']
+  difficulty String
+  questions Json [not null]
+  passingScore Int [not null, default: 70]
+  timeLimit Int
+  book books [not null]
+  attempts quiz_attempts [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table quiz_attempts {
+  id String [pk]
+  userId String [not null]
+  quizId String [not null]
+  score Int [not null]
+  answers Json [not null]
+  timeSpent Int
+  passed Boolean [not null]
+  feedback Json
+  attemptNumber Int [not null, default: 1]
+  completedAt DateTime [default: `now()`, not null]
+  user users [not null]
+  quiz quizzes [not null]
+}
+
+Table book_clubs {
+  id String [pk]
+  bookId String [not null]
+  creatorId String [not null]
+  name String [not null]
+  description String
+  isActive Boolean [not null, default: true]
+  isPublic Boolean [not null, default: true]
+  maxMembers Int
+  language String
+  level String
+  book books [not null]
+  creator users [not null]
+  members book_club_members [not null]
+  posts book_club_posts [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table book_club_members {
+  id String [pk]
+  clubId String [not null]
+  userId String [not null]
+  role String [not null, default: 'MEMBER']
+  joinedAt DateTime [default: `now()`, not null]
+  club book_clubs [not null]
+  user users [not null]
+
+  indexes {
+    (clubId, userId) [unique]
+  }
+}
+
+Table book_club_posts {
+  id String [pk]
+  clubId String [not null]
+  userId String [not null]
+  parentId String
+  content String [not null]
+  likes Int [not null, default: 0]
+  club book_clubs [not null]
+  user users [not null]
+  parent book_club_posts
+  replies book_club_posts [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table achievements {
+  id String [pk]
+  name String [not null]
+  description String [not null]
+  icon String
+  category String [not null]
+  requirement Json [not null]
+  xpReward Int [not null, default: 0]
+  userAchievements user_achievements [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table user_achievements {
+  id String [pk]
+  userId String [not null]
+  achievementId String [not null]
+  unlockedAt DateTime [default: `now()`, not null]
+  progress Int [not null, default: 0]
+  isComplete Boolean [not null, default: false]
+  user users [not null]
+  achievement achievements [not null]
+
+  indexes {
+    (userId, achievementId) [unique]
+  }
+}
+
+Table learning_sessions {
+  id String [pk]
+  userId String [not null]
+  bookId String
+  startTime DateTime [default: `now()`, not null]
+  endTime DateTime
+  duration Int
+  pagesRead Int [not null, default: 0]
+  wordsLearned Int [not null, default: 0]
+  xpEarned Int [not null, default: 0]
+  user users [not null]
+  book books
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table BookReviews {
+  bookreviewsId String [ref: > book_submissions.id]
+  reviewsId String [ref: > reviews.id]
 }
 
 Enum UserRole {
@@ -2132,6 +2452,32 @@ Enum MigrationStatus {
   REVERSED
 }
 
+Enum ContentStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+Enum ContentReviewStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+  REVISION_NEEDED
+}
+
+Enum BookSubmissionStatus {
+  DRAFT
+  PENDING_REVIEW
+  REVIEWED
+  PENDING_COORDINATOR
+  APPROVED_COORDINATOR
+  PENDING_ADMIN
+  PUBLISHED
+  REJECTED
+}
+
 Ref: users.schoolId > schools.id
 
 Ref: profiles.userId - users.id [delete: Cascade]
@@ -2325,3 +2671,63 @@ Ref: ab_test_participants.userId > users.id [delete: Cascade]
 Ref: role_migrations.userId > users.id [delete: Cascade]
 
 Ref: feature_usage.userId > users.id [delete: Cascade]
+
+Ref: user_content_interactions.userId > users.id [delete: Cascade]
+
+Ref: contents.submittedById > users.id
+
+Ref: contents.reviewerId > users.id
+
+Ref: content_reviews.contentId > contents.id [delete: Cascade]
+
+Ref: content_reviews.reviewerId > users.id
+
+Ref: content_reviews.assignedTo > users.id
+
+Ref: book_submissions.submittedById > users.id
+
+Ref: book_submissions.reviewedById > users.id
+
+Ref: book_submissions.coordinatorId > users.id
+
+Ref: book_submissions.adminId > users.id
+
+Ref: book_submissions.publishedBookId - books.id
+
+Ref: learning_progress.userId > users.id [delete: Cascade]
+
+Ref: learning_progress.bookId > books.id [delete: Cascade]
+
+Ref: vocabulary.userId > users.id [delete: Cascade]
+
+Ref: vocabulary.bookId > books.id [delete: Set Null]
+
+Ref: user_stats.userId - users.id [delete: Cascade]
+
+Ref: quizzes.bookId > books.id [delete: Cascade]
+
+Ref: quiz_attempts.userId > users.id [delete: Cascade]
+
+Ref: quiz_attempts.quizId > quizzes.id [delete: Cascade]
+
+Ref: book_clubs.bookId > books.id [delete: Cascade]
+
+Ref: book_clubs.creatorId > users.id
+
+Ref: book_club_members.clubId > book_clubs.id [delete: Cascade]
+
+Ref: book_club_members.userId > users.id [delete: Cascade]
+
+Ref: book_club_posts.clubId > book_clubs.id [delete: Cascade]
+
+Ref: book_club_posts.userId > users.id [delete: Cascade]
+
+Ref: book_club_posts.parentId - book_club_posts.id
+
+Ref: user_achievements.userId > users.id [delete: Cascade]
+
+Ref: user_achievements.achievementId > achievements.id
+
+Ref: learning_sessions.userId > users.id [delete: Cascade]
+
+Ref: learning_sessions.bookId > books.id [delete: Set Null]

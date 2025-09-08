@@ -82,12 +82,14 @@ export default function Header() {
     const role = session.user.role;
     const roleNav = [];
 
-    // Add dashboard link for all authenticated users
-    roleNav.push({ 
-      name: 'Dashboard', 
-      href: '/dashboard', 
-      icon: LayoutDashboard 
-    });
+    // Add dashboard link for non-learner users
+    if (role !== UserRole.LEARNER) {
+      roleNav.push({ 
+        name: 'Dashboard', 
+        href: '/dashboard', 
+        icon: LayoutDashboard 
+      });
+    }
 
     // Add role-specific navigation
     switch (role) {
@@ -104,7 +106,7 @@ export default function Header() {
         roleNav.push({ name: 'Volunteer Hub', href: '/dashboard/volunteer', icon: Users });
         break;
       case UserRole.LEARNER:
-        roleNav.push({ name: 'My Learning', href: '/dashboard/learner', icon: BookOpen });
+        roleNav.push({ name: 'My Learning', href: '/learn', icon: BookOpen });
         break;
     }
 

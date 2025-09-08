@@ -100,6 +100,7 @@ export async function GET(request: NextRequest) {
           currency: true,
           // thumbnails: true, // Will be added when schema is ready
           coverImage: true,
+          content: true, // Add content field for PDF paths
           previewPages: true,
           pageCount: true,
           viewCount: true,
@@ -130,6 +131,7 @@ export async function GET(request: NextRequest) {
       currency: book.currency,
       // thumbnails: book.thumbnails, // Will be added when schema is ready
       coverImage: book.coverImage || undefined,
+      content: book.content || undefined, // Include content field
       previewPages: book.previewPages,
       pageCount: book.pageCount || undefined,
       viewCount: book.viewCount,

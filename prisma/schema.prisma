@@ -118,6 +118,29 @@ model User {
   abTestParticipations ABTestParticipant[] @relation("ABTestParticipants")
   roleMigrations  RoleMigration[]  @relation("RoleMigrations")
   featureUsage    FeatureUsage[]   @relation("FeatureUsage")
+  // Unified Learning System
+  userContentInteractions UserContentInteraction[]
+  contentSubmissions Content[] @relation("ContentSubmissions")
+  contentReviews Content[] @relation("ContentReviews")
+  assignedReviews ContentReview[] @relation("ReviewerAssignments")
+  reviewsToComplete ContentReview[] @relation("RevieweeAssignments")
+  
+  // Book submission workflow
+  bookSubmissions BookSubmission[] @relation("BookSubmissions")
+  bookReviews BookSubmission[] @relation("BookReviews")
+  bookCoordination BookSubmission[] @relation("BookCoordination")
+  bookAdminApprovals BookSubmission[] @relation("BookAdminApproval")
+  
+  // Learning System Relations
+  learningProgress LearningProgress[] @relation("UserLearningProgress")
+  vocabulary      Vocabulary[]        @relation("UserVocabulary")
+  userStats       UserStats?          @relation("UserStats")
+  quizAttempts    QuizAttempt[]       @relation("UserQuizAttempts")
+  bookClubsCreated BookClub[]         @relation("BookClubsCreated")
+  bookClubMemberships BookClubMember[] @relation("BookClubMemberships")
+  bookClubPosts   BookClubPost[]      @relation("BookClubPosts")
+  achievements    UserAchievement[]   @relation("UserAchievements")
+  learningSessions LearningSession[]  @relation("UserLearningSessions")
   
   @@index([email])
   @@index([role])
@@ -2492,12 +2515,13 @@ model AnonymizationLog {
 // 1001 STORIES ENHANCED MODELS
 // ==========================================
 
-// Enhanced Book model for PDF-based digital books
+// Enhanced Book model for PDF-based and text-based digital books
 model Book {
   id              String           @id @default(cuid())
   title           String
   subtitle        String?
   summary         String?          @db.Text
+  content         String?          @db.Text  // Text content for books without PDF
   
   // Author information
   authorName      String
@@ -2557,6 +2581,14 @@ model Book {
   publications    Publication[]
   shopProducts    ShopProduct[]
   reviews         Review[]         @relation("BookReviews")
+  bookSubmission  BookSubmission?  @relation("PublishedBook")
+  
+  // Learning System Relations
+  learningProgress LearningProgress[] @relation("BookLearningProgress")
+  vocabulary      Vocabulary[]        @relation("BookVocabulary")
+  quizzes         Quiz[]              @relation("BookQuizzes")
+  bookClubs       BookClub[]          @relation("BookClubs")
+  learningSessions LearningSession[]  @relation("BookLearningSessions")
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -3255,3 +3287,436 @@ enum MigrationStatus {
   REVERSED
 }
 
+
+// ==========================================
+// UNIFIED LEARNING SYSTEM
+// ==========================================
+
+// Track user interactions with content for recommendations
+model UserContentInteraction {
+  id              String           @id @default(cuid())
+  userId          String
+  contentId       String
+  contentType     String           // "book", "story", "material"
+  
+  // Interaction metrics
+  completed       Boolean          @default(false)
+  progress        Float            @default(0)  // 0-100 percentage
+  timeSpent       Int              @default(0)  // Minutes
+  rating          Int?             // 1-5 stars
+  
+  // Learning metrics
+  quizScore       Float?           // Quiz/test results if applicable
+  vocabulary      String[]         // New words learned
+  notes           String?          @db.Text
+  
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@unique([userId, contentId])
+  @@index([userId])
+  @@index([completed])
+  @@map("user_content_interactions")
+}
+
+// Unified content model for content pipeline
+model Content {
+  id              String           @id @default(cuid())
+  title           String
+  authorName      String
+  content         String           @db.Text
+  pdfUrl          String?
+  type            ContentType      // Uses existing ContentType enum
+  
+  // Metadata
+  language        String           @default("en")
+  categories      String[]
+  tags            String[]
+  readingLevel    String?
+  wordCount       Int              @default(0)
+  estimatedReadTime Int            @default(0)
+  
+  // Status and workflow
+  status          ContentStatus    @default(DRAFT)
+  destinations    String[]         // ["library", "education", "both"]
+  submittedById   String
+  reviewerId      String?
+  
+  // Relations
+  submittedBy     User             @relation("ContentSubmissions", fields: [submittedById], references: [id])
+  reviewer        User?            @relation("ContentReviews", fields: [reviewerId], references: [id])
+  contentReviews  ContentReview[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  publishedAt     DateTime?
+  
+  @@index([status])
+  @@index([submittedById])
+  @@map("contents")
+}
+
+enum ContentStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+// Content review workflow
+model ContentReview {
+  id              String           @id @default(cuid())
+  contentId       String
+  reviewerId      String?
+  assignedTo      String?
+  
+  // Review details
+  status          ContentReviewStatus @default(PENDING)
+  feedback        String?          @db.Text
+  rating          Int?             // Quality rating 1-5
+  corrections     Json?            // Suggested corrections
+  
+  // Review criteria
+  grammarCheck    Boolean          @default(false)
+  ageAppropriate  Boolean          @default(false)
+  culturalCheck   Boolean          @default(false)
+  educationalValue Boolean         @default(false)
+  
+  content         Content          @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  reviewer        User?            @relation("ReviewerAssignments", fields: [reviewerId], references: [id])
+  assignee        User?            @relation("RevieweeAssignments", fields: [assignedTo], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  completedAt     DateTime?
+  
+  @@index([status])
+  @@index([contentId])
+  @@map("content_reviews")
+}
+
+enum ContentReviewStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+  REVISION_NEEDED
+}
+
+// Book submission workflow status
+enum BookSubmissionStatus {
+  DRAFT                    // Initial upload by volunteer
+  PENDING_REVIEW          // Waiting for volunteer review
+  REVIEWED                // Reviewed by volunteer
+  PENDING_COORDINATOR     // Waiting for coordinator approval
+  APPROVED_COORDINATOR    // Approved by coordinator
+  PENDING_ADMIN          // Waiting for admin approval
+  PUBLISHED              // Published to library
+  REJECTED               // Rejected at any stage
+}
+
+// Book submission for multi-stage approval workflow
+model BookSubmission {
+  id              String               @id @default(cuid())
+  
+  // Book details
+  title           String
+  authorName      String
+  authorAge       Int?
+  authorLocation  String?
+  summary         String?              @db.Text
+  language        String               @default("en")
+  ageRange        String?
+  readingLevel    String?
+  categories      String[]
+  tags            String[]
+  
+  // File information
+  format          String               // "pdf", "md", "html", "txt"
+  filePath        String               // Path in public/books/submissions/
+  coverImagePath  String?
+  pageCount       Int?
+  wordCount       Int?
+  
+  // Workflow status
+  status          BookSubmissionStatus @default(DRAFT)
+  
+  // Approval chain
+  submittedById   String
+  reviewedById    String?
+  coordinatorId   String?
+  adminId         String?
+  
+  // Review notes
+  reviewNotes     String?              @db.Text
+  coordinatorNotes String?             @db.Text
+  adminNotes      String?              @db.Text
+  rejectionReason String?              @db.Text
+  
+  // Relations
+  submittedBy     User                 @relation("BookSubmissions", fields: [submittedById], references: [id])
+  reviewedBy      User?                @relation("BookReviews", fields: [reviewedById], references: [id])
+  coordinator     User?                @relation("BookCoordination", fields: [coordinatorId], references: [id])
+  admin           User?                @relation("BookAdminApproval", fields: [adminId], references: [id])
+  
+  // Published book reference
+  publishedBookId String?              @unique
+  publishedBook   Book?                @relation("PublishedBook", fields: [publishedBookId], references: [id])
+  
+  // Timestamps
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  reviewedAt      DateTime?
+  coordinatorApprovedAt DateTime?
+  adminApprovedAt DateTime?
+  publishedAt     DateTime?
+  
+  @@index([status])
+  @@index([submittedById])
+  @@map("book_submissions")
+}
+
+// ==========================================
+// ESL Learning System Models
+// ==========================================
+
+// Learning Progress tracking
+model LearningProgress {
+  id              String           @id @default(cuid())
+  userId          String
+  bookId          String
+  pagesRead       Int              @default(0)
+  totalPages      Int              @default(0)
+  readingTime     Int              @default(0) // in minutes
+  lastPageRead    Int              @default(0)
+  startedAt       DateTime         @default(now())
+  completedAt     DateTime?
+  isCompleted     Boolean          @default(false)
+  metrics         Json?            // Additional metrics
+  
+  user            User             @relation("UserLearningProgress", fields: [userId], references: [id], onDelete: Cascade)
+  book            Book             @relation("BookLearningProgress", fields: [bookId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@unique([userId, bookId])
+  @@index([userId])
+  @@index([bookId])
+  @@map("learning_progress")
+}
+
+// Vocabulary management
+model Vocabulary {
+  id              String           @id @default(cuid())
+  userId          String
+  word            String           @db.VarChar(100)
+  definition      String           @db.Text
+  translations    Json?
+  pronunciation   String?
+  partOfSpeech    String?
+  contexts        Json[]           @default([])
+  bookId          String?
+  masteryLevel    Int              @default(0)
+  timesSeen       Int              @default(1)
+  timesCorrect    Int              @default(0)
+  lastSeen        DateTime         @default(now())
+  
+  user            User             @relation("UserVocabulary", fields: [userId], references: [id], onDelete: Cascade)
+  book            Book?            @relation("BookVocabulary", fields: [bookId], references: [id], onDelete: SetNull)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@unique([userId, word])
+  @@index([userId])
+  @@index([bookId])
+  @@map("vocabulary")
+}
+
+// User stats for gamification
+model UserStats {
+  id              String           @id @default(cuid())
+  userId          String           @unique
+  level           Int              @default(1)
+  xp              Int              @default(0)
+  totalReadingTime Int             @default(0) // in minutes
+  booksCompleted  Int              @default(0)
+  wordsLearned    Int              @default(0)
+  currentStreak   Int              @default(0)
+  longestStreak   Int              @default(0)
+  lastActiveDate  DateTime         @default(now())
+  
+  user            User             @relation("UserStats", fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@map("user_stats")
+}
+
+// Quiz model
+model Quiz {
+  id              String           @id @default(cuid())
+  bookId          String
+  title           String
+  description     String?          @db.Text
+  type            String           @default("COMPREHENSION")
+  difficulty      String?
+  questions       Json
+  passingScore    Int              @default(70)
+  timeLimit       Int?             // in minutes
+  
+  book            Book             @relation("BookQuizzes", fields: [bookId], references: [id], onDelete: Cascade)
+  attempts        QuizAttempt[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([bookId])
+  @@map("quizzes")
+}
+
+// Quiz attempts
+model QuizAttempt {
+  id              String           @id @default(cuid())
+  userId          String
+  quizId          String
+  score           Int
+  answers         Json
+  timeSpent       Int?             // in seconds
+  passed          Boolean
+  feedback        Json?
+  attemptNumber   Int              @default(1)
+  completedAt     DateTime         @default(now())
+  
+  user            User             @relation("UserQuizAttempts", fields: [userId], references: [id], onDelete: Cascade)
+  quiz            Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([quizId])
+  @@map("quiz_attempts")
+}
+
+// Book Club
+model BookClub {
+  id              String           @id @default(cuid())
+  bookId          String
+  creatorId       String
+  name            String
+  description     String?          @db.Text
+  isActive        Boolean          @default(true)
+  isPublic        Boolean          @default(true)
+  maxMembers      Int?
+  language        String?
+  level           String?
+  
+  book            Book             @relation("BookClubs", fields: [bookId], references: [id], onDelete: Cascade)
+  creator         User             @relation("BookClubsCreated", fields: [creatorId], references: [id])
+  members         BookClubMember[]
+  posts           BookClubPost[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([bookId])
+  @@index([creatorId])
+  @@map("book_clubs")
+}
+
+// Book Club Members
+model BookClubMember {
+  id              String           @id @default(cuid())
+  clubId          String
+  userId          String
+  role            String           @default("MEMBER") // MEMBER, MODERATOR
+  joinedAt        DateTime         @default(now())
+  
+  club            BookClub         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user            User             @relation("BookClubMemberships", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([clubId, userId])
+  @@index([userId])
+  @@map("book_club_members")
+}
+
+// Book Club Posts
+model BookClubPost {
+  id              String           @id @default(cuid())
+  clubId          String
+  userId          String
+  parentId        String?          // For replies
+  content         String           @db.Text
+  likes           Int              @default(0)
+  
+  club            BookClub         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user            User             @relation("BookClubPosts", fields: [userId], references: [id], onDelete: Cascade)
+  parent          BookClubPost?    @relation("PostReplies", fields: [parentId], references: [id])
+  replies         BookClubPost[]   @relation("PostReplies")
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([clubId])
+  @@index([userId])
+  @@index([parentId])
+  @@map("book_club_posts")
+}
+
+// Achievements
+model Achievement {
+  id              String           @id @default(cuid())
+  name            String
+  description     String
+  icon            String?
+  category        String           // READING, VOCABULARY, SOCIAL, STREAK
+  requirement     Json             // Conditions to unlock
+  xpReward        Int              @default(0)
+  
+  userAchievements UserAchievement[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@map("achievements")
+}
+
+// User Achievements
+model UserAchievement {
+  id              String           @id @default(cuid())
+  userId          String
+  achievementId   String
+  unlockedAt      DateTime         @default(now())
+  progress        Int              @default(0)
+  isComplete      Boolean          @default(false)
+  
+  user            User             @relation("UserAchievements", fields: [userId], references: [id], onDelete: Cascade)
+  achievement     Achievement      @relation(fields: [achievementId], references: [id])
+  
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+// Learning Sessions
+model LearningSession {
+  id              String           @id @default(cuid())
+  userId          String
+  bookId          String?
+  startTime       DateTime         @default(now())
+  endTime         DateTime?
+  duration        Int?             // in seconds
+  pagesRead       Int              @default(0)
+  wordsLearned    Int              @default(0)
+  xpEarned        Int              @default(0)
+  
+  user            User             @relation("UserLearningSessions", fields: [userId], references: [id], onDelete: Cascade)
+  book            Book?            @relation("BookLearningSessions", fields: [bookId], references: [id], onDelete: SetNull)
+  
+  createdAt       DateTime         @default(now())
+  
+  @@index([userId])
+  @@index([bookId])
+  @@map("learning_sessions")
+}

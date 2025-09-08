@@ -35,13 +35,14 @@ const CSP_DIRECTIVES = {
     'https://*.githubusercontent.com',
     'https://res.cloudinary.com',
   ],
-  'media-src': ["'self'"],
+  'media-src': ["'self'", 'blob:', 'data:'],
   'connect-src': [
     "'self'",
     'https://api.stripe.com',
     'https://api.paypal.com',
     'https://www.google-analytics.com',
     'https://vitals.vercel-insights.com',
+    'https://api.openai.com',
   ],
   'frame-src': [
     "'self'",
@@ -70,6 +71,8 @@ function generateCSP(isDevelopment: boolean): string {
   if (isDevelopment) {
     directives['script-src'].push("'unsafe-eval'");
     directives['connect-src'].push('ws://localhost:*', 'http://localhost:*');
+    // Allow iframe embedding in development
+    directives['frame-ancestors'] = ["'self'", 'http://localhost:*', 'http://127.0.0.1:*'];
     // Remove upgrade-insecure-requests for development
     delete directives['upgrade-insecure-requests'];
   }
@@ -85,8 +88,8 @@ export function getSecurityHeaders(isDevelopment = false): Record<string, string
     // Content Security Policy
     'Content-Security-Policy': generateCSP(isDevelopment),
     
-    // Prevent clickjacking
-    'X-Frame-Options': 'DENY',
+    // Prevent clickjacking (allow in development)
+    'X-Frame-Options': isDevelopment ? 'SAMEORIGIN' : 'DENY',
     
     // Prevent MIME type sniffing
     'X-Content-Type-Options': 'nosniff',

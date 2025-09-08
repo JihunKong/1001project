@@ -12,116 +12,15 @@ type AccessResult = {
   details?: string;
 };
 
-// Check comprehensive book access based on user, role, and entitlements
+// Check book access - simplified for all free books
 async function checkBookAccess(userId: string | undefined, bookId: string, filename: string, userRole?: string): Promise<AccessResult> {
   try {
-    // 1. Admin users have full access
-    if (userRole === 'ADMIN') {
-      return { access: true, reason: 'admin_access' };
-    }
-
-    // 2. Hardcoded free books (sample/preview books) - CHECK FIRST for reliability
-    // These books should be accessible to EVERYONE, including unauthenticated users
-    const freeBooks = ['neema-01', 'neema-02', 'neema-03'];
-    if (freeBooks.includes(bookId)) {
-      return { access: true, reason: userId ? 'free_book_authenticated' : 'free_book_preview' };
-    }
-
-    // 3. Sample PDF access - Allow sample access for premium books without authentication
-    if (filename === 'sample.pdf') {
-      return { access: true, reason: userId ? 'sample_authenticated' : 'sample_preview' };
-    }
-
-    // For non-hardcoded books, we need to check authentication first
-    if (!userId) {
-      return { access: false, reason: 'authentication_required' };
-    }
-
-    // Get book details from database
-    const book = await prisma.story.findUnique({
-      where: { id: bookId },
-      select: {
-        id: true,
-        title: true,
-        isPremium: true,
-        price: true
-      }
-    });
-
-    if (!book) {
-      return { access: false, reason: 'book_not_found' };
-    }
-
-    // 3. Free books are accessible to all authenticated users
-    if (!book.isPremium) {
-      return { access: true, reason: 'free_book_authenticated' };
-    }
-
-    // 4. Check teacher institutional access
-    if (userRole === 'TEACHER') {
-      const teacherAccess = await checkTeacherInstitutionalAccess(userId, bookId);
-      if (teacherAccess.hasAccess) {
-        return { 
-          access: true, 
-          reason: 'teacher_institutional_access',
-          details: teacherAccess.details
-        };
-      }
-    }
-
-    // 5. Check individual entitlements (purchases)
-    const entitlement = await prisma.entitlement.findFirst({
-      where: {
-        userId: userId,
-        OR: [
-          { bookId: bookId },
-          { storyId: bookId } // Legacy support
-        ],
-        isActive: true,
-        AND: [
-          {
-            OR: [
-              { expiresAt: null },
-              { expiresAt: { gt: new Date() } }
-            ]
-          }
-        ]
-      },
-      select: {
-        id: true,
-        type: true,
-        grantReason: true,
-        expiresAt: true
-      }
-    });
-
-    if (entitlement) {
-      // Update access tracking
-      await prisma.entitlement.update({
-        where: { id: entitlement.id },
-        data: {
-          lastAccessedAt: new Date(),
-          accessCount: { increment: 1 }
-        }
-      }).catch(() => {}); // Fail silently
-
-      return { 
-        access: true, 
-        reason: 'individual_entitlement',
-        details: `${entitlement.type}: ${entitlement.grantReason}`
-      };
-    }
-
-    // 6. Check subscription access
-    // Subscription disabled - all books are free
-
-    // All PDFs are free in this version
+    // All books are free - always grant access
     return { 
       access: true, 
       reason: 'free_access',
-      details: 'All PDFs are free'
+      details: 'All books are free to read'
     };
-
   } catch (error) {
     console.error('Error checking book access:', error);
     return { access: false, reason: 'system_error' };
@@ -232,7 +131,7 @@ export async function GET(
       const session = await getServerSession(authOptions);
       
       // Get the book details to check if it's premium
-      const book = await prisma.story.findFirst({
+      const book = await prisma.book.findFirst({
         where: {
           id: bookId,
           isPublished: true

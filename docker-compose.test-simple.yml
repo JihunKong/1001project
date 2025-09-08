@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  # Test Database Only
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: 1001-stories-test-db
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: stories_test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_pass_2024
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d stories_test_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres_test_data:
+    name: edu_test_postgres_data

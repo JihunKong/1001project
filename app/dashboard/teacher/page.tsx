@@ -16,6 +16,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import StudentAssessment from '@/components/teacher/StudentAssessment';
 
 export default function TeacherDashboard() {
   const { t } = useTranslation('common');
@@ -294,6 +295,16 @@ export default function TeacherDashboard() {
             </div>
           </motion.div>
         </div>
+        
+        {/* Student Assessment Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="mt-8"
+        >
+          <StudentAssessment />
+        </motion.div>
       </div>
     </div>
   );

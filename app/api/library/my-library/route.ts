@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth'
 /**
  * GET /api/library/my-library
  * 
- * Returns user's purchased stories and subscription content
+ * Returns user's purchased books and subscription content
  */
 export async function GET(request: NextRequest) {
   try {
@@ -35,12 +35,9 @@ export async function GET(request: NextRequest) {
     const purchasedStoryIds: string[] = [];
     const purchasedIds: string[] = [];
     
-    // Build where clause for stories
+    // Build where clause for books
     const whereClause: any = {
       isPublished: true,
-      author: {
-        deletedAt: null
-      },
       OR: []
     }
     
@@ -87,7 +84,7 @@ export async function GET(request: NextRequest) {
         readingProgress: {
           some: {
             userId: session.user.id,
-            progress: 100
+            percentComplete: 100
           }
         }
       }
@@ -103,17 +100,11 @@ export async function GET(request: NextRequest) {
     
     Object.assign(whereClause, progressFilter)
     
-    // Query stories
-    const [stories, totalCount] = await Promise.all([
-      prisma.story.findMany({
+    // Query books
+    const [books, totalCount] = await Promise.all([
+      prisma.book.findMany({
         where: whereClause,
         include: {
-          author: {
-            select: {
-              id: true,
-              name: true
-            }
-          },
           readingProgress: {
             where: { userId: session.user.id },
             select: {
@@ -141,37 +132,37 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit
       }),
-      prisma.story.count({ where: whereClause })
+      prisma.book.count({ where: whereClause })
     ])
     
-    // Transform stories with access information
-    const transformedStories = stories.map(story => {
+    // Transform books with access information
+    const transformedStories = books.map(book => {
       const isPurchased = false; // All books are free
       const purchaseInfo = null;
       const hasSubscriptionAccess = true; // All books are accessible
       
       return {
-        id: story.id,
-        title: story.title,
-        subtitle: story.subtitle,
-        summary: story.summary,
-        authorName: story.authorName,
-        authorAge: story.authorAge,
-        authorLocation: story.authorLocation,
-        language: story.language,
-        category: story.category,
-        tags: story.tags,
-        readingLevel: story.readingLevel,
-        readingTime: story.readingTime,
-        coverImage: story.coverImage,
-        isPremium: story.isPremium,
-        price: story.price,
-        rating: story.rating,
+        id: book.id,
+        title: book.title,
+        subtitle: book.subtitle,
+        summary: book.summary,
+        authorName: book.authorName,
+        authorAge: book.authorAge,
+        authorLocation: book.authorLocation,
+        language: book.language,
+        category: book.category,
+        tags: book.tags,
+        readingLevel: book.readingLevel,
+        readingTime: book.readingTime,
+        coverImage: book.coverImage,
+        isPremium: book.isPremium,
+        price: book.price,
+        rating: book.rating,
         accessType: isPurchased ? 'purchased' : 'subscription',
         purchaseDate: null,
         purchasePrice: null,
-        progress: story.readingProgress[0] || null,
-        latestBookmark: story.bookmarks[0] || null,
+        progress: book.readingProgress[0] || null,
+        latestBookmark: book.bookmarks[0] || null,
         canDownload: true
       }
     })
@@ -179,7 +170,7 @@ export async function GET(request: NextRequest) {
     // Calculate stats
     const stats = {
       totalPurchased: purchasedIds.length,
-      totalSubscriptionAccess: await prisma.story.count({ where: { isPremium: true, isPublished: true } }),
+      totalSubscriptionAccess: await prisma.book.count({ where: { isPremium: true, isPublished: true } }),
       currentlyReading: await prisma.readingProgress.count({
         where: {
           userId: session.user.id,

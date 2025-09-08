@@ -103,7 +103,7 @@ export default function Home() {
   ];
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-900/50 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white">
       {/* Hero Section with hero image background */}
       <section className="relative overflow-hidden py-24 sm:py-32 lg:py-40">
         {/* Hero background image */}
@@ -140,7 +140,7 @@ export default function Home() {
             </motion.div>
             
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8">
-              <span className="block text-gray-900 dark:text-white mb-2">
+              <span className="block text-gray-900 mb-2">
                 Empower Young Voices
               </span>
               <span className="text-brand-primary text-6xl sm:text-7xl lg:text-8xl font-bold">
@@ -148,7 +148,7 @@ export default function Home() {
               </span>
             </h1>
             
-            <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl sm:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
               {t('hero.subtitle')}
             </p>
             
@@ -182,10 +182,10 @@ export default function Home() {
                 <div className={`inline-flex items-center justify-center w-20 h-20 mb-6 rounded-3xl bg-gradient-to-br ${feature.gradient} shadow-lg shadow-${feature.gradient.split('-')[1]}-500/25 group-hover:scale-110 transition-transform duration-300`}>
                   <feature.icon className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-lg">
+                <p className="text-gray-600 text-lg">
                   {feature.description}
                 </p>
               </motion.div>
@@ -212,7 +212,7 @@ export default function Home() {
                   <div className="text-3xl sm:text-4xl font-bold text-brand-primary mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="text-sm text-gray-600">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -232,14 +232,14 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded-full">
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-blue-700 bg-blue-50 rounded-full">
               <Sparkles className="w-4 h-4" />
               Join Our Community
             </div>
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
               Start Your Journey Today
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-12">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
               Discover amazing stories from children around the world. Whether you're here to learn, teach, volunteer, or support our mission, your journey begins with a single step.
             </p>
             
@@ -254,7 +254,7 @@ export default function Home() {
               </Link>
             </div>
             
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
+            <p className="text-sm text-gray-500 mt-6">
               Free to join • No commitment • Access granted instantly
             </p>
           </motion.div>
@@ -285,7 +285,7 @@ export default function Home() {
               <span className="text-brand-primary">Plant Seeds of Hope</span>
             </h2>
             
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
               Every contribution plants seeds of hope and opportunity for children worldwide.
               Join us in creating a world where every child&apos;s voice is heard.
             </p>

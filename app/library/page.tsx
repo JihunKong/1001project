@@ -19,8 +19,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
-import SimpleBookCard from '@/components/library/SimpleBookCard';
 
 interface Book {
   id: string
@@ -55,6 +53,7 @@ interface Book {
   previewPages?: number
   fullPdf?: string
   samplePdf?: string
+  content?: string // PDF path from content field
 }
 
 interface BooksResponse {
@@ -176,99 +175,6 @@ export default function Library() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, selectedLanguage, selectedAge]);
-
-  const BookCard = ({ book }: { book: Book }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-2"
-    >
-      <div className="relative">
-        <div className="aspect-[2/3] bg-gradient-to-br from-blue-100 to-purple-100">
-          <SimplePDFThumbnail
-            bookId={book.id || book.bookId || ''}
-            title={book.title}
-            pdfUrl={book.pdfKey || book.fullPdf || book.samplePdf}
-            existingImage={book.coverImage}
-            className="w-full h-full"
-            alt={book.title}
-          />
-        </div>
-        {(book.featured || book.isFeatured) && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
-            <Star className="w-3 h-3" />
-            Featured
-          </div>
-        )}
-        {book.rating && (
-          <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
-            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-            {Number(book.rating || 0).toFixed(1)}
-          </div>
-        )}
-      </div>
-      
-      <div className="p-6">
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-          <Globe className="w-4 h-4" />
-          {book.authorLocation || 'Unknown'}
-          <span>•</span>
-          <Clock className="w-4 h-4" />
-          {book.readingTime || 5} min
-        </div>
-        
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-          {book.title}
-        </h3>
-        
-        <div className="text-sm text-gray-600 mb-3">
-          By {book.authorName}{book.authorAge ? `, age ${book.authorAge}` : ''}
-        </div>
-        
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {book.summary || 'No description available'}
-        </p>
-        
-        <div className="flex flex-wrap gap-1 mb-4">
-          {book.tags.slice(0, 2).map(tag => (
-            <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
-              #{tag}
-            </span>
-          ))}
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-            {book.category[0] || 'Story'}
-          </span>
-          
-          {session ? (
-            <div className="flex gap-2">
-              <Link
-                href={`/library/books/${book.id}`}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-              >
-                <Eye className="w-4 h-4" />
-                View Details
-              </Link>
-            </div>
-          ) : (
-            <div className="text-center">
-              <p className="text-xs text-gray-600 mb-2">Sign up to read stories</p>
-              <Link
-                href="/signup"
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-              >
-                <Users className="w-4 h-4" />
-                Sign Up Free
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -489,9 +395,78 @@ export default function Library() {
               <p className="text-gray-600">Try adjusting your search terms or filters.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {books.map((book, index) => (
-                <SimpleBookCard key={book.id} book={book} />
+            <div className="space-y-4">
+              {books.map((book) => (
+                <div key={book.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                          {book.title}
+                        </h3>
+                        {book.featured && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                            <Star className="w-3 h-3" />
+                            Featured
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+                        <span className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          {book.authorName}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Globe className="w-4 h-4" />
+                          {book.language || 'en'}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="w-4 h-4" />
+                          {book.category[0] || 'Story'}
+                        </span>
+                        {book.pageCount && (
+                          <span className="flex items-center gap-1">
+                            📄 {book.pageCount} pages
+                          </span>
+                        )}
+                      </div>
+                      
+                      {book.summary && (
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {book.summary}
+                        </p>
+                      )}
+                      
+                      <div className="flex flex-wrap gap-2">
+                        {book.tags?.slice(0, 3).map(tag => (
+                          <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2 ml-4">
+                      {book.content && (
+                        <Link
+                          href={`/library/books/${book.id}`}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          <BookOpen className="w-4 h-4" />
+                          Read PDF
+                        </Link>
+                      )}
+                      <Link
+                        href={`/library/books/${book.id}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        <Eye className="w-4 h-4" />
+                        View Details
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           )}

@@ -108,7 +108,7 @@ export default function LibrarySection({
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
               <Link
-                href={`/library/stories/${story.id}`}
+                href={`/library/books/${story.id}`}
                 className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
               >
                 <Play className="w-3 h-3" />

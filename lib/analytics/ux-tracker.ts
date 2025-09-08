@@ -268,10 +268,14 @@ class UXTracker {
     this.sessionData.clickCount++
     
     const target = event.target as HTMLElement
+    const className = typeof target.className === 'string' 
+      ? target.className 
+      : target.className?.baseVal || ''
+    
     this.clickEvents.push({
       x: event.clientX,
       y: event.clientY,
-      target: target.tagName + (target.className ? '.' + target.className.split(' ').join('.') : ''),
+      target: target.tagName + (className ? '.' + className.split(' ').join('.') : ''),
       timestamp: Date.now()
     })
     

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+import type { PDFDocumentProxy, PDFPageProxy } from 'react-pdf/node_modules/pdfjs-dist';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -75,6 +75,7 @@ export default function EnhancedPDFViewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
+  const renderTaskRef = useRef<any>(null);
 
   // Calculate effective max pages (authentication + demo limitations)
   const effectiveMaxPages = isDemo 
@@ -90,6 +91,15 @@ export default function EnhancedPDFViewer({
       // Cancel any ongoing loading
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
+      }
+      // Cancel any ongoing render task
+      if (renderTaskRef.current) {
+        try {
+          renderTaskRef.current.cancel();
+        } catch (e) {
+          // Ignore cancellation errors
+        }
+        renderTaskRef.current = null;
       }
     };
   }, []);
@@ -116,12 +126,12 @@ export default function EnhancedPDFViewer({
         throw new Error('PDF viewer must be rendered on client side');
       }
 
-      // Simple PDF.js loading
-      const pdfLib = await import('pdfjs-dist');
+      // Import from react-pdf's bundled pdfjs-dist for consistency
+      const pdfLib = await import('react-pdf/node_modules/pdfjs-dist');
       
       // Configure worker once
       if (!workerConfigured) {
-        pdfLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+        pdfLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
         workerConfigured = true;
         console.log('PDF.js worker configured');
       }
@@ -221,7 +231,17 @@ export default function EnhancedPDFViewer({
 
   // Render single page
   const renderSinglePage = async (pdfDoc: PDFDocumentProxy, pageNum: number) => {
-    if (!singleCanvasRef.current || pageRendering) return;
+    if (!singleCanvasRef.current) return;
+    
+    // Cancel any existing render task
+    if (renderTaskRef.current) {
+      try {
+        renderTaskRef.current.cancel();
+      } catch (e) {
+        // Ignore cancellation errors
+      }
+      renderTaskRef.current = null;
+    }
     
     setPageRendering(true);
     
@@ -245,11 +265,16 @@ export default function EnhancedPDFViewer({
         viewport: viewport,
       };
 
-      await page.render(renderContext).promise;
+      // Store render task reference
+      renderTaskRef.current = page.render(renderContext);
+      await renderTaskRef.current.promise;
+      renderTaskRef.current = null;
       console.log('Single page rendered:', pageNum);
-    } catch (err) {
-      console.error('Error rendering single page:', err);
-      setError(`Page rendering failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } catch (err: any) {
+      if (err?.name !== 'RenderingCancelledException') {
+        console.error('Error rendering single page:', err);
+        setError(`Page rendering failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      }
     } finally {
       setPageRendering(false);
     }
@@ -319,7 +344,14 @@ export default function EnhancedPDFViewer({
       viewport: viewport,
     };
 
-    await page.render(renderContext).promise;
+    try {
+      const renderTask = page.render(renderContext);
+      await renderTask.promise;
+    } catch (err: any) {
+      if (err?.name !== 'RenderingCancelledException') {
+        throw err;
+      }
+    }
   };
 
   // Re-render when page, scale, rotation, or view mode changes

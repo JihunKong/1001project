@@ -66,7 +66,7 @@ export default function DemoHub() {
   ];
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-900/50 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white">
       {/* Demo Mode Banner */}
       <div className="bg-yellow-50 border-b border-yellow-200">
         <div className="container mx-auto px-4 py-3">
@@ -105,15 +105,15 @@ export default function DemoHub() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 rounded-full">
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-indigo-700 bg-indigo-50 rounded-full">
               <Play className="w-4 h-4" />
               Demo Experience
             </div>
             
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
               Explore the Platform
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Choose a role to explore its features with sample data. No signup required!
             </p>
           </motion.div>
@@ -139,24 +139,24 @@ export default function DemoHub() {
                     <div className={`absolute inset-0 bg-gradient-to-br ${role.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
                     
                     {/* Icon */}
-                    <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
+                    <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-white shadow-lg border border-gray-100"
                       style={{ boxShadow: `0 10px 30px -10px ${role.shadowColor}` }}
                     >
                       <role.icon className={`w-8 h-8 ${role.iconColor}`} />
                     </div>
                     
                     {/* Content */}
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
                       {role.title} Demo
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    <p className="text-gray-600 mb-6">
                       {role.description}
                     </p>
                     
                     {/* Demo Features */}
                     <ul className="space-y-2 mb-6">
                       {role.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li key={feature} className="flex items-center gap-2 text-sm text-gray-600">
                           <div className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
                           {feature}
                         </li>
@@ -166,7 +166,7 @@ export default function DemoHub() {
                     {/* CTA */}
                     <div className={`flex items-center font-semibold bg-gradient-to-r ${role.gradient} bg-clip-text text-transparent group-hover:gap-3 transition-all duration-300`}>
                       Try Demo
-                      <ArrowRight className="w-5 h-5 ml-2 text-gray-600 dark:text-gray-400 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-5 h-5 ml-2 text-gray-600 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>
@@ -182,38 +182,38 @@ export default function DemoHub() {
             className="mt-16 text-center"
           >
             <div className="glass-card rounded-2xl p-8 max-w-3xl mx-auto">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 What to Expect in Demo Mode
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="font-semibold text-gray-900 mb-2">
                     Sample Data
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600">
                     All content is fictional and for demonstration purposes only
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="font-semibold text-gray-900 mb-2">
                     Limited Features
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600">
                     Some advanced features require a full account
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="font-semibold text-gray-900 mb-2">
                     No Data Saved
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600">
                     Your demo interactions are not saved or tracked
                   </p>
                 </div>
               </div>
               
-              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <p className="text-gray-600 mb-4">
                   Ready to join our community?
                 </p>
                 <Link 

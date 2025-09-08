@@ -14,7 +14,6 @@ const SimplePDFThumbnail = dynamic(() => import('./SimplePDFThumbnail'), {
     </div>
   )
 });
-import { resolveBookFiles } from '@/lib/book-files';
 
 interface Book {
   id: string;
@@ -49,21 +48,12 @@ interface SimpleBookCardProps {
 }
 
 export default function SimpleBookCard({ book }: SimpleBookCardProps) {
-  // Resolve book files
-  const bookFiles = resolveBookFiles(book.id || book.bookId || '');
+  // Only use PDF source if we have actual PDF data
+  const pdfSource = book.pdfFrontCover || book.pdfKey || book.fullPdf || book.samplePdf;
   
-  // Use the correct cover.pdf files first
-  const pdfSource = bookFiles.frontCover || book.pdfFrontCover || book.pdfKey || book.fullPdf || book.samplePdf || bookFiles.main;
-  
-  // Debug log to check which source is being used
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Book:', book.title, 'PDF Source:', pdfSource, {
-      pdfKey: book.pdfKey,
-      main: bookFiles.main,
-      pdfFrontCover: book.pdfFrontCover,
-      frontCover: bookFiles.frontCover
-    });
-  }
+  // Use cover image if available, otherwise check for PDF
+  const hasCoverImage = book.coverImage && !book.coverImage.endsWith('.pdf');
+  const shouldUsePDF = !hasCoverImage && pdfSource;
 
   return (
     <motion.div
@@ -77,7 +67,15 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
         <div className="relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl">
           {/* Cover Image Container with Fixed Aspect Ratio */}
           <div className="relative bg-white aspect-[3/4]">
-            {pdfSource ? (
+            {hasCoverImage ? (
+              <Image
+                src={book.coverImage!}
+                alt={book.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
+            ) : shouldUsePDF ? (
               <SimplePDFThumbnail
                 bookId={book.id || book.bookId || ''}
                 title={book.title}

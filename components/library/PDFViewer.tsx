@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
-import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+import { getDocument, GlobalWorkerOptions } from 'react-pdf/node_modules/pdfjs-dist';
+import type { PDFDocumentProxy, PDFPageProxy } from 'react-pdf/node_modules/pdfjs-dist';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -19,7 +19,7 @@ import {
 // Set up PDF.js worker
 if (typeof window !== 'undefined') {
   // Use local worker file to avoid CORS issues
-  GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+  GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 }
 
 interface PDFViewerProps {

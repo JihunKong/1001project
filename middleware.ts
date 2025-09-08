@@ -153,6 +153,32 @@ export default withAuth(
       );
     }
 
+    // Unified Learning System Redirects
+    // Redirect old learner dashboard to new unified learn page
+    if (pathname === '/dashboard/learner' && token?.role === 'LEARNER') {
+      return NextResponse.redirect(new URL('/learn', req.url));
+    }
+    
+    // Note: /programs/english-education is now an enrollment page, not a redirect
+    
+    // Redirect dashboard to appropriate location based on role
+    if (pathname === '/dashboard' && token?.role) {
+      switch (token.role) {
+        case 'LEARNER':
+        case 'STUDENT':
+          // Redirect to unified learn page instead of separate dashboard
+          return NextResponse.redirect(new URL('/learn', req.url));
+        case 'TEACHER':
+          return NextResponse.redirect(new URL('/dashboard/teacher', req.url));
+        case 'INSTITUTION':
+          return NextResponse.redirect(new URL('/dashboard/institution', req.url));
+        case 'VOLUNTEER':
+          return NextResponse.redirect(new URL('/dashboard/volunteer', req.url));
+        case 'ADMIN':
+          return NextResponse.redirect(new URL('/admin', req.url));
+      }
+    }
+
     return response;
   },
   {
