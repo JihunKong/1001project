@@ -46,37 +46,94 @@ export async function GET(request: NextRequest) {
 
 async function fetchUserData(userId: string, dashboardType: string) {
   try {
-    // For now, simulate data fetching since we don't have all the database structure yet
-    // In production, this would query the actual database
+    const { prisma } = await import('@/lib/prisma');
     
-    const mockData = {
-      totalActivities: Math.floor(Math.random() * 20) + 5,
-      completedBooks: Math.floor(Math.random() * 10) + 2,
-      currentStreak: Math.floor(Math.random() * 30) + 1,
-      recentActivity: 'Completed vocabulary exercise for "The Little Explorer"',
-      weeklyProgress: Math.floor(Math.random() * 80) + 20,
-      strongestSkill: ['vocabulary', 'comprehension', 'discussion', 'writing'][Math.floor(Math.random() * 4)],
-      areaForImprovement: ['pronunciation', 'grammar', 'listening', 'reading fluency'][Math.floor(Math.random() * 4)],
+    // Fetch real user data from database
+    const readingProgress = await prisma.readingProgress.findMany({
+      where: { userId },
+      orderBy: { lastReadAt: 'desc' }
+    });
+    
+    const completedBooks = readingProgress.filter(p => p.percentComplete === 100).length;
+    const currentlyReading = readingProgress.filter(p => p.percentComplete > 0 && p.percentComplete < 100);
+    
+    // Get vocabulary progress
+    const vocabulary = await prisma.vocabulary.count({
+      where: { userId }
+    });
+    
+    // Get learning sessions for streak calculation
+    const sessions = await prisma.learningSession.findMany({
+      where: { 
+        userId,
+        startTime: {
+          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+        }
+      },
+      orderBy: { startTime: 'desc' }
+    });
+    
+    // Calculate current streak
+    let currentStreak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      const hasSession = sessions.some(s => {
+        const sessionDate = new Date(s.startTime);
+        sessionDate.setHours(0, 0, 0, 0);
+        return sessionDate.getTime() === date.getTime();
+      });
+      
+      if (hasSession) {
+        currentStreak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+    
+    // Get quiz attempts
+    const quizAttempts = await prisma.quizAttempt.count({
+      where: { userId }
+    });
+    
+    // Calculate weekly progress
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const recentSessions = sessions.filter(s => s.startTime > weekAgo);
+    const weeklyProgress = Math.min(100, Math.round((recentSessions.length / 7) * 100));
+    
+    // Get recent activity description
+    let recentActivity = 'No recent activity';
+    if (currentlyReading.length > 0) {
+      const book = await prisma.book.findUnique({
+        where: { id: currentlyReading[0].bookId },
+        select: { title: true }
+      });
+      if (book) {
+        recentActivity = `Reading "${book.title}" - ${currentlyReading[0].percentComplete}% complete`;
+      }
+    }
+    
+    return {
+      totalActivities: sessions.length + quizAttempts,
+      completedBooks,
+      currentStreak,
+      recentActivity,
+      weeklyProgress,
+      strongestSkill: vocabulary > 50 ? 'vocabulary' : 'reading',
+      areaForImprovement: quizAttempts === 0 ? 'quiz practice' : 'vocabulary',
       role: dashboardType
     };
-
-    // Try to get real user data if available
-    try {
-      // For now, we'll skip the database query and use mock data
-      // This can be implemented later when the full database schema is ready
-      console.log('Using mock data for user:', userId);
-    } catch (dbError) {
-      console.log('Database query failed, using mock data');
-    }
-
-    return mockData;
+    
   } catch (error) {
     console.error('Error fetching user data:', error);
     return {
       totalActivities: 0,
       completedBooks: 0,
       currentStreak: 0,
-      recentActivity: 'No recent activity',
+      recentActivity: 'Start reading your first book!',
       weeklyProgress: 0,
       strongestSkill: 'reading',
       areaForImprovement: 'practice',

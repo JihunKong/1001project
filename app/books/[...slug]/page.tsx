@@ -1,11 +1,32 @@
 import { notFound } from 'next/navigation';
 import { EnhancedReadingPage } from '@/components/learn/EnhancedReadingPage';
-import { ContentLoader } from '@/lib/content-loader';
+import { ContentLoader, BookContent } from '@/lib/content-loader';
 
 interface BookPageProps {
   params: {
     slug: string[];
   };
+}
+
+// Fetch book data from API
+async function fetchBookData(bookId: string) {
+  try {
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/library/books/${bookId}`, {
+      cache: 'no-store' // Always fetch fresh data
+    });
+    
+    if (!response.ok) {
+      console.error('Failed to fetch book:', response.status, response.statusText);
+      return null;
+    }
+    
+    const data = await response.json();
+    return data.success ? data.book : null;
+  } catch (error) {
+    console.error('Error fetching book data:', error);
+    return null;
+  }
 }
 
 export default async function BookPage({ params }: BookPageProps) {
@@ -23,49 +44,64 @@ export default async function BookPage({ params }: BookPageProps) {
   const bookId = slug[0];
   const action = slug[1] || 'read';
   
-  // Load book content using ContentLoader
+  // First try to fetch book data from database API
+  const dbBook = await fetchBookData(bookId);
+  
+  // Then try to load file content using ContentLoader as fallback for content
   const loader = new ContentLoader(bookId);
-  const bookContent = await loader.loadContent();
+  const fileContent = await loader.loadContent();
   const coverImage = await loader.getCoverImage();
   const thumbnails = await loader.getThumbnails();
   
-  // If content not found, use sample data as fallback
-  const bookData = bookContent ? {
+  // If neither database book nor file content exists, return 404
+  if (!dbBook && !fileContent) {
+    return notFound();
+  }
+  
+  // Combine database book data with file content
+  const bookData = dbBook ? {
+    id: dbBook.id,
+    title: dbBook.title || 'Untitled Book',
+    content: dbBook.content || fileContent?.content || '',
+    format: dbBook.format || fileContent?.format || 'txt' as const,
+    totalPages: dbBook.pageCount || fileContent?.metadata?.pageCount || 10,
+    category: dbBook.category?.[0] || dbBook.genres?.[0] || fileContent?.metadata?.tags?.[0] || 'education',
+    level: dbBook.readingLevel || dbBook.difficultyLevel || fileContent?.metadata?.level || 'B1',
+    author: dbBook.authorName || fileContent?.metadata?.author || 'Unknown Author',
+    coverImage: dbBook.coverImage || coverImage,
+    thumbnails: thumbnails || []
+  } : {
+    // Fallback to file-based content if database book not found
     id: bookId,
-    title: bookContent.metadata?.title || 'Untitled Book',
-    content: bookContent.content,
-    format: bookContent.format,
-    totalPages: bookContent.metadata?.pageCount || 10,
-    category: bookContent.metadata?.tags?.[0] || 'education',
-    level: bookContent.metadata?.level || 'B1',
-    author: bookContent.metadata?.author || 'Unknown Author',
+    title: fileContent!.metadata?.title || 'Untitled Book',
+    content: fileContent!.content,
+    format: fileContent!.format,
+    totalPages: fileContent!.metadata?.pageCount || 10,
+    category: fileContent!.metadata?.tags?.[0] || 'education',
+    level: fileContent!.metadata?.level || 'B1',
+    author: fileContent!.metadata?.author || 'Unknown Author',
     coverImage,
     thumbnails
-  } : {
-    id: bookId,
-    title: 'Sample Book Title',
-    content: `This is the content of the book. It contains multiple paragraphs with various vocabulary words that will be highlighted based on the student's level.
-    
-    The learning system uses artificial intelligence to identify difficult words and provide definitions. Students can click on highlighted words to see their meanings and add them to their personal vocabulary list.
-    
-    As students progress through the book, their reading progress is tracked automatically. They earn XP points for completing pages, learning new words, and taking quizzes.
-    
-    The book club feature allows students to discuss the content with their classmates and teacher. This collaborative learning environment helps improve comprehension and critical thinking skills.
-    
-    After completing each chapter, students can take a quiz to test their understanding. The AI generates questions based on the content they've read, ensuring relevant and appropriate assessment.
-    
-    The gamification system includes achievements, leaderboards, and streaks to keep students motivated. They can see their progress compared to other learners and earn badges for various accomplishments.
-    
-    This integrated learning approach combines reading, vocabulary building, comprehension testing, and social interaction to create a comprehensive ESL learning experience.`,
-    format: 'txt' as const,
-    totalPages: 10,
-    category: 'education',
-    level: 'B1',
-    author: 'Sample Author',
-    coverImage: null,
-    thumbnails: []
   };
   
+  // Create proper BookContent object for components
+  const bookContent: BookContent = {
+    format: bookData.format,
+    content: bookData.content,
+    id: bookData.id,
+    title: bookData.title,
+    author: bookData.author,
+    coverImage: bookData.coverImage,
+    thumbnails: bookData.thumbnails,
+    metadata: {
+      title: bookData.title,
+      author: bookData.author,
+      level: bookData.level,
+      tags: [bookData.category],
+      pageCount: bookData.totalPages
+    }
+  };
+
   switch (action) {
     case 'read':
       return (

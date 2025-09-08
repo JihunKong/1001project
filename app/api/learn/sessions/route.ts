@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new session
-    const readingSession = await prisma.readingSession.create({
+    const readingSession = await prisma.learningSession.create({
       data: {
         userId: session.user.id,
         bookId,
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
       ...(bookId && { bookId }),
     };
 
-    const sessions = await prisma.readingSession.findMany({
+    const sessions = await prisma.learningSession.findMany({
       where,
       orderBy: { startTime: 'desc' },
       take: limit,

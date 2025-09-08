@@ -7,6 +7,13 @@ export type ContentFormat = 'pdf' | 'md' | 'html' | 'txt';
 export interface BookContent {
   format: ContentFormat;
   content: string;
+  // Database fields (when fetched from API)
+  id?: string;
+  title?: string;
+  author?: string;
+  coverImage?: string | null;
+  thumbnails?: string[];
+  // Legacy metadata structure (for file-based content)
   metadata?: {
     title?: string;
     author?: string;

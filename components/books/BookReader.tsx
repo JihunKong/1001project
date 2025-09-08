@@ -59,9 +59,9 @@ export default function BookReader({
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <div>
-                  <h1 className="text-lg font-semibold">{content.metadata?.title || 'Untitled Book'}</h1>
+                  <h1 className="text-lg font-semibold">{content.title || content.metadata?.title || 'Untitled Book'}</h1>
                   <p className="text-sm text-gray-600">
-                    by {content.metadata?.author || 'Unknown Author'}
+                    by {content.author || content.metadata?.author || 'Unknown Author'}
                   </p>
                 </div>
               </div>
@@ -159,7 +159,7 @@ export default function BookReader({
         isOpen={showAITutor}
         onClose={() => setShowAITutor(false)}
         bookId={bookId}
-        bookTitle={content.metadata?.title || 'Untitled Book'}
+        bookTitle={content.title || content.metadata?.title || 'Untitled Book'}
         currentPage={currentPage}
         pageContent={content.content}
       />

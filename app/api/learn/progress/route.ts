@@ -82,13 +82,14 @@ export async function GET(request: NextRequest) {
       data: {
         progress: learningProgress,
         stats: stats || {
-          totalXP: 0,
+          xp: 0,
           level: 1,
-          streak: currentStreak,
-          booksRead: learningProgress.filter(p => p.isCompleted).length,
+          currentStreak: currentStreak,
+          booksCompleted: learningProgress.filter(p => p.isCompleted).length,
           wordsLearned: vocabularyCount,
-          quizzesPassed: 0,
-          totalReadingTime: learningProgress.reduce((sum, p) => sum + p.readingTime, 0)
+          totalReadingTime: learningProgress.reduce((sum, p) => sum + p.readingTime, 0),
+          longestStreak: 0,
+          lastActiveDate: new Date()
         }
       }
     });
@@ -174,16 +175,13 @@ export async function POST(request: NextRequest) {
       update: {},
       create: {
         userId,
-        totalXP: 0,
+        xp: 0,
         level: 1,
-        streak: 0,
-        lastActive: new Date(),
-        booksRead: 0,
+        currentStreak: 0,
+        lastActiveDate: new Date(),
+        booksCompleted: 0,
         wordsLearned: 0,
-        quizzesPassed: 0,
-        totalReadingTime: 0,
-        postsCreated: 0,
-        likesReceived: 0
+        totalReadingTime: 0
       }
     });
 

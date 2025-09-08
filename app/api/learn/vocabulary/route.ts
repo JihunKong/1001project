@@ -117,8 +117,8 @@ export async function POST(request: NextRequest) {
       where: { userId: session.user.id },
       data: {
         wordsLearned: { increment: 1 },
-        totalXP: { increment: XP_REWARDS.WORD_LEARNED },
-        lastActive: new Date(),
+        xp: { increment: XP_REWARDS.WORD_LEARNED },
+        lastActiveDate: new Date(),
       },
     });
 

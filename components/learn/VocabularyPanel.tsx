@@ -42,7 +42,7 @@ export function VocabularyPanel({ isOpen, onClose, bookId }: VocabularyPanelProp
     setIsLoading(true);
     try {
       const response = await getVocabulary(bookId);
-      if (response.success && response.data) {
+      if (response.success && response.data && Array.isArray(response.data)) {
         // Update store with fetched vocabulary
         response.data.forEach(word => {
           useLearningStore.getState().addVocabulary(word);

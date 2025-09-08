@@ -6,7 +6,20 @@ import { prisma } from '@/lib/prisma'
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    const data = await request.json()
+    
+    // Handle empty request body
+    let data: any = {}
+    try {
+      const text = await request.text()
+      if (text) {
+        data = JSON.parse(text)
+      }
+    } catch (parseError) {
+      return NextResponse.json(
+        { error: 'Invalid request body' },
+        { status: 400 }
+      )
+    }
     
     // Validate required fields
     if (!data.sessionId) {

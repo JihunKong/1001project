@@ -52,21 +52,32 @@ export default function StudentAssessment() {
   }, []);
 
   const fetchStudents = async () => {
-    // Mock data - in production, this would fetch from API
-    const mockStudents: Student[] = [
-      {
-        id: 'student1',
-        name: 'Test Student',
-        email: 'student@test.com',
-        progress: {
-          booksRead: 5,
-          currentBook: 'The Little Prince',
-          completionRate: 75,
-          lastActive: '2 hours ago'
-        }
+    try {
+      const response = await fetch('/api/teacher/students');
+      if (!response.ok) {
+        throw new Error('Failed to fetch students');
       }
-    ];
-    setStudents(mockStudents);
+      const data = await response.json();
+      
+      // Transform the data to match the Student interface
+      const transformedStudents: Student[] = data.students.map((student: any) => ({
+        id: student.id,
+        name: student.name || 'Student',
+        email: student.email,
+        progress: {
+          booksRead: student.booksRead || 0,
+          currentBook: student.currentBook || null,
+          completionRate: student.completionRate || 0,
+          lastActive: student.lastActive || 'Never'
+        }
+      }));
+      
+      setStudents(transformedStudents);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      // For development, show empty state instead of mock data
+      setStudents([]);
+    }
   };
 
   const handleAssessmentSubmit = async () => {

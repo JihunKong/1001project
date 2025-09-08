@@ -20,7 +20,7 @@ export async function POST(
     }
 
     // Get existing session
-    const existingSession = await prisma.readingSession.findFirst({
+    const existingSession = await prisma.learningSession.findFirst({
       where: {
         id: params.sessionId,
         userId: session.user.id,
@@ -41,7 +41,7 @@ export async function POST(
     );
 
     // Update session
-    const readingSession = await prisma.readingSession.update({
+    const readingSession = await prisma.learningSession.update({
       where: { id: params.sessionId },
       data: {
         endTime,
@@ -79,7 +79,7 @@ export async function POST(
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
-    const yesterdaySession = await prisma.readingSession.findFirst({
+    const yesterdaySession = await prisma.learningSession.findFirst({
       where: {
         userId: session.user.id,
         startTime: {
