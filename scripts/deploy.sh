@@ -76,8 +76,8 @@ deploy_to_server() {
             
             echo "Pulling latest changes..."
             git fetch origin
-            git checkout feature/role-system-v2
-            git pull origin feature/role-system-v2
+            git checkout v0.4.1
+            git pull origin v0.4.1
             
             echo "Restoring uploaded files..."
             LATEST_BACKUP=$(ls -t /tmp/books-backup-* 2>/dev/null | head -n1)
