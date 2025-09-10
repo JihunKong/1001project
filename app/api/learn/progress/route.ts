@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: existingProgress
-      } as ApiResponse<LearningProgress>);
+      });
     }
 
     // Get book details for total pages
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: progress
-    } as ApiResponse<LearningProgress>);
+    });
   } catch (error) {
     console.error('Error creating progress:', error);
     return NextResponse.json(

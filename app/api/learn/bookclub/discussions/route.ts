@@ -30,8 +30,11 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     const [discussions, total] = await Promise.all([
-      prisma.bookClubDiscussion.findMany({
-        where: { bookId },
+      prisma.bookClubPost.findMany({
+        where: { 
+          club: { bookId },
+          parentId: null // Top-level posts are discussions
+        },
         include: {
           user: {
             select: {
@@ -41,7 +44,7 @@ export async function GET(request: NextRequest) {
               image: true,
             },
           },
-          comments: {
+          replies: {
             include: {
               user: {
                 select: {
@@ -59,7 +62,10 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit,
       }),
-      prisma.bookClubDiscussion.count({ where: { bookId } }),
+      prisma.bookClubPost.count({ where: { 
+        club: { bookId },
+        parentId: null 
+      } }),
     ]);
 
     return NextResponse.json({
@@ -103,31 +109,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user has read the book
-    const progress = await prisma.learningProgress.findFirst({
-      where: {
-        userId: session.user.id,
-        bookId,
-      },
+    // Find or create a book club for this book
+    let bookClub = await prisma.bookClub.findFirst({
+      where: { bookId }
     });
-
-    if (!progress || progress.pagesRead < progress.totalPages * 0.5) {
-      return NextResponse.json(
-        { success: false, error: 'Please read at least 50% of the book before starting a discussion' },
-        { status: 400 }
-      );
+    
+    if (!bookClub) {
+      bookClub = await prisma.bookClub.create({
+        data: {
+          bookId,
+          creatorId: session.user.id,
+          name: `${title} Discussion`,
+          isActive: true,
+          isPublic: true,
+        }
+      });
     }
 
-    const discussion = await prisma.bookClubDiscussion.create({
+    const discussion = await prisma.bookClubPost.create({
       data: {
         userId: session.user.id,
-        bookId,
-        title,
-        content,
-        tags: tags || [],
+        clubId: bookClub.id,
+        content: `# ${title}\n\n${content}`,
         likes: 0,
-        views: 0,
-        isActive: true,
       },
       include: {
         user: {
@@ -138,7 +142,7 @@ export async function POST(request: NextRequest) {
             image: true,
           },
         },
-        comments: true,
+        replies: true,
       },
     });
 
@@ -151,8 +155,7 @@ export async function POST(request: NextRequest) {
       await prisma.userStats.update({
         where: { userId: session.user.id },
         data: {
-          totalXp: userStats.totalXp + 25, // 25 XP for starting a discussion
-          discussionsStarted: (userStats as any).discussionsStarted + 1 || 1,
+          xp: userStats.xp + 25, // 25 XP for starting a discussion
         },
       });
     }
@@ -160,7 +163,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: discussion,
-    } as ApiResponse<BookClubDiscussion>);
+    });
   } catch (error) {
     console.error('Error creating discussion:', error);
     return NextResponse.json(

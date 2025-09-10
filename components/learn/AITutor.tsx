@@ -144,13 +144,8 @@ export function AITutor({ bookId, bookTitle, currentPage, pageContent }: AITutor
       }
     } catch (error) {
       console.error('TTS Error:', error);
-      // Fallback to browser TTS if API fails
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.9;
-        speechSynthesis.speak(utterance);
-      }
+      // TTS disabled - no browser fallback to prevent monster sounds
+      console.log('TTS disabled to prevent monster sounds');
     }
   };
 

@@ -3,9 +3,9 @@ import { EnhancedReadingPage } from '@/components/learn/EnhancedReadingPage';
 import { ContentLoader, BookContent } from '@/lib/content-loader';
 
 interface BookPageProps {
-  params: {
+  params: Promise<{
     slug: string[];
-  };
+  }>;
 }
 
 // Fetch book data from API

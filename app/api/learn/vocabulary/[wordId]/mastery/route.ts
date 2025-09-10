@@ -7,7 +7,7 @@ import type { ApiResponse, Vocabulary } from '@/types/learning';
 // PUT /api/learn/vocabulary/[wordId]/mastery - Update vocabulary mastery
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { wordId: string } }
+  { params }: { params: Promise<{ wordId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);

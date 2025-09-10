@@ -25,8 +25,10 @@ ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 # Generate Prisma Client (only the client, skip other generators)
 RUN npx prisma generate --generator client
 
-# Reinstall sharp for Alpine Linux musl x64
-RUN npm install --os=linux --libc=musl --cpu=x64 sharp --legacy-peer-deps
+# Install sharp with optimized build for Alpine Linux
+RUN apk add --no-cache --virtual .build-deps python3 make g++ \
+    && npm install --platform=linux --arch=x64 --libc=musl sharp --legacy-peer-deps \
+    && apk del .build-deps
 
 # Build application
 RUN npm run build

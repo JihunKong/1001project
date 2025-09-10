@@ -105,7 +105,7 @@ export async function POST(request: Request) {
         isPublished: true,
         isPremium: false,
         pageCount: Math.ceil(content.split(' ').length / 250), // Estimate page count (250 words per page)
-        createdBy: session.user.id
+        // createdBy: session.user.id // Field doesn't exist on Book model
       }
     });
 

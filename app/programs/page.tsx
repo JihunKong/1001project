@@ -6,59 +6,65 @@ import Link from 'next/link';
 
 const programs = [
   {
-    id: 'partnership',
+    id: 'PARTNERSHIP_NETWORK',
     title: 'Partnership Network',
-    description: 'Connect with schools and organizations worldwide to expand educational opportunities.',
+    description: 'Connect with schools, NGOs, companies, and universities worldwide to expand educational opportunities.',
     icon: Handshake,
     color: 'text-primary-green',
     bgColor: 'bg-green-50',
     features: [
-      'Global school partnerships',
+      'Global institutional partnerships',
       'Resource sharing programs',
       'Cross-cultural exchanges',
-      'Joint curriculum development'
+      'Joint curriculum development',
+      'NGO collaboration opportunities',
+      'Corporate partnership programs'
     ],
     stats: {
-      schools: '150+',
+      partners: '150+',
       countries: '25+',
       students: '10,000+'
     }
   },
   {
-    id: 'english-education',
+    id: 'ENGLISH_EDUCATION',
     title: 'English Education',
-    description: 'ESL programs designed to help children learn English through engaging stories.',
+    description: 'Comprehensive ESL programs for teachers, students, and mentors to advance English language learning.',
     icon: BookOpenCheck,
     color: 'text-primary-green',
     bgColor: 'bg-yellow-50',
     features: [
-      'Interactive ESL lessons',
-      'AI-powered learning assistant',
+      'Teacher training programs',
+      'Student learning pathways',
+      'Mentor support networks',
+      'AI-powered learning tools',
       'Vocabulary building exercises',
       'Pronunciation practice'
     ],
     stats: {
-      lessons: '500+',
-      languages: '15+',
+      teachers: '500+',
+      students: '15,000+',
       completion: '85%'
     }
   },
   {
-    id: 'mentorship',
+    id: 'MENTORSHIP',
     title: 'Mentorship Program',
-    description: 'Connect experienced educators with new teachers and volunteers for guidance and support.',
+    description: 'Connect experienced professionals with newcomers across various expertise domains for guidance and growth.',
     icon: Users,
     color: 'text-primary-green',
     bgColor: 'bg-blue-50',
     features: [
       'One-on-one mentoring',
       'Professional development',
-      'Teaching resources',
-      'Community support'
+      'Cross-domain expertise sharing',
+      'Flexible meeting schedules',
+      'Community support networks',
+      'Progress tracking tools'
     ],
     stats: {
       mentors: '200+',
-      hours: '5,000+',
+      domains: '15+',
       satisfaction: '95%'
     }
   }
@@ -86,8 +92,8 @@ export default function ProgramsPage() {
             </p>
             
             <div className="flex justify-center gap-4">
-              <Link href="/signup" className="btn-brand-primary">
-                Join a Program
+              <Link href="/programs/apply" className="btn-brand-primary">
+                Apply to Programs
               </Link>
               <Link href="/contact" className="btn-brand-secondary">
                 Learn More
@@ -139,10 +145,10 @@ export default function ProgramsPage() {
                   </div>
                   
                   <Link
-                    href={`/programs/${program.id}`}
+                    href={`/programs/apply?program=${program.id}`}
                     className="btn-brand-accent w-full mt-6 text-center"
                   >
-                    Explore Program
+                    Apply Now
                   </Link>
                 </div>
               </motion.div>
@@ -168,8 +174,8 @@ export default function ProgramsPage() {
             <p className="text-xl text-gray-600 mb-8">
               Join thousands of educators and volunteers who are transforming education worldwide
             </p>
-            <Link href="/signup" className="btn-brand-primary text-lg px-8 py-4">
-              Get Started Today
+            <Link href="/programs/apply" className="btn-brand-primary text-lg px-8 py-4">
+              Apply to Programs
             </Link>
           </motion.div>
         </div>

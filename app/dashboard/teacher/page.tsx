@@ -16,10 +16,22 @@ import {
   FileText,
   ChevronRight,
   AlertCircle,
-  Loader2
+  Loader2,
+  Copy,
+  RefreshCw,
+  Plus,
+  UserPlus,
+  Target,
+  Flame,
+  Star
 } from 'lucide-react';
 import Link from 'next/link';
 import StudentAssessment from '@/components/teacher/StudentAssessment';
+import ClassCodeManager from '@/components/teacher/ClassCodeManager';
+import StudentRoster from '@/components/teacher/StudentRoster';
+import BookAssignmentManager from '@/components/teacher/BookAssignmentManager';
+import ProgressTracker from '@/components/teacher/ProgressTracker';
+import AITaskGenerator from '@/components/teacher/AITaskGenerator';
 
 interface TeacherStats {
   user: {
@@ -33,13 +45,18 @@ interface TeacherStats {
     pendingAssignments: number;
     averageProgress: number;
     totalAssignments: number;
+    avgReadingStreak: number;
+    avgSessionLength: number;
+    avgDifficultyProgression: number;
   };
   classes: Array<{
     id: string;
     name: string;
+    code: string;
     students: number;
     averageProgress: number;
     pendingTasks: number;
+    createdAt: string;
   }>;
   recentActivity: Array<{
     id: string;
@@ -56,6 +73,7 @@ export default function TeacherDashboard() {
   const [teacherData, setTeacherData] = useState<TeacherStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'students' | 'assignments' | 'progress' | 'tasks'>('overview');
   
   useEffect(() => {
     if (status === 'authenticated') {
@@ -101,7 +119,10 @@ export default function TeacherDashboard() {
       assignmentsGraded: 0,
       pendingAssignments: 0,
       averageProgress: 0,
-      totalAssignments: 0
+      totalAssignments: 0,
+      avgReadingStreak: 0,
+      avgSessionLength: 0,
+      avgDifficultyProgression: 0
     },
     classes: [],
     recentActivity: []
@@ -163,6 +184,15 @@ export default function TeacherDashboard() {
     );
   }
   
+  // Tab navigation
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: BarChart },
+    { id: 'students', label: 'My Students', icon: Users },
+    { id: 'assignments', label: 'Assignments', icon: BookOpen },
+    { id: 'progress', label: 'Progress', icon: TrendingUp },
+    { id: 'tasks', label: 'AI Tasks', icon: Star }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -176,6 +206,29 @@ export default function TeacherDashboard() {
             Teacher Dashboard
           </h1>
           <p className="text-gray-600">Welcome back, {data.user.name}!</p>
+          
+          {/* Tab Navigation */}
+          <div className="mt-6 border-b border-gray-200">
+            <nav className="flex space-x-8">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`flex items-center gap-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === tab.id
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
         </motion.div>
         
         {/* Error Message */}
@@ -189,7 +242,10 @@ export default function TeacherDashboard() {
           </motion.div>
         )}
         
-        {/* Stats Grid */}
+        {/* Tab Content */}
+        {activeTab === 'overview' && (
+          <div>
+            {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -395,16 +451,38 @@ export default function TeacherDashboard() {
             </div>
           </motion.div>
         </div>
+          </div>
+        )}
         
-        {/* Student Assessment Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="mt-8"
-        >
-          <StudentAssessment />
-        </motion.div>
+        {/* Students Tab */}
+        {activeTab === 'students' && (
+          <div className="space-y-6">
+            <ClassCodeManager />
+            <StudentRoster />
+          </div>
+        )}
+        
+        {/* Assignments Tab */}
+        {activeTab === 'assignments' && (
+          <div className="space-y-6">
+            <BookAssignmentManager />
+          </div>
+        )}
+        
+        {/* Progress Tab */}
+        {activeTab === 'progress' && (
+          <div className="space-y-6">
+            <ProgressTracker />
+          </div>
+        )}
+        
+        {/* AI Tasks Tab */}
+        {activeTab === 'tasks' && (
+          <div className="space-y-6">
+            <AITaskGenerator />
+            <StudentAssessment />
+          </div>
+        )}
       </div>
     </div>
   );

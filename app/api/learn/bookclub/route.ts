@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get or create book club for this book
-    let bookClub = await prisma.bookClub.findFirst({
+    // Get or create book club for this book  
+    let bookClub: any = await prisma.bookClub.findFirst({
       where: {
         bookId: bookId,
         isActive: true,
@@ -110,9 +110,37 @@ export async function GET(request: NextRequest) {
               }
             }
           },
-          posts: []
+          posts: {
+            where: {
+              parentId: null
+            },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                }
+              },
+              replies: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      image: true,
+                    }
+                  }
+                }
+              }
+            },
+            orderBy: {
+              createdAt: 'desc'
+            },
+            take: 20
+          }
         }
-      });
+      }) as any;
 
       // Automatically add creator as a member
       await prisma.bookClubMember.create({
@@ -122,6 +150,13 @@ export async function GET(request: NextRequest) {
           role: 'MODERATOR'
         }
       });
+    }
+
+    if (!bookClub) {
+      return NextResponse.json(
+        { success: false, error: 'Failed to create or find book club' },
+        { status: 500 }
+      );
     }
 
     // Check if current user is a member
@@ -135,7 +170,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Transform posts for API response
-    const discussions = bookClub.posts.map(post => ({
+    const discussions = bookClub.posts.map((post: any) => ({
       id: post.id,
       userId: post.userId,
       author: post.user.name || 'Anonymous',
@@ -143,7 +178,7 @@ export async function GET(request: NextRequest) {
       content: post.content,
       createdAt: post.createdAt,
       likes: post.likes,
-      comments: post.replies.map(reply => ({
+      comments: post.replies.map((reply: any) => ({
         id: reply.id,
         userId: reply.userId,
         author: reply.user.name || 'Anonymous',

@@ -8,7 +8,7 @@ import { XP_REWARDS } from '@/types/learning';
 // POST /api/learn/progress/[bookId]/complete - Mark book as completed
 export async function POST(
   request: NextRequest,
-  { params }: { params: { bookId: string } }
+  { params }: { params: Promise<{ bookId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -20,7 +20,7 @@ export async function POST(
     }
 
     const userId = session.user.id;
-    const bookId = params.bookId;
+    const { bookId } = await params;
 
     // Update progress to completed
     const progress = await prisma.learningProgress.update({
@@ -33,7 +33,7 @@ export async function POST(
       data: {
         isCompleted: true,
         completedAt: new Date(),
-        pagesRead: prisma.learningProgress.fields.totalPages, // Set pages read to total
+        // pagesRead: totalPages, // Set pages read to total (needs to be implemented separately)
       },
     });
 
@@ -41,22 +41,20 @@ export async function POST(
     const userStats = await prisma.userStats.upsert({
       where: { userId },
       update: {
-        booksRead: { increment: 1 },
-        totalXP: { increment: XP_REWARDS.BOOK_COMPLETED },
-        lastActive: new Date(),
+        booksCompleted: { increment: 1 },
+        xp: { increment: XP_REWARDS.BOOK_COMPLETED },
+        lastActiveDate: new Date(),
       },
       create: {
         userId,
-        totalXP: XP_REWARDS.BOOK_COMPLETED,
+        xp: XP_REWARDS.BOOK_COMPLETED,
         level: 1,
-        streak: 1,
-        lastActive: new Date(),
-        booksRead: 1,
+        currentStreak: 1,
+        longestStreak: 1,
+        lastActiveDate: new Date(),
+        booksCompleted: 1,
         wordsLearned: 0,
-        quizzesPassed: 0,
         totalReadingTime: 0,
-        postsCreated: 0,
-        likesReceived: 0,
       },
     });
 
@@ -64,7 +62,7 @@ export async function POST(
     const achievements = [];
     
     // First book achievement
-    if (userStats.booksRead === 1) {
+    if (userStats.booksCompleted === 1) {
       const firstBookAchievement = await prisma.achievement.findFirst({
         where: { name: 'First Book' },
       });
@@ -83,9 +81,9 @@ export async function POST(
     
     // Book milestone achievements (5, 10, 25, 50, 100 books)
     const milestones = [5, 10, 25, 50, 100];
-    if (milestones.includes(userStats.booksRead)) {
+    if (milestones.includes(userStats.booksCompleted)) {
       const milestoneAchievement = await prisma.achievement.findFirst({
-        where: { name: `${userStats.booksRead} Books Read` },
+        where: { name: `${userStats.booksCompleted} Books Read` },
       });
       
       if (milestoneAchievement) {

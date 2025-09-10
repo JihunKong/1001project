@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Heart, 
@@ -22,9 +22,27 @@ import { UserRole } from '@prisma/client';
 import PDFUploadForm from '@/components/volunteer/PDFUploadForm';
 import SubmissionHistory from '@/components/volunteer/SubmissionHistory';
 
+interface Stats {
+  submissionsTotal: number;
+  submissionsApproved: number;
+  submissionsPublished: number;
+  readersReached: number;
+  totalContributions: number;
+  rank: string;
+  achievements: Array<{
+    name: string;
+    icon: string;
+    earned: boolean;
+    description: string;
+  }>;
+}
+
 export default function VolunteerDashboard() {
   const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState<'overview' | 'submit' | 'history'>('overview');
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Redirect if not logged in or not a volunteer
   if (status === 'loading') {
@@ -35,21 +53,51 @@ export default function VolunteerDashboard() {
     redirect('/dashboard');
   }
 
-  const stats = {
-    submissionsTotal: 8,
-    submissionsApproved: 5,
-    submissionsPublished: 3,
-    readersReached: 1247,
-    totalContributions: 156,
-    rank: 'Story Contributor'
-  };
+  // Fetch volunteer stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch('/api/volunteer/stats');
+        if (!response.ok) {
+          throw new Error('Failed to fetch stats');
+        }
+        const data = await response.json();
+        setStats(data);
+      } catch (err) {
+        console.error('Error fetching volunteer stats:', err);
+        setError('Failed to load statistics');
+        // Fallback to mock data if API fails
+        setStats({
+          submissionsTotal: 0,
+          submissionsApproved: 0,
+          submissionsPublished: 0,
+          readersReached: 0,
+          totalContributions: 0,
+          rank: 'New Contributor',
+          achievements: [
+            { name: 'First Submission', icon: 'Award', earned: false, description: 'Submit your first story' },
+            { name: 'Published Author', icon: 'BookOpen', earned: false, description: 'Have 3 stories published' },
+            { name: 'Global Reach', icon: 'Globe', earned: false, description: 'Reach 1000+ readers' },
+            { name: 'Prolific Writer', icon: 'FileText', earned: false, description: 'Submit 10 stories' }
+          ]
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const achievements = [
-    { name: 'First Submission', icon: Award, earned: true, description: 'Submit your first story' },
-    { name: 'Published Author', icon: BookOpen, earned: true, description: 'Have 3 stories published' },
-    { name: 'Global Reach', icon: Globe, earned: false, description: 'Reach 1000+ readers' },
-    { name: 'Prolific Writer', icon: FileText, earned: false, description: 'Submit 10 stories' }
-  ];
+    fetchStats();
+  }, []);
+
+  // Icon mapping
+  const iconMap = {
+    Award,
+    BookOpen,
+    Globe,
+    FileText
+  } as const;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -109,8 +157,25 @@ export default function VolunteerDashboard() {
         {/* Tab Content */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
+            {/* Loading State */}
+            {isLoading && (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
+                <span className="ml-2 text-gray-600">Loading your statistics...</span>
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-600">{error}</p>
+              </div>
+            )}
+
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {stats && !isLoading && (
+              <>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -214,22 +279,25 @@ export default function VolunteerDashboard() {
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Your Achievements</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {achievements.map((achievement) => (
-                  <div
-                    key={achievement.name}
-                    className={`p-4 rounded-lg border-2 ${
-                      achievement.earned 
-                        ? 'border-yellow-400 bg-yellow-50' 
-                        : 'border-gray-200 bg-gray-50 opacity-50'
-                    }`}
-                  >
-                    <achievement.icon className={`w-8 h-8 mb-2 ${
-                      achievement.earned ? 'text-yellow-600' : 'text-gray-400'
-                    }`} />
-                    <h3 className="font-semibold text-sm text-gray-900">{achievement.name}</h3>
-                    <p className="text-xs text-gray-600 mt-1">{achievement.description}</p>
-                  </div>
-                ))}
+                {stats.achievements.map((achievement) => {
+                  const IconComponent = iconMap[achievement.icon as keyof typeof iconMap];
+                  return (
+                    <div
+                      key={achievement.name}
+                      className={`p-4 rounded-lg border-2 ${
+                        achievement.earned 
+                          ? 'border-yellow-400 bg-yellow-50' 
+                          : 'border-gray-200 bg-gray-50 opacity-50'
+                      }`}
+                    >
+                      <IconComponent className={`w-8 h-8 mb-2 ${
+                        achievement.earned ? 'text-yellow-600' : 'text-gray-400'
+                      }`} />
+                      <h3 className="font-semibold text-sm text-gray-900">{achievement.name}</h3>
+                      <p className="text-xs text-gray-600 mt-1">{achievement.description}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -238,7 +306,7 @@ export default function VolunteerDashboard() {
               <h2 className="text-2xl font-bold mb-4">Your Community Impact</h2>
               <p className="text-lg mb-6">
                 Through your story contributions, you&apos;ve helped make education accessible to children worldwide. 
-                Your stories have directly reached {stats.readersReached} readers!
+                Your stories have directly reached {stats.readersReached.toLocaleString()} readers!
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
@@ -251,10 +319,12 @@ export default function VolunteerDashboard() {
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
                   <Heart className="w-8 h-8 mb-2" />
-                  <p className="font-semibold">{stats.readersReached} Children Inspired</p>
+                  <p className="font-semibold">{stats.readersReached.toLocaleString()} Children Inspired</p>
                 </div>
               </div>
             </div>
+            </>
+            )}
           </div>
         )}
 

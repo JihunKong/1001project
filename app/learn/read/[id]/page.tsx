@@ -72,73 +72,111 @@ export default function LearnReadPage() {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = (scrollTop / docHeight) * 100;
-      setReadingProgress(Math.min(100, Math.max(0, progress)));
+      const newProgress = Math.min(100, Math.max(0, progress));
+      
+      setReadingProgress(newProgress);
+      
+      // Update progress in database periodically
+      if (Math.abs(newProgress - readingProgress) > 5) { // Update every 5% progress
+        updateReadingProgress(newProgress);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [readingProgress, book]);
 
   const fetchBookContent = async () => {
     try {
       setLoading(true);
       
+      // First check if this book is assigned to the student
+      const assignmentCheck = await fetch('/api/learn/assignments');
+      if (assignmentCheck.ok) {
+        const assignmentData = await assignmentCheck.json();
+        const isAssigned = assignmentData.assignments?.some((assignment: any) => 
+          assignment.book.id === bookId
+        );
+        
+        if (!isAssigned) {
+          throw new Error('This book is not assigned to you. Please check with your teacher.');
+        }
+      }
+      
       // Fetch book details
       const bookResponse = await fetch(`/api/library/books/${bookId}`);
-      if (!bookResponse.ok) throw new Error('Failed to fetch book');
-      const bookData = await bookResponse.json();
+      if (!bookResponse.ok) throw new Error('Failed to fetch book details');
+      const response = await bookResponse.json();
+      const bookData = response.book;
       
-      // Parse PDF to get text content
-      const contentResponse = await fetch(`/api/learn/parse-content/${bookId}`);
+      // Parse PDF to get text content with Upstage integration
+      const contentResponse = await fetch(`/api/learn/parse-content`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          bookId,
+          difficulty: 'Intermediate' // Default difficulty
+        }),
+      });
+      
       let parsedContent = null;
-      
       if (contentResponse.ok) {
         parsedContent = await contentResponse.json();
       } else {
-        // Use dummy content for demonstration
+        // Fallback content for demo purposes
         parsedContent = {
-          text: `${bookData.title}
-
-Once upon a time, in a small village nestled in the mountains, there lived a young girl named Maria. She loved to explore the forests and listen to the stories the wind whispered through the trees.
-
-Every morning, Maria would wake up early and help her grandmother prepare breakfast. Her grandmother would tell her stories about the old days, when the village was first founded by brave explorers who crossed the mountains in search of a new home.
-
-One day, Maria discovered a hidden path in the forest. The path was covered with colorful flowers and led to a beautiful clearing where a crystal-clear stream flowed. She decided this would be her secret place, where she could read and dream.
-
-As the seasons changed, Maria grew older and wiser. She learned to read the signs of nature - when the birds flew south, winter was coming; when the flowers bloomed, spring had arrived. She shared these observations with the village children, becoming their teacher and friend.
-
-Years later, Maria became the village storyteller, just like her grandmother. She would gather the children around the fire and tell them tales of adventure, courage, and the importance of protecting nature. Her stories inspired a new generation to love and respect their mountain home.
-
-The village prospered under Maria's guidance. She taught the people to live in harmony with nature, to take only what they needed, and to give back to the earth. Her legacy lived on through the stories that were passed down from generation to generation.`,
-          vocabulary: [
-            { word: 'nestled', definition: 'Settled comfortably within or against something', example: 'The village was nestled in the mountains.', difficulty: 2 },
-            { word: 'whispered', definition: 'Spoke very softly using breath without vocal cords', example: 'The wind whispered through the trees.', difficulty: 1 },
-            { word: 'founded', definition: 'Established or created', example: 'The village was founded by brave explorers.', difficulty: 2 },
-            { word: 'clearing', definition: 'An open space in a forest', example: 'The path led to a beautiful clearing.', difficulty: 2 },
-            { word: 'observations', definition: 'Things that are noticed or perceived', example: 'She shared her observations with the children.', difficulty: 3 },
-            { word: 'prospered', definition: 'Became successful or wealthy', example: 'The village prospered under her guidance.', difficulty: 3 },
-            { word: 'harmony', definition: 'A pleasing arrangement; agreement', example: 'They lived in harmony with nature.', difficulty: 2 },
-            { word: 'legacy', definition: 'Something handed down from the past', example: 'Her legacy lived on through stories.', difficulty: 3 }
-          ]
+          text: bookData.summary || 'Content will be available after teacher assigns reading level.',
+          vocabulary: [],
+          difficulty: 'Intermediate'
         };
       }
 
       const bookContent: BookContent = {
         id: bookData.id,
         title: bookData.title,
-        author: bookData.author || 'Unknown Author',
+        author: bookData.authorName || bookData.author || 'Unknown Author',
         originalText: parsedContent.text,
         currentText: parsedContent.text,
-        difficulty: 'Intermediate',
+        difficulty: parsedContent.difficulty || 'Intermediate',
         readingTime: Math.ceil(parsedContent.text.split(' ').length / 200),
         vocabulary: parsedContent.vocabulary || []
       };
 
       setBook(bookContent);
+      
+      // Update reading progress
+      await updateReadingProgress(0); // Initialize reading session
+      
     } catch (error) {
       console.error('Error fetching book:', error);
+      // Show user-friendly error message
+      setBook(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Update reading progress function
+  const updateReadingProgress = async (percentComplete: number) => {
+    if (!bookId || !session?.user?.id) return;
+    
+    try {
+      await fetch('/api/learn/progress/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          storyId: bookId,
+          percentComplete,
+          currentPage: Math.floor(percentComplete / 10), // Rough page estimation
+          totalPages: Math.ceil(book?.currentText.split(' ').length / 250) || 1, // Words per page estimation
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to update reading progress:', error);
     }
   };
 
@@ -149,31 +187,54 @@ The village prospered under Maria's guidance. She taught the people to live in h
     setDifficulty(newDifficulty);
     setShowDifficultyMenu(false);
 
-    // Simulate AI adaptation
-    setTimeout(() => {
-      let adaptedText = book.originalText;
-      
-      if (newDifficulty === 'Beginner') {
-        // Simplified version
-        adaptedText = book.originalText
-          .replace(/nestled in/g, 'in')
-          .replace(/whispered/g, 'made sounds')
-          .replace(/crystal-clear/g, 'clear')
-          .replace(/observations/g, 'things she saw')
-          .replace(/prospered/g, 'did well')
-          .replace(/harmony/g, 'peace');
-      } else if (newDifficulty === 'Advanced') {
-        // More complex version
-        adaptedText = `${book.originalText}
+    try {
+      // Call Upstage API for content parsing and adaptation
+      const response = await fetch('/api/learn/parse-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          bookId,
+          difficulty: newDifficulty.toLowerCase() === 'beginner' ? 'under-7' :
+                     newDifficulty.toLowerCase() === 'intermediate' ? '7-9' : 
+                     newDifficulty.toLowerCase() === 'advanced' ? '10-12' : 'adult'
+        }),
+      });
 
-Maria's profound connection with the natural world transcended mere observation. She developed an intricate understanding of the ecosystem's delicate balance, recognizing the interdependence of all living things. Her teachings emphasized sustainable practices and environmental stewardship, concepts that were revolutionary for her time.
+      if (response.ok) {
+        const adaptedContent = await response.json();
+        setBook({ 
+          ...book, 
+          currentText: adaptedContent.text || book.originalText,
+          difficulty: newDifficulty,
+          vocabulary: adaptedContent.vocabulary || book.vocabulary
+        });
+      } else {
+        // Fallback to simple text replacement for demo
+        let adaptedText = book.originalText;
+        
+        if (newDifficulty === 'Beginner') {
+          adaptedText = book.originalText
+            .replace(/difficult/g, 'hard')
+            .replace(/magnificent/g, 'beautiful')
+            .replace(/adventurous/g, 'fun')
+            .replace(/discovered/g, 'found')
+            .replace(/mysterious/g, 'strange');
+        } else if (newDifficulty === 'Advanced') {
+          adaptedText = `${book.originalText}
 
-The transformation she brought to the village was not merely economic but deeply philosophical. She challenged traditional paradigms and introduced innovative approaches to agriculture, water management, and community governance. Her holistic worldview integrated ancient wisdom with progressive thinking.`;
+This narrative exemplifies the quintessential bildungsroman elements, demonstrating the protagonist's psychological and moral development through their encounters with adversity and revelation. The thematic undertones explore existential questions while maintaining accessibility through archetypal character construction.`;
+        }
+
+        setBook({ ...book, currentText: adaptedText, difficulty: newDifficulty });
       }
-
-      setBook({ ...book, currentText: adaptedText, difficulty: newDifficulty });
+    } catch (error) {
+      console.error('Error adapting text:', error);
+      // Keep original text on error
+    } finally {
       setIsAdapting(false);
-    }, 1500);
+    }
   };
 
   const toggleFontSize = () => {
@@ -245,14 +306,8 @@ The transformation she brought to the village was not merely economic but deeply
     } catch (error) {
       console.error('TTS Error:', error);
       setIsSpeaking(false);
-      // Fallback to browser TTS
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
-        window.speechSynthesis.speak(utterance);
-      }
+      // TTS disabled - no browser fallback to prevent monster sounds
+      console.log('TTS disabled to prevent monster sounds');
     }
   };
 
@@ -297,15 +352,15 @@ The transformation she brought to the village was not merely economic but deeply
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.push('/learn')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors min-w-0"
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Back to Learning</span>
+              <ArrowLeft className="w-5 h-5 flex-shrink-0" />
+              <span className="hidden sm:inline">Back to Learning</span>
             </button>
             
-            <h1 className="text-xl font-semibold text-gray-900">{book.title}</h1>
+            <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate mx-4">{book.title}</h1>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {/* Difficulty Selector */}
               <div className="relative">
                 <button
@@ -343,7 +398,7 @@ The transformation she brought to the village was not merely economic but deeply
                 className="p-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
                 title="Change text size"
               >
-                <Type className="w-5 h-5" />
+                <Type className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               {/* Text to Speech */}
@@ -356,7 +411,7 @@ The transformation she brought to the village was not merely economic but deeply
                 }`}
                 title={isSpeaking ? 'Stop reading' : 'Start reading'}
               >
-                <Volume2 className={`w-5 h-5 ${isSpeaking ? 'animate-pulse' : ''}`} />
+                <Volume2 className={`w-4 h-4 sm:w-5 sm:h-5 ${isSpeaking ? 'animate-pulse' : ''}`} />
               </button>
 
               {/* Vocabulary */}
@@ -369,7 +424,7 @@ The transformation she brought to the village was not merely economic but deeply
                 }`}
                 title={showVocabulary ? 'Hide vocabulary' : 'Show vocabulary'}
               >
-                <Brain className="w-5 h-5" />
+                <Brain className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
@@ -405,7 +460,7 @@ The transformation she brought to the village was not merely economic but deeply
                 </div>
               )}
 
-              {/* Text Content */}
+              {/* Content Display - Always text content in learn mode */}
               <div className={`prose prose-lg max-w-none ${fontSize}`}>
                 {book.currentText.split('\n').map((paragraph, index) => (
                   <p key={index} className="mb-4 leading-relaxed text-gray-800">
@@ -486,26 +541,30 @@ The transformation she brought to the village was not merely economic but deeply
             </div>
           </div>
 
-          {/* AI Tutor Side Panel */}
-          <div className={`transition-all duration-300 ${showAITutor ? 'w-96' : 'w-0'} overflow-hidden`}>
+          {/* AI Tutor Side Panel - Mobile: Full overlay, Desktop: Side panel */}
+          <div className={`transition-all duration-300 ${showAITutor ? 'w-96' : 'w-0'} overflow-hidden ${showAITutor ? 'fixed lg:relative' : ''} ${showAITutor ? 'top-0 left-0 right-0 bottom-0 lg:top-auto lg:left-auto lg:right-auto lg:bottom-auto' : ''} ${showAITutor ? 'z-50 lg:z-auto' : ''}`}>
             {showAITutor && (
-              <div className="w-96 bg-white rounded-lg shadow-lg h-[calc(100vh-200px)] sticky top-24 flex flex-col">
-                {/* AI Tutor Header */}
-                <div className="p-4 border-b bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Brain className="w-5 h-5" />
-                      <h3 className="font-semibold">AI Tutor</h3>
+              <>
+                {/* Mobile backdrop */}
+                <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowAITutor(false)} />
+                
+                <div className={`${showAITutor ? 'w-full lg:w-96' : 'w-96'} bg-white rounded-lg shadow-lg h-[calc(100vh-80px)] lg:h-[calc(100vh-200px)] ${showAITutor ? 'fixed lg:sticky' : 'sticky'} ${showAITutor ? 'top-20 lg:top-24' : 'top-24'} ${showAITutor ? 'left-4 right-4 lg:left-auto lg:right-auto' : ''} flex flex-col z-50`}>
+                  {/* AI Tutor Header */}
+                  <div className="p-4 border-b bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Brain className="w-5 h-5" />
+                        <h3 className="font-semibold">AI Tutor</h3>
+                      </div>
+                      <button
+                        onClick={() => setShowAITutor(false)}
+                        className="p-1 hover:bg-white/20 rounded transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => setShowAITutor(false)}
-                      className="p-1 hover:bg-white/20 rounded transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+                    <p className="text-xs mt-1 opacity-90">Ask questions about the text</p>
                   </div>
-                  <p className="text-xs mt-1 opacity-90">Ask questions about the text</p>
-                </div>
 
                 {/* Messages Area */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -583,17 +642,39 @@ The transformation she brought to the village was not merely economic but deeply
                       setIsAiLoading(true);
 
                       try {
-                        // Here you would call your AI API
-                        // For now, simulate a response
-                        setTimeout(() => {
+                        // Call actual AI chat API
+                        const response = await fetch('/api/learn/chat', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            message: userMessage,
+                            bookId,
+                            bookContext: {
+                              title: book.title,
+                              content: book.currentText.substring(0, 2000) // Send relevant context
+                            },
+                            chatHistory: aiTutorMessages
+                          }),
+                        });
+
+                        if (response.ok) {
+                          const data = await response.json();
                           setAiTutorMessages(prev => [...prev, {
                             role: 'assistant',
-                            content: `That's a great question about "${userMessage}". Based on the text, let me explain...`
+                            content: data.response
                           }]);
-                          setIsAiLoading(false);
-                        }, 1000);
+                        } else {
+                          throw new Error('AI service temporarily unavailable');
+                        }
+                        setIsAiLoading(false);
                       } catch (error) {
                         console.error('AI Tutor error:', error);
+                        setAiTutorMessages(prev => [...prev, {
+                          role: 'assistant',
+                          content: 'I apologize, but I\'m having trouble right now. Please try asking your question again in a moment.'
+                        }]);
                         setIsAiLoading(false);
                       }
                     }}
@@ -617,6 +698,7 @@ The transformation she brought to the village was not merely economic but deeply
                   </form>
                 </div>
               </div>
+              </>
             )}
           </div>
         </div>
@@ -626,10 +708,10 @@ The transformation she brought to the village was not merely economic but deeply
       {!showAITutor && (
         <button
           onClick={() => setShowAITutor(true)}
-          className="fixed right-8 bottom-8 p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200 z-40"
+          className="fixed right-4 sm:right-8 bottom-4 sm:bottom-8 p-3 sm:p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-200 z-40"
           title="Ask AI Tutor"
         >
-          <MessageCircle className="w-6 h-6" />
+          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       )}
     </div>

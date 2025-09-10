@@ -246,7 +246,8 @@ export function EnhancedReadingPage({
       setIsSpeaking(false);
       setIsReading(false); // Stop reading time tracking
       currentAudioRef.current = null;
-      // OpenAI TTS 실패 시 음성 재생 안 함 (크롬 기본 음성 사용 안 함)
+      // TTS disabled - no browser fallback to prevent monster sounds
+      console.log('TTS failed and browser TTS is disabled to prevent monster sounds');
     }
   };
 

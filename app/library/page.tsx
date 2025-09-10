@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import Featured3Section from '@/components/Featured3Section';
 
 interface Book {
   id: string
@@ -80,6 +81,7 @@ export default function Library() {
   const { data: session } = useSession();
   
   const [books, setBooks] = useState<Book[]>([]);
+  const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [pagination, setPagination] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -115,12 +117,31 @@ export default function Library() {
     ]
   };
 
+  // Fetch featured books first
+  const fetchFeaturedBooks = async () => {
+    try {
+      const response = await fetch('/api/library/featured');
+      if (response.ok) {
+        const data = await response.json();
+        const featured = data.featuredBooks || [];
+        setFeaturedBooks(featured);
+        return featured.map((book: Book) => book.id);
+      }
+    } catch (err) {
+      console.log('No featured books available');
+    }
+    return [];
+  };
+
   // Fetch books from API
   const fetchBooks = async () => {
     setLoading(true);
     setError(null);
     
     try {
+      // First, get the list of featured book IDs
+      const featuredBookIds = await fetchFeaturedBooks();
+      
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: '12'
@@ -154,9 +175,13 @@ export default function Library() {
       console.log('📚 Books array:', data.books);
       console.log('📊 Pagination:', data.pagination);
       
-      setBooks(data.books || []);
+      // Filter out featured books from the main list to avoid duplication
+      const nonFeaturedBooks = (data.books || []).filter(book => !featuredBookIds.includes(book.id));
+      console.log('🎯 Filtered out featured books. Remaining:', nonFeaturedBooks.length);
+      
+      setBooks(nonFeaturedBooks);
       setPagination(data.pagination);
-      console.log('✅ State updated - books count:', data.books?.length || 0);
+      console.log('✅ State updated - books count:', nonFeaturedBooks.length);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'FETCH_ERROR';
       console.error('🚨 Error fetching books:', err);
@@ -196,6 +221,9 @@ export default function Library() {
           </motion.div>
         </div>
       </section>
+
+      {/* Featured-3 Section */}
+      <Featured3Section />
 
       {/* Search and Filter Bar */}
       <section className="sticky top-16 z-40 bg-white border-b shadow-sm">
@@ -299,10 +327,6 @@ export default function Library() {
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <BookOpen className="w-4 h-4 text-green-600" />
-                  Free
-                </div>
                 <div className="flex items-center gap-1">
                   📚
                   Free
@@ -448,21 +472,12 @@ export default function Library() {
                     </div>
                     
                     <div className="flex flex-col gap-2 ml-4">
-                      {book.content && (
-                        <Link
-                          href={`/library/books/${book.id}`}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                          <BookOpen className="w-4 h-4" />
-                          Read PDF
-                        </Link>
-                      )}
                       <Link
                         href={`/library/books/${book.id}`}
-                        className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                       >
-                        <Eye className="w-4 h-4" />
-                        View Details
+                        <BookOpen className="w-4 h-4" />
+                        {book.content ? 'Read PDF' : 'View Details'}
                       </Link>
                     </div>
                   </div>

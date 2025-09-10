@@ -38,6 +38,7 @@ export async function GET(request: NextRequest) {
       where: { teacherId },
       include: {
         enrollments: {
+          where: { status: 'ACTIVE' },
           include: {
             student: {
               select: {
@@ -119,6 +120,7 @@ export async function GET(request: NextRequest) {
     const classesData = classes.map(cls => ({
       id: cls.id,
       name: cls.name,
+      code: cls.code,
       students: cls.enrollments.length,
       averageProgress: cls.enrollments.length > 0 
         ? Math.round(
@@ -130,7 +132,8 @@ export async function GET(request: NextRequest) {
         : 0,
       pendingTasks: cls.assignments.filter(a => 
         new Date(a.dueDate) > new Date()
-      ).length
+      ).length,
+      createdAt: cls.createdAt.toISOString()
     }));
 
     return NextResponse.json({
@@ -153,7 +156,7 @@ export async function GET(request: NextRequest) {
           id: activity.id,
           studentName: activity.user.name || activity.user.email,
           action: activity.action,
-          details: activity.details,
+          details: activity.metadata,
           timestamp: activity.createdAt
         }))
       }

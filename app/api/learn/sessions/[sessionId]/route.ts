@@ -8,7 +8,7 @@ import { XP_REWARDS } from '@/types/learning';
 // PUT /api/learn/sessions/[sessionId] - Update session
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -64,8 +64,8 @@ export async function PUT(
       await prisma.userStats.update({
         where: { userId: session.user.id },
         data: {
-          totalXP: { increment: xpEarned },
-          lastActive: new Date(),
+          xp: { increment: xpEarned },
+          lastActiveDate: new Date(),
         },
       });
     }

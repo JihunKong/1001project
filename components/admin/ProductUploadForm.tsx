@@ -352,7 +352,7 @@ export default function ProductUploadForm({
                         className="sr-only"
                       />
                       <Icon className="w-5 h-5 mr-3" />
-                      <span className="font-medium">{type.label}</span>
+                      <span className="font-medium text-gray-900">{type.label}</span>
                     </label>
                   );
                 })}

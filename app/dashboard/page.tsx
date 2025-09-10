@@ -72,6 +72,33 @@ export default function UniversalDashboard() {
                   Publisher Dashboard
                 </Link>
               )}
+              {user.role === 'STORY_MANAGER' && (
+                <Link 
+                  href="/dashboard/story-manager" 
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  Story Manager
+                </Link>
+              )}
+              {user.role === 'BOOK_MANAGER' && (
+                <Link 
+                  href="/dashboard/book-manager" 
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors"
+                >
+                  <Settings className="w-4 h-4" />
+                  Book Manager
+                </Link>
+              )}
+              {user.role === 'CONTENT_ADMIN' && (
+                <Link 
+                  href="/dashboard/content-admin" 
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-teal-100 text-teal-700 rounded-lg hover:bg-teal-200 transition-colors"
+                >
+                  <Crown className="w-4 h-4" />
+                  Content Admin
+                </Link>
+              )}
               {user.role === 'ADMIN' && (
                 <Link 
                   href="/admin" 

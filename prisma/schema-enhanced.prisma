@@ -1,0 +1,1172 @@
+// Enhanced Educational Platform Schema
+// Version 2.0 - Comprehensive Educational Features
+// This schema extends the existing structure with new educational and publishing features
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema", "postgresqlExtensions", "fullTextSearch", "jsonProtocol"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [pgcrypto, pg_trgm, uuid-ossp]
+}
+
+// ==========================================
+// CORE MODELS (ENHANCED)
+// ==========================================
+
+// Enhanced User model with educational features
+model User {
+  id              String           @id @default(cuid())
+  email           String           @unique
+  emailVerified   DateTime?
+  name            String?
+  image           String?
+  password        String?
+  role            UserRole         @default(LEARNER)
+  tokenVersion    Int              @default(1)
+  
+  // Educational profile
+  gradeLevel      String?          // K-12, College, Adult
+  preferredLanguage String         @default("en")
+  readingLevel    String?          // Lexile measure or grade level
+  interests       String[]         // Topics of interest
+  
+  // Analytics
+  lastActiveAt    DateTime         @default(now())
+  totalReadingTime Int            @default(0) // in minutes
+  booksCompleted  Int              @default(0)
+  currentStreak   Int              @default(0)
+  longestStreak   Int              @default(0)
+  
+  // GDPR/COPPA
+  deletedAt       DateTime?
+  isMinor         Boolean          @default(false)
+  parentEmail     String?
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  accounts        Account[]
+  sessions        Session[]
+  profile         Profile?
+  
+  // Teaching Relations
+  teachingClasses ClassRoom[]      @relation("TeacherClasses")
+  enrollments     ClassEnrollment[] @relation("StudentEnrollments")
+  assignments     Assignment[]     @relation("TeacherAssignments")
+  assignmentSubmissions AssignmentSubmission[]
+  
+  // Content Creation & Publishing
+  bookSubmissions BookSubmission[] @relation("AuthorSubmissions")
+  reviewsGiven    ContentReview[]  @relation("ReviewerRelation")
+  feedbackGiven   PublishingFeedback[] @relation("FeedbackGiver")
+  publishedBooks  Book[]           @relation("PublishedAuthors")
+  
+  // Reading & Learning
+  readingProgress ReadingProgress[]
+  vocabulary      VocabularyWord[]
+  readingSessions ReadingSession[]
+  quizAttempts    QuizAttempt[]
+  achievements    UserAchievement[]
+  
+  // Book Clubs & Social
+  bookClubsCreated BookClub[]      @relation("ClubCreator")
+  bookClubMemberships BookClubMember[]
+  discussionPosts DiscussionPost[]
+  postLikes       PostLike[]
+  
+  // AI Content
+  aiGeneratedImages AIGeneratedImage[]
+  ttsRequests     TTSRequest[]
+  
+  // Notifications
+  notifications   Notification[]
+  activityLogs    ActivityLog[]
+  
+  @@index([email])
+  @@index([role])
+  @@index([lastActiveAt])
+  @@map("users")
+}
+
+// User roles with educational focus
+enum UserRole {
+  LEARNER
+  TEACHER
+  PARENT
+  INSTITUTION_ADMIN
+  CONTENT_CREATOR
+  VOLUNTEER_REVIEWER
+  EDITOR
+  PUBLISHER
+  ADMIN
+}
+
+// ==========================================
+// CLASSROOM & ASSIGNMENTS
+// ==========================================
+
+// Classroom model for teacher-student relationships
+model ClassRoom {
+  id              String           @id @default(cuid())
+  name            String
+  description     String?          @db.Text
+  classCode       String           @unique @default(dbgenerated("gen_random_uuid()"))
+  teacherId       String
+  gradeLevel      String?
+  subject         String?
+  language        String           @default("en")
+  
+  // Settings
+  isActive        Boolean          @default(true)
+  allowSelfEnroll Boolean          @default(true)
+  maxStudents     Int              @default(30)
+  academicYear    String?
+  term            String?          // Fall, Spring, Summer
+  
+  // Analytics
+  avgReadingLevel String?
+  avgCompletionRate Float?
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  archivedAt      DateTime?
+  
+  // Relations
+  teacher         User             @relation("TeacherClasses", fields: [teacherId], references: [id])
+  enrollments     ClassEnrollment[]
+  assignments     Assignment[]
+  announcements   ClassAnnouncement[]
+  readingGoals    ClassReadingGoal[]
+  
+  @@index([classCode])
+  @@index([teacherId])
+  @@index([isActive])
+  @@map("classrooms")
+}
+
+// Student enrollment in classes
+model ClassEnrollment {
+  id              String           @id @default(cuid())
+  classId         String
+  studentId       String
+  enrolledAt      DateTime         @default(now())
+  status          EnrollmentStatus @default(ACTIVE)
+  
+  // Progress tracking
+  assignmentsCompleted Int         @default(0)
+  averageScore    Float?
+  lastActivityAt  DateTime?
+  
+  // Relations
+  class           ClassRoom        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student         User             @relation("StudentEnrollments", fields: [studentId], references: [id], onDelete: Cascade)
+  
+  @@unique([classId, studentId])
+  @@index([studentId])
+  @@index([status])
+  @@map("class_enrollments")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  INACTIVE
+  COMPLETED
+  WITHDRAWN
+}
+
+// Assignment model for teachers to assign books/content
+model Assignment {
+  id              String           @id @default(cuid())
+  classId         String
+  teacherId       String
+  bookId          String
+  title           String
+  instructions    String?          @db.Text
+  
+  // Assignment settings
+  type            AssignmentType   @default(READING)
+  dueDate         DateTime?
+  points          Int              @default(100)
+  allowLateSubmission Boolean      @default(true)
+  latePenalty     Float?          // Percentage
+  
+  // Requirements
+  requiredPages   Int?            // Minimum pages to read
+  requiredTime    Int?            // Minimum reading time in minutes
+  requireQuiz     Boolean         @default(false)
+  requireReflection Boolean       @default(false)
+  vocabularyCount Int?            // Number of vocabulary words to identify
+  
+  // Status
+  status          AssignmentStatus @default(DRAFT)
+  publishedAt     DateTime?
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  class           ClassRoom        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher         User             @relation("TeacherAssignments", fields: [teacherId], references: [id])
+  book            Book             @relation(fields: [bookId], references: [id])
+  submissions     AssignmentSubmission[]
+  rubric          AssignmentRubric?
+  
+  @@index([classId])
+  @@index([teacherId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("assignments")
+}
+
+enum AssignmentType {
+  READING
+  WRITING
+  VOCABULARY
+  DISCUSSION
+  PROJECT
+  QUIZ
+}
+
+enum AssignmentStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+// Student assignment submissions
+model AssignmentSubmission {
+  id              String           @id @default(cuid())
+  assignmentId    String
+  studentId       String
+  
+  // Submission details
+  status          SubmissionStatus @default(NOT_STARTED)
+  startedAt       DateTime?
+  submittedAt     DateTime?
+  
+  // Progress tracking
+  pagesRead       Int              @default(0)
+  readingTime     Int              @default(0) // in minutes
+  completionRate  Float            @default(0) // 0-100
+  
+  // Student work
+  reflection      String?          @db.Text
+  vocabularyWords String[]         // Words identified by student
+  quizScore       Float?
+  
+  // Grading
+  score           Float?
+  feedback        String?          @db.Text
+  gradedAt        DateTime?
+  gradedBy        String?
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  assignment      Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student         User             @relation(fields: [studentId], references: [id])
+  attachments     SubmissionAttachment[]
+  
+  @@unique([assignmentId, studentId])
+  @@index([studentId])
+  @@index([status])
+  @@map("assignment_submissions")
+}
+
+enum SubmissionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  SUBMITTED
+  LATE_SUBMITTED
+  GRADED
+  RETURNED
+}
+
+// ==========================================
+// ENHANCED BOOK & PUBLISHING MODELS
+// ==========================================
+
+// Enhanced Book model with educational features
+model Book {
+  id              String           @id @default(cuid())
+  isbn            String?          @unique
+  title           String
+  subtitle        String?
+  summary         String?          @db.Text
+  
+  // Content
+  content         String?          @db.Text // For text-based books
+  pdfUrl          String?          // For PDF books
+  epubUrl         String?          // For EPUB books
+  audioUrl        String?          // For audiobooks
+  
+  // Authorship
+  authorId        String?
+  authorName      String
+  authorAge       Int?
+  authorLocation  String?
+  coAuthors       String[]
+  illustratorName String?
+  
+  // Publishing details
+  publishingStatus PublishingStatus @default(DRAFT)
+  publishedAt     DateTime?
+  publisher       String?
+  edition         String?
+  publicationYear Int?
+  
+  // Educational metadata
+  language        String           @default("en")
+  readingLevel    String?          // Lexile, Guided Reading Level, etc.
+  ageRange        String?          // "5-8", "9-12", etc.
+  gradeLevel      String[]         // ["K", "1", "2"]
+  pageCount       Int?
+  wordCount       Int?
+  readingTime     Int?             // Estimated in minutes
+  
+  // Categorization
+  categories      String[]
+  genres          String[]
+  subjects        String[]
+  themes          String[]
+  tags            String[]
+  curriculum      String[]         // Common Core, State Standards, etc.
+  
+  // Media
+  coverImage      String?
+  thumbnailImage  String?
+  previewPages    String[]         // URLs to preview page images
+  
+  // Educational features
+  hasQuiz         Boolean          @default(false)
+  hasVocabulary   Boolean          @default(false)
+  hasAudio        Boolean          @default(false)
+  hasActivities   Boolean          @default(false)
+  isInteractive   Boolean          @default(false)
+  
+  // Pricing & Access
+  accessType      BookAccessType   @default(FREE)
+  price           Float?
+  
+  // Metrics
+  viewCount       Int              @default(0)
+  readCount       Int              @default(0)
+  avgRating       Float?
+  totalRatings    Int              @default(0)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  author          User?            @relation("PublishedAuthors", fields: [authorId], references: [id])
+  assignments     Assignment[]
+  readingProgress ReadingProgress[]
+  vocabulary      BookVocabulary[]
+  quizzes         Quiz[]
+  reviews         Review[]
+  bookClubs       BookClub[]
+  aiImages        AIGeneratedImage[]
+  bookSubmission  BookSubmission?  @relation("PublishedBook")
+  
+  // Full-text search
+  @@index([title])
+  @@index([authorName])
+  @@index([publishingStatus])
+  @@index([language])
+  @@index([readingLevel])
+  @@map("books")
+}
+
+enum PublishingStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+  REJECTED
+}
+
+enum BookAccessType {
+  FREE
+  PREMIUM
+  RESTRICTED
+  PRIVATE
+}
+
+// Enhanced Book Submission with multi-stage workflow
+model BookSubmission {
+  id              String           @id @default(cuid())
+  
+  // Submission details
+  submitterId     String
+  title           String
+  summary         String?          @db.Text
+  content         String?          @db.Text
+  uploadedFileUrl String?
+  fileFormat      String           // pdf, docx, txt, epub
+  
+  // Metadata
+  language        String           @default("en")
+  targetAge       String?
+  targetGrade     String[]
+  categories      String[]
+  
+  // Workflow tracking
+  currentStage    WorkflowStage    @default(DRAFT)
+  currentReviewerId String?
+  
+  // Timestamps for each stage
+  submittedAt     DateTime?
+  reviewStartedAt DateTime?
+  editorReviewAt  DateTime?
+  finalApprovalAt DateTime?
+  publishedAt     DateTime?
+  rejectedAt      DateTime?
+  
+  // Publishing decision
+  publishedBookId String?          @unique
+  rejectionReason String?          @db.Text
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  submitter       User             @relation("AuthorSubmissions", fields: [submitterId], references: [id])
+  reviews         ContentReview[]
+  feedback        PublishingFeedback[]
+  workflowHistory WorkflowTransition[]
+  publishedBook   Book?            @relation("PublishedBook", fields: [publishedBookId], references: [id])
+  aiContent       AIGeneratedContent[]
+  
+  @@index([currentStage])
+  @@index([submitterId])
+  @@map("book_submissions")
+}
+
+enum WorkflowStage {
+  DRAFT
+  SUBMITTED
+  INITIAL_REVIEW
+  CONTENT_REVIEW
+  EDITORIAL_REVIEW
+  FINAL_APPROVAL
+  APPROVED
+  PUBLISHED
+  REJECTED
+  REVISION_REQUESTED
+}
+
+// Content review for multi-stage approval
+model ContentReview {
+  id              String           @id @default(cuid())
+  submissionId    String
+  reviewerId      String
+  stage           WorkflowStage
+  
+  // Review details
+  decision        ReviewDecision
+  score           Int?             // 1-10 rating
+  comments        String?          @db.Text
+  suggestions     String?          @db.Text
+  
+  // Specific checks
+  contentQuality  Int?             // 1-5
+  ageAppropriate  Boolean?
+  educationalValue Int?            // 1-5
+  languageQuality Int?             // 1-5
+  culturalSensitivity Boolean?
+  
+  // Review metadata
+  reviewStartedAt DateTime         @default(now())
+  reviewCompletedAt DateTime?
+  timeSpent       Int?             // in minutes
+  
+  // Relations
+  submission      BookSubmission   @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewer        User             @relation("ReviewerRelation", fields: [reviewerId], references: [id])
+  
+  @@index([submissionId])
+  @@index([reviewerId])
+  @@index([stage])
+  @@map("content_reviews")
+}
+
+enum ReviewDecision {
+  APPROVE
+  REJECT
+  REVISION_NEEDED
+  ESCALATE
+}
+
+// Feedback during publishing process
+model PublishingFeedback {
+  id              String           @id @default(cuid())
+  submissionId    String
+  userId          String
+  stage           WorkflowStage
+  
+  type            FeedbackType
+  category        String           // Grammar, Content, Structure, etc.
+  severity        FeedbackSeverity
+  
+  description     String           @db.Text
+  suggestion      String?          @db.Text
+  pageNumber      Int?
+  lineNumber      Int?
+  
+  resolved        Boolean          @default(false)
+  resolvedAt      DateTime?
+  resolution      String?          @db.Text
+  
+  createdAt       DateTime         @default(now())
+  
+  // Relations
+  submission      BookSubmission   @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  user            User             @relation("FeedbackGiver", fields: [userId], references: [id])
+  
+  @@index([submissionId])
+  @@index([stage])
+  @@map("publishing_feedback")
+}
+
+enum FeedbackType {
+  CORRECTION
+  SUGGESTION
+  COMMENT
+  QUESTION
+  PRAISE
+}
+
+enum FeedbackSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// ==========================================
+// READING PROGRESS & ANALYTICS
+// ==========================================
+
+// Enhanced reading progress tracking
+model ReadingProgress {
+  id              String           @id @default(cuid())
+  userId          String
+  bookId          String
+  
+  // Progress metrics
+  currentPage     Int              @default(1)
+  totalPages      Int
+  percentComplete Float            @default(0)
+  
+  // Reading behavior
+  totalReadingTime Int             @default(0) // in seconds
+  averageSessionTime Int?         // in seconds
+  readingSpeed    Float?           // words per minute
+  
+  // Completion tracking
+  startedAt       DateTime         @default(now())
+  lastReadAt      DateTime         @default(now())
+  completedAt     DateTime?
+  
+  // Engagement metrics
+  annotationCount Int              @default(0)
+  highlightCount  Int              @default(0)
+  vocabularyCount Int              @default(0)
+  quizzesTaken    Int              @default(0)
+  
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book            Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  sessions        ReadingSession[]
+  annotations     Annotation[]
+  highlights      Highlight[]
+  
+  @@unique([userId, bookId])
+  @@index([userId])
+  @@index([bookId])
+  @@index([percentComplete])
+  @@map("reading_progress")
+}
+
+// Individual reading sessions
+model ReadingSession {
+  id              String           @id @default(cuid())
+  userId          String
+  progressId      String
+  
+  startTime       DateTime         @default(now())
+  endTime         DateTime?
+  duration        Int?             // in seconds
+  
+  startPage       Int
+  endPage         Int
+  pagesRead       Int
+  
+  // Device/Context
+  deviceType      String?          // mobile, tablet, desktop
+  location        String?          // home, school, library
+  
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  progress        ReadingProgress  @relation(fields: [progressId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([progressId])
+  @@map("reading_sessions")
+}
+
+// ==========================================
+// VOCABULARY & LEARNING TOOLS
+// ==========================================
+
+// User's vocabulary words
+model VocabularyWord {
+  id              String           @id @default(cuid())
+  userId          String
+  bookId          String?
+  
+  word            String
+  definition      String           @db.Text
+  context         String?          @db.Text // Sentence where word was found
+  pageNumber      Int?
+  
+  // Learning metrics
+  difficulty      DifficultyLevel  @default(MEDIUM)
+  mastery         Int              @default(0) // 0-100
+  reviewCount     Int              @default(0)
+  correctCount    Int              @default(0)
+  lastReviewedAt  DateTime?
+  
+  // Additional info
+  partOfSpeech    String?
+  pronunciation   String?
+  etymology       String?
+  synonyms        String[]
+  antonyms        String[]
+  examples        String[]
+  
+  // AI-generated
+  aiDefinition    String?          @db.Text
+  aiExamples      String[]
+  audioUrl        String?          // TTS pronunciation
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book            Book?            @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([word])
+  @@index([mastery])
+  @@map("vocabulary_words")
+}
+
+// Book's vocabulary list (teacher/system defined)
+model BookVocabulary {
+  id              String           @id @default(cuid())
+  bookId          String
+  
+  word            String
+  definition      String           @db.Text
+  pageNumber      Int?
+  chapter         String?
+  
+  difficulty      DifficultyLevel  @default(MEDIUM)
+  gradeLevel      String?
+  
+  // Educational content
+  teachingNotes   String?          @db.Text
+  activities      Json?            // Structured activities
+  
+  createdAt       DateTime         @default(now())
+  
+  // Relations
+  book            Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  @@index([bookId])
+  @@map("book_vocabulary")
+}
+
+enum DifficultyLevel {
+  EASY
+  MEDIUM
+  HARD
+  ADVANCED
+}
+
+// ==========================================
+// DISCUSSION & BOOK CLUBS
+// ==========================================
+
+// Enhanced Book Club model
+model BookClub {
+  id              String           @id @default(cuid())
+  bookId          String
+  creatorId       String
+  
+  name            String
+  description     String?          @db.Text
+  coverImage      String?
+  
+  // Settings
+  type            BookClubType     @default(PUBLIC)
+  maxMembers      Int?
+  language        String?
+  ageGroup        String?
+  readingPace     String?          // pages/chapters per week
+  
+  // Schedule
+  startDate       DateTime
+  endDate         DateTime?
+  meetingSchedule String?          // "Weekly on Mondays"
+  nextMeetingAt   DateTime?
+  
+  // Status
+  status          BookClubStatus   @default(PLANNING)
+  currentChapter  Int?
+  currentPage     Int?
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  book            Book             @relation(fields: [bookId], references: [id])
+  creator         User             @relation("ClubCreator", fields: [creatorId], references: [id])
+  members         BookClubMember[]
+  discussions     Discussion[]
+  milestones      ReadingMilestone[]
+  announcements   ClubAnnouncement[]
+  
+  @@index([bookId])
+  @@index([status])
+  @@map("book_clubs")
+}
+
+enum BookClubType {
+  PUBLIC
+  PRIVATE
+  CLASSROOM
+  INVITE_ONLY
+}
+
+enum BookClubStatus {
+  PLANNING
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+// Discussion threads in book clubs
+model Discussion {
+  id              String           @id @default(cuid())
+  clubId          String
+  startedById     String
+  
+  title           String
+  type            DiscussionType   @default(GENERAL)
+  
+  // Context
+  chapterNumber   Int?
+  pageNumber      Int?
+  quote           String?          @db.Text
+  
+  // Settings
+  isPinned        Boolean          @default(false)
+  isLocked        Boolean          @default(false)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  club            BookClub         @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  posts           DiscussionPost[]
+  
+  @@index([clubId])
+  @@map("discussions")
+}
+
+enum DiscussionType {
+  GENERAL
+  CHAPTER_DISCUSSION
+  CHARACTER_ANALYSIS
+  THEME_EXPLORATION
+  VOCABULARY
+  QUESTION
+  THEORY
+  REVIEW
+}
+
+// Posts in discussions
+model DiscussionPost {
+  id              String           @id @default(cuid())
+  discussionId    String
+  userId          String
+  parentId        String?          // For replies
+  
+  content         String           @db.Text
+  
+  // Engagement
+  likeCount       Int              @default(0)
+  replyCount      Int              @default(0)
+  
+  // Moderation
+  isEdited        Boolean          @default(false)
+  editedAt        DateTime?
+  isDeleted       Boolean          @default(false)
+  deletedAt       DateTime?
+  
+  createdAt       DateTime         @default(now())
+  
+  // Relations
+  discussion      Discussion       @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id])
+  parent          DiscussionPost?  @relation("PostReplies", fields: [parentId], references: [id])
+  replies         DiscussionPost[] @relation("PostReplies")
+  likes           PostLike[]
+  attachments     PostAttachment[]
+  
+  @@index([discussionId])
+  @@index([userId])
+  @@map("discussion_posts")
+}
+
+// ==========================================
+// AI-GENERATED CONTENT
+// ==========================================
+
+// AI-generated images for books
+model AIGeneratedImage {
+  id              String           @id @default(cuid())
+  bookId          String?
+  submissionId    String?
+  userId          String
+  
+  prompt          String           @db.Text
+  style           String?          // cartoon, realistic, watercolor, etc.
+  
+  // Generated content
+  imageUrl        String
+  thumbnailUrl    String?
+  
+  // Metadata
+  model           String           // dall-e-3, stable-diffusion, etc.
+  size            String           // 1024x1024, etc.
+  seed            String?
+  
+  // Usage
+  usageType       AIImageUsage    @default(ILLUSTRATION)
+  pageNumber      Int?
+  chapter         String?
+  
+  // Moderation
+  isApproved      Boolean          @default(false)
+  moderationScore Float?
+  moderationFlags String[]
+  
+  createdAt       DateTime         @default(now())
+  
+  // Relations
+  book            Book?            @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  submission      BookSubmission?  @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  user            User             @relation(fields: [userId], references: [id])
+  
+  @@index([bookId])
+  @@index([userId])
+  @@map("ai_generated_images")
+}
+
+enum AIImageUsage {
+  COVER
+  ILLUSTRATION
+  CHARACTER
+  SCENE
+  ICON
+  DECORATION
+}
+
+// Text-to-speech requests
+model TTSRequest {
+  id              String           @id @default(cuid())
+  userId          String
+  bookId          String?
+  
+  text            String           @db.Text
+  language        String           @default("en")
+  voice           String           // voice ID or name
+  
+  // Generated audio
+  audioUrl        String?
+  duration        Int?             // in seconds
+  wordCount       Int?
+  
+  // Settings
+  speed           Float            @default(1.0)
+  pitch           Float            @default(1.0)
+  
+  // Metadata
+  model           String           // polly, elevenlabs, etc.
+  cost            Float?
+  
+  status          TTSStatus        @default(PENDING)
+  error           String?
+  
+  createdAt       DateTime         @default(now())
+  completedAt     DateTime?
+  
+  // Relations
+  user            User             @relation(fields: [userId], references: [id])
+  book            Book?            @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([status])
+  @@map("tts_requests")
+}
+
+enum TTSStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+// AI-generated educational content
+model AIGeneratedContent {
+  id              String           @id @default(cuid())
+  submissionId    String?
+  bookId          String?
+  
+  type            AIContentType
+  prompt          String           @db.Text
+  content         Json             // Structured content based on type
+  
+  // Metadata
+  model           String           // gpt-4, claude, etc.
+  tokens          Int?
+  cost            Float?
+  
+  // Quality
+  confidence      Float?
+  humanReviewed   Boolean          @default(false)
+  humanEdited     Boolean          @default(false)
+  
+  createdAt       DateTime         @default(now())
+  
+  // Relations
+  submission      BookSubmission?  @relation(fields: [submissionId], references: [id], onDelete: SetNull)
+  book            Book?            @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  
+  @@index([type])
+  @@map("ai_generated_content")
+}
+
+enum AIContentType {
+  SUMMARY
+  QUIZ_QUESTIONS
+  VOCABULARY_DEFINITIONS
+  DISCUSSION_PROMPTS
+  TEACHING_GUIDE
+  READING_LEVEL_ANALYSIS
+  TRANSLATION
+  SIMPLIFICATION
+  EXPANSION
+}
+
+// ==========================================
+// SUPPORTING MODELS
+// ==========================================
+
+// NextAuth Account model
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// NextAuth Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}
+
+// Review model
+model Review {
+  id              String           @id @default(cuid())
+  userId          String
+  bookId          String
+  
+  rating          Int              // 1-5 stars
+  title           String?
+  content         String?          @db.Text
+  
+  // Review quality
+  helpful         Int              @default(0)
+  notHelpful      Int              @default(0)
+  verified        Boolean          @default(false) // Verified purchase/read
+  featured        Boolean          @default(false)
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book            Book             @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, bookId])
+  @@index([bookId])
+  @@index([rating])
+  @@map("reviews")
+}
+
+// Donation model (simplified from original)
+model Donation {
+  id              String           @id @default(cuid())
+  donorId         String?
+  amount          Float
+  currency        String           @default("USD")
+  
+  // Donor info
+  donorName       String?
+  donorEmail      String
+  anonymous       Boolean          @default(false)
+  
+  // Payment
+  paymentMethod   String?
+  transactionId   String?
+  status          DonationStatus   @default(PENDING)
+  
+  // Purpose
+  purpose         String?
+  message         String?          @db.Text
+  
+  createdAt       DateTime         @default(now())
+  
+  // Relations
+  donor           User?            @relation(fields: [donorId], references: [id])
+  
+  @@index([status])
+  @@map("donations")
+}
+
+enum DonationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Order model for premium content
+model Order {
+  id              String           @id @default(cuid())
+  userId          String
+  
+  // Order details
+  orderNumber     String           @unique @default(dbgenerated("gen_random_uuid()"))
+  type            OrderType        @default(SUBSCRIPTION)
+  status          OrderStatus      @default(PENDING)
+  
+  // Financial
+  subtotal        Float
+  tax             Float            @default(0)
+  total           Float
+  currency        String           @default("USD")
+  
+  // Payment
+  paymentMethod   String?
+  transactionId   String?
+  
+  // Timestamps
+  createdAt       DateTime         @default(now())
+  paidAt          DateTime?
+  completedAt     DateTime?
+  
+  // Relations
+  user            User             @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  
+  @@index([userId])
+  @@index([status])
+  @@map("orders")
+}
+
+enum OrderType {
+  SUBSCRIPTION
+  BOOK_PURCHASE
+  DONATION
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+// Order items
+model OrderItem {
+  id              String           @id @default(cuid())
+  orderId         String
+  
+  itemType        String           // book, subscription, etc.
+  itemId          String
+  itemName        String
+  
+  quantity        Int              @default(1)
+  price           Float
+  total           Float
+  
+  // Relations
+  order           Order            @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@map("order_items")
+}
+
+// Additional supporting models...
+
+// ==========================================
+// INDEXES FOR PERFORMANCE
+// ==========================================
+
+// The indexes are already included inline with each model
+// Additional composite indexes can be added as needed
+
+// ==========================================
+// NOTES ON MIGRATION STRATEGY
+// ==========================================
+
+// 1. Create new tables first (no breaking changes)
+// 2. Migrate existing data with transformation scripts
+// 3. Update application code to use new models
+// 4. Deprecate old fields/tables gradually
+// 5. Clean up after full migration

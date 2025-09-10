@@ -1,11 +1,15 @@
 import { UserRole } from '@prisma/client';
 import { Session } from 'next-auth';
+import { hasPermission, Permission, PERMISSIONS } from './permissions';
 
 // Role hierarchy - higher roles have access to lower role features
 const roleHierarchy: Record<UserRole, number> = {
   [UserRole.ADMIN]: 100,
+  [UserRole.CONTENT_ADMIN]: 95,
   [UserRole.PUBLISHER]: 90,
+  [UserRole.BOOK_MANAGER]: 88,
   [UserRole.EDITOR]: 85,
+  [UserRole.STORY_MANAGER]: 83,
   [UserRole.INSTITUTION]: 80,
   [UserRole.TEACHER]: 60,
   [UserRole.VOLUNTEER]: 40,
@@ -43,6 +47,9 @@ export function getRoleDashboardUrl(role: UserRole): string {
     [UserRole.VOLUNTEER]: '/dashboard/volunteer',
     [UserRole.EDITOR]: '/dashboard/editor',
     [UserRole.PUBLISHER]: '/dashboard/publisher',
+    [UserRole.STORY_MANAGER]: '/dashboard/story-manager',
+    [UserRole.BOOK_MANAGER]: '/dashboard/book-manager',
+    [UserRole.CONTENT_ADMIN]: '/dashboard/content-admin',
     [UserRole.ADMIN]: '/admin',
   };
   
@@ -125,6 +132,43 @@ export function getAccessibleRoutes(role: UserRole): string[] {
       '/admin/stories/**',
       '/settings',
     ],
+    [UserRole.STORY_MANAGER]: [
+      ...publicRoutes,
+      '/dashboard',
+      '/dashboard/story-manager',
+      '/dashboard/story-manager/**',
+      '/submissions',
+      '/submissions/**',
+      '/review',
+      '/review/**',
+      '/settings',
+    ],
+    [UserRole.BOOK_MANAGER]: [
+      ...publicRoutes,
+      '/dashboard',
+      '/dashboard/book-manager',
+      '/dashboard/book-manager/**',
+      '/publications',
+      '/publications/**',
+      '/review',
+      '/review/**',
+      '/settings',
+    ],
+    [UserRole.CONTENT_ADMIN]: [
+      ...publicRoutes,
+      '/dashboard',
+      '/dashboard/content-admin',
+      '/dashboard/content-admin/**',
+      '/submissions',
+      '/submissions/**',
+      '/publications',
+      '/publications/**',
+      '/review',
+      '/review/**',
+      '/admin/content',
+      '/admin/content/**',
+      '/settings',
+    ],
     [UserRole.ADMIN]: [
       ...publicRoutes,
       '/admin',
@@ -199,7 +243,7 @@ export const permissions = {
 };
 
 // Check if a user has a specific permission
-export function hasPermission(
+export function hasSessionPermission(
   session: Session | null, 
   permission: keyof typeof permissions
 ): boolean {
@@ -242,8 +286,42 @@ export function getRoleBadgeColor(role: UserRole): string {
     [UserRole.VOLUNTEER]: 'bg-pink-100 text-pink-800 border-pink-200',
     [UserRole.EDITOR]: 'bg-orange-100 text-orange-800 border-orange-200',
     [UserRole.PUBLISHER]: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    [UserRole.STORY_MANAGER]: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    [UserRole.BOOK_MANAGER]: 'bg-teal-100 text-teal-800 border-teal-200',
+    [UserRole.CONTENT_ADMIN]: 'bg-amber-100 text-amber-800 border-amber-200',
     [UserRole.ADMIN]: 'bg-red-100 text-red-800 border-red-200',
   };
   
   return roleColors[role] || 'bg-gray-100 text-gray-800 border-gray-200';
+}
+
+// Check if user has a specific permission
+export function userHasPermission(session: Session | null, permission: Permission): boolean {
+  if (!session?.user?.role) return false;
+  return hasPermission(session.user.role, permission);
+}
+
+// Check if user can perform an action
+export function canPerformAction(session: Session | null, action: string): boolean {
+  if (!session?.user?.role) return false;
+  
+  // Map actions to permissions
+  const actionPermissionMap: Record<string, Permission> = {
+    'view-all-books': PERMISSIONS.BOOK_VIEW_ALL,
+    'view-assigned-books': PERMISSIONS.BOOK_VIEW_ASSIGNED,
+    'assign-books': PERMISSIONS.BOOK_ASSIGN,
+    'create-class': PERMISSIONS.CLASS_CREATE,
+    'join-class': PERMISSIONS.CLASS_JOIN,
+    'submit-content': PERMISSIONS.CONTENT_SUBMIT,
+    'review-story': PERMISSIONS.CONTENT_REVIEW_STORY,
+    'review-format': PERMISSIONS.CONTENT_REVIEW_FORMAT,
+    'approve-final': PERMISSIONS.CONTENT_APPROVE_FINAL,
+    'use-ai-chat': PERMISSIONS.AI_USE_CHAT,
+    'generate-image': PERMISSIONS.AI_GENERATE_IMAGE,
+  };
+  
+  const permission = actionPermissionMap[action];
+  if (!permission) return false;
+  
+  return hasPermission(session.user.role, permission);
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { PDFDocumentProxy, PDFPageProxy } from 'react-pdf/node_modules/pdfjs-dist';
+import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -77,10 +77,8 @@ export default function EnhancedPDFViewer({
   const isMountedRef = useRef(true);
   const renderTaskRef = useRef<any>(null);
 
-  // Calculate effective max pages (authentication + demo limitations)
-  const effectiveMaxPages = isDemo 
-    ? Math.min(maxPages, totalPages) 
-    : (!isAuthenticated ? Math.min(10, totalPages) : totalPages);
+  // No page restrictions - show full PDF
+  const effectiveMaxPages = totalPages;
 
   // Component lifecycle and cleanup
   useEffect(() => {
@@ -126,8 +124,8 @@ export default function EnhancedPDFViewer({
         throw new Error('PDF viewer must be rendered on client side');
       }
 
-      // Import from react-pdf's bundled pdfjs-dist for consistency
-      const pdfLib = await import('react-pdf/node_modules/pdfjs-dist');
+      // Import pdfjs-dist 
+      const pdfLib = await import('pdfjs-dist/build/pdf.mjs');
       
       // Configure worker once
       if (!workerConfigured) {
@@ -529,27 +527,6 @@ export default function EnhancedPDFViewer({
           <h2 className="font-semibold text-gray-900 truncate">{title}</h2>
           
           {/* Sample Mode Indicator */}
-          {isSample && isPremium && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium">
-              <Eye className="w-3 h-3" />
-              Sample Preview
-            </div>
-          )}
-          
-          {/* Premium Book Indicator */}
-          {isPremium && !isSample && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
-              <Crown className="w-3 h-3" />
-              Premium
-            </div>
-          )}
-          
-          {/* Legacy Demo/Preview indicators */}
-          {(isDemo || (!isAuthenticated && !isSample)) && (
-            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
-              {isDemo ? `Demo Mode (Max ${maxPages} pages)` : `Preview (Max 10 pages)`}
-            </span>
-          )}
         </div>
         
         <div className="flex items-center gap-2">
@@ -713,43 +690,7 @@ export default function EnhancedPDFViewer({
         )}
       </div>
 
-      {/* Warning Banner */}
-      {(isSample && isPremium) && (
-        <div className="bg-purple-500 text-white px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 text-sm font-medium">
-              <Lock className="w-4 h-4" />
-              <span>📖 Sample Preview: This is a preview of the book</span>
-              <span>|</span>
-              <span>Purchase the full book to read the complete content!</span>
-            </div>
-            {bookId && onPurchase && (
-              <button
-                onClick={() => onPurchase(bookId)}
-                className="bg-white text-purple-600 px-4 py-1 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors"
-              >
-                Buy Now $${Number(price || 0).toFixed(2)}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
       
-      {/* Legacy Warning Banner */}
-      {(isDemo || (!isAuthenticated && !isSample)) && (
-        <div className="bg-yellow-400 text-black px-4 py-3">
-          <div className="flex items-center justify-center gap-3 text-sm font-medium">
-            <span>
-              {isDemo 
-                ? `🎭 Demo Mode: Preview up to ${maxPages} pages only`
-                : '📖 Preview Mode: Only first 10 pages available'
-              }
-            </span>
-            <span>|</span>
-            <span>Sign up and purchase to read the full content!</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

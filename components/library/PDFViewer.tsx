@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { getDocument, GlobalWorkerOptions } from 'react-pdf/node_modules/pdfjs-dist';
-import type { PDFDocumentProxy, PDFPageProxy } from 'react-pdf/node_modules/pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist/build/pdf.mjs';
+import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -19,7 +19,7 @@ import {
 // Set up PDF.js worker
 if (typeof window !== 'undefined') {
   // Use local worker file to avoid CORS issues
-  GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 }
 
 interface PDFViewerProps {
@@ -57,7 +57,7 @@ export default function PDFViewer({
       
       try {
         console.log('Loading PDF from:', pdfUrl);
-        const loadingTask = getDocument(pdfUrl);
+        const loadingTask = pdfjsLib.getDocument(pdfUrl);
         const pdfDoc = await loadingTask.promise;
         
         setPdf(pdfDoc);
@@ -201,7 +201,7 @@ export default function PDFViewer({
               <ChevronLeft className="w-4 h-4" />
             </button>
             
-            <span className="font-medium">
+            <span className="font-medium text-gray-900">
               {currentPage} / {effectiveMaxPages}
             </span>
             

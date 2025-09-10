@@ -79,6 +79,17 @@ export interface QuizAttempt {
   completedAt: Date;
 }
 
+export interface QuizSubmission {
+  answers: Record<string, any>;
+  results: {
+    questionIndex: number;
+    userAnswer: string;
+    isCorrect: boolean;
+    explanation?: string;
+  }[];
+  submittedAt: Date;
+}
+
 export interface BookClub {
   id: string;
   bookId: string;
@@ -125,6 +136,45 @@ export interface BookClubPost {
     image?: string;
   };
   replies?: BookClubPost[];
+}
+
+export interface BookClubDiscussion {
+  id: string;
+  userId: string;
+  bookId: string;
+  title: string;
+  content: string;
+  tags?: string[];
+  likes: number;
+  views: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
+  comments?: BookClubComment[];
+}
+
+export interface BookClubComment {
+  id: string;
+  userId: string;
+  discussionId: string;
+  content: string;
+  parentId?: string;
+  likes: number;
+  createdAt: Date;
+  updatedAt: Date;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
+  replies?: BookClubComment[];
 }
 
 export interface Achievement {

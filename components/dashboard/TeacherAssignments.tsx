@@ -170,7 +170,7 @@ export default function TeacherAssignments() {
                 </div>
                 
                 <Link
-                  href={assignment.bookId ? `/books/${assignment.bookId}/read` : `/learn/assignments/${assignment.id}`}
+                  href={assignment.bookId ? `/learn/read/${assignment.bookId}` : `/learn/assignments/${assignment.id}`}
                   className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 >
                   <ChevronRight className="w-5 h-5 text-gray-400" />

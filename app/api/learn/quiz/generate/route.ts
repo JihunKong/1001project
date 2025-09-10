@@ -99,21 +99,18 @@ Make questions appropriate for ${difficulty} level learners.`;
     // Create quiz in database
     const quiz = await prisma.quiz.create({
       data: {
-        userId: session.user.id,
         bookId,
-        type: 'comprehension',
-        questions,
-        totalQuestions: questions.length,
-        score: 0,
-        completedAt: null,
-        timeSpent: 0,
+        title: `Quiz for Book ${bookId}`,
+        type: 'COMPREHENSION',
+        questions: questions as any, // Cast to satisfy JSON type requirement
+        passingScore: 70,
       },
     });
 
     return NextResponse.json({
       success: true,
       data: quiz,
-    } as ApiResponse<Quiz>);
+    });
   } catch (error) {
     console.error('Error generating quiz:', error);
     return NextResponse.json(
@@ -141,7 +138,6 @@ function generateFallbackQuestions(text: string, count: number): QuizQuestion[] 
         ],
         correctAnswer: 'The main topic discussed in the text',
         explanation: 'The text primarily focuses on this topic.',
-        difficulty: 2,
       });
     } else if (i === 1 && sentences.length > 0) {
       questions.push({
@@ -150,7 +146,6 @@ function generateFallbackQuestions(text: string, count: number): QuizQuestion[] 
         options: ['True', 'False'],
         correctAnswer: 'True',
         explanation: 'This statement appears in the text.',
-        difficulty: 1,
       });
     } else if (i === 2) {
       questions.push({
@@ -164,7 +159,6 @@ function generateFallbackQuestions(text: string, count: number): QuizQuestion[] 
         ],
         correctAnswer: 'The information presented in the text',
         explanation: 'This information is directly stated in the text.',
-        difficulty: 3,
       });
     } else if (i === 3) {
       questions.push({
@@ -178,7 +172,6 @@ function generateFallbackQuestions(text: string, count: number): QuizQuestion[] 
         ],
         correctAnswer: 'A logical conclusion based on the text',
         explanation: 'This can be inferred from the information provided.',
-        difficulty: 4,
       });
     } else {
       questions.push({
@@ -187,7 +180,6 @@ function generateFallbackQuestions(text: string, count: number): QuizQuestion[] 
         options: ['True', 'False'],
         correctAnswer: 'True',
         explanation: 'Self-assessment of comprehension.',
-        difficulty: 1,
       });
     }
   }

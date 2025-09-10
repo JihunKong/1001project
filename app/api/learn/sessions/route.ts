@@ -40,19 +40,17 @@ export async function POST(request: NextRequest) {
     // Update user's last active time
     await prisma.userStats.upsert({
       where: { userId: session.user.id },
-      update: { lastActive: new Date() },
+      update: { lastActiveDate: new Date() },
       create: {
         userId: session.user.id,
-        totalXP: 0,
+        xp: 0,
         level: 1,
-        streak: 0,
-        lastActive: new Date(),
-        booksRead: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActiveDate: new Date(),
+        booksCompleted: 0,
         wordsLearned: 0,
-        quizzesPassed: 0,
         totalReadingTime: 0,
-        postsCreated: 0,
-        likesReceived: 0,
       },
     });
 

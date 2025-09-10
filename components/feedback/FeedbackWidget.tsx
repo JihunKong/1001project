@@ -263,7 +263,7 @@ export default function FeedbackWidget({
                     <div className="flex items-start space-x-3">
                       <Icon className="h-5 w-5 text-blue-600 mt-0.5" />
                       <div>
-                        <div className="font-medium">{type.label}</div>
+                        <div className="font-medium text-gray-900">{type.label}</div>
                         <div className="text-sm text-gray-500">{type.description}</div>
                       </div>
                     </div>

@@ -81,6 +81,16 @@ Table users {
   bookClubPosts book_club_posts [not null]
   achievements user_achievements [not null]
   learningSessions learning_sessions [not null]
+  studentBookAssignments book_assignments [not null]
+  teacherBookAssignments book_assignments [not null]
+  workflowTransitions workflow_transitions [not null]
+  aiContentApprovals ai_generated_content [not null]
+  featuredSetsCreated featured_sets [not null]
+  platformSettingsUpdated platform_settings [not null]
+  programApplications program_applications [not null]
+  assignedProgramReviews program_applications [not null]
+  programReviews application_reviews [not null]
+  applicationStatusChanges application_status_history [not null]
 }
 
 Table profiles {
@@ -298,6 +308,7 @@ Table classes {
   lessons lessons [not null]
   resources class_resources [not null]
   announcements class_announcements [not null]
+  bookAssignments book_assignments [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -1267,6 +1278,59 @@ Table books {
   quizzes quizzes [not null]
   bookClubs book_clubs [not null]
   learningSessions learning_sessions [not null]
+  bookAssignments book_assignments [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table book_assignments {
+  id String [pk]
+  bookId String [not null]
+  classId String
+  studentId String
+  teacherId String [not null]
+  assignedAt DateTime [default: `now()`, not null]
+  dueDate DateTime
+  instructions String
+  isRequired Boolean [not null, default: true]
+  allowDiscussion Boolean [not null, default: true]
+  book books [not null]
+  class classes
+  student users
+  teacher users [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (bookId, classId) [unique]
+    (bookId, studentId) [unique]
+  }
+}
+
+Table workflow_transitions {
+  id String [pk]
+  submissionId String [not null]
+  submissionType String [not null]
+  fromStatus String [not null]
+  toStatus String [not null]
+  performedById String [not null]
+  reason String
+  performedBy users [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table ai_generated_content {
+  id String [pk]
+  relatedId String
+  relatedType String
+  type String [not null]
+  prompt String [not null]
+  model String [not null]
+  content String [not null]
+  metadata Json
+  isApproved Boolean [not null, default: false]
+  approvedById String
+  approvedBy users
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -1791,6 +1855,11 @@ Table book_clubs {
   maxMembers Int
   language String
   level String
+  joinCode String
+  classId String
+  startDate DateTime [default: `now()`, not null]
+  endDate DateTime
+  settings Json
   book books [not null]
   creator users [not null]
   members book_club_members [not null]
@@ -1871,6 +1940,120 @@ Table learning_sessions {
   createdAt DateTime [default: `now()`, not null]
 }
 
+Table featured_sets {
+  id String [pk]
+  bookIds String[] [not null]
+  startsAt DateTime [not null]
+  endsAt DateTime [not null]
+  createdBy String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  isActive Boolean [not null, default: true]
+  rotationType String [not null, default: 'MONTHLY']
+  selectionMethod String [not null, default: 'RANDOM']
+  creator users [not null]
+}
+
+Table platform_settings {
+  key String [pk]
+  valueJson Json [not null]
+  description String
+  updatedBy String
+  updatedAt DateTime [default: `now()`, not null]
+  updater users
+}
+
+Table program_applications {
+  id String [pk]
+  programType ProgramType [not null]
+  applicantId String [not null]
+  status ProgramApplicationStatus [not null, default: 'DRAFT']
+  fullName String [not null]
+  email String [not null]
+  phone String
+  country String [not null]
+  city String [not null]
+  timezone String
+  languages String[] [not null]
+  organizationName String
+  organizationType String
+  jobTitle String
+  experienceYears Int
+  weeklyHours Int
+  availableDays String[] [not null]
+  timeWindows Json
+  interests String[] [not null]
+  skills String[] [not null]
+  languageProficiency Json
+  goals String
+  motivation String
+  preferredModality String
+  programSpecificData Json
+  dataProcessingConsent Boolean [not null, default: false]
+  codeOfConductAccepted Boolean [not null, default: false]
+  backgroundCheckConsent Boolean [not null, default: false]
+  matchScore Float
+  internalNotes String
+  assignedReviewerId String
+  priority Int [not null, default: 3]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  submittedAt DateTime
+  reviewedAt DateTime
+  decidedAt DateTime
+  applicant users [not null]
+  assignedReviewer users
+  attachments application_attachments [not null]
+  reviews application_reviews [not null]
+  statusHistory application_status_history [not null]
+}
+
+Table application_attachments {
+  id String [pk]
+  applicationId String [not null]
+  filename String [not null]
+  originalName String [not null]
+  filePath String [not null]
+  fileSize Int [not null]
+  mimeType String [not null]
+  attachmentType AttachmentType [not null]
+  description String
+  uploadedAt DateTime [default: `now()`, not null]
+  application program_applications [not null]
+}
+
+Table application_reviews {
+  id String [pk]
+  applicationId String [not null]
+  reviewerId String [not null]
+  status ReviewStatus [not null, default: 'PENDING']
+  score Int
+  strengths String
+  concerns String
+  recommendations String
+  decision String
+  followUpRequired Boolean [not null, default: false]
+  followUpNotes String
+  nextReviewDate DateTime
+  assignedAt DateTime [default: `now()`, not null]
+  startedAt DateTime
+  completedAt DateTime
+  application program_applications [not null]
+  reviewer users [not null]
+}
+
+Table application_status_history {
+  id String [pk]
+  applicationId String [not null]
+  fromStatus ProgramApplicationStatus
+  toStatus ProgramApplicationStatus [not null]
+  changedById String
+  reason String
+  automaticChange Boolean [not null, default: false]
+  changedAt DateTime [default: `now()`, not null]
+  application program_applications [not null]
+  changedBy users
+}
+
 Table BookReviews {
   bookreviewsId String [ref: > book_submissions.id]
   reviewsId String [ref: > reviews.id]
@@ -1884,6 +2067,10 @@ Enum UserRole {
   VOLUNTEER
   EDITOR
   PUBLISHER
+  STORY_MANAGER
+  BOOK_MANAGER
+  CONTENT_ADMIN
+  PROGRAM_LEAD
   ADMIN
 }
 
@@ -2478,6 +2665,41 @@ Enum BookSubmissionStatus {
   REJECTED
 }
 
+Enum ProgramType {
+  PARTNERSHIP_NETWORK
+  ENGLISH_EDUCATION
+  MENTORSHIP
+}
+
+Enum ProgramApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  ADDITIONAL_INFO_REQUESTED
+  INTERVIEW_SCHEDULED
+  ACCEPTED
+  REJECTED
+  WAITLISTED
+  WITHDRAWN
+}
+
+Enum ReviewStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  ESCALATED
+}
+
+Enum AttachmentType {
+  CV_RESUME
+  PORTFOLIO
+  TEACHING_SAMPLES
+  CERTIFICATES
+  TRANSCRIPTS
+  RECOMMENDATION_LETTER
+  OTHER_DOCUMENT
+}
+
 Ref: users.schoolId > schools.id
 
 Ref: profiles.userId - users.id [delete: Cascade]
@@ -2634,6 +2856,18 @@ Ref: user_deletion_requests.userId - users.id [delete: Cascade]
 
 Ref: deletion_audit_logs.deletionRequestId > user_deletion_requests.id [delete: Cascade]
 
+Ref: book_assignments.bookId > books.id
+
+Ref: book_assignments.classId > classes.id
+
+Ref: book_assignments.studentId > users.id
+
+Ref: book_assignments.teacherId > users.id
+
+Ref: workflow_transitions.performedById > users.id
+
+Ref: ai_generated_content.approvedById > users.id
+
 Ref: volunteer_submissions.volunteerId > users.id [delete: Cascade]
 
 Ref: volunteer_submissions.reviewerId > users.id [delete: Cascade]
@@ -2731,3 +2965,21 @@ Ref: user_achievements.achievementId > achievements.id
 Ref: learning_sessions.userId > users.id [delete: Cascade]
 
 Ref: learning_sessions.bookId > books.id [delete: Set Null]
+
+Ref: featured_sets.createdBy > users.id
+
+Ref: platform_settings.updatedBy > users.id
+
+Ref: program_applications.applicantId > users.id [delete: Cascade]
+
+Ref: program_applications.assignedReviewerId > users.id [delete: Cascade]
+
+Ref: application_attachments.applicationId > program_applications.id [delete: Cascade]
+
+Ref: application_reviews.applicationId > program_applications.id [delete: Cascade]
+
+Ref: application_reviews.reviewerId > users.id
+
+Ref: application_status_history.applicationId > program_applications.id [delete: Cascade]
+
+Ref: application_status_history.changedById > users.id

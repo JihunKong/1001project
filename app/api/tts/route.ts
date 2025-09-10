@@ -36,57 +36,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!openai) {
-      console.error('OpenAI API key not configured');
-      // Return a simple error without exposing the missing key
-      return NextResponse.json(
-        { error: 'TTS service not configured' },
-        { status: 503 }
-      );
-    }
-
-    // Generate a hash of the text for caching
-    const textHash = crypto.createHash('md5').update(text).digest('hex');
-    const fileName = `${textHash}-${voice}-${speed}.mp3`;
-    const audioDir = join(process.cwd(), 'public', 'audio', 'tts');
-    const filePath = join(audioDir, fileName);
-    
-    // Create directory if it doesn't exist
-    await mkdir(audioDir, { recursive: true });
-
-    // Check if we have a cached version
-    try {
-      await access(filePath);
-      // File exists, return cached version
-      return NextResponse.json({
-        success: true,
-        audioUrl: `/audio/tts/${fileName}`,
-        cached: true,
-      });
-    } catch {
-      // File doesn't exist, generate new audio
-    }
-
-    // Generate speech using OpenAI TTS with SDK
-    const mp3 = await openai.audio.speech.create({
-      model: 'tts-1',
-      voice: voice as any, // Options: alloy, echo, fable, onyx, nova, shimmer
-      input: text,
-      speed: speed,
-    });
-
-    // Convert the response to a buffer
-    const buffer = Buffer.from(await mp3.arrayBuffer());
-    
-    // Save the audio file for caching
-    await writeFile(filePath, buffer);
-
-    // Return the audio URL instead of raw data
-    return NextResponse.json({
-      success: true,
-      audioUrl: `/audio/tts/${fileName}`,
-      cached: false,
-    });
+    // ALWAYS return error - TTS is disabled to prevent monster sounds
+    console.log('TTS request blocked - returning error to prevent browser fallback');
+    return NextResponse.json(
+      { 
+        success: false,
+        error: 'Sound generation failed' 
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('TTS API Error:', error);
     return NextResponse.json(

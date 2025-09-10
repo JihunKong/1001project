@@ -103,10 +103,25 @@ export async function GET(request: NextRequest) {
             id: enrollment.student.id,
             name: enrollment.student.name || 'Student',
             email: enrollment.student.email,
-            booksRead: completedBooks,
-            currentBook: currentBookTitle,
-            completionRate: avgCompletionRate,
-            lastActive: lastActiveText
+            enrolledAt: enrollment.student.createdAt.toISOString(),
+            status: 'ACTIVE' as const,
+            lastActive: lastActive?.toISOString(),
+            progress: {
+              booksRead: completedBooks,
+              currentBooks: currentBook ? 1 : 0,
+              avgProgress: avgCompletionRate,
+              readingStreak: 0, // TODO: Calculate actual streak
+              sessionLength: 30, // TODO: Calculate actual session length
+              difficultyLevel: 'INTERMEDIATE' as const
+            },
+            assignments: {
+              total: 0, // TODO: Calculate actual assignments
+              completed: 0,
+              pending: 0,
+              overdue: 0
+            },
+            classId: classItem.id,
+            className: classItem.name
           });
         }
       }
@@ -117,8 +132,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      students,
-      totalClasses: classes.length
+      data: {
+        students,
+        totalClasses: classes.length
+      }
     });
 
   } catch (error) {
@@ -128,8 +145,10 @@ export async function GET(request: NextRequest) {
     if (error instanceof Error && error.message.includes('Record to update not found')) {
       return NextResponse.json({
         success: true,
-        students: [],
-        totalClasses: 0
+        data: {
+          students: [],
+          totalClasses: 0
+        }
       });
     }
     

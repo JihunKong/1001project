@@ -108,7 +108,7 @@ async function fetchUserData(userId: string, dashboardType: string) {
     let recentActivity = 'No recent activity';
     if (currentlyReading.length > 0) {
       const book = await prisma.book.findUnique({
-        where: { id: currentlyReading[0].bookId },
+        where: { id: currentlyReading[0].storyId },
         select: { title: true }
       });
       if (book) {

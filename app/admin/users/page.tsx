@@ -66,6 +66,10 @@ const roleConfig = {
   VOLUNTEER: { label: 'Volunteer', color: 'bg-green-100 text-green-800', icon: Clock },
   EDITOR: { label: 'Editor', color: 'bg-purple-100 text-purple-800', icon: BookOpen },
   PUBLISHER: { label: 'Publisher', color: 'bg-emerald-100 text-emerald-800', icon: CheckCircle },
+  STORY_MANAGER: { label: 'Story Manager', color: 'bg-teal-100 text-teal-800', icon: BookOpen },
+  BOOK_MANAGER: { label: 'Book Manager', color: 'bg-cyan-100 text-cyan-800', icon: CheckCircle },
+  CONTENT_ADMIN: { label: 'Content Admin', color: 'bg-violet-100 text-violet-800', icon: Shield },
+  PROGRAM_LEAD: { label: 'Program Lead', color: 'bg-indigo-100 text-indigo-800', icon: Users },
   ADMIN: { label: 'Admin', color: 'bg-red-100 text-red-800', icon: Shield },
 };
 

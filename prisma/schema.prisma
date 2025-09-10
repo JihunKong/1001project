@@ -142,6 +142,24 @@ model User {
   achievements    UserAchievement[]   @relation("UserAchievements")
   learningSessions LearningSession[]  @relation("UserLearningSessions")
   
+  // Book Assignment Relations
+  studentBookAssignments BookAssignment[] @relation("StudentBookAssignments")
+  teacherBookAssignments BookAssignment[] @relation("TeacherBookAssignments")
+  
+  // Workflow and AI Relations
+  workflowTransitions WorkflowTransition[] @relation("WorkflowTransitions")
+  aiContentApprovals AIGeneratedContent[] @relation("AIContentApprovals")
+  
+  // Featured Reading System Relations
+  featuredSetsCreated FeaturedSet[] @relation("FeaturedSetsCreated")
+  platformSettingsUpdated PlatformSetting[] @relation("PlatformSettingsUpdated")
+  
+  // Program Application Relations
+  programApplications ProgramApplication[] @relation("ProgramApplications")
+  assignedProgramReviews ProgramApplication[] @relation("AssignedProgramReviews") 
+  programReviews ApplicationReview[] @relation("ProgramReviews")
+  applicationStatusChanges ApplicationStatusHistory[] @relation("ApplicationStatusChanges")
+  
   @@index([email])
   @@index([role])
   @@index([schoolId])
@@ -157,6 +175,10 @@ enum UserRole {
   VOLUNTEER
   EDITOR
   PUBLISHER
+  STORY_MANAGER    // Reviews and approves story submissions
+  BOOK_MANAGER     // Decides publication format
+  CONTENT_ADMIN    // Final approval authority
+  PROGRAM_LEAD     // Reviews and manages program applications
   ADMIN
 }
 
@@ -780,6 +802,7 @@ model Class {
   lessons         Lesson[]
   resources       ClassResource[]
   announcements   ClassAnnouncement[]
+  bookAssignments BookAssignment[] @relation("ClassBookAssignments")
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -2589,6 +2612,7 @@ model Book {
   quizzes         Quiz[]              @relation("BookQuizzes")
   bookClubs       BookClub[]          @relation("BookClubs")
   learningSessions LearningSession[]  @relation("BookLearningSessions")
+  bookAssignments BookAssignment[]    @relation("BookAssignments")
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -2599,6 +2623,86 @@ model Book {
   @@index([visibility])
   @@index([thumbnailGeneratedAt])
   @@map("books")
+}
+
+// Book assignments - controls what students can access
+model BookAssignment {
+  id              String           @id @default(cuid())
+  bookId          String
+  classId         String?
+  studentId       String?          // For individual assignments
+  teacherId       String
+  
+  // Assignment details
+  assignedAt      DateTime         @default(now())
+  dueDate         DateTime?
+  instructions    String?          @db.Text
+  isRequired      Boolean          @default(true)
+  allowDiscussion Boolean          @default(true)
+  
+  // Relations
+  book            Book             @relation("BookAssignments", fields: [bookId], references: [id])
+  class           Class?           @relation("ClassBookAssignments", fields: [classId], references: [id])
+  student         User?            @relation("StudentBookAssignments", fields: [studentId], references: [id])
+  teacher         User             @relation("TeacherBookAssignments", fields: [teacherId], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@unique([bookId, classId])
+  @@unique([bookId, studentId])
+  @@index([teacherId])
+  @@index([classId])
+  @@index([studentId])
+  @@map("book_assignments")
+}
+
+// Workflow transition history for publishing
+model WorkflowTransition {
+  id              String           @id @default(cuid())
+  submissionId    String
+  submissionType  String           // "BookSubmission", "StorySubmission", etc.
+  fromStatus      String
+  toStatus        String
+  performedById   String
+  reason          String?          @db.Text
+  
+  performedBy     User             @relation("WorkflowTransitions", fields: [performedById], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  
+  @@index([submissionId])
+  @@index([performedById])
+  @@map("workflow_transitions")
+}
+
+// AI-generated content storage
+model AIGeneratedContent {
+  id              String           @id @default(cuid())
+  relatedId       String?          // ID of related entity (book, submission, etc.)
+  relatedType     String?          // Type of related entity
+  
+  // Content type
+  type            String           // "IMAGE", "AUDIO", "PARSED_TEXT", "SUMMARY"
+  prompt          String           @db.Text
+  model           String           // "GPT-4", "DALL-E-3", "UPSTAGE", etc.
+  
+  // Generated content
+  content         String           @db.Text  // URL or text content
+  metadata        Json?            // Additional metadata
+  
+  // Quality control
+  isApproved      Boolean          @default(false)
+  approvedById    String?
+  
+  approvedBy      User?            @relation("AIContentApprovals", fields: [approvedById], references: [id])
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([relatedId])
+  @@index([type])
+  @@map("ai_generated_content")
 }
 
 // Volunteer PDF submission system (No WYSIWYG editor)
@@ -3611,6 +3715,11 @@ model BookClub {
   maxMembers      Int?
   language        String?
   level           String?
+  joinCode        String?          // Join code for private clubs
+  classId         String?          // Associated class (if any)
+  startDate       DateTime         @default(now())
+  endDate         DateTime?
+  settings        Json?            // Club settings
   
   book            Book             @relation("BookClubs", fields: [bookId], references: [id], onDelete: Cascade)
   creator         User             @relation("BookClubsCreated", fields: [creatorId], references: [id])
@@ -3719,4 +3828,237 @@ model LearningSession {
   @@index([userId])
   @@index([bookId])
   @@map("learning_sessions")
+}
+
+// ==========================================
+// FEATURED READING SYSTEM
+// ==========================================
+
+// Featured book sets for public reading
+model FeaturedSet {
+  id              String           @id @default(cuid())
+  bookIds         String[]         // Exactly 3 book IDs
+  startsAt        DateTime
+  endsAt          DateTime
+  createdBy       String
+  createdAt       DateTime         @default(now())
+  isActive        Boolean          @default(true)
+  
+  // Metadata for rotation
+  rotationType    String           @default("MONTHLY") // MONTHLY, MANUAL, SEASONAL
+  selectionMethod String           @default("RANDOM")  // RANDOM, CURATED, POPULARITY
+  
+  // Relations
+  creator         User             @relation("FeaturedSetsCreated", fields: [createdBy], references: [id])
+  
+  @@index([isActive])
+  @@index([startsAt])
+  @@index([createdBy])
+  @@map("featured_sets")
+}
+
+// Platform-wide settings
+model PlatformSetting {
+  key             String           @id
+  valueJson       Json
+  description     String?          @db.Text
+  updatedBy       String?
+  updatedAt       DateTime         @default(now())
+  
+  // Relations
+  updater         User?            @relation("PlatformSettingsUpdated", fields: [updatedBy], references: [id])
+  
+  @@map("platform_settings")
+}
+
+// ==========================================
+// PROGRAMS APPLICATION SYSTEM
+// ==========================================
+
+// Program types enumeration
+enum ProgramType {
+  PARTNERSHIP_NETWORK    // Schools, NGOs, companies, universities seeking partnerships
+  ENGLISH_EDUCATION      // Teachers, students, mentors for English language programs
+  MENTORSHIP            // Mentor-mentee matching for various expertise domains
+}
+
+// Application status enumeration
+enum ProgramApplicationStatus {
+  DRAFT                 // Application being worked on
+  SUBMITTED             // Application submitted for review
+  UNDER_REVIEW          // Being reviewed by program staff
+  ADDITIONAL_INFO_REQUESTED // Reviewer needs more information
+  INTERVIEW_SCHEDULED   // Interview/call scheduled
+  ACCEPTED              // Application accepted
+  REJECTED              // Application rejected
+  WAITLISTED           // Application waitlisted
+  WITHDRAWN            // Applicant withdrew
+}
+
+// Application review status
+enum ReviewStatus {
+  PENDING               // Awaiting review assignment
+  IN_PROGRESS          // Currently being reviewed
+  COMPLETED            // Review completed
+  ESCALATED            // Escalated to senior reviewer
+}
+
+// File upload types
+enum AttachmentType {
+  CV_RESUME
+  PORTFOLIO
+  TEACHING_SAMPLES
+  CERTIFICATES
+  TRANSCRIPTS
+  RECOMMENDATION_LETTER
+  OTHER_DOCUMENT
+}
+
+// Main program application model
+model ProgramApplication {
+  id                    String                   @id @default(cuid())
+  
+  // Program and user information
+  programType           ProgramType
+  applicantId           String
+  status                ProgramApplicationStatus @default(DRAFT)
+  
+  // Common applicant profile fields
+  fullName              String
+  email                 String
+  phone                 String?
+  country               String
+  city                  String
+  timezone              String?
+  languages             String[]                 // JSON array of language codes
+  
+  // Affiliation information
+  organizationName      String?
+  organizationType      String?                  // school, ngo, company, university, individual
+  jobTitle              String?
+  experienceYears       Int?
+  
+  // Availability information
+  weeklyHours           Int?                     // Available hours per week
+  availableDays         String[]                 // Days of week available
+  timeWindows           Json?                    // Available time windows with timezone
+  
+  // Personal information
+  interests             String[]
+  skills                String[]
+  languageProficiency   Json?                    // Language proficiency levels (CEFR, etc.)
+  goals                 String?                  @db.Text
+  motivation            String?                  @db.Text
+  preferredModality     String?                  // online, in-person, hybrid
+  
+  // Program-specific data (flexible JSON storage)
+  programSpecificData   Json?                    // Varies by program type
+  
+  // Consent and agreements
+  dataProcessingConsent Boolean                  @default(false)
+  codeOfConductAccepted Boolean                  @default(false)
+  backgroundCheckConsent Boolean                 @default(false)
+  
+  // Internal tracking
+  matchScore            Float?                   // Calculated match score
+  internalNotes         String?                  @db.Text
+  assignedReviewerId    String?
+  priority              Int                      @default(3) // 1=high, 3=normal, 5=low
+  
+  // Timestamps
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  submittedAt           DateTime?
+  reviewedAt            DateTime?
+  decidedAt             DateTime?
+  
+  // Relations
+  applicant             User                     @relation("ProgramApplications", fields: [applicantId], references: [id], onDelete: Cascade)
+  assignedReviewer      User?                    @relation("AssignedProgramReviews", fields: [assignedReviewerId], references: [id])
+  attachments           ApplicationAttachment[]
+  reviews               ApplicationReview[]
+  statusHistory         ApplicationStatusHistory[]
+  
+  @@map("program_applications")
+  @@index([programType, status])
+  @@index([assignedReviewerId])
+  @@index([createdAt])
+}
+
+// File attachments for applications
+model ApplicationAttachment {
+  id                    String              @id @default(cuid())
+  applicationId         String
+  
+  // File information
+  filename              String
+  originalName          String
+  filePath              String              // Storage path
+  fileSize              Int                 // Size in bytes
+  mimeType              String
+  attachmentType        AttachmentType
+  
+  // Metadata
+  description           String?
+  uploadedAt            DateTime            @default(now())
+  
+  // Relations
+  application           ProgramApplication  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  @@map("application_attachments")
+}
+
+// Application review tracking
+model ApplicationReview {
+  id                    String              @id @default(cuid())
+  applicationId         String
+  reviewerId            String
+  
+  // Review information
+  status                ReviewStatus        @default(PENDING)
+  score                 Int?                // 1-10 rating
+  strengths             String?             @db.Text
+  concerns              String?             @db.Text
+  recommendations       String?             @db.Text
+  decision              String?             // accept, reject, request_info, interview
+  
+  // Follow-up actions
+  followUpRequired      Boolean             @default(false)
+  followUpNotes         String?             @db.Text
+  nextReviewDate        DateTime?
+  
+  // Timestamps
+  assignedAt            DateTime            @default(now())
+  startedAt             DateTime?
+  completedAt           DateTime?
+  
+  // Relations
+  application           ProgramApplication  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  reviewer              User                @relation("ProgramReviews", fields: [reviewerId], references: [id])
+  
+  @@map("application_reviews")
+  @@index([reviewerId, status])
+}
+
+// Application status change history (audit trail)
+model ApplicationStatusHistory {
+  id                    String                   @id @default(cuid())
+  applicationId         String
+  
+  // Status change information
+  fromStatus            ProgramApplicationStatus?
+  toStatus              ProgramApplicationStatus
+  changedById           String?
+  reason                String?                  @db.Text
+  automaticChange       Boolean                  @default(false)
+  
+  // Timestamp
+  changedAt             DateTime                 @default(now())
+  
+  // Relations
+  application           ProgramApplication       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  changedBy             User?                    @relation("ApplicationStatusChanges", fields: [changedById], references: [id])
+  
+  @@map("application_status_history")
+  @@index([applicationId, changedAt])
 }

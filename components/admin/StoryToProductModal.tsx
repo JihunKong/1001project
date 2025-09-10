@@ -278,7 +278,7 @@ export default function StoryToProductModal({
                             }`}
                           >
                             <Book className="w-6 h-6 text-blue-600 mb-2" />
-                            <div className="font-medium">Physical Book</div>
+                            <div className="font-medium text-gray-900">Physical Book</div>
                             <div className="text-sm text-gray-600">Printed, shipped to customers</div>
                           </button>
                           
@@ -291,7 +291,7 @@ export default function StoryToProductModal({
                             }`}
                           >
                             <Package className="w-6 h-6 text-blue-600 mb-2" />
-                            <div className="font-medium">Digital Book</div>
+                            <div className="font-medium text-gray-900">Digital Book</div>
                             <div className="text-sm text-gray-600">Download, instant delivery</div>
                           </button>
                         </div>

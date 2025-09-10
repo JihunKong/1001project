@@ -7,7 +7,7 @@ import type { ApiResponse, BookClubComment } from '@/types/learning';
 // POST /api/learn/bookclub/discussions/[discussionId]/comments - Add a comment
 export async function POST(
   request: NextRequest,
-  { params }: { params: { discussionId: string } }
+  { params }: { params: Promise<{ discussionId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -28,8 +28,8 @@ export async function POST(
     }
 
     // Check if discussion exists
-    const discussion = await prisma.bookClubDiscussion.findUnique({
-      where: { id: params.discussionId },
+    const discussion = await prisma.bookClubPost.findUnique({
+      where: { id: (await params).discussionId },
     });
 
     if (!discussion) {
@@ -39,12 +39,12 @@ export async function POST(
       );
     }
 
-    const comment = await prisma.bookClubComment.create({
+    const comment = await prisma.bookClubPost.create({
       data: {
         userId: session.user.id,
-        discussionId: params.discussionId,
+        clubId: discussion.clubId,
         content,
-        parentId: parentId || null,
+        parentId: parentId || (await params).discussionId,
         likes: 0,
       },
       include: {
@@ -68,7 +68,7 @@ export async function POST(
       await prisma.userStats.update({
         where: { userId: session.user.id },
         data: {
-          totalXp: userStats.totalXp + 10, // 10 XP for commenting
+          xp: userStats.xp + 10, // 10 XP for commenting
         },
       });
     }
@@ -76,7 +76,7 @@ export async function POST(
     return NextResponse.json({
       success: true,
       data: comment,
-    } as ApiResponse<BookClubComment>);
+    });
   } catch (error) {
     console.error('Error adding comment:', error);
     return NextResponse.json(
@@ -89,7 +89,7 @@ export async function POST(
 // GET /api/learn/bookclub/discussions/[discussionId]/comments - Get comments
 export async function GET(
   request: NextRequest,
-  { params }: { params: { discussionId: string } }
+  { params }: { params: Promise<{ discussionId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -100,8 +100,8 @@ export async function GET(
       );
     }
 
-    const comments = await prisma.bookClubComment.findMany({
-      where: { discussionId: params.discussionId },
+    const comments = await prisma.bookClubPost.findMany({
+      where: { parentId: (await params).discussionId },
       include: {
         user: {
           select: {

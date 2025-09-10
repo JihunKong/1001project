@@ -158,7 +158,7 @@ export default function BookDetailPage() {
       }
 
       const data = await response.json();
-      setBook(data);
+      setBook(data.book);
     } catch (err) {
       setError('Failed to load book');
     } finally {
@@ -281,13 +281,6 @@ export default function BookDetailPage() {
   };
 
 
-  const handlePreview = () => {
-    router.push(`/library/stories/${bookId}?preview=true`);
-  };
-
-  const handleReadFull = () => {
-    router.push(`/library/stories/${bookId}`);
-  };
 
   const handleOpenPDF = () => {
     setShowPDFViewer(true);
@@ -341,8 +334,9 @@ export default function BookDetailPage() {
     );
   }
 
-  const displayedReviews = showAllReviews ? reviews : reviews.slice(0, 3);
-  const averageRating = Number(book.rating || 0) || (reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : 0);
+  const safeReviews = reviews || [];
+  const displayedReviews = showAllReviews ? safeReviews : safeReviews.slice(0, 3);
+  const averageRating = Number(book.rating || 0) || (safeReviews.length > 0 ? safeReviews.reduce((sum, r) => sum + r.rating, 0) / safeReviews.length : 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -470,7 +464,7 @@ export default function BookDetailPage() {
                     </div>
                     <span className="text-sm text-gray-600">
                       {averageRating > 0 ? Number(averageRating || 0).toFixed(1) : 'No ratings yet'} 
-                      ({reviews.length} review{reviews.length !== 1 ? 's' : ''})
+                      ({(reviews || []).length} review{(reviews || []).length !== 1 ? 's' : ''})
                     </span>
                   </div>
 
@@ -490,7 +484,7 @@ export default function BookDetailPage() {
 
                   {/* Categories and Tags */}
                   <div>
-                    {book.category.length > 0 && (
+                    {book.category && book.category.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
                         {book.category.map((cat) => (
                           <span 
@@ -503,9 +497,9 @@ export default function BookDetailPage() {
                       </div>
                     )}
                     
-                    {book.tags.length > 0 && (
+                    {book.tags && book.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2">
-                        {book.tags.slice(0, 5).map((tag) => (
+                        {(book.tags || []).slice(0, 5).map((tag) => (
                           <span 
                             key={tag}
                             className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
@@ -513,7 +507,7 @@ export default function BookDetailPage() {
                             #{tag}
                           </span>
                         ))}
-                        {book.tags.length > 5 && (
+                        {book.tags && book.tags.length > 5 && (
                           <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
                             +{book.tags.length - 5} more
                           </span>
@@ -549,7 +543,7 @@ export default function BookDetailPage() {
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Reviews ({reviews.length})
+                  Reviews ({(reviews || []).length})
                 </h2>
                 {session?.user?.id && !userReview && (
                   <button
@@ -721,18 +715,18 @@ export default function BookDetailPage() {
                 ))}
               </div>
 
-              {reviews.length > 3 && (
+              {reviews && reviews.length > 3 && (
                 <div className="text-center mt-6">
                   <button
                     onClick={() => setShowAllReviews(!showAllReviews)}
                     className="text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    {showAllReviews ? 'Show Less' : `Show All ${reviews.length} Reviews`}
+                    {showAllReviews ? 'Show Less' : `Show All ${(reviews || []).length} Reviews`}
                   </button>
                 </div>
               )}
 
-              {reviews.length === 0 && (
+              {(!reviews || reviews.length === 0) && (
                 <div className="text-center py-8">
                   <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500">No reviews yet. Be the first to review this book!</p>
@@ -823,7 +817,7 @@ export default function BookDetailPage() {
               >
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Related Books</h3>
                 <div className="space-y-3">
-                  {book.relatedStories.slice(0, 3).map((relatedBook) => (
+                  {book.relatedStories?.slice(0, 3).map((relatedBook) => (
                     <Link
                       key={relatedBook.id}
                       href={`/library/books/${relatedBook.id}`}

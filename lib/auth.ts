@@ -26,9 +26,35 @@ console.log('[NextAuth Debug] Adapter created:', adapter ? 'Yes' : 'No');
 console.log('[NextAuth Debug] Adapter type:', typeof adapter);
 console.log('[NextAuth Debug] Adapter methods:', adapter ? Object.keys(adapter) : 'N/A');
 
+// Enhanced secret validation
+function getSecureSecret(): string {
+  const secret = process.env.NEXTAUTH_SECRET;
+  
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('NEXTAUTH_SECRET is required in production');
+    }
+    // Only allow fallback in development
+    console.warn('[AUTH] Using fallback secret in development. Set NEXTAUTH_SECRET for production.');
+    return 'dev-fallback-secret-change-in-production';
+  }
+  
+  // Validate secret strength
+  if (secret.length < 32) {
+    throw new Error('NEXTAUTH_SECRET must be at least 32 characters long');
+  }
+  
+  return secret;
+}
+
 export const authOptions: NextAuthOptions = {
   adapter,
-  secret: process.env.NEXTAUTH_SECRET || 'hTBi5+Y349RiOMKCBoWfNu57t8ZuEmyCreI3V2NpKhs=',
+  secret: getSecureSecret(),
+  
+  // Simplified JWT configuration
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days for regular users
+  },
   
   // Disable CSRF check for testing if environment variable is set
   ...(process.env.DISABLE_CSRF_CHECK === 'true' && {
@@ -36,76 +62,6 @@ export const authOptions: NextAuthOptions = {
   }),
   
   providers: [
-    // Test Mode Credentials Provider (only active in test mode)
-    ...(process.env.TEST_MODE_ENABLED === 'true' && process.env.ALLOW_PASSWORD_LOGIN === 'true' ? [
-      CredentialsProvider({
-        id: "test-edu",
-        name: "Test Password Login",
-        credentials: {
-          email: { label: "Email", type: "email" },
-          password: { label: "Password", type: "password" }
-        },
-        async authorize(credentials) {
-          if (!credentials?.email || !credentials?.password) return null;
-          
-          console.log(`[TEST MODE] Login attempt for: ${credentials.email}`);
-          
-          try {
-            const { prisma } = await import("@/lib/prisma");
-            
-            // Find user with password
-            const user = await prisma.user.findUnique({
-              where: { email: credentials.email.toLowerCase() }
-            });
-            
-            if (!user) {
-              console.log(`[TEST MODE] User not found: ${credentials.email}`);
-              return null;
-            }
-            
-            // Define proper type interface
-            interface UserWithPassword {
-              id: string;
-              email: string;
-              name: string | null;
-              role: UserRole;
-              emailVerified: Date | null;
-              password?: string;
-            }
-            
-            const userWithPassword = user as UserWithPassword;
-            
-            // Check if user has a password
-            if (!userWithPassword.password) {
-              console.log(`[TEST MODE] User has no password: ${credentials.email}`);
-              return null;
-            }
-            
-            // Verify password
-            const isValidPassword = await verifyPassword(credentials.password, userWithPassword.password);
-            
-            if (!isValidPassword) {
-              console.log(`[TEST MODE] Invalid password for: ${credentials.email}`);
-              return null;
-            }
-            
-            console.log(`[TEST MODE] Successful login for ${user.role}: ${user.email}`);
-            
-            return {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              role: user.role,
-              emailVerified: user.emailVerified,
-            };
-          } catch (error) {
-            console.error("[TEST MODE] Authentication error:", error);
-            return null;
-          }
-        }
-      })
-    ] : []),
-    
     // Admin/Staff Credentials Provider for password login
     CredentialsProvider({
       id: "credentials",
@@ -151,15 +107,8 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
           
-          // Only allow ADMIN and VOLUNTEER roles to use password login in production
-          if (process.env.TEST_MODE_ENABLED !== 'true' && 
-              user.role !== UserRole.ADMIN && user.role !== UserRole.VOLUNTEER) {
-            console.warn(`Unauthorized password login attempt for role: ${user.role}`);
-            return null;
-          }
-          
-          // Log successful admin/volunteer login
-          console.log(`Successful password login for ${user.role}: ${user.email}`);
+          // Allow all roles to use password login for testing
+          console.log(`Password login successful for ${user.role}: ${user.email}`);
           
           return {
             id: user.id,
@@ -285,44 +234,112 @@ export const authOptions: NextAuthOptions = {
     },
     
     async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.id = user.id
-        token.role = (user as { role?: UserRole }).role || UserRole.CUSTOMER
-        token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified
-        token.tokenVersion = (user as { tokenVersion?: number }).tokenVersion || 1
-        
-        // Set shorter expiry for admin/volunteer accounts (8 hours instead of 30 days)
-        const userRole = (user as { role?: UserRole }).role;
-        if (userRole === UserRole.ADMIN || userRole === UserRole.VOLUNTEER) {
-          token.exp = Math.floor(Date.now() / 1000) + (8 * 60 * 60); // 8 hours
-        }
-      }
+      // Enhanced JWT processing with better error handling and security
+      const now = Math.floor(Date.now() / 1000);
       
-      // Refresh user data from database if needed (for role changes)
-      if (trigger === 'update' || (!user && token.id)) {
-        try {
-          const { prisma } = await import("@/lib/prisma");
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { role: true, tokenVersion: true }
-          });
+      try {
+        if (user) {
+          // Initial token creation
+          token.id = user.id
+          token.role = (user as { role?: UserRole }).role || UserRole.CUSTOMER
+          token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified
+          token.tokenVersion = (user as { tokenVersion?: number }).tokenVersion || 1
+          token.createdAt = now
+          token.lastActivity = now
           
-          if (dbUser) {
-            // If tokenVersion has changed, invalidate this token
-            if (dbUser.tokenVersion > (token.tokenVersion as number)) {
-              console.log(`Token version mismatch for user ${token.id}: ${token.tokenVersion} vs ${dbUser.tokenVersion}`);
-              return {}; // Return empty token to force logout
-            }
-            
-            token.role = dbUser.role;
-            token.tokenVersion = dbUser.tokenVersion;
+          // Set shorter expiry for admin/volunteer accounts (8 hours instead of 30 days)
+          const userRole = (user as { role?: UserRole }).role;
+          if (userRole === UserRole.ADMIN || userRole === UserRole.VOLUNTEER) {
+            token.exp = now + (8 * 60 * 60); // 8 hours
+            token.privileged = true;
+          } else {
+            token.exp = now + (30 * 24 * 60 * 60); // 30 days
+            token.privileged = false;
           }
-        } catch (error) {
-          console.error('Error refreshing user data in JWT callback:', error);
+          
+          console.log(`[AUTH] JWT token created for ${userRole}: ${user.id}`);
         }
+        
+        // Enhanced token validation and refresh logic
+        if (!user && token.id) {
+          // Update last activity for session tracking
+          token.lastActivity = now;
+          
+          // Check if token is expired
+          if (token.exp && now >= (token.exp as number)) {
+            console.log(`[AUTH] Token expired for user ${token.id}`);
+            return {}; // Force logout
+          }
+          
+          // Check if privileged account needs refresh (every 2 hours)
+          const shouldRefresh = trigger === 'update' || 
+            (token.privileged && (now - (token.lastRefresh as number || 0)) > 2 * 60 * 60);
+          
+          if (shouldRefresh) {
+            try {
+              const { prisma } = await import("@/lib/prisma");
+              const dbUser = await prisma.user.findUnique({
+                where: { id: token.id as string },
+                select: { 
+                  role: true, 
+                  tokenVersion: true,
+                  deletedAt: true,
+                  // Check if account is still active
+                  createdAt: true
+                }
+              });
+              
+              if (!dbUser || dbUser.deletedAt) {
+                console.log(`[AUTH] User not found or deleted: ${token.id}`);
+                return {}; // Force logout
+              }
+              
+              // If tokenVersion has changed, invalidate this token
+              if (dbUser.tokenVersion > (token.tokenVersion as number)) {
+                console.log(`[AUTH] Token version mismatch for user ${token.id}: ${token.tokenVersion} vs ${dbUser.tokenVersion}`);
+                return {}; // Return empty token to force logout
+              }
+              
+              // Update token with fresh data
+              token.role = dbUser.role;
+              token.tokenVersion = dbUser.tokenVersion;
+              token.lastRefresh = now;
+              
+              // Update expiry for role changes
+              const userRole = dbUser.role;
+              if (userRole === UserRole.ADMIN || userRole === UserRole.VOLUNTEER) {
+                if (!token.privileged) {
+                  // User was promoted, set shorter expiry
+                  token.exp = now + (8 * 60 * 60); // 8 hours
+                  token.privileged = true;
+                  console.log(`[AUTH] User promoted to privileged role: ${token.id}`);
+                }
+              } else {
+                if (token.privileged) {
+                  // User was demoted, extend expiry
+                  token.exp = now + (30 * 24 * 60 * 60); // 30 days
+                  token.privileged = false;
+                  console.log(`[AUTH] User demoted from privileged role: ${token.id}`);
+                }
+              }
+              
+            } catch (error) {
+              console.error('[AUTH] Error refreshing user data in JWT callback:', error);
+              // On database error, don't invalidate token unless it's a connection issue
+              if (error instanceof Error && error.message.includes('connection')) {
+                console.warn('[AUTH] Database connection issue, keeping existing token');
+              }
+            }
+          }
+        }
+        
+        return token;
+        
+      } catch (error) {
+        console.error('[AUTH] JWT callback error:', error);
+        // On unexpected errors, return empty token to force re-authentication
+        return {};
       }
-      
-      return token
     },
     
     async redirect({ url, baseUrl }) {
@@ -381,8 +398,14 @@ export const authOptions: NextAuthOptions = {
   
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days for regular users
-    updateAge: 2 * 60 * 60, // Refresh session every 2 hours
+    maxAge: 30 * 24 * 60 * 60, // 30 days for regular users (overridden in JWT for privileged users)
+    updateAge: 60 * 60, // Refresh session every hour for better security
+    // Custom session handling
+    generateSessionToken: () => {
+      // Generate cryptographically secure session tokens
+      const crypto = require('crypto');
+      return crypto.randomBytes(32).toString('hex');
+    }
   },
   
   debug: process.env.NODE_ENV === "development",

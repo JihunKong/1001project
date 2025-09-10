@@ -306,7 +306,7 @@ export default function UXResearchDashboard() {
                 {data.topIssues.slice(0, 5).map((issue, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1">
-                      <p className="font-medium">{issue.issue}</p>
+                      <p className="font-medium text-gray-900">{issue.issue}</p>
                       <p className="text-sm text-gray-500">{issue.count} reports</p>
                     </div>
                     <span className={`px-2 py-1 text-xs rounded-full ${
@@ -455,7 +455,7 @@ export default function UXResearchDashboard() {
                 {data.roleMigrations.map((migration, index) => (
                   <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div>
-                      <p className="font-medium">
+                      <p className="font-medium text-gray-900">
                         {migration.fromRole} → {migration.toRole}
                       </p>
                       <p className="text-sm text-gray-600">{migration.count} users migrated</p>

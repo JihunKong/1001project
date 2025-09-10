@@ -66,12 +66,8 @@ export function WordDefinitionPopup({
   }, [onClose]);
 
   const speakWord = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.8;
-      speechSynthesis.speak(utterance);
-    }
+    // TTS is disabled to prevent monster sounds
+    console.log('TTS disabled - word pronunciation not available:', word);
   };
 
   const handleAddToVocabulary = async () => {

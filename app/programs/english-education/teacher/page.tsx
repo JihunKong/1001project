@@ -376,7 +376,7 @@ export default function TeacherDashboard() {
                       <div>
                         <div className="flex justify-between text-sm mb-1">
                           <span>Assignment Completion Rate</span>
-                          <span className="font-medium">89%</span>
+                          <span className="font-medium text-gray-900">89%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div className="bg-blue-500 h-2 rounded-full" style={{ width: '89%' }}></div>
@@ -385,7 +385,7 @@ export default function TeacherDashboard() {
                       <div>
                         <div className="flex justify-between text-sm mb-1">
                           <span>Average Quiz Score</span>
-                          <span className="font-medium">78%</span>
+                          <span className="font-medium text-gray-900">78%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div className="bg-purple-500 h-2 rounded-full" style={{ width: '78%' }}></div>

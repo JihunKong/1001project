@@ -63,7 +63,6 @@ export async function GET(
         isPublished: true,
         createdAt: true,
         updatedAt: true,
-        format: true,
         pdfKey: true
       }
     });
@@ -115,7 +114,7 @@ export async function GET(
       featured: book.featured || false,
       createdAt: book.createdAt.toISOString(),
       updatedAt: book.updatedAt.toISOString(),
-      format: book.format || 'pdf',
+      format: 'pdf', // Default format since Book model doesn't have this field
       pdfKey: book.pdfKey || undefined,
       hasAccess: true // TODO: Implement proper access control
     };

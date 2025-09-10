@@ -170,7 +170,7 @@ export default function TeacherRecommendations() {
                     - {book.teacherName}
                   </span>
                   <Link
-                    href={`/books/${book.id}/read`}
+                    href={`/learn/read/${book.id}`}
                     className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center"
                   >
                     Start Reading <ChevronRight className="w-3 h-3 ml-0.5" />

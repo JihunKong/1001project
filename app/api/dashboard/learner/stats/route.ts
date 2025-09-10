@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Get reading progress stats
-    const readingProgress = await prisma.readingProgress.findMany({
+    // Get learning progress stats  
+    const learningProgress = await prisma.learningProgress.findMany({
       where: { userId },
       include: {
         book: {
@@ -39,10 +39,10 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Calculate statistics
-    const storiesRead = readingProgress.filter(p => p.percentComplete === 100).length;
-    const currentlyReading = readingProgress.filter(p => p.percentComplete > 0 && p.percentComplete < 100).length;
-    const totalReadingTime = readingProgress.reduce((sum, p) => sum + (p.totalReadingTime || 0), 0);
+    // Calculate statistics  
+    const booksRead = learningProgress.filter(p => p.isCompleted === true).length;
+    const currentlyReading = learningProgress.filter(p => p.pagesRead > 0 && !p.isCompleted).length;
+    const totalReadingTime = learningProgress.reduce((sum, p) => sum + (p.readingTime || 0), 0);
 
     // Get vocabulary stats
     const vocabularyCount = await prisma.vocabulary.count({
@@ -83,9 +83,16 @@ export async function GET(request: NextRequest) {
 
     // Get achievements/points
     const achievements = await prisma.userAchievement.findMany({
-      where: { userId }
+      where: { userId },
+      include: {
+        achievement: {
+          select: {
+            xpReward: true,
+          }
+        }
+      }
     });
-    const points = achievements.reduce((sum, a) => sum + (a.points || 0), 0);
+    const points = achievements.reduce((sum, a) => sum + (a.achievement.xpReward || 0), 0);
 
     // Get quiz attempts
     const quizAttempts = await prisma.quizAttempt.count({
@@ -94,9 +101,9 @@ export async function GET(request: NextRequest) {
 
     // Determine user level based on progress
     let level = 'Beginner';
-    if (storiesRead > 10) level = 'Intermediate';
-    if (storiesRead > 25) level = 'Advanced';
-    if (storiesRead > 50) level = 'Expert';
+    if (booksRead > 10) level = 'Intermediate';
+    if (booksRead > 25) level = 'Advanced';
+    if (booksRead > 50) level = 'Expert';
 
     return NextResponse.json({
       success: true,
@@ -107,20 +114,20 @@ export async function GET(request: NextRequest) {
           level
         },
         stats: {
-          storiesRead,
+          booksRead,
           currentlyReading,
           wordsLearned: vocabularyCount,
-          timeSpent: Math.round(totalReadingTime / 60), // Convert to minutes
+          timeSpent: Math.round(totalReadingTime), // Already in minutes
           currentStreak,
           points,
           quizzesCompleted: quizAttempts,
           achievementsUnlocked: achievements.length
         },
-        recentActivity: readingProgress.slice(0, 5).map(p => ({
+        recentActivity: learningProgress.slice(0, 5).map(p => ({
           bookId: p.book.id,
           bookTitle: p.book.title,
-          progress: p.percentComplete,
-          lastReadAt: p.lastReadAt
+          progress: p.totalPages > 0 ? Math.round((p.pagesRead / p.totalPages) * 100) : 0,
+          lastReadAt: p.updatedAt
         }))
       }
     });

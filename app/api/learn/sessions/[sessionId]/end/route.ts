@@ -8,7 +8,7 @@ import { XP_REWARDS } from '@/types/learning';
 // POST /api/learn/sessions/[sessionId]/end - End reading session
 export async function POST(
   request: NextRequest,
-  { params }: { params: { sessionId: string } }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -67,7 +67,7 @@ export async function POST(
       where: { userId: session.user.id },
       data: {
         totalReadingTime: { increment: minutesRead },
-        lastActive: new Date(),
+        lastActiveDate: new Date(),
       },
     });
 
@@ -94,8 +94,8 @@ export async function POST(
       await prisma.userStats.update({
         where: { userId: session.user.id },
         data: {
-          streak: { increment: 1 },
-          totalXP: { increment: XP_REWARDS.DAILY_STREAK },
+          currentStreak: { increment: 1 },
+          xp: { increment: XP_REWARDS.DAILY_STREAK },
         },
       });
     }

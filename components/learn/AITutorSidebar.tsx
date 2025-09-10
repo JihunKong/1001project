@@ -108,10 +108,10 @@ export function AITutorSidebar({
     }
     
     if (lowerQuestion.includes('quiz')) {
-      return 'Let\\'s test your understanding!\\n\\n**Question 1:** What are the main components of the ESL learning system described?\\n\\na) Only reading\\nb) Reading, vocabulary, quizzes, and social features\\nc) Just vocabulary\\nd) Only gamification\\n\\nType your answer (a, b, c, or d) to continue!';
+      return `Let's test your understanding!\n\n**Question 1:** What are the main components of the ESL learning system described?\n\na) Only reading\nb) Reading, vocabulary, quizzes, and social features\nc) Just vocabulary\nd) Only gamification\n\nType your answer (a, b, c, or d) to continue!`;
     }
     
-    return 'That\\'s a great question! Based on the text, the integrated learning approach combines multiple elements to create an effective ESL learning experience. The system tracks progress, provides instant feedback, and adapts to your learning level. Would you like me to explain any specific part in more detail?';
+    return `That's a great question! Based on the text, the integrated learning approach combines multiple elements to create an effective ESL learning experience. The system tracks progress, provides instant feedback, and adapts to your learning level. Would you like me to explain any specific part in more detail?`;
   };
 
   const speakMessage = async (text: string) => {
@@ -149,9 +149,8 @@ export function AITutorSidebar({
       }
     } catch (error) {
       console.error('TTS Error:', error);
-      // OpenAI TTS 실패 시 브라우저 TTS를 사용하지 않음
-      // 크롬의 기본 음성이 불편하므로 차라리 음성 재생을 하지 않음
-      console.log('TTS is not available. Please check OpenAI API configuration.');
+      // TTS disabled - no browser fallback to prevent monster sounds
+      console.log('TTS disabled to prevent monster sounds');
     }
   };
 

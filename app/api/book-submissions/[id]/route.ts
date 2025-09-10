@@ -9,8 +9,9 @@ import { promises as fs } from 'fs';
 // GET: Get a specific submission
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -18,7 +19,7 @@ export async function GET(
     }
 
     const submission = await prisma.bookSubmission.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         submittedBy: {
           select: { id: true, name: true, email: true }
@@ -53,8 +54,9 @@ export async function GET(
 // PATCH: Update submission status (review, approve, reject)
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -73,7 +75,7 @@ export async function PATCH(
     const { action, notes, rejectionReason } = data;
 
     const submission = await prisma.bookSubmission.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!submission) {
@@ -161,7 +163,7 @@ export async function PATCH(
     }
 
     const updatedSubmission = await prisma.bookSubmission.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         submittedBy: {
@@ -292,8 +294,9 @@ async function publishBook(submission: any) {
 // DELETE: Delete a submission (only drafts)
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -309,7 +312,7 @@ export async function DELETE(
     }
 
     const submission = await prisma.bookSubmission.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!submission) {
@@ -332,7 +335,7 @@ export async function DELETE(
     }
 
     await prisma.bookSubmission.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Submission deleted successfully' });

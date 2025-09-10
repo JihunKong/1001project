@@ -178,11 +178,11 @@ export default function StudentAssessment() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Books Read:</span>
-                  <span className="font-medium">{student.progress.booksRead}</span>
+                  <span className="font-medium text-gray-900">{student.progress.booksRead}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Completion:</span>
-                  <span className="font-medium">{student.progress.completionRate}%</span>
+                  <span className="font-medium text-gray-900">{student.progress.completionRate}%</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Last Active:</span>

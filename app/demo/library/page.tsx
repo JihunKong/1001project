@@ -16,7 +16,7 @@ import {
   Star
 } from 'lucide-react';
 import Link from 'next/link';
-import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
+// import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
 
 interface DemoBook {
   id: string;
@@ -246,14 +246,9 @@ export default function DemoLibrary() {
                     </div>
                   )}
                   
-                  <SimplePDFThumbnail
-                    pdfUrl={book.pdfKey}
-                    bookId={book.id}
-                    title={book.title}
-                    existingImage={book.coverImage}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    alt={book.title}
-                  />
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                    <BookOpen className="w-12 h-12 text-white opacity-60" />
+                  </div>
                   
                   {/* Overlay */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300" />
