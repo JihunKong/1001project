@@ -126,7 +126,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
     }
 
     // Check if role is being changed to increment tokenVersion for security
-    let updateData: any = { ...validatedData };
+    const updateData: any = { ...validatedData };
     let roleChanged = false;
     
     if (validatedData.role && validatedData.role !== existingUser.role) {

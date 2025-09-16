@@ -28,6 +28,8 @@ Table users {
   teachingClasses classes [not null]
   stories stories [not null]
   storySubmissions story_submissions [not null]
+  textSubmissions text_submissions [not null]
+  textSubmissionReviews text_submissions [not null]
   translations translations [not null]
   illustrations illustrations [not null]
   readingProgress reading_progress [not null]
@@ -91,6 +93,12 @@ Table users {
   assignedProgramReviews program_applications [not null]
   programReviews application_reviews [not null]
   applicationStatusChanges application_status_history [not null]
+  draftSessions draft_sessions [not null]
+  submissionFeedback submission_feedback [not null]
+  termsAcceptances terms_acceptances [not null]
+  auditEventsAsActor audit_events [not null]
+  createdRejectionTemplates rejection_templates [not null]
+  createdWorkflowSettings workflow_settings [not null]
 }
 
 Table profiles {
@@ -309,6 +317,7 @@ Table classes {
   resources class_resources [not null]
   announcements class_announcements [not null]
   bookAssignments book_assignments [not null]
+  textSubmissions text_submissions [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -688,6 +697,7 @@ Table story_submissions {
   author users [not null]
   coverImage media_files
   workflowHistory workflow_history [not null]
+  feedback submission_feedback [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -1233,6 +1243,7 @@ Table books {
   subtitle String
   summary String
   content String
+  primaryTextId String
   authorName String [not null]
   authorAlias String
   authorAge Int
@@ -1246,12 +1257,21 @@ Table books {
   subjects String[] [not null]
   tags String[] [not null]
   coverImage String
-  pdfKey String
+  pdfStorageKey String
+  pdfChecksum String
+  pdfSize Int
+  pdfPageCount Int
+  pdfUploadedAt DateTime
+  pdfUploadedBy String
   pdfFrontCover String
   pdfBackCover String
   pageLayout String [not null, default: 'single']
-  pageCount Int
   previewPages Int [not null, default: 10]
+  status BookStatus [not null, default: 'DRAFT']
+  publishingMode String [not null, default: 'STANDARD']
+  version Int [not null, default: 1]
+  lastReviewComment String
+  levelBand String
   thumbnails Json
   thumbnailGeneratedAt DateTime
   thumbnailConfig Json
@@ -1273,14 +1293,71 @@ Table books {
   shopProducts shop_products [not null]
   reviews reviews [not null]
   bookSubmission book_submissions
+  primaryText text_submissions
   learningProgress learning_progress [not null]
   vocabulary vocabulary [not null]
   quizzes quizzes [not null]
   bookClubs book_clubs [not null]
   learningSessions learning_sessions [not null]
   bookAssignments book_assignments [not null]
+  parsedStories parsed_stories [not null]
+  auditEvents audit_events [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
+}
+
+Table text_submissions {
+  id String [pk]
+  authorId String [not null]
+  authorRole UserRole [not null]
+  title String [not null]
+  contentMd String [not null]
+  chaptersJson String
+  source String
+  classId String
+  status PublishingWorkflowStatus [not null, default: 'DRAFT']
+  revisionNo Int [not null, default: 0]
+  language String [not null, default: 'en']
+  ageRange String
+  category String[] [not null]
+  tags String[] [not null]
+  summary String
+  reviewNotes String
+  rejectionReason String
+  lastReviewedBy String
+  lastReviewedAt DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  author users [not null]
+  class classes
+  lastReviewer users
+  publishedBooks books [not null]
+  workflowTransitions workflow_transitions [not null]
+  aiContent ai_generated_content [not null]
+}
+
+Table parsed_stories {
+  id String [pk]
+  bookId String [not null]
+  levelBand String [not null]
+  parsedContent String [not null]
+  wordCount Int
+  readingTimeMinutes Int
+  lexileLevel String
+  readabilityScore Float
+  vocabularyLevel String
+  simplifiedVersion String
+  enhancedVersion String
+  keyVocabulary String[] [not null]
+  comprehensionQuestions Json
+  parsedAt DateTime [default: `now()`, not null]
+  parsedBy String
+  isActive Boolean [not null, default: true]
+  book books [not null]
+
+  indexes {
+    (bookId, levelBand) [unique]
+  }
 }
 
 Table book_assignments {
@@ -1316,6 +1393,7 @@ Table workflow_transitions {
   performedById String [not null]
   reason String
   performedBy users [not null]
+  textSubmission text_submissions
   createdAt DateTime [default: `now()`, not null]
 }
 
@@ -1331,6 +1409,7 @@ Table ai_generated_content {
   isApproved Boolean [not null, default: false]
   approvedById String
   approvedBy users
+  textSubmission text_submissions
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 }
@@ -2054,6 +2133,94 @@ Table application_status_history {
   changedBy users
 }
 
+Table rejection_templates {
+  id String [pk]
+  category RejectionCategory [not null]
+  title String [not null]
+  description String [not null]
+  isActive Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  createdBy String
+  feedback submission_feedback [not null]
+  creator users
+}
+
+Table audit_events {
+  id String [pk]
+  entityType String [not null]
+  entityId String [not null]
+  actorId String [not null]
+  actorRole UserRole [not null]
+  action AuditAction [not null]
+  previousState Json
+  newState Json
+  metadata Json
+  timestamp DateTime [default: `now()`, not null]
+  bookId String
+  actor users [not null]
+  book books
+}
+
+Table draft_sessions {
+  id String [pk]
+  userId String [not null]
+  content String [not null]
+  title String
+  lastSaved DateTime [default: `now()`, not null]
+  sessionId String [unique, not null]
+  user users [not null]
+}
+
+Table submission_feedback {
+  id String [pk]
+  submissionId String [not null]
+  reviewerId String [not null]
+  templateId String
+  customMessage String
+  revisionRound Int [not null, default: 1]
+  createdAt DateTime [default: `now()`, not null]
+  submission story_submissions [not null]
+  reviewer users [not null]
+  template rejection_templates
+}
+
+Table terms_acceptances {
+  id String [pk]
+  userId String [not null]
+  termsVersion String [not null]
+  personalInfoAck Boolean [not null]
+  respectfulLangAck Boolean [not null]
+  acceptedAt DateTime [default: `now()`, not null]
+  ipAddress String
+  user users [not null]
+}
+
+Table workflow_settings {
+  id String [pk]
+  organizationId String
+  defaultMode String [not null, default: 'STANDARD']
+  allowModeOverride Boolean [not null, default: false]
+  reviewDeadlineHours Int [not null, default: 48]
+  revisionDeadlineDays Int [not null, default: 7]
+  reminderIntervalHours Int [not null, default: 24]
+  escalationRoles String[] [not null]
+  enableAutoEscalation Boolean [not null, default: true]
+  enableEmailNotifications Boolean [not null, default: true]
+  enableWebhookNotifications Boolean [not null, default: false]
+  webhookEndpoints String[] [not null]
+  requireDualApproval Boolean [not null, default: false]
+  allowSelfApproval Boolean [not null, default: false]
+  maxBulkOperationSize Int [not null, default: 100]
+  enableDryRunMode Boolean [not null, default: true]
+  retentionPeriodDays Int [not null, default: 2555]
+  enableIntegrityChecks Boolean [not null, default: true]
+  createdBy String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  creator users [not null]
+}
+
 Table BookReviews {
   bookreviewsId String [ref: > book_submissions.id]
   reviewsId String [ref: > reviews.id]
@@ -2665,6 +2832,15 @@ Enum BookSubmissionStatus {
   REJECTED
 }
 
+Enum BookStatus {
+  DRAFT
+  PENDING
+  NEEDS_REVISION
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
 Enum ProgramType {
   PARTNERSHIP_NETWORK
   ENGLISH_EDUCATION
@@ -2698,6 +2874,40 @@ Enum AttachmentType {
   TRANSCRIPTS
   RECOMMENDATION_LETTER
   OTHER_DOCUMENT
+}
+
+Enum RejectionCategory {
+  CONTENT_QUALITY
+  AGE_INAPPROPRIATE
+  POLICY_VIOLATION
+  TECHNICAL_ISSUES
+  OTHER
+}
+
+Enum AuditAction {
+  CREATED
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PUBLISHED
+  EDITED
+  ASSIGNED
+  VIEWED
+  DOWNLOADED
+}
+
+Enum PublishingWorkflowStatus {
+  DRAFT
+  PENDING
+  NEEDS_REVISION
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+Enum WorkflowModeType {
+  SIMPLE
+  STANDARD
 }
 
 Ref: users.schoolId > schools.id
@@ -2856,6 +3066,16 @@ Ref: user_deletion_requests.userId - users.id [delete: Cascade]
 
 Ref: deletion_audit_logs.deletionRequestId > user_deletion_requests.id [delete: Cascade]
 
+Ref: books.primaryTextId > text_submissions.id
+
+Ref: text_submissions.authorId > users.id
+
+Ref: text_submissions.classId > classes.id
+
+Ref: text_submissions.lastReviewedBy > users.id
+
+Ref: parsed_stories.bookId > books.id [delete: Cascade]
+
 Ref: book_assignments.bookId > books.id
 
 Ref: book_assignments.classId > classes.id
@@ -2866,7 +3086,11 @@ Ref: book_assignments.teacherId > users.id
 
 Ref: workflow_transitions.performedById > users.id
 
+Ref: workflow_transitions.submissionId > text_submissions.id
+
 Ref: ai_generated_content.approvedById > users.id
+
+Ref: ai_generated_content.relatedId > text_submissions.id
 
 Ref: volunteer_submissions.volunteerId > users.id [delete: Cascade]
 
@@ -2983,3 +3207,21 @@ Ref: application_reviews.reviewerId > users.id
 Ref: application_status_history.applicationId > program_applications.id [delete: Cascade]
 
 Ref: application_status_history.changedById > users.id
+
+Ref: rejection_templates.createdBy > users.id
+
+Ref: audit_events.actorId > users.id
+
+Ref: audit_events.bookId > books.id
+
+Ref: draft_sessions.userId > users.id [delete: Cascade]
+
+Ref: submission_feedback.submissionId > story_submissions.id [delete: Cascade]
+
+Ref: submission_feedback.reviewerId > users.id
+
+Ref: submission_feedback.templateId > rejection_templates.id
+
+Ref: terms_acceptances.userId > users.id [delete: Cascade]
+
+Ref: workflow_settings.createdBy > users.id

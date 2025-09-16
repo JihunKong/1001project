@@ -15,7 +15,9 @@ import {
   Users,
   Clock,
   Loader2,
-  Eye
+  Eye,
+  FileText,
+  FileImage
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -92,6 +94,7 @@ export default function Library() {
   const [selectedAge, setSelectedAge] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [contentType, setContentType] = useState<'text' | 'pdf'>('text'); // Default to text
   
   // Static filter options (could be fetched from API in the future)
   const filters = {
@@ -144,7 +147,8 @@ export default function Library() {
       
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: '12'
+        limit: '12',
+        type: contentType // Pass content type to API
       });
       
       if (searchTerm) params.set('search', searchTerm);
@@ -152,8 +156,10 @@ export default function Library() {
       if (selectedLanguage !== 'all') params.set('language', selectedLanguage);
       if (selectedAge !== 'all') params.set('ageGroup', selectedAge);
       
-      const url = `/api/library/books?${params}`;
-      console.log('📚 Fetching books from:', url);
+      const url = contentType === 'text' 
+        ? `/api/library/text-stories?${params}`
+        : `/api/library/books?${params}`;
+      console.log('📚 Fetching content from:', url);
       
       const response = await fetch(url);
       console.log('📡 Response status:', response.status, response.statusText);
@@ -191,15 +197,15 @@ export default function Library() {
     }
   };
   
-  // Fetch books when page or filters change
+  // Fetch books when page, filters, or content type changes
   useEffect(() => {
     fetchBooks();
-  }, [currentPage, searchTerm, selectedCategory, selectedLanguage, selectedAge]);
+  }, [currentPage, searchTerm, selectedCategory, selectedLanguage, selectedAge, contentType]);
   
-  // Reset to first page when filters change (not page)
+  // Reset to first page when filters or content type changes (not page)
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, selectedLanguage, selectedAge]);
+  }, [searchTerm, selectedCategory, selectedLanguage, selectedAge, contentType]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -228,13 +234,39 @@ export default function Library() {
       {/* Search and Filter Bar */}
       <section className="sticky top-16 z-40 bg-white border-b shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* Content Type Tabs */}
+          <div className="flex items-center gap-2 mb-4">
+            <button
+              onClick={() => setContentType('text')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                contentType === 'text'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              Text Stories
+            </button>
+            <button
+              onClick={() => setContentType('pdf')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                contentType === 'pdf'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <FileImage className="w-4 h-4" />
+              PDF Books
+            </button>
+          </div>
+
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search Bar */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder={t('library.search')}
+                placeholder={contentType === 'text' ? 'Search text stories...' : 'Search PDF books...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -318,10 +350,12 @@ export default function Library() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">
-                Stories ({pagination?.totalCount || 0})
+                {contentType === 'text' ? 'Text Stories' : 'PDF Books'} ({pagination?.totalCount || 0})
               </h2>
               <p className="text-gray-600">
-                Discover amazing stories from young authors worldwide
+                {contentType === 'text' 
+                  ? 'Read and learn from community-written stories'
+                  : 'Browse our collection of illustrated PDF books'}
               </p>
             </div>
             
@@ -473,11 +507,22 @@ export default function Library() {
                     
                     <div className="flex flex-col gap-2 ml-4">
                       <Link
-                        href={`/library/books/${book.id}`}
+                        href={contentType === 'text' 
+                          ? `/library/text/${book.id}`
+                          : `/library/books/${book.id}`}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                       >
-                        <BookOpen className="w-4 h-4" />
-                        {book.content ? 'Read PDF' : 'View Details'}
+                        {contentType === 'text' ? (
+                          <>
+                            <FileText className="w-4 h-4" />
+                            Read Story
+                          </>
+                        ) : (
+                          <>
+                            <BookOpen className="w-4 h-4" />
+                            {book.content ? 'Read PDF' : 'View Details'}
+                          </>
+                        )}
                       </Link>
                     </div>
                   </div>

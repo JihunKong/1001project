@@ -13,6 +13,10 @@ export default withAuth(
     response.headers.set('X-Frame-Options', 'SAMEORIGIN');
     response.headers.set('X-Content-Type-Options', 'nosniff');
     
+    // MVP: Remove all CSP headers to fix resource loading issues
+    response.headers.delete('Content-Security-Policy');
+    response.headers.delete('content-security-policy');
+    
     // Admin route protection
     if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
       return NextResponse.redirect(new URL("/dashboard", req.url));

@@ -23,7 +23,8 @@ import {
   UserPlus,
   Target,
   Flame,
-  Star
+  Star,
+  PenTool
 } from 'lucide-react';
 import Link from 'next/link';
 import StudentAssessment from '@/components/teacher/StudentAssessment';
@@ -435,6 +436,10 @@ export default function TeacherDashboard() {
             <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
               <div className="space-y-2">
+                <Link href="/dashboard/teacher/submit" className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+                  <PenTool className="w-5 h-5 text-orange-600" />
+                  <span className="text-sm font-medium text-orange-900">Submit Story</span>
+                </Link>
                 <Link href="/assignments/create" className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                   <FileText className="w-5 h-5 text-blue-600" />
                   <span className="text-sm font-medium text-blue-900">Create Assignment</span>

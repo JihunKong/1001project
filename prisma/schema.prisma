@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["multiSchema", "postgresqlExtensions"]
 }
 
@@ -18,8 +18,8 @@ generator dbml {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
   extensions = [pgcrypto]
 }
 
@@ -29,137 +29,149 @@ datasource db {
 
 // User model - Core authentication
 model User {
-  id              String           @id @default(cuid())
-  email           String           @unique
-  emailVerified   DateTime?
-  name            String?
-  image           String?
-  password        String?          // For admin/volunteer password login
-  role            UserRole         @default(CUSTOMER)
-  tokenVersion    Int              @default(1) // JWT versioning for session invalidation
-  schoolId        String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  password      String? // For admin/volunteer password login
+  role          UserRole  @default(CUSTOMER)
+  tokenVersion  Int       @default(1) // JWT versioning for session invalidation
+  schoolId      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
   // GDPR Deletion fields
-  deletedAt       DateTime?
+  deletedAt         DateTime?
   deletionRequestId String?
-  
+
   // Relations
   accounts        Account[]
   sessions        Session[]
   profile         Profile?
   // subscription    Subscription?
-  school          School?          @relation(fields: [schoolId], references: [id])
+  school          School?              @relation(fields: [schoolId], references: [id])
   deletionRequest UserDeletionRequest?
-  
+
   // E-commerce - Commented out for free library
   // cart            Cart?
   // orders          Order[]
-  reviews         Review[]
-  
+  reviews Review[]
+
   // Educational
   enrollments     ClassEnrollment[]
   submissions     Submission[]
   lessonProgress  LessonProgress[]
-  teachingClasses Class[]          @relation("TeacherClasses")
-  
+  teachingClasses Class[]           @relation("TeacherClasses")
+
   // Content
-  stories         Story[]
-  storySubmissions StorySubmission[]
-  translations    Translation[]
-  illustrations   Illustration[]
-  
+  stories               Story[]
+  storySubmissions      StorySubmission[]
+  textSubmissions       TextSubmission[]  @relation("TextSubmissions")
+  textSubmissionReviews TextSubmission[]  @relation("TextSubmissionReviews")
+  translations          Translation[]
+  illustrations         Illustration[]
+
   // Reading
   readingProgress ReadingProgress[]
   bookmarks       Bookmark[]
   readingLists    ReadingList[]
-  
+
   // Volunteer
-  volunteerProfile VolunteerProfile?
+  volunteerProfile      VolunteerProfile?
   volunteerApplications VolunteerApplication[]
-  volunteerHours  VolunteerHours[]
+  volunteerHours        VolunteerHours[]
   volunteerCertificates VolunteerCertificate[]
-  coordinatingProjects VolunteerProject[]
-  createdQuests Quest[]
-  reviewedEvidence VolunteerEvidence[]
-  issuedPoints VolunteerPoints[]
-  fulfilledRewards VolunteerRedemption[]
-  questReviews QuestReview[]
-  
+  coordinatingProjects  VolunteerProject[]
+  createdQuests         Quest[]
+  reviewedEvidence      VolunteerEvidence[]
+  issuedPoints          VolunteerPoints[]
+  fulfilledRewards      VolunteerRedemption[]
+  questReviews          QuestReview[]
+
   // Donations
-  donations       Donation[]
+  donations          Donation[]
   recurringDonations RecurringDonation[]
-  
+
   // System
-  notifications   Notification[]
-  activityLogs    ActivityLog[]
-  
+  notifications Notification[]
+  activityLogs  ActivityLog[]
+
   // CMS Admin
   uploadedMedia   MediaFile[]
   workflowActions WorkflowHistory[]
   bulkImports     BulkImport[]
-  
+
   // Onboarding
-  onboardingProgress OnboardingProgress?
+  onboardingProgress  OnboardingProgress?
   sampleContentAccess SampleContentAccess[]
-  
+
   // Enhanced 1001 Stories relations
-  entitlements    Entitlement[]
-  volunteerSubmissions VolunteerSubmission[] @relation("VolunteerSubmissions")
+  entitlements                 Entitlement[]
+  volunteerSubmissions         VolunteerSubmission[] @relation("VolunteerSubmissions")
   reviewedVolunteerSubmissions VolunteerSubmission[] @relation("ReviewedVolunteerSubmissions")
   assignedVolunteerSubmissions VolunteerSubmission[] @relation("AssignedVolunteerSubmissions")
-  publishedContent Publication[] @relation("PublishedContent")
-  
+  publishedContent             Publication[]         @relation("PublishedContent")
+
   // UX Research relations
-  feedback        UserFeedback[]   @relation("UserFeedback")
-  surveyResponses SurveyResponse[] @relation("SurveyResponses")
-  analytics       UserAnalytics[]  @relation("UserAnalytics")
-  abTestParticipations ABTestParticipant[] @relation("ABTestParticipants")
-  roleMigrations  RoleMigration[]  @relation("RoleMigrations")
-  featureUsage    FeatureUsage[]   @relation("FeatureUsage")
+  feedback                UserFeedback[]           @relation("UserFeedback")
+  surveyResponses         SurveyResponse[]         @relation("SurveyResponses")
+  analytics               UserAnalytics[]          @relation("UserAnalytics")
+  abTestParticipations    ABTestParticipant[]      @relation("ABTestParticipants")
+  roleMigrations          RoleMigration[]          @relation("RoleMigrations")
+  featureUsage            FeatureUsage[]           @relation("FeatureUsage")
   // Unified Learning System
   userContentInteractions UserContentInteraction[]
-  contentSubmissions Content[] @relation("ContentSubmissions")
-  contentReviews Content[] @relation("ContentReviews")
-  assignedReviews ContentReview[] @relation("ReviewerAssignments")
-  reviewsToComplete ContentReview[] @relation("RevieweeAssignments")
-  
+  contentSubmissions      Content[]                @relation("ContentSubmissions")
+  contentReviews          Content[]                @relation("ContentReviews")
+  assignedReviews         ContentReview[]          @relation("ReviewerAssignments")
+  reviewsToComplete       ContentReview[]          @relation("RevieweeAssignments")
+
   // Book submission workflow
-  bookSubmissions BookSubmission[] @relation("BookSubmissions")
-  bookReviews BookSubmission[] @relation("BookReviews")
-  bookCoordination BookSubmission[] @relation("BookCoordination")
+  bookSubmissions    BookSubmission[] @relation("BookSubmissions")
+  bookReviews        BookSubmission[] @relation("BookReviews")
+  bookCoordination   BookSubmission[] @relation("BookCoordination")
   bookAdminApprovals BookSubmission[] @relation("BookAdminApproval")
-  
+
   // Learning System Relations
-  learningProgress LearningProgress[] @relation("UserLearningProgress")
-  vocabulary      Vocabulary[]        @relation("UserVocabulary")
-  userStats       UserStats?          @relation("UserStats")
-  quizAttempts    QuizAttempt[]       @relation("UserQuizAttempts")
-  bookClubsCreated BookClub[]         @relation("BookClubsCreated")
-  bookClubMemberships BookClubMember[] @relation("BookClubMemberships")
-  bookClubPosts   BookClubPost[]      @relation("BookClubPosts")
-  achievements    UserAchievement[]   @relation("UserAchievements")
-  learningSessions LearningSession[]  @relation("UserLearningSessions")
-  
+  learningProgress    LearningProgress[] @relation("UserLearningProgress")
+  vocabulary          Vocabulary[]       @relation("UserVocabulary")
+  userStats           UserStats?         @relation("UserStats")
+  quizAttempts        QuizAttempt[]      @relation("UserQuizAttempts")
+  bookClubsCreated    BookClub[]         @relation("BookClubsCreated")
+  bookClubMemberships BookClubMember[]   @relation("BookClubMemberships")
+  bookClubPosts       BookClubPost[]     @relation("BookClubPosts")
+  achievements        UserAchievement[]  @relation("UserAchievements")
+  learningSessions    LearningSession[]  @relation("UserLearningSessions")
+
   // Book Assignment Relations
   studentBookAssignments BookAssignment[] @relation("StudentBookAssignments")
   teacherBookAssignments BookAssignment[] @relation("TeacherBookAssignments")
-  
+
   // Workflow and AI Relations
   workflowTransitions WorkflowTransition[] @relation("WorkflowTransitions")
-  aiContentApprovals AIGeneratedContent[] @relation("AIContentApprovals")
-  
+  aiContentApprovals  AIGeneratedContent[] @relation("AIContentApprovals")
+
   // Featured Reading System Relations
-  featuredSetsCreated FeaturedSet[] @relation("FeaturedSetsCreated")
+  featuredSetsCreated     FeaturedSet[]     @relation("FeaturedSetsCreated")
   platformSettingsUpdated PlatformSetting[] @relation("PlatformSettingsUpdated")
-  
+
   // Program Application Relations
-  programApplications ProgramApplication[] @relation("ProgramApplications")
-  assignedProgramReviews ProgramApplication[] @relation("AssignedProgramReviews") 
-  programReviews ApplicationReview[] @relation("ProgramReviews")
+  programApplications      ProgramApplication[]       @relation("ProgramApplications")
+  assignedProgramReviews   ProgramApplication[]       @relation("AssignedProgramReviews")
+  programReviews           ApplicationReview[]        @relation("ProgramReviews")
   applicationStatusChanges ApplicationStatusHistory[] @relation("ApplicationStatusChanges")
-  
+
+  // Publishing Workflow Relations
+  draftSessions      DraftSession[]       @relation("DraftSessions")
+  submissionFeedback SubmissionFeedback[] @relation("SubmissionFeedback")
+  termsAcceptances   TermsAcceptance[]    @relation("TermsAcceptances")
+
+  // Phase 5: Publishing workflow relations
+  auditEventsAsActor        AuditEvent[]        @relation("ActorAuditEvents")
+  createdRejectionTemplates RejectionTemplate[] @relation("CreatedRejectionTemplates")
+  createdWorkflowSettings   WorkflowSettings[]  @relation("CreatedWorkflowSettings")
+
   @@index([email])
   @@index([role])
   @@index([schoolId])
@@ -175,57 +187,57 @@ enum UserRole {
   VOLUNTEER
   EDITOR
   PUBLISHER
-  STORY_MANAGER    // Reviews and approves story submissions
-  BOOK_MANAGER     // Decides publication format
-  CONTENT_ADMIN    // Final approval authority
-  PROGRAM_LEAD     // Reviews and manages program applications
+  STORY_MANAGER // Reviews and approves story submissions
+  BOOK_MANAGER // Decides publication format
+  CONTENT_ADMIN // Final approval authority
+  PROGRAM_LEAD // Reviews and manages program applications
   ADMIN
 }
 
 // User profile with extended information
 model Profile {
-  id              String           @id @default(cuid())
-  userId          String           @unique
-  firstName       String?
-  lastName        String?
-  organization    String?
-  bio             String?          @db.Text
-  location        String?
-  phone           String?
-  dateOfBirth     DateTime?
-  language        String           @default("en")
-  timezone        String           @default("UTC")
-  
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  firstName    String?
+  lastName     String?
+  organization String?
+  bio          String?   @db.Text
+  location     String?
+  phone        String?
+  dateOfBirth  DateTime?
+  language     String    @default("en")
+  timezone     String    @default("UTC")
+
   // COPPA Compliance Fields
-  isMinor         Boolean          @default(false)
-  ageVerificationStatus AgeVerificationStatus @default(PENDING)
-  parentalConsentRequired Boolean  @default(false)
-  parentalConsentStatus ParentalConsentStatus @default(NOT_REQUIRED)
-  parentalConsentDate DateTime?
-  parentEmail     String?
-  parentName      String?
-  coppaCompliant  Boolean          @default(false)
-  
+  isMinor                 Boolean               @default(false)
+  ageVerificationStatus   AgeVerificationStatus @default(PENDING)
+  parentalConsentRequired Boolean               @default(false)
+  parentalConsentStatus   ParentalConsentStatus @default(NOT_REQUIRED)
+  parentalConsentDate     DateTime?
+  parentEmail             String?
+  parentName              String?
+  coppaCompliant          Boolean               @default(false)
+
   // For teachers/institutions
-  teachingLevel   String?
-  subjects        String[]
-  studentCount    Int?
-  
+  teachingLevel String?
+  subjects      String[]
+  studentCount  Int?
+
   // For volunteers
-  skills          String[]
-  availability    String?
-  experience      String?          @db.Text
-  
+  skills       String[]
+  availability String?
+  experience   String?  @db.Text
+
   // Preferences
-  emailNotifications Boolean       @default(true)
-  pushNotifications Boolean        @default(true)
-  newsletter      Boolean          @default(true)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  emailNotifications Boolean @default(true)
+  pushNotifications  Boolean @default(true)
+  newsletter         Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("profiles")
 }
 
@@ -235,18 +247,18 @@ model Profile {
 
 // NextAuth Account model (for OAuth providers)
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -261,7 +273,7 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@map("sessions")
 }
 
@@ -620,69 +632,69 @@ model VerificationToken {
 
 // Enhanced story model for digital books
 model Story {
-  id              String           @id @default(cuid())
-  isbn            String?          @unique
-  title           String
-  subtitle        String?
-  content         String           @db.Text
-  summary         String?
-  
+  id       String  @id @default(cuid())
+  isbn     String? @unique
+  title    String
+  subtitle String?
+  content  String  @db.Text
+  summary  String?
+
   // Author information
-  authorId        String
-  authorName      String
-  coAuthors       String[]
-  authorAge       Int?
-  authorLocation  String?
-  illustratorId   String?
-  
+  authorId       String
+  authorName     String
+  coAuthors      String[]
+  authorAge      Int?
+  authorLocation String?
+  illustratorId  String?
+
   // Publication details
-  publishedDate   DateTime?
-  publisher       String?
-  language        String           @default("en")
-  pageCount       Int?
-  readingLevel    String?
-  readingTime     Int?             // Estimated minutes
-  
+  publishedDate DateTime?
+  publisher     String?
+  language      String    @default("en")
+  pageCount     Int?
+  readingLevel  String?
+  readingTime   Int? // Estimated minutes
+
   // Categorization
-  category        String[]
-  genres          String[]
-  subjects        String[]
-  tags            String[]
-  
+  category String[]
+  genres   String[]
+  subjects String[]
+  tags     String[]
+
   // Media
-  coverImage      String?
-  illustrations   String[]
-  samplePdf       String?
-  fullPdf         String?
-  epubFile        String?
-  audioFile       String?
-  
+  coverImage    String?
+  illustrations String[]
+  samplePdf     String?
+  fullPdf       String?
+  epubFile      String?
+  audioFile     String?
+
   // Access control
-  isPremium       Boolean          @default(false)
-  isPublished     Boolean          @default(false)
-  featured        Boolean          @default(false)
-  price           Decimal?         @db.Decimal(10, 2)
-  
+  isPremium   Boolean  @default(false)
+  isPublished Boolean  @default(false)
+  featured    Boolean  @default(false)
+  price       Decimal? @db.Decimal(10, 2)
+
   // Metrics
-  viewCount       Int              @default(0)
-  likeCount       Int              @default(0)
-  rating          Float?
-  
+  viewCount Int    @default(0)
+  likeCount Int    @default(0)
+  rating    Float?
+
   // Relations
-  author          User             @relation(fields: [authorId], references: [id])
+  author          User                  @relation(fields: [authorId], references: [id])
   chapters        Chapter[]
   readingProgress ReadingProgress[]
   bookmarks       Bookmark[]
-  reviews         Review[]         @relation("StoryReviews")
+  reviews         Review[]              @relation("StoryReviews")
   translations    Translation[]
   sampleAccesses  SampleContentAccess[]
   entitlements    Entitlement[]
   publications    Publication[]
   shopProducts    ShopProduct[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([isPublished])
   @@index([isPremium])
   @@index([language])
@@ -691,44 +703,44 @@ model Story {
 
 // Book chapters for sequential reading
 model Chapter {
-  id              String           @id @default(cuid())
-  storyId         String
-  chapterNumber   Int
-  title           String
-  content         String           @db.Text
-  audioUrl        String?
-  illustrations   String[]
-  readingTime     Int?             // Estimated minutes
-  
-  story           Story            @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id            String   @id @default(cuid())
+  storyId       String
+  chapterNumber Int
+  title         String
+  content       String   @db.Text
+  audioUrl      String?
+  illustrations String[]
+  readingTime   Int? // Estimated minutes
+
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([storyId, chapterNumber])
   @@map("chapters")
 }
 
 // User's reading progress tracking
 model ReadingProgress {
-  id              String           @id @default(cuid())
-  userId          String
-  storyId         String
-  currentChapter  Int              @default(1)
-  currentPage     Int?
-  totalPages      Int?
-  currentPosition String?          // Text position for continue reading
-  percentComplete Float            @default(0)
-  totalReadingTime Int             @default(0) // Minutes
-  lastReadAt      DateTime         @default(now())
-  startedAt       DateTime         @default(now())
-  completedAt     DateTime?
-  isCompleted     Boolean          @default(false)
-  notes           String[]
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  story           Story            @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  
+  id               String    @id @default(cuid())
+  userId           String
+  storyId          String
+  currentChapter   Int       @default(1)
+  currentPage      Int?
+  totalPages       Int?
+  currentPosition  String? // Text position for continue reading
+  percentComplete  Float     @default(0)
+  totalReadingTime Int       @default(0) // Minutes
+  lastReadAt       DateTime  @default(now())
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  isCompleted      Boolean   @default(false)
+  notes            String[]
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
   @@unique([userId, storyId])
   @@index([userId])
   @@index([lastReadAt])
@@ -737,20 +749,20 @@ model ReadingProgress {
 
 // Saved positions in books
 model Bookmark {
-  id              String           @id @default(cuid())
-  userId          String
-  storyId         String
-  chapterId       Int?
-  position        String?          // Text position
-  note            String?
-  color           String?          // Highlight color
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  story           Story            @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id        String  @id @default(cuid())
+  userId    String
+  storyId   String
+  chapterId Int?
+  position  String? // Text position
+  note      String?
+  color     String? // Highlight color
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, storyId], name: "userId_storyId")
   @@index([userId])
   @@map("bookmarks")
@@ -758,18 +770,18 @@ model Bookmark {
 
 // User's reading lists/collections
 model ReadingList {
-  id              String           @id @default(cuid())
-  userId          String
-  name            String
-  description     String?
-  isPublic        Boolean          @default(false)
-  storyIds        String[]
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  isPublic    Boolean  @default(false)
+  storyIds    String[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([userId])
   @@map("reading_lists")
 }
@@ -780,33 +792,34 @@ model ReadingList {
 
 // Educational classes/courses
 model Class {
-  id              String           @id @default(cuid())
-  code            String           @unique
-  name            String
-  description     String?          @db.Text
-  teacherId       String
-  schoolId        String?
-  subject         String
-  gradeLevel      String
-  schedule        Json             // Class schedule
-  startDate       DateTime
-  endDate         DateTime
-  maxStudents     Int              @default(30)
-  isActive        Boolean          @default(true)
-  settings        Json             // Class settings
-  
-  teacher         User             @relation("TeacherClasses", fields: [teacherId], references: [id])
-  school          School?          @relation(fields: [schoolId], references: [id])
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?  @db.Text
+  teacherId   String
+  schoolId    String?
+  subject     String
+  gradeLevel  String
+  schedule    Json // Class schedule
+  startDate   DateTime
+  endDate     DateTime
+  maxStudents Int      @default(30)
+  isActive    Boolean  @default(true)
+  settings    Json // Class settings
+
+  teacher         User                @relation("TeacherClasses", fields: [teacherId], references: [id])
+  school          School?             @relation(fields: [schoolId], references: [id])
   enrollments     ClassEnrollment[]
   assignments     Assignment[]
   lessons         Lesson[]
   resources       ClassResource[]
   announcements   ClassAnnouncement[]
-  bookAssignments BookAssignment[] @relation("ClassBookAssignments")
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  bookAssignments BookAssignment[]    @relation("ClassBookAssignments")
+  textSubmissions TextSubmission[]    @relation("ClassTextSubmissions")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([teacherId])
   @@index([schoolId])
   @@map("classes")
@@ -814,18 +827,18 @@ model Class {
 
 // Student-class relationships
 model ClassEnrollment {
-  id              String           @id @default(cuid())
-  classId         String
-  studentId       String
-  enrolledAt      DateTime         @default(now())
-  status          EnrollmentStatus @default(ACTIVE)
-  grade           String?
-  attendance      Float            @default(100)
-  progress        Float            @default(0)
-  
-  class           Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
-  student         User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  
+  id         String           @id @default(cuid())
+  classId    String
+  studentId  String
+  enrolledAt DateTime         @default(now())
+  status     EnrollmentStatus @default(ACTIVE)
+  grade      String?
+  attendance Float            @default(100)
+  progress   Float            @default(0)
+
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
   @@unique([classId, studentId])
   @@index([studentId])
   @@index([classId])
@@ -841,22 +854,22 @@ enum EnrollmentStatus {
 
 // Class assignments and homework
 model Assignment {
-  id              String           @id @default(cuid())
-  classId         String
-  title           String
-  description     String           @db.Text
-  type            AssignmentType
-  dueDate         DateTime
-  points          Int              @default(100)
-  resources       String[]
-  requirements    Json
-  
-  class           Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
-  submissions     Submission[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id           String         @id @default(cuid())
+  classId      String
+  title        String
+  description  String         @db.Text
+  type         AssignmentType
+  dueDate      DateTime
+  points       Int            @default(100)
+  resources    String[]
+  requirements Json
+
+  class       Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  submissions Submission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([classId])
   @@index([dueDate])
   @@map("assignments")
@@ -873,19 +886,19 @@ enum AssignmentType {
 
 // Student assignment submissions
 model Submission {
-  id              String           @id @default(cuid())
-  assignmentId    String
-  studentId       String
-  submittedAt     DateTime         @default(now())
-  content         String?          @db.Text
-  attachments     String[]
-  grade           Float?
-  feedback        String?          @db.Text
-  status          SubmissionStatus @default(DRAFT)
-  
-  assignment      Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  student         User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  
+  id           String           @id @default(cuid())
+  assignmentId String
+  studentId    String
+  submittedAt  DateTime         @default(now())
+  content      String?          @db.Text
+  attachments  String[]
+  grade        Float?
+  feedback     String?          @db.Text
+  status       SubmissionStatus @default(DRAFT)
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  student    User       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
   @@unique([assignmentId, studentId])
   @@index([studentId])
   @@map("submissions")
@@ -901,38 +914,38 @@ enum SubmissionStatus {
 
 // Course lessons/modules
 model Lesson {
-  id              String           @id @default(cuid())
-  classId         String
-  lessonNumber    Int
-  title           String
-  objectives      String[]
-  content         String           @db.Text
-  resources       Json             // Lesson materials
-  duration        Int              // Estimated minutes
-  
-  class           Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
-  progress        LessonProgress[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id           String   @id @default(cuid())
+  classId      String
+  lessonNumber Int
+  title        String
+  objectives   String[]
+  content      String   @db.Text
+  resources    Json // Lesson materials
+  duration     Int // Estimated minutes
+
+  class    Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([classId, lessonNumber])
   @@map("lessons")
 }
 
 // Student lesson completion
 model LessonProgress {
-  id              String           @id @default(cuid())
-  lessonId        String
-  studentId       String
-  startedAt       DateTime         @default(now())
-  completedAt     DateTime?
-  timeSpent       Int              @default(0) // Minutes
-  score           Float?
-  
-  lesson          Lesson           @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  student         User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  
+  id          String    @id @default(cuid())
+  lessonId    String
+  studentId   String
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  timeSpent   Int       @default(0) // Minutes
+  score       Float?
+
+  lesson  Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  student User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
   @@unique([lessonId, studentId])
   @@index([studentId])
   @@map("lesson_progress")
@@ -940,18 +953,18 @@ model LessonProgress {
 
 // Class resources (materials, documents)
 model ClassResource {
-  id              String           @id @default(cuid())
-  classId         String
-  title           String
-  description     String?
-  type            ResourceType
-  url             String
-  size            Int?             // File size in bytes
-  
-  class           Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  id          String       @id @default(cuid())
+  classId     String
+  title       String
+  description String?
+  type        ResourceType
+  url         String
+  size        Int? // File size in bytes
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@map("class_resources")
 }
 
@@ -966,16 +979,16 @@ enum ResourceType {
 
 // Class announcements
 model ClassAnnouncement {
-  id              String           @id @default(cuid())
-  classId         String
-  title           String
-  content         String           @db.Text
-  priority        AnnouncementPriority @default(NORMAL)
-  
-  class           Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  id       String               @id @default(cuid())
+  classId  String
+  title    String
+  content  String               @db.Text
+  priority AnnouncementPriority @default(NORMAL)
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@map("class_announcements")
 }
 
@@ -992,7 +1005,7 @@ enum AnnouncementPriority {
 
 // Educational institutions
 model School {
-  id              String           @id @default(cuid())
+  id              String       @id @default(cuid())
   name            String
   type            SchoolType
   address         Json
@@ -1001,23 +1014,23 @@ model School {
   email           String?
   website         String?
   principalName   String?
-  studentCount    Int              @default(0)
-  teacherCount    Int              @default(0)
+  studentCount    Int          @default(0)
+  teacherCount    Int          @default(0)
   establishedYear Int?
   accreditation   String[]
-  partneredAt     DateTime         @default(now())
-  status          SchoolStatus     @default(PENDING)
-  
+  partneredAt     DateTime     @default(now())
+  status          SchoolStatus @default(PENDING)
+
   // Relations
-  users           User[]
-  classes         Class[]
-  budgets         Budget[]
-  resources       SchoolResource[]
+  users                User[]
+  classes              Class[]
+  budgets              Budget[]
+  resources            SchoolResource[]
   volunteerAssignments SchoolVolunteer[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("schools")
 }
 
@@ -1039,60 +1052,60 @@ enum SchoolStatus {
 
 // School financial management
 model Budget {
-  id              String           @id @default(cuid())
+  id              String  @id @default(cuid())
   schoolId        String
   year            Int
-  totalBudget     Decimal          @db.Decimal(12, 2)
-  allocatedBudget Decimal          @db.Decimal(12, 2) @default(0)
-  spentBudget     Decimal          @db.Decimal(12, 2) @default(0)
+  totalBudget     Decimal @db.Decimal(12, 2)
+  allocatedBudget Decimal @default(0) @db.Decimal(12, 2)
+  spentBudget     Decimal @default(0) @db.Decimal(12, 2)
   categories      Json
-  
-  school          School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  items           BudgetItem[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  school School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  items  BudgetItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([schoolId, year])
   @@map("budgets")
 }
 
 // Budget line items
 model BudgetItem {
-  id              String           @id @default(cuid())
-  budgetId        String
-  category        String
-  description     String
-  amount          Decimal          @db.Decimal(10, 2)
-  spent           Decimal          @db.Decimal(10, 2) @default(0)
-  vendor          String?
-  approvedBy      String?
-  approvedAt      DateTime?
-  
-  budget          Budget           @relation(fields: [budgetId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  id          String    @id @default(cuid())
+  budgetId    String
+  category    String
+  description String
+  amount      Decimal   @db.Decimal(10, 2)
+  spent       Decimal   @default(0) @db.Decimal(10, 2)
+  vendor      String?
+  approvedBy  String?
+  approvedAt  DateTime?
+
+  budget Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@map("budget_items")
 }
 
 // School educational resources
 model SchoolResource {
-  id              String           @id @default(cuid())
-  schoolId        String
-  type            SchoolResourceType
-  name            String
-  quantity        Int              @default(1)
-  condition       String?
-  location        String?
-  purchaseDate    DateTime?
-  value           Decimal?         @db.Decimal(10, 2)
-  
-  school          School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id           String             @id @default(cuid())
+  schoolId     String
+  type         SchoolResourceType
+  name         String
+  quantity     Int                @default(1)
+  condition    String?
+  location     String?
+  purchaseDate DateTime?
+  value        Decimal?           @db.Decimal(10, 2)
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("school_resources")
 }
 
@@ -1108,18 +1121,18 @@ enum SchoolResourceType {
 
 // School-volunteer assignments
 model SchoolVolunteer {
-  id              String           @id @default(cuid())
-  schoolId        String
-  volunteerId     String
-  role            String
-  startDate       DateTime
-  endDate         DateTime?
-  isActive        Boolean          @default(true)
-  
-  school          School           @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  id          String    @id @default(cuid())
+  schoolId    String
+  volunteerId String
+  role        String
+  startDate   DateTime
+  endDate     DateTime?
+  isActive    Boolean   @default(true)
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@unique([schoolId, volunteerId])
   @@map("school_volunteers")
 }
@@ -1130,28 +1143,28 @@ model SchoolVolunteer {
 
 // Volunteer opportunities and projects
 model VolunteerProject {
-  id              String           @id @default(cuid())
-  title           String
-  description     String           @db.Text
-  type            VolunteerType
-  skills          String[]
-  location        String           // Remote or physical location
-  timeCommitment  String           // Hours per week
-  startDate       DateTime
-  endDate         DateTime?
-  maxVolunteers   Int
-  currentVolunteers Int            @default(0)
-  status          ProjectStatus    @default(OPEN)
-  impact          String           // Expected impact
-  coordinatorId   String
-  
-  coordinator     User             @relation(fields: [coordinatorId], references: [id])
-  applications    VolunteerApplication[]
-  hours           VolunteerHours[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id                String        @id @default(cuid())
+  title             String
+  description       String        @db.Text
+  type              VolunteerType
+  skills            String[]
+  location          String // Remote or physical location
+  timeCommitment    String // Hours per week
+  startDate         DateTime
+  endDate           DateTime?
+  maxVolunteers     Int
+  currentVolunteers Int           @default(0)
+  status            ProjectStatus @default(OPEN)
+  impact            String // Expected impact
+  coordinatorId     String
+
+  coordinator  User                   @relation(fields: [coordinatorId], references: [id])
+  applications VolunteerApplication[]
+  hours        VolunteerHours[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status])
   @@map("volunteer_projects")
 }
@@ -1177,39 +1190,39 @@ enum ProjectStatus {
 
 // Volunteer applications for projects (Enhanced)
 model VolunteerApplication {
-  id              String           @id @default(cuid())
-  projectId       String?          // Old projects
-  questId         String?          // New quest system
+  id              String  @id @default(cuid())
+  projectId       String? // Old projects
+  questId         String? // New quest system
   volunteerId     String
-  volunteerUserId String           // Link to User for backward compatibility
-  
+  volunteerUserId String // Link to User for backward compatibility
+
   // Application content
-  motivation      String           @db.Text
-  experience      String           @db.Text
-  availability    String
-  coverLetter     String?          @db.Text
-  
+  motivation   String  @db.Text
+  experience   String  @db.Text
+  availability String
+  coverLetter  String? @db.Text
+
   // Status and review
   status          ApplicationStatus @default(PENDING)
   reviewedBy      String?
   reviewedAt      DateTime?
-  notes           String?          @db.Text
-  rejectionReason String?          @db.Text
-  
+  notes           String?           @db.Text
+  rejectionReason String?           @db.Text
+
   // Matching and selection
-  matchScore      Float?           // Auto-calculated match score
-  isRecommended   Boolean          @default(false)
-  selectionReason String?          @db.Text
-  
+  matchScore      Float? // Auto-calculated match score
+  isRecommended   Boolean @default(false)
+  selectionReason String? @db.Text
+
   // Relations
-  project         VolunteerProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  quest           Quest?           @relation(fields: [questId], references: [id], onDelete: Cascade)
-  volunteer       User             @relation(fields: [volunteerUserId], references: [id], onDelete: Cascade)
-  volunteerProfile VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  project          VolunteerProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  quest            Quest?            @relation(fields: [questId], references: [id], onDelete: Cascade)
+  volunteer        User              @relation(fields: [volunteerUserId], references: [id], onDelete: Cascade)
+  volunteerProfile VolunteerProfile  @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([projectId, volunteerId])
   @@unique([questId, volunteerId])
   @@map("volunteer_applications")
@@ -1224,22 +1237,22 @@ enum ApplicationStatus {
 
 // Volunteer time tracking
 model VolunteerHours {
-  id              String           @id @default(cuid())
-  volunteerId     String
-  projectId       String
-  date            DateTime
-  hours           Float
-  activity        String           @db.Text
-  impact          String?
-  verified        Boolean          @default(false)
-  verifiedBy      String?
-  verifiedAt      DateTime?
-  
-  volunteer       User             @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
-  project         VolunteerProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  id          String    @id @default(cuid())
+  volunteerId String
+  projectId   String
+  date        DateTime
+  hours       Float
+  activity    String    @db.Text
+  impact      String?
+  verified    Boolean   @default(false)
+  verifiedBy  String?
+  verifiedAt  DateTime?
+
+  volunteer User             @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  project   VolunteerProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@index([volunteerId])
   @@index([projectId])
   @@map("volunteer_hours")
@@ -1247,18 +1260,18 @@ model VolunteerHours {
 
 // Volunteer recognition certificates
 model VolunteerCertificate {
-  id              String           @id @default(cuid())
-  volunteerId     String
-  type            CertificateType
-  title           String
-  description     String           @db.Text
+  id               String          @id @default(cuid())
+  volunteerId      String
+  type             CertificateType
+  title            String
+  description      String          @db.Text
   hoursContributed Float
-  projectCount    Int
-  issuedDate      DateTime         @default(now())
-  certificateUrl  String?
-  
-  volunteer       User             @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
-  
+  projectCount     Int
+  issuedDate       DateTime        @default(now())
+  certificateUrl   String?
+
+  volunteer User @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+
   @@map("volunteer_certificates")
 }
 
@@ -1276,27 +1289,27 @@ enum CertificateType {
 
 // Individual donations
 model Donation {
-  id              String           @id @default(cuid())
+  id              String         @id @default(cuid())
   donorId         String?
   campaignId      String?
-  amount          Decimal          @db.Decimal(10, 2)
-  currency        String           @default("USD")
-  type            DonationType     @default(ONE_TIME)
+  amount          Decimal        @db.Decimal(10, 2)
+  currency        String         @default("USD")
+  type            DonationType   @default(ONE_TIME)
   paymentMethod   String?
   stripePaymentId String?
-  anonymous       Boolean          @default(false)
+  anonymous       Boolean        @default(false)
   donorName       String?
   donorEmail      String
-  message         String?          @db.Text
-  taxDeductible   Boolean          @default(true)
+  message         String?        @db.Text
+  taxDeductible   Boolean        @default(true)
   receiptUrl      String?
-  status          DonationStatus   @default(PENDING)
-  
-  donor           User?            @relation(fields: [donorId], references: [id])
-  campaign        DonationCampaign? @relation(fields: [campaignId], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  
+  status          DonationStatus @default(PENDING)
+
+  donor    User?             @relation(fields: [donorId], references: [id])
+  campaign DonationCampaign? @relation(fields: [campaignId], references: [id])
+
+  createdAt DateTime @default(now())
+
   @@index([donorId])
   @@index([campaignId])
   @@index([status])
@@ -1319,28 +1332,28 @@ enum DonationStatus {
 
 // Fundraising campaigns
 model DonationCampaign {
-  id              String           @id @default(cuid())
+  id              String         @id @default(cuid())
   title           String
-  description     String           @db.Text
-  goal            Decimal          @db.Decimal(10, 2)
-  raised          Decimal          @db.Decimal(10, 2) @default(0)
-  currency        String           @default("USD")
+  description     String         @db.Text
+  goal            Decimal        @db.Decimal(10, 2)
+  raised          Decimal        @default(0) @db.Decimal(10, 2)
+  currency        String         @default("USD")
   startDate       DateTime
   endDate         DateTime
   category        String
-  beneficiary     String           // Who benefits
-  impactStatement String           @db.Text
+  beneficiary     String // Who benefits
+  impactStatement String         @db.Text
   images          String[]
   videoUrl        String?
-  status          CampaignStatus   @default(DRAFT)
-  featured        Boolean          @default(false)
-  
-  donations       Donation[]
-  updates         CampaignUpdate[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  status          CampaignStatus @default(DRAFT)
+  featured        Boolean        @default(false)
+
+  donations Donation[]
+  updates   CampaignUpdate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status])
   @@index([featured])
   @@map("donation_campaigns")
@@ -1356,41 +1369,41 @@ enum CampaignStatus {
 
 // Campaign progress updates
 model CampaignUpdate {
-  id              String           @id @default(cuid())
-  campaignId      String
-  title           String
-  content         String           @db.Text
-  images          String[]
-  
-  campaign        DonationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  id         String   @id @default(cuid())
+  campaignId String
+  title      String
+  content    String   @db.Text
+  images     String[]
+
+  campaign DonationCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@map("campaign_updates")
 }
 
 // Subscription donations
 model RecurringDonation {
-  id              String           @id @default(cuid())
-  donorId         String
-  amount          Decimal          @db.Decimal(10, 2)
-  currency        String           @default("USD")
-  frequency       DonationFrequency @default(MONTHLY)
-  dayOfMonth      Int?             // For monthly donations
-  stripeSubscriptionId String?     @unique
-  status          RecurringStatus  @default(ACTIVE)
-  startDate       DateTime         @default(now())
-  pausedAt        DateTime?
-  cancelledAt     DateTime?
-  totalContributed Decimal         @db.Decimal(10, 2) @default(0)
-  lastPaymentDate DateTime?
-  nextPaymentDate DateTime?
-  
-  donor           User             @relation(fields: [donorId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id                   String            @id @default(cuid())
+  donorId              String
+  amount               Decimal           @db.Decimal(10, 2)
+  currency             String            @default("USD")
+  frequency            DonationFrequency @default(MONTHLY)
+  dayOfMonth           Int? // For monthly donations
+  stripeSubscriptionId String?           @unique
+  status               RecurringStatus   @default(ACTIVE)
+  startDate            DateTime          @default(now())
+  pausedAt             DateTime?
+  cancelledAt          DateTime?
+  totalContributed     Decimal           @default(0) @db.Decimal(10, 2)
+  lastPaymentDate      DateTime?
+  nextPaymentDate      DateTime?
+
+  donor User @relation(fields: [donorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([donorId])
   @@index([status])
   @@map("recurring_donations")
@@ -1416,36 +1429,37 @@ enum RecurringStatus {
 
 // User story submissions
 model StorySubmission {
-  id              String           @id @default(cuid())
-  authorId        String
-  title           String
-  content         String           @db.Text
-  summary         String?          @db.Text
-  language        String
-  category        String
-  ageGroup        String
-  status          StorySubmissionStatus @default(DRAFT)
-  priority        Priority         @default(MEDIUM)
-  reviewerId      String?
-  assigneeId      String?
-  dueDate         DateTime?
-  reviewNotes     String?          @db.Text
-  editorialNotes  String?          @db.Text
-  publishDate     DateTime?
-  compensation    Decimal?         @db.Decimal(10, 2)
-  tags            String[]
-  
+  id             String                @id @default(cuid())
+  authorId       String
+  title          String
+  content        String                @db.Text
+  summary        String?               @db.Text
+  language       String
+  category       String
+  ageGroup       String
+  status         StorySubmissionStatus @default(DRAFT)
+  priority       Priority              @default(MEDIUM)
+  reviewerId     String?
+  assigneeId     String?
+  dueDate        DateTime?
+  reviewNotes    String?               @db.Text
+  editorialNotes String?               @db.Text
+  publishDate    DateTime?
+  compensation   Decimal?              @db.Decimal(10, 2)
+  tags           String[]
+
   // Media files
-  coverImageId    String?
-  attachments     String[]
-  
-  author          User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  coverImage      MediaFile?       @relation(fields: [coverImageId], references: [id])
+  coverImageId String?
+  attachments  String[]
+
+  author          User                 @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  coverImage      MediaFile?           @relation(fields: [coverImageId], references: [id])
   workflowHistory WorkflowHistory[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  feedback        SubmissionFeedback[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status])
   @@index([priority])
   @@index([assigneeId])
@@ -1464,24 +1478,24 @@ enum StorySubmissionStatus {
 
 // Story translations
 model Translation {
-  id              String           @id @default(cuid())
-  storyId         String
-  translatorId    String
-  fromLanguage    String
-  toLanguage      String
-  title           String
-  content         String           @db.Text
-  status          TranslationStatus @default(IN_PROGRESS)
-  qualityScore    Float?
-  reviewerId      String?
-  reviewNotes     String?          @db.Text
-  
-  story           Story            @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  translator      User             @relation(fields: [translatorId], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id           String            @id @default(cuid())
+  storyId      String
+  translatorId String
+  fromLanguage String
+  toLanguage   String
+  title        String
+  content      String            @db.Text
+  status       TranslationStatus @default(IN_PROGRESS)
+  qualityScore Float?
+  reviewerId   String?
+  reviewNotes  String?           @db.Text
+
+  story      Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  translator User  @relation(fields: [translatorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([storyId, toLanguage])
   @@index([status])
   @@map("translations")
@@ -1497,23 +1511,23 @@ enum TranslationStatus {
 
 // Story illustrations
 model Illustration {
-  id              String           @id @default(cuid())
-  storyId         String
-  artistId        String
-  title           String
-  description     String?
-  fileUrl         String
-  thumbnailUrl    String?
-  position        Int?
-  status          IllustrationStatus @default(DRAFT)
-  compensation    Decimal?         @db.Decimal(10, 2)
-  license         String
-  
-  artist          User             @relation(fields: [artistId], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id           String             @id @default(cuid())
+  storyId      String
+  artistId     String
+  title        String
+  description  String?
+  fileUrl      String
+  thumbnailUrl String?
+  position     Int?
+  status       IllustrationStatus @default(DRAFT)
+  compensation Decimal?           @db.Decimal(10, 2)
+  license      String
+
+  artist User @relation(fields: [artistId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("illustrations")
 }
 
@@ -1527,22 +1541,22 @@ enum IllustrationStatus {
 
 // Content reviews and ratings
 model Review {
-  id              String           @id @default(cuid())
-  userId          String
-  contentType     ContentType
-  contentId       String
-  rating          Int              // 1-5 stars
-  title           String?
-  comment         String?          @db.Text
-  helpful         Int              @default(0)
-  verified        Boolean          @default(false)
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  story           Story?           @relation("StoryReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_story_contentId_fkey")
-  book            Book?            @relation("BookReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_book_contentId_fkey")
-  
-  createdAt       DateTime         @default(now())
-  
+  id          String      @id @default(cuid())
+  userId      String
+  contentType ContentType
+  contentId   String
+  rating      Int // 1-5 stars
+  title       String?
+  comment     String?     @db.Text
+  helpful     Int         @default(0)
+  verified    Boolean     @default(false)
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story? @relation("StoryReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_story_contentId_fkey")
+  book  Book?  @relation("BookReviews", fields: [contentId], references: [id], onDelete: Cascade, map: "reviews_book_contentId_fkey")
+
+  createdAt DateTime @default(now())
+
   @@unique([userId, contentType, contentId], name: "unique_user_content_review")
   @@index([userId])
   @@index([contentType, contentId])
@@ -1562,19 +1576,19 @@ enum ContentType {
 
 // User notifications
 model Notification {
-  id              String           @id @default(cuid())
-  userId          String
-  type            NotificationType
-  title           String
-  message         String
-  data            Json?
-  read            Boolean          @default(false)
-  readAt          DateTime?
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  id      String           @id @default(cuid())
+  userId  String
+  type    NotificationType
+  title   String
+  message String
+  data    Json?
+  read    Boolean          @default(false)
+  readAt  DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@index([userId, read])
   @@map("notifications")
 }
@@ -1591,19 +1605,19 @@ enum NotificationType {
 
 // Activity logging
 model ActivityLog {
-  id              String           @id @default(cuid())
-  userId          String
-  action          String
-  entity          String
-  entityId        String
-  metadata        Json?
-  ipAddress       String?
-  userAgent       String?
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  id        String  @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@index([userId])
   @@index([entity, entityId])
   @@map("activity_logs")
@@ -1623,33 +1637,33 @@ enum Priority {
 
 // Media file library for CMS
 model MediaFile {
-  id              String           @id @default(cuid())
-  filename        String
-  originalName    String
-  mimeType        String
-  size            Int              // File size in bytes
-  url             String
-  thumbnailUrl    String?
-  altText         String?
-  description     String?
-  
+  id           String  @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int // File size in bytes
+  url          String
+  thumbnailUrl String?
+  altText      String?
+  description  String?
+
   // Image processing details
-  width           Int?
-  height          Int?
-  format          String?
-  
+  width  Int?
+  height Int?
+  format String?
+
   // Organization
-  folder          String           @default("/")
-  tags            String[]
-  
+  folder String   @default("/")
+  tags   String[]
+
   // Relationships
-  uploadedById    String
-  uploadedBy      User             @relation(fields: [uploadedById], references: [id])
+  uploadedById     String
+  uploadedBy       User              @relation(fields: [uploadedById], references: [id])
   storySubmissions StorySubmission[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([uploadedById])
   @@index([mimeType])
   @@index([folder])
@@ -1658,19 +1672,19 @@ model MediaFile {
 
 // Workflow history tracking for story submissions
 model WorkflowHistory {
-  id              String           @id @default(cuid())
+  id                String                 @id @default(cuid())
   storySubmissionId String
-  fromStatus      StorySubmissionStatus?
-  toStatus        StorySubmissionStatus
-  comment         String?          @db.Text
-  performedById   String
-  metadata        Json?
-  
-  storySubmission StorySubmission  @relation(fields: [storySubmissionId], references: [id], onDelete: Cascade)
-  performedBy     User             @relation(fields: [performedById], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  
+  fromStatus        StorySubmissionStatus?
+  toStatus          StorySubmissionStatus
+  comment           String?                @db.Text
+  performedById     String
+  metadata          Json?
+
+  storySubmission StorySubmission @relation(fields: [storySubmissionId], references: [id], onDelete: Cascade)
+  performedBy     User            @relation(fields: [performedById], references: [id])
+
+  createdAt DateTime @default(now())
+
   @@index([storySubmissionId])
   @@index([performedById])
   @@map("workflow_history")
@@ -1678,30 +1692,30 @@ model WorkflowHistory {
 
 // Bulk import tracking for CSV/Excel uploads
 model BulkImport {
-  id              String           @id @default(cuid())
-  filename        String
-  originalName    String
-  fileUrl         String
-  type            ImportType
-  status          ImportStatus     @default(PENDING)
-  
+  id           String       @id @default(cuid())
+  filename     String
+  originalName String
+  fileUrl      String
+  type         ImportType
+  status       ImportStatus @default(PENDING)
+
   // Processing details
-  totalRows       Int              @default(0)
-  processedRows   Int              @default(0)
-  successfulRows  Int              @default(0)
-  errorRows       Int              @default(0)
-  
+  totalRows      Int @default(0)
+  processedRows  Int @default(0)
+  successfulRows Int @default(0)
+  errorRows      Int @default(0)
+
   // Results
-  errors          Json?            // Array of error details
-  summary         Json?            // Import summary
-  
+  errors  Json? // Array of error details
+  summary Json? // Import summary
+
   // Relations
-  uploadedById    String
-  uploadedBy      User             @relation(fields: [uploadedById], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([uploadedById])
   @@index([status])
   @@map("bulk_imports")
@@ -1728,69 +1742,69 @@ enum ImportStatus {
 
 // User onboarding progress tracking
 model OnboardingProgress {
-  id              String           @id @default(cuid())
-  userId          String           @unique
-  currentStep     OnboardingStep   @default(WELCOME)
-  completionRate  Float            @default(0)
-  samplesViewed   Int              @default(0)
+  id                String         @id @default(cuid())
+  userId            String         @unique
+  currentStep       OnboardingStep @default(WELCOME)
+  completionRate    Float          @default(0)
+  samplesViewed     Int            @default(0)
   tutorialCompleted Boolean        @default(false)
-  lastActivity    DateTime         @default(now())
-  isCompleted     Boolean          @default(false)
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  activities      OnboardingActivity[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  lastActivity      DateTime       @default(now())
+  isCompleted       Boolean        @default(false)
+
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activities OnboardingActivity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("onboarding_progress")
 }
 
 // Individual onboarding activities
 model OnboardingActivity {
-  id              String           @id @default(cuid())
+  id              String       @id @default(cuid())
   progressId      String
   activityType    ActivityType
   contentId       String?
-  timeSpent       Int              @default(0) // Minutes
-  isCompleted     Boolean          @default(false)
-  interactionData Json?            // Clicks, scrolls, etc.
-  
-  progress        OnboardingProgress @relation(fields: [progressId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  timeSpent       Int          @default(0) // Minutes
+  isCompleted     Boolean      @default(false)
+  interactionData Json? // Clicks, scrolls, etc.
+
+  progress OnboardingProgress @relation(fields: [progressId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@map("onboarding_activities")
 }
 
 // Sample content access tracking
 model SampleContentAccess {
-  id              String           @id @default(cuid())
-  userId          String
-  storyId         String
-  viewCount       Int              @default(0)
-  totalTimeSpent  Int              @default(0) // Minutes
-  lastAccessed    DateTime         @default(now())
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  story           Story            @relation(fields: [storyId], references: [id])
-  
+  id             String   @id @default(cuid())
+  userId         String
+  storyId        String
+  viewCount      Int      @default(0)
+  totalTimeSpent Int      @default(0) // Minutes
+  lastAccessed   DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id])
+
   @@unique([userId, storyId])
   @@map("sample_content_access")
 }
 
 // Welcome messages and notifications
 model WelcomeMessage {
-  id              String           @id @default(cuid())
-  messageType     WelcomeType
-  language        String           @default("ko")
-  content         String           @db.Text
-  isActive        Boolean          @default(true)
-  priority        Int              @default(1)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id          String      @id @default(cuid())
+  messageType WelcomeType
+  language    String      @default("ko")
+  content     String      @db.Text
+  isActive    Boolean     @default(true)
+  priority    Int         @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("welcome_messages")
 }
 
@@ -1830,125 +1844,125 @@ enum WelcomeType {
 
 // Enhanced volunteer profile with comprehensive information
 model VolunteerProfile {
-  id              String           @id @default(cuid())
-  userId          String           @unique
-  
+  id     String @id @default(cuid())
+  userId String @unique
+
   // Skills and qualifications
-  languages       String[]         // Spoken languages
-  languageLevels  Json             // {"en": "native", "es": "advanced"}
-  skills          String[]         // Technical and soft skills
-  qualifications  String[]         // Certifications, degrees
-  experience      String?          @db.Text
-  portfolio       String?          // Portfolio URL
-  
+  languages      String[] // Spoken languages
+  languageLevels Json // {"en": "native", "es": "advanced"}
+  skills         String[] // Technical and soft skills
+  qualifications String[] // Certifications, degrees
+  experience     String?  @db.Text
+  portfolio      String? // Portfolio URL
+
   // Availability and preferences
-  timezone        String           @default("UTC")
-  availableSlots  Json             // Weekly availability slots
-  maxHoursPerWeek Int              @default(10)
-  remoteOnly      Boolean          @default(true)
-  preferredTypes  VolunteerType[]  // Preferred activity types
-  
+  timezone        String          @default("UTC")
+  availableSlots  Json // Weekly availability slots
+  maxHoursPerWeek Int             @default(10)
+  remoteOnly      Boolean         @default(true)
+  preferredTypes  VolunteerType[] // Preferred activity types
+
   // Verification and approval
   verificationStatus VerificationStatus @default(PENDING)
-  backgroundCheck Boolean          @default(false)
-  documentUrl     String?          // ID or background check document
-  verifiedAt      DateTime?
-  verifiedById    String?
-  
+  backgroundCheck    Boolean            @default(false)
+  documentUrl        String? // ID or background check document
+  verifiedAt         DateTime?
+  verifiedById       String?
+
   // Performance tracking
-  totalHours      Float            @default(0)
-  totalPoints     Int              @default(0)
-  currentLevel    VolunteerLevel   @default(BRONZE)
-  rating          Float            @default(5.0)
-  reliability     Float            @default(100.0) // Percentage
-  
+  totalHours   Float          @default(0)
+  totalPoints  Int            @default(0)
+  currentLevel VolunteerLevel @default(BRONZE)
+  rating       Float          @default(5.0)
+  reliability  Float          @default(100.0) // Percentage
+
   // Mentorship
-  isMentor        Boolean          @default(false)
-  mentorLevel     MentorLevel?
-  canAcceptMentees Boolean          @default(false)
-  maxMentees      Int              @default(0)
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  isMentor         Boolean      @default(false)
+  mentorLevel      MentorLevel?
+  canAcceptMentees Boolean      @default(false)
+  maxMentees       Int          @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // Relations for tracking
   applications    VolunteerApplication[]
   assignments     QuestAssignment[]
   evidenceRecords VolunteerEvidence[]
   pointHistory    VolunteerPoints[]
   redemptions     VolunteerRedemption[]
-  mentorships     MentorRelation[]  @relation("MentorRelations")
-  mentorees       MentorRelation[]  @relation("MenteeRelations")
+  mentorships     MentorRelation[]       @relation("MentorRelations")
+  mentorees       MentorRelation[]       @relation("MenteeRelations")
   matchScores     VolunteerMatch[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("volunteer_profiles")
 }
 
 // Enhanced quest/class system for scheduling and matching
 model Quest {
-  id              String           @id @default(cuid())
-  title           String
-  description     String           @db.Text
-  type            VolunteerType
-  category        QuestCategory    @default(EDUCATION)
-  difficulty      DifficultyLevel  @default(BEGINNER)
-  
+  id          String          @id @default(cuid())
+  title       String
+  description String          @db.Text
+  type        VolunteerType
+  category    QuestCategory   @default(EDUCATION)
+  difficulty  DifficultyLevel @default(BEGINNER)
+
   // Requirements
-  requiredSkills  String[]
-  requiredLanguages String[]       // Required languages
-  minimumLevel    VolunteerLevel   @default(BRONZE)
-  experienceRequired Boolean       @default(false)
-  
+  requiredSkills     String[]
+  requiredLanguages  String[] // Required languages
+  minimumLevel       VolunteerLevel @default(BRONZE)
+  experienceRequired Boolean        @default(false)
+
   // Scheduling
-  startDate       DateTime
-  endDate         DateTime?
-  duration        Int              // Expected hours
-  isRecurring     Boolean          @default(false)
-  recurringPattern String?         // e.g., "weekly", "biweekly"
-  timezone        String           @default("UTC")
-  timeSlots       Json             // Available time slots
-  
+  startDate        DateTime
+  endDate          DateTime?
+  duration         Int // Expected hours
+  isRecurring      Boolean   @default(false)
+  recurringPattern String? // e.g., "weekly", "biweekly"
+  timezone         String    @default("UTC")
+  timeSlots        Json // Available time slots
+
   // Capacity and urgency
-  maxVolunteers   Int              @default(1)
-  currentVolunteers Int            @default(0)
-  urgency         UrgencyLevel     @default(MEDIUM)
-  priority        Int              @default(1)
-  
+  maxVolunteers     Int          @default(1)
+  currentVolunteers Int          @default(0)
+  urgency           UrgencyLevel @default(MEDIUM)
+  priority          Int          @default(1)
+
   // Rewards
-  pointsReward    Int              @default(10)
-  additionalRewards String[]       // Badges, certificates, etc.
-  
+  pointsReward      Int      @default(10)
+  additionalRewards String[] // Badges, certificates, etc.
+
   // Content and location
-  location        String           @default("Remote")
-  materials       String[]         // Required materials/resources
-  targetAudience  String?          // Who this quest helps
-  expectedImpact  String?          // Expected outcome
-  
+  location       String   @default("Remote")
+  materials      String[] // Required materials/resources
+  targetAudience String? // Who this quest helps
+  expectedImpact String? // Expected outcome
+
   // Creator and approval
-  creatorId       String
-  createdByRole   UserRole         @default(ADMIN)
-  approvalRequired Boolean         @default(false)
-  isApproved      Boolean          @default(true)
-  approvedById    String?
-  approvedAt      DateTime?
-  
+  creatorId        String
+  createdByRole    UserRole  @default(ADMIN)
+  approvalRequired Boolean   @default(false)
+  isApproved       Boolean   @default(true)
+  approvedById     String?
+  approvedAt       DateTime?
+
   // Status
-  status          QuestStatus      @default(OPEN)
-  isActive        Boolean          @default(true)
-  isFeatured      Boolean          @default(false)
-  
-  creator         User             @relation(fields: [creatorId], references: [id])
+  status     QuestStatus @default(OPEN)
+  isActive   Boolean     @default(true)
+  isFeatured Boolean     @default(false)
+
+  creator         User                   @relation(fields: [creatorId], references: [id])
   applications    VolunteerApplication[]
   assignments     QuestAssignment[]
   evidenceRecords VolunteerEvidence[]
   reviews         QuestReview[]
   matches         VolunteerMatch[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status, type])
   @@index([urgency, startDate])
   @@map("quests")
@@ -1956,73 +1970,73 @@ model Quest {
 
 // Assignment relationship between volunteers and quests
 model QuestAssignment {
-  id              String           @id @default(cuid())
-  questId         String
-  volunteerId     String
-  
+  id          String @id @default(cuid())
+  questId     String
+  volunteerId String
+
   // Assignment details
-  assignedAt      DateTime         @default(now())
-  startedAt       DateTime?
-  completedAt     DateTime?
-  status          AssignmentStatus @default(ASSIGNED)
-  
+  assignedAt  DateTime         @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+  status      AssignmentStatus @default(ASSIGNED)
+
   // Performance tracking
-  hoursLogged     Float            @default(0)
-  progressPercent Int              @default(0)
+  hoursLogged     Float  @default(0)
+  progressPercent Int    @default(0)
   qualityScore    Float?
-  
+
   // Notes and feedback
-  volunteerNotes  String?          @db.Text
-  supervisorNotes String?          @db.Text
-  finalFeedback   String?          @db.Text
-  rating          Int?             // 1-5 rating
-  
-  quest           Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
-  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  volunteerNotes  String? @db.Text
+  supervisorNotes String? @db.Text
+  finalFeedback   String? @db.Text
+  rating          Int? // 1-5 rating
+
+  quest           Quest               @relation(fields: [questId], references: [id], onDelete: Cascade)
+  volunteer       VolunteerProfile    @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
   evidenceRecords VolunteerEvidence[]
-  
+
   @@unique([questId, volunteerId])
   @@map("quest_assignments")
 }
 
 // Evidence submission and verification system
 model VolunteerEvidence {
-  id              String           @id @default(cuid())
-  assignmentId    String
-  volunteerId     String
-  questId         String
-  
+  id           String @id @default(cuid())
+  assignmentId String
+  volunteerId  String
+  questId      String
+
   // Evidence details
-  type            EvidenceType
-  title           String
-  description     String?          @db.Text
-  fileUrls        String[]         // Multiple files supported
-  metadata        Json?            // OCR results, timestamps, etc.
-  
+  type        EvidenceType
+  title       String
+  description String?      @db.Text
+  fileUrls    String[] // Multiple files supported
+  metadata    Json? // OCR results, timestamps, etc.
+
   // Verification
-  status          EvidenceStatus   @default(PENDING)
-  submittedAt     DateTime         @default(now())
-  reviewedAt      DateTime?
-  reviewerId      String?
-  reviewNotes     String?          @db.Text
-  
+  status      EvidenceStatus @default(PENDING)
+  submittedAt DateTime       @default(now())
+  reviewedAt  DateTime?
+  reviewerId  String?
+  reviewNotes String?        @db.Text
+
   // Hours and points
-  hoursSubmitted  Float
-  hoursApproved   Float            @default(0)
-  pointsAwarded   Int              @default(0)
-  
+  hoursSubmitted Float
+  hoursApproved  Float @default(0)
+  pointsAwarded  Int   @default(0)
+
   // Auto-verification
-  autoVerified    Boolean          @default(false)
-  verificationScore Float?         // Confidence score for auto-verification
-  
-  assignment      QuestAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
-  quest           Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
-  reviewer        User?            @relation(fields: [reviewerId], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  autoVerified      Boolean @default(false)
+  verificationScore Float? // Confidence score for auto-verification
+
+  assignment QuestAssignment  @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  volunteer  VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  quest      Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
+  reviewer   User?            @relation(fields: [reviewerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status, submittedAt])
   @@index([volunteerId, status])
   @@map("volunteer_evidence")
@@ -2030,159 +2044,159 @@ model VolunteerEvidence {
 
 // Point transaction history
 model VolunteerPoints {
-  id              String           @id @default(cuid())
-  volunteerId     String
-  
+  id          String @id @default(cuid())
+  volunteerId String
+
   // Transaction details
-  type            PointTransactionType
-  amount          Int              // Positive for earning, negative for spending
-  reason          String
-  description     String?
-  referenceId     String?          // Quest ID, reward ID, etc.
-  referenceType   String?          // "quest", "reward", "bonus", etc.
-  
+  type          PointTransactionType
+  amount        Int // Positive for earning, negative for spending
+  reason        String
+  description   String?
+  referenceId   String? // Quest ID, reward ID, etc.
+  referenceType String? // "quest", "reward", "bonus", etc.
+
   // Balance tracking
-  balanceAfter    Int
-  
+  balanceAfter Int
+
   // Metadata
-  metadata        Json?
-  issuedById      String?
-  
-  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
-  issuedBy        User?            @relation(fields: [issuedById], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  
+  metadata   Json?
+  issuedById String?
+
+  volunteer VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  issuedBy  User?            @relation(fields: [issuedById], references: [id])
+
+  createdAt DateTime @default(now())
+
   @@index([volunteerId, createdAt])
   @@map("volunteer_points")
 }
 
 // Reward system
 model VolunteerReward {
-  id              String           @id @default(cuid())
-  name            String
-  description     String           @db.Text
-  type            RewardType
-  category        RewardCategory   @default(DIGITAL)
-  
+  id          String         @id @default(cuid())
+  name        String
+  description String         @db.Text
+  type        RewardType
+  category    RewardCategory @default(DIGITAL)
+
   // Cost and availability
-  pointsCost      Int
-  levelRequired   VolunteerLevel   @default(BRONZE)
-  maxRedemptions  Int?             // Null = unlimited
-  currentRedemptions Int           @default(0)
-  
+  pointsCost         Int
+  levelRequired      VolunteerLevel @default(BRONZE)
+  maxRedemptions     Int? // Null = unlimited
+  currentRedemptions Int            @default(0)
+
   // Reward details
-  value           String?          // "$25", "Certificate", etc.
-  imageUrl        String?
-  terms           String?          @db.Text
-  
+  value    String? // "$25", "Certificate", etc.
+  imageUrl String?
+  terms    String? @db.Text
+
   // Availability
-  isActive        Boolean          @default(true)
-  validFrom       DateTime         @default(now())
-  validUntil      DateTime?
-  
-  redemptions     VolunteerRedemption[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  isActive   Boolean   @default(true)
+  validFrom  DateTime  @default(now())
+  validUntil DateTime?
+
+  redemptions VolunteerRedemption[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("volunteer_rewards")
 }
 
 // Reward redemption tracking
 model VolunteerRedemption {
-  id              String           @id @default(cuid())
-  volunteerId     String
-  rewardId        String
-  
+  id          String @id @default(cuid())
+  volunteerId String
+  rewardId    String
+
   // Redemption details
-  pointsUsed      Int
-  status          RedemptionStatus @default(PENDING)
-  
+  pointsUsed Int
+  status     RedemptionStatus @default(PENDING)
+
   // Fulfillment
-  fulfilledAt     DateTime?
-  fulfilledById   String?
-  fulfillmentNotes String?         @db.Text
-  trackingInfo    String?          // Tracking number, download link, etc.
-  
+  fulfilledAt      DateTime?
+  fulfilledById    String?
+  fulfillmentNotes String?   @db.Text
+  trackingInfo     String? // Tracking number, download link, etc.
+
   // Digital delivery
-  deliveryMethod  String?          // "email", "download", "physical"
+  deliveryMethod  String? // "email", "download", "physical"
   recipientEmail  String?
   shippingAddress Json?
-  
-  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
-  reward          VolunteerReward  @relation(fields: [rewardId], references: [id], onDelete: Cascade)
-  fulfilledBy     User?            @relation(fields: [fulfilledById], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  volunteer   VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  reward      VolunteerReward  @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  fulfilledBy User?            @relation(fields: [fulfilledById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("volunteer_redemptions")
 }
 
 // Mentor-mentee relationships
 model MentorRelation {
-  id              String           @id @default(cuid())
-  mentorId        String
-  menteeId        String
-  
+  id       String @id @default(cuid())
+  mentorId String
+  menteeId String
+
   // Relationship details
-  status          MentorshipStatus @default(ACTIVE)
-  startDate       DateTime         @default(now())
-  endDate         DateTime?
-  
+  status    MentorshipStatus @default(ACTIVE)
+  startDate DateTime         @default(now())
+  endDate   DateTime?
+
   // Goals and progress
   goals           String[]
-  progress        Json?            // Goal progress tracking
-  meetingSchedule String?          // "weekly", "biweekly", etc.
+  progress        Json? // Goal progress tracking
+  meetingSchedule String? // "weekly", "biweekly", etc.
   lastMeeting     DateTime?
   nextMeeting     DateTime?
-  
+
   // Feedback and notes
-  mentorNotes     String?          @db.Text
-  menteeNotes     String?          @db.Text
-  adminNotes      String?          @db.Text
-  
-  mentor          VolunteerProfile @relation("MentorRelations", fields: [mentorId], references: [id], onDelete: Cascade)
-  mentee          VolunteerProfile @relation("MenteeRelations", fields: [menteeId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  mentorNotes String? @db.Text
+  menteeNotes String? @db.Text
+  adminNotes  String? @db.Text
+
+  mentor VolunteerProfile @relation("MentorRelations", fields: [mentorId], references: [id], onDelete: Cascade)
+  mentee VolunteerProfile @relation("MenteeRelations", fields: [menteeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([mentorId, menteeId])
   @@map("mentor_relations")
 }
 
 // Matching algorithm support
 model VolunteerMatch {
-  id              String           @id @default(cuid())
-  volunteerId     String
-  questId         String
-  
+  id          String @id @default(cuid())
+  volunteerId String
+  questId     String
+
   // Matching scores
-  overallScore    Float            // 0-100
-  languageScore   Float            @default(0)
-  skillScore      Float            @default(0)
-  availabilityScore Float          @default(0)
-  experienceScore Float            @default(0)
-  locationScore   Float            @default(0)
-  
+  overallScore      Float // 0-100
+  languageScore     Float @default(0)
+  skillScore        Float @default(0)
+  availabilityScore Float @default(0)
+  experienceScore   Float @default(0)
+  locationScore     Float @default(0)
+
   // Matching metadata
-  reasons         String[]         // Why this match was made
-  concerns        String[]         // Potential issues
-  confidence      Float            @default(0) // 0-1
-  
+  reasons    String[] // Why this match was made
+  concerns   String[] // Potential issues
+  confidence Float    @default(0) // 0-1
+
   // Selection tracking
-  isRecommended   Boolean          @default(false)
-  wasSelected     Boolean          @default(false)
+  isRecommended   Boolean @default(false)
+  wasSelected     Boolean @default(false)
   selectionReason String?
-  
-  volunteer       VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
-  quest           Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  volunteer VolunteerProfile @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  quest     Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([volunteerId, questId])
   @@index([questId, overallScore])
   @@map("volunteer_matches")
@@ -2190,30 +2204,30 @@ model VolunteerMatch {
 
 // Quest reviews and feedback
 model QuestReview {
-  id              String           @id @default(cuid())
-  questId         String
-  reviewerId      String
-  reviewerRole    UserRole
-  
+  id           String   @id @default(cuid())
+  questId      String
+  reviewerId   String
+  reviewerRole UserRole
+
   // Review content
-  rating          Int              // 1-5 stars
-  title           String?
-  content         String           @db.Text
-  
+  rating  Int // 1-5 stars
+  title   String?
+  content String  @db.Text
+
   // Categories
-  difficultyRating Int?            // Was difficulty accurate?
-  clarityRating   Int?             // Was description clear?
-  supportRating   Int?             // Was support adequate?
-  
+  difficultyRating Int? // Was difficulty accurate?
+  clarityRating    Int? // Was description clear?
+  supportRating    Int? // Was support adequate?
+
   // Recommendation
-  wouldRecommend  Boolean          @default(true)
-  improvementSuggestions String?   @db.Text
-  
-  quest           Quest            @relation(fields: [questId], references: [id], onDelete: Cascade)
-  reviewer        User             @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  wouldRecommend         Boolean @default(true)
+  improvementSuggestions String? @db.Text
+
+  quest    Quest @relation(fields: [questId], references: [id], onDelete: Cascade)
+  reviewer User  @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@map("quest_reviews")
 }
 
@@ -2372,46 +2386,46 @@ enum ParentalConsentStatus {
 
 // User deletion requests tracking
 model UserDeletionRequest {
-  id                        String           @id @default(cuid())
-  userId                    String           @unique
-  status                    DeletionStatus   @default(PENDING)
-  deletionReason            String?          @db.Text
-  
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  status         DeletionStatus @default(PENDING)
+  deletionReason String?        @db.Text
+
   // COPPA compliance for minors
-  parentalConsentRequired   Boolean          @default(false)
-  parentalConsentVerified   Boolean          @default(false)
-  parentConfirmationToken   String?          @unique
-  parentConfirmationSentAt  DateTime?
-  parentConfirmationExpiry  DateTime?
-  
+  parentalConsentRequired  Boolean   @default(false)
+  parentalConsentVerified  Boolean   @default(false)
+  parentConfirmationToken  String?   @unique
+  parentConfirmationSentAt DateTime?
+  parentConfirmationExpiry DateTime?
+
   // Soft delete timing
-  softDeletedAt             DateTime?
-  hardDeletedAt             DateTime?
-  recoveryDeadline          DateTime?
-  
+  softDeletedAt    DateTime?
+  hardDeletedAt    DateTime?
+  recoveryDeadline DateTime?
+
   // Request metadata
-  requestSource             String           @default("self_service") // "self_service", "parental", "admin"
-  ipAddress                 String?
-  userAgent                 String?
-  additionalContext         Json?
-  
+  requestSource     String  @default("self_service") // "self_service", "parental", "admin"
+  ipAddress         String?
+  userAgent         String?
+  additionalContext Json?
+
   // Processing status
-  reviewRequired            Boolean          @default(false)
-  reviewedBy                String?
-  reviewedAt                DateTime?
-  reviewNotes               String?          @db.Text
-  
+  reviewRequired Boolean   @default(false)
+  reviewedBy     String?
+  reviewedAt     DateTime?
+  reviewNotes    String?   @db.Text
+
   // Final confirmation
-  finalConfirmationToken    String?          @unique
-  finalConfirmationSentAt   DateTime?
-  finalConfirmationExpiry   DateTime?
-  
-  user                      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  auditLogs                 DeletionAuditLog[]
-  
-  createdAt                 DateTime         @default(now())
-  updatedAt                 DateTime         @updatedAt
-  
+  finalConfirmationToken  String?   @unique
+  finalConfirmationSentAt DateTime?
+  finalConfirmationExpiry DateTime?
+
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auditLogs DeletionAuditLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status])
   @@index([softDeletedAt])
   @@index([recoveryDeadline])
@@ -2419,55 +2433,55 @@ model UserDeletionRequest {
 }
 
 enum DeletionStatus {
-  PENDING                    // Initial request received
-  PARENTAL_CONSENT_REQUIRED  // Waiting for parental consent (COPPA)
-  PARENTAL_CONSENT_PENDING   // Parental consent email sent
-  REVIEW_REQUIRED           // Manual review needed
-  CONFIRMED                 // Ready for soft delete
-  SOFT_DELETED              // Account soft deleted, in recovery period
-  HARD_DELETED              // Permanently deleted
-  CANCELLED                 // Request cancelled by user
-  RECOVERED                 // Account recovered during soft delete period
-  FAILED                    // Deletion failed due to error
+  PENDING // Initial request received
+  PARENTAL_CONSENT_REQUIRED // Waiting for parental consent (COPPA)
+  PARENTAL_CONSENT_PENDING // Parental consent email sent
+  REVIEW_REQUIRED // Manual review needed
+  CONFIRMED // Ready for soft delete
+  SOFT_DELETED // Account soft deleted, in recovery period
+  HARD_DELETED // Permanently deleted
+  CANCELLED // Request cancelled by user
+  RECOVERED // Account recovered during soft delete period
+  FAILED // Deletion failed due to error
 }
 
 // Comprehensive audit logging for deletion operations
 model DeletionAuditLog {
-  id                        String           @id @default(cuid())
-  deletionRequestId         String
-  
+  id                String @id @default(cuid())
+  deletionRequestId String
+
   // Action details
-  action                    DeletionAction
-  performedBy               String?          // User ID who performed action
-  performedByRole           UserRole?
-  performedByType           ActorType        @default(SYSTEM)
-  
+  action          DeletionAction
+  performedBy     String? // User ID who performed action
+  performedByRole UserRole?
+  performedByType ActorType      @default(SYSTEM)
+
   // Data affected
-  tableName                 String?
-  recordId                  String?
-  recordCount               Int?
-  
+  tableName   String?
+  recordId    String?
+  recordCount Int?
+
   // Action details
-  previousStatus            DeletionStatus?
-  newStatus                 DeletionStatus?
-  actionDetails             String?          @db.Text
-  metadata                  Json?
-  
+  previousStatus DeletionStatus?
+  newStatus      DeletionStatus?
+  actionDetails  String?         @db.Text
+  metadata       Json?
+
   // Technical details
-  ipAddress                 String?
-  userAgent                 String?
-  sessionId                 String?
-  
+  ipAddress String?
+  userAgent String?
+  sessionId String?
+
   // Data processing
-  dataAnonymized            Boolean          @default(false)
-  anonymizedFields          String[]
-  dataBackedUp              Boolean          @default(false)
-  backupLocation            String?
-  
-  deletionRequest           UserDeletionRequest @relation(fields: [deletionRequestId], references: [id], onDelete: Cascade)
-  
-  createdAt                 DateTime         @default(now())
-  
+  dataAnonymized   Boolean  @default(false)
+  anonymizedFields String[]
+  dataBackedUp     Boolean  @default(false)
+  backupLocation   String?
+
+  deletionRequest UserDeletionRequest @relation(fields: [deletionRequestId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@index([deletionRequestId])
   @@index([action])
   @@index([tableName, recordId])
@@ -2504,30 +2518,30 @@ enum ActorType {
 
 // Anonymization tracking for retained data
 model AnonymizationLog {
-  id                        String           @id @default(cuid())
-  tableName                 String
-  recordId                  String
-  
+  id        String @id @default(cuid())
+  tableName String
+  recordId  String
+
   // Anonymization details
-  anonymizedFields          Json             // {"email": "user_123@anonymized.local", "name": "[ANONYMIZED]"}
-  retainedFields            Json?            // Fields kept for legitimate interest
-  anonymizationMethod       String           // "hash", "pseudonym", "removal", "generalization"
-  
+  anonymizedFields    Json // {"email": "user_123@anonymized.local", "name": "[ANONYMIZED]"}
+  retainedFields      Json? // Fields kept for legitimate interest
+  anonymizationMethod String // "hash", "pseudonym", "removal", "generalization"
+
   // Legal basis for retention
-  retentionReason           String?          @db.Text
-  retentionPeriod           String?          // "7_years", "indefinite", etc.
-  legalBasis                String?          // "legitimate_interest", "legal_obligation", etc.
-  
+  retentionReason String? @db.Text
+  retentionPeriod String? // "7_years", "indefinite", etc.
+  legalBasis      String? // "legitimate_interest", "legal_obligation", etc.
+
   // Processing metadata
-  processedBy               String?          // User/system that performed anonymization
-  processingJobId           String?
-  
+  processedBy     String? // User/system that performed anonymization
+  processingJobId String?
+
   // Verification
-  verificationHash          String?          // Hash to verify data integrity
-  reversible                Boolean          @default(false)
-  
-  createdAt                 DateTime         @default(now())
-  
+  verificationHash String? // Hash to verify data integrity
+  reversible       Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
   @@unique([tableName, recordId])
   @@index([tableName])
   @@index([createdAt])
@@ -2540,83 +2554,103 @@ model AnonymizationLog {
 
 // Enhanced Book model for PDF-based and text-based digital books
 model Book {
-  id              String           @id @default(cuid())
-  title           String
-  subtitle        String?
-  summary         String?          @db.Text
-  content         String?          @db.Text  // Text content for books without PDF
-  
+  id       String  @id @default(cuid())
+  title    String
+  subtitle String?
+  summary  String? @db.Text
+  content  String? @db.Text // Text content for books without PDF
+
+  // Text-based publishing workflow
+  primaryTextId String? // Reference to TextSubmission that generated this book
+
   // Author information
-  authorName      String
-  authorAlias     String?          // For privacy/anonymity
-  authorAge       Int?
-  authorLocation  String?
-  coAuthors       String[]
-  
+  authorName     String
+  authorAlias    String? // For privacy/anonymity
+  authorAge      Int?
+  authorLocation String?
+  coAuthors      String[]
+
   // Publication details
-  language        String           @default("en")
-  ageRange        String?          // "5-8", "9-12", etc.
-  readingLevel    String?
-  category        String[]
-  genres          String[]
-  subjects        String[]
-  tags            String[]
-  
-  // PDF and media
-  coverImage      String?
-  pdfKey          String?          // Storage key for main PDF file
-  pdfFrontCover   String?          // Storage key for front cover PDF
-  pdfBackCover    String?          // Storage key for back cover PDF
-  pageLayout      String           @default("single")  // "single" or "double" for spread view
-  pageCount       Int?
-  previewPages    Int              @default(10)  // Number of pages available for preview
-  
+  language     String   @default("en")
+  ageRange     String? // "5-8", "9-12", etc.
+  readingLevel String?
+  category     String[]
+  genres       String[]
+  subjects     String[]
+  tags         String[]
+
+  // PDF and media - Enhanced
+  coverImage        String?
+  pdfStorageKey     String? // Enhanced: s3://... or /storage/books/...
+  pdfChecksum       String? // SHA256 for integrity verification
+  pdfSize           Int? // File size in bytes
+  pdfPageCount      Int? // Extracted from PDF
+  pdfUploadedAt     DateTime?
+  pdfUploadedBy     String? // Admin user ID
+  pdfFrontCover     String? // Storage key for front cover PDF
+  pdfBackCover      String? // Storage key for back cover PDF
+  pageLayout        String     @default("single") // "single" or "double" for spread view
+  previewPages      Int        @default(10) // Number of pages available for preview
+  // Publishing workflow status
+  status            BookStatus @default(DRAFT)
+  publishingMode    String     @default("STANDARD") // "SIMPLE" or "STANDARD"
+  version           Int        @default(1) // Optimistic locking version
+  lastReviewComment String?    @db.Text // Last reviewer comment
+  levelBand         String? // Under-7|7-9|10-12|Adult
+
   // Thumbnail storage and management
-  thumbnails      Json?            // {"frontCover": "/thumbnails/book1/front-page-1.png", "backCover": "/thumbnails/book1/back-page-1.png", "pages": ["/thumbnails/book1/page-1.png", ...]}
-  thumbnailGeneratedAt DateTime?   // When thumbnails were last generated
-  thumbnailConfig Json?            // {"frontCover": {"width": 400, "height": 533, "quality": 90}, "backCover": {}, "pages": {"maxPages": 20}}
-  
+  thumbnails           Json? // {"frontCover": "/thumbnails/book1/front-page-1.png", "backCover": "/thumbnails/book1/back-page-1.png", "pages": ["/thumbnails/book1/page-1.png", ...]}
+  thumbnailGeneratedAt DateTime? // When thumbnails were last generated
+  thumbnailConfig      Json? // {"frontCover": {"width": 400, "height": 533, "quality": 90}, "backCover": {}, "pages": {"maxPages": 20}}
+
   // DRM and access control
-  drm             Json?            // {"watermark":true,"downloadAllowed":false,"printAllowed":false}
-  downloadAllowed Boolean          @default(false)
-  printAllowed    Boolean          @default(false)
-  
+  drm             Json? // {"watermark":true,"downloadAllowed":false,"printAllowed":false}
+  downloadAllowed Boolean @default(false)
+  printAllowed    Boolean @default(false)
+
   // Publishing status
-  isPublished     Boolean          @default(false)
-  publishedAt     DateTime?
-  featured        Boolean          @default(false)
-  
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  featured    Boolean   @default(false)
+
   // Pricing and access
-  isPremium       Boolean          @default(false)
-  price           Decimal?         @db.Decimal(10, 2)
-  currency        String           @default("USD")
-  
+  isPremium Boolean  @default(false)
+  price     Decimal? @db.Decimal(10, 2)
+  currency  String   @default("USD")
+
   // Visibility and permissions
-  visibility      BookVisibility   @default(PUBLIC)
-  
+  visibility BookVisibility @default(PUBLIC)
+
   // Metrics
-  viewCount       Int              @default(0)
-  downloadCount   Int              @default(0)
-  rating          Float?
-  
+  viewCount     Int    @default(0)
+  downloadCount Int    @default(0)
+  rating        Float?
+
   // Relations
-  entitlements    Entitlement[]
-  publications    Publication[]
-  shopProducts    ShopProduct[]
-  reviews         Review[]         @relation("BookReviews")
-  bookSubmission  BookSubmission?  @relation("PublishedBook")
-  
+  entitlements   Entitlement[]
+  publications   Publication[]
+  shopProducts   ShopProduct[]
+  reviews        Review[]        @relation("BookReviews")
+  bookSubmission BookSubmission? @relation("PublishedBook")
+
+  // Text-based publishing workflow relation
+  primaryText TextSubmission? @relation("PublishedFromTextSubmission", fields: [primaryTextId], references: [id])
+
   // Learning System Relations
   learningProgress LearningProgress[] @relation("BookLearningProgress")
-  vocabulary      Vocabulary[]        @relation("BookVocabulary")
-  quizzes         Quiz[]              @relation("BookQuizzes")
-  bookClubs       BookClub[]          @relation("BookClubs")
+  vocabulary       Vocabulary[]       @relation("BookVocabulary")
+  quizzes          Quiz[]             @relation("BookQuizzes")
+  bookClubs        BookClub[]         @relation("BookClubs")
   learningSessions LearningSession[]  @relation("BookLearningSessions")
-  bookAssignments BookAssignment[]    @relation("BookAssignments")
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  bookAssignments  BookAssignment[]   @relation("BookAssignments")
+  parsedStories    ParsedStory[]
+
+  // Phase 5: Publishing workflow relations
+  auditEvents AuditEvent[] @relation("BookAuditEvents")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([isPublished])
   @@index([isPremium])
   @@index([language])
@@ -2625,30 +2659,118 @@ model Book {
   @@map("books")
 }
 
+// Text-based submission model for new publishing workflow
+model TextSubmission {
+  id           String                   @id @default(cuid())
+  authorId     String
+  authorRole   UserRole
+  title        String
+  contentMd    String                   @db.Text // Markdown format
+  chaptersJson String?                  @db.Text // Chapter structure as JSON
+  source       String? // "classroom" | "individual"
+  classId      String? // For classroom submissions
+  status       PublishingWorkflowStatus @default(DRAFT)
+  revisionNo   Int                      @default(0)
+
+  // Publishing metadata
+  language String   @default("en")
+  ageRange String? // "5-8", "9-12", etc.
+  category String[]
+  tags     String[]
+  summary  String?  @db.Text
+
+  // Review and feedback
+  reviewNotes     String?   @db.Text
+  rejectionReason String?   @db.Text
+  lastReviewedBy  String?
+  lastReviewedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  author       User   @relation("TextSubmissions", fields: [authorId], references: [id])
+  class        Class? @relation("ClassTextSubmissions", fields: [classId], references: [id])
+  lastReviewer User?  @relation("TextSubmissionReviews", fields: [lastReviewedBy], references: [id])
+
+  // Book relation when published
+  publishedBooks Book[] @relation("PublishedFromTextSubmission")
+
+  // Workflow transition history
+  workflowTransitions WorkflowTransition[] @relation("TextSubmissionTransitions")
+  
+  // AI-generated content
+  aiContent     AIGeneratedContent[] @relation("TextSubmissionAI")
+
+  @@index([authorId])
+  @@index([classId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("text_submissions")
+}
+
+// Level-based parsed content for adaptive learning
+model ParsedStory {
+  id     String @id @default(cuid())
+  bookId String
+
+  // Content parsing by difficulty level
+  levelBand String // "Under-7", "7-9", "10-12", "Adult"
+
+  // Parsed content for this level
+  parsedContent      String @db.Text
+  wordCount          Int?
+  readingTimeMinutes Int?
+
+  // Difficulty metrics
+  lexileLevel      String?
+  readabilityScore Float?
+  vocabularyLevel  String? // "Basic", "Intermediate", "Advanced"
+
+  // AI-generated enhancements
+  simplifiedVersion      String?  @db.Text // For lower levels
+  enhancedVersion        String?  @db.Text // For higher levels
+  keyVocabulary          String[] // Important words for this level
+  comprehensionQuestions Json? // Level-appropriate questions
+
+  // Metadata
+  parsedAt DateTime @default(now())
+  parsedBy String? // AI engine version or user ID
+  isActive Boolean  @default(true)
+
+  // Relations
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, levelBand])
+  @@index([levelBand])
+  @@index([isActive])
+  @@map("parsed_stories")
+}
+
 // Book assignments - controls what students can access
 model BookAssignment {
-  id              String           @id @default(cuid())
-  bookId          String
-  classId         String?
-  studentId       String?          // For individual assignments
-  teacherId       String
-  
+  id        String  @id @default(cuid())
+  bookId    String
+  classId   String?
+  studentId String? // For individual assignments
+  teacherId String
+
   // Assignment details
-  assignedAt      DateTime         @default(now())
+  assignedAt      DateTime  @default(now())
   dueDate         DateTime?
-  instructions    String?          @db.Text
-  isRequired      Boolean          @default(true)
-  allowDiscussion Boolean          @default(true)
-  
+  instructions    String?   @db.Text
+  isRequired      Boolean   @default(true)
+  allowDiscussion Boolean   @default(true)
+
   // Relations
-  book            Book             @relation("BookAssignments", fields: [bookId], references: [id])
-  class           Class?           @relation("ClassBookAssignments", fields: [classId], references: [id])
-  student         User?            @relation("StudentBookAssignments", fields: [studentId], references: [id])
-  teacher         User             @relation("TeacherBookAssignments", fields: [teacherId], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  book    Book   @relation("BookAssignments", fields: [bookId], references: [id])
+  class   Class? @relation("ClassBookAssignments", fields: [classId], references: [id])
+  student User?  @relation("StudentBookAssignments", fields: [studentId], references: [id])
+  teacher User   @relation("TeacherBookAssignments", fields: [teacherId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([bookId, classId])
   @@unique([bookId, studentId])
   @@index([teacherId])
@@ -2659,18 +2781,19 @@ model BookAssignment {
 
 // Workflow transition history for publishing
 model WorkflowTransition {
-  id              String           @id @default(cuid())
-  submissionId    String
-  submissionType  String           // "BookSubmission", "StorySubmission", etc.
-  fromStatus      String
-  toStatus        String
-  performedById   String
-  reason          String?          @db.Text
-  
-  performedBy     User             @relation("WorkflowTransitions", fields: [performedById], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  
+  id             String  @id @default(cuid())
+  submissionId   String
+  submissionType String // "BookSubmission", "StorySubmission", etc.
+  fromStatus     String
+  toStatus       String
+  performedById  String
+  reason         String? @db.Text
+
+  performedBy    User            @relation("WorkflowTransitions", fields: [performedById], references: [id])
+  textSubmission TextSubmission? @relation("TextSubmissionTransitions", fields: [submissionId], references: [id])
+
+  createdAt DateTime @default(now())
+
   @@index([submissionId])
   @@index([performedById])
   @@map("workflow_transitions")
@@ -2678,28 +2801,29 @@ model WorkflowTransition {
 
 // AI-generated content storage
 model AIGeneratedContent {
-  id              String           @id @default(cuid())
-  relatedId       String?          // ID of related entity (book, submission, etc.)
-  relatedType     String?          // Type of related entity
-  
+  id          String  @id @default(cuid())
+  relatedId   String? // ID of related entity (book, submission, etc.)
+  relatedType String? // Type of related entity
+
   // Content type
-  type            String           // "IMAGE", "AUDIO", "PARSED_TEXT", "SUMMARY"
-  prompt          String           @db.Text
-  model           String           // "GPT-4", "DALL-E-3", "UPSTAGE", etc.
-  
+  type   String // "IMAGE", "AUDIO", "PARSED_TEXT", "SUMMARY"
+  prompt String @db.Text
+  model  String // "GPT-4", "DALL-E-3", "UPSTAGE", etc.
+
   // Generated content
-  content         String           @db.Text  // URL or text content
-  metadata        Json?            // Additional metadata
-  
+  content  String @db.Text // URL or text content
+  metadata Json? // Additional metadata
+
   // Quality control
-  isApproved      Boolean          @default(false)
-  approvedById    String?
-  
-  approvedBy      User?            @relation("AIContentApprovals", fields: [approvedById], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  isApproved   Boolean @default(false)
+  approvedById String?
+
+  approvedBy User? @relation("AIContentApprovals", fields: [approvedById], references: [id])
+  textSubmission TextSubmission? @relation("TextSubmissionAI", fields: [relatedId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([relatedId])
   @@index([type])
   @@map("ai_generated_content")
@@ -2707,57 +2831,57 @@ model AIGeneratedContent {
 
 // Volunteer PDF submission system (No WYSIWYG editor)
 model VolunteerSubmission {
-  id            String           @id @default(cuid())
-  volunteerId   String
-  projectId     String?
-  
+  id          String  @id @default(cuid())
+  volunteerId String
+  projectId   String?
+
   // Submission type and content
-  type          VolunteerSubmissionType   @default(PDF_UPLOAD)
-  pdfRef        String?          // Storage key for uploaded PDF
-  originalName  String?          // Original filename
-  fileSize      Int?             // File size in bytes
-  
+  type         VolunteerSubmissionType @default(PDF_UPLOAD)
+  pdfRef       String? // Storage key for uploaded PDF
+  originalName String? // Original filename
+  fileSize     Int? // File size in bytes
+
   // Content metadata
-  title         String
-  authorAlias   String           // Author's chosen name/pseudonym
-  language      String           @default("en")
-  ageRange      String?
-  category      String[]
-  tags          String[]
-  summary       String           @db.Text
-  
+  title       String
+  authorAlias String // Author's chosen name/pseudonym
+  language    String   @default("en")
+  ageRange    String?
+  category    String[]
+  tags        String[]
+  summary     String   @db.Text
+
   // Visibility and access
-  visibility    ContentVisibility @default(PUBLIC)
-  targetAudience String?         // Who this content is for
-  
+  visibility     ContentVisibility @default(PUBLIC)
+  targetAudience String? // Who this content is for
+
   // Copyright and permissions
-  copyrightConfirmed Boolean     @default(false)
+  copyrightConfirmed      Boolean @default(false)
   portraitRightsConfirmed Boolean @default(false)
-  originalWork  Boolean          @default(true)
-  licenseType   String?          // "CC-BY", "CC-BY-SA", etc.
-  
+  originalWork            Boolean @default(true)
+  licenseType             String? // "CC-BY", "CC-BY-SA", etc.
+
   // Review and approval workflow
-  status        VolunteerSubmissionStatus @default(SUBMITTED)
-  priority      Priority         @default(MEDIUM)
-  reviewerId    String?
-  assigneeId    String?
-  dueDate       DateTime?
-  reviewNotes   String?          @db.Text
-  rejectionReason String?        @db.Text
-  
+  status          VolunteerSubmissionStatus @default(SUBMITTED)
+  priority        Priority                  @default(MEDIUM)
+  reviewerId      String?
+  assigneeId      String?
+  dueDate         DateTime?
+  reviewNotes     String?                   @db.Text
+  rejectionReason String?                   @db.Text
+
   // Publishing information
-  publishDate   DateTime?
-  compensation  Decimal?         @db.Decimal(10, 2)
-  
+  publishDate  DateTime?
+  compensation Decimal?  @db.Decimal(10, 2)
+
   // Relations
-  volunteer     User             @relation("VolunteerSubmissions", fields: [volunteerId], references: [id], onDelete: Cascade)
-  reviewer      User?            @relation("ReviewedVolunteerSubmissions", fields: [reviewerId], references: [id])
-  assignee      User?            @relation("AssignedVolunteerSubmissions", fields: [assigneeId], references: [id])
-  publications  Publication[]
-  
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  
+  volunteer    User          @relation("VolunteerSubmissions", fields: [volunteerId], references: [id], onDelete: Cascade)
+  reviewer     User?         @relation("ReviewedVolunteerSubmissions", fields: [reviewerId], references: [id])
+  assignee     User?         @relation("AssignedVolunteerSubmissions", fields: [assigneeId], references: [id])
+  publications Publication[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status])
   @@index([volunteerId])
   @@index([reviewerId])
@@ -2767,47 +2891,47 @@ model VolunteerSubmission {
 
 // User entitlements for accessing premium content
 model Entitlement {
-  id              String           @id @default(cuid())
-  userId          String?          // Null for guest purchases
-  email           String?          // For guest purchase tracking
-  bookId          String?          // For individual book access
-  storyId         String?          // For legacy Story compatibility
-  
+  id      String  @id @default(cuid())
+  userId  String? // Null for guest purchases
+  email   String? // For guest purchase tracking
+  bookId  String? // For individual book access
+  storyId String? // For legacy Story compatibility
+
   // Purchase/grant details
   // orderId         String?          // Connected to purchase
   // subscriptionId  String?          // Connected to subscription
-  licenseId       String?          // Connected to classroom license
-  grantReason     String?          // "purchase", "subscription", "license", "promotional"
-  
+  licenseId   String? // Connected to classroom license
+  grantReason String? // "purchase", "subscription", "license", "promotional"
+
   // Entitlement type and scope
-  type            EntitlementType  @default(PURCHASE)
-  scope           EntitlementScope @default(BOOK)
-  
+  type  EntitlementType  @default(PURCHASE)
+  scope EntitlementScope @default(BOOK)
+
   // Validity and timing
-  grantedAt       DateTime         @default(now())
-  expiresAt       DateTime?        // Null = permanent
-  isActive        Boolean          @default(true)
-  activatedAt     DateTime?        // When first accessed
-  
+  grantedAt   DateTime  @default(now())
+  expiresAt   DateTime? // Null = permanent
+  isActive    Boolean   @default(true)
+  activatedAt DateTime? // When first accessed
+
   // Usage tracking
-  lastAccessedAt  DateTime?
-  accessCount     Int              @default(0)
-  downloadCount   Int              @default(0)
-  
+  lastAccessedAt DateTime?
+  accessCount    Int       @default(0)
+  downloadCount  Int       @default(0)
+
   // Restrictions
-  maxDownloads    Int?             // Download limit
-  ipRestrictions  String[]         // Allowed IP ranges
-  
+  maxDownloads   Int? // Download limit
+  ipRestrictions String[] // Allowed IP ranges
+
   // Relations
-  user            User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book            Book?            @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  story           Story?           @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user  User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book  Book?  @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  story Story? @relation(fields: [storyId], references: [id], onDelete: Cascade)
   // order           Order?           @relation(fields: [orderId], references: [id])
   // subscription    Subscription?    @relation(fields: [subscriptionId], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([userId])
   @@index([email])
   @@index([bookId])
@@ -2818,42 +2942,42 @@ model Entitlement {
 
 // Publication management (Approval → Library)
 model Publication {
-  id           String           @id @default(cuid())
+  id           String  @id @default(cuid())
   bookId       String?
-  storyId      String?          // Legacy support
-  submissionId String?          // Source submission
-  
+  storyId      String? // Legacy support
+  submissionId String? // Source submission
+
   // Publication settings
   visibility   ContentVisibility @default(PUBLIC)
-  isPremium    Boolean          @default(false)
-  unlockPolicy UnlockPolicy     @default(PURCHASE)
-  price        Decimal?         @db.Decimal(10, 2)
-  currency     String           @default("USD")
-  
+  isPremium    Boolean           @default(false)
+  unlockPolicy UnlockPolicy      @default(PURCHASE)
+  price        Decimal?          @db.Decimal(10, 2)
+  currency     String            @default("USD")
+
   // Version control
-  version      Int              @default(1)
-  changelog    String?          @db.Text
-  
+  version   Int     @default(1)
+  changelog String? @db.Text
+
   // Publishing workflow
-  status       PublicationStatus @default(DRAFT)
-  publishedAt  DateTime?
-  publishedBy  String           // Admin user ID
-  
+  status      PublicationStatus @default(DRAFT)
+  publishedAt DateTime?
+  publishedBy String // Admin user ID
+
   // Content organization
-  featured     Boolean          @default(false)
-  category     String[]
-  tags         String[]
-  sortOrder    Int              @default(0)
-  
+  featured  Boolean  @default(false)
+  category  String[]
+  tags      String[]
+  sortOrder Int      @default(0)
+
   // Relations
-  book         Book?            @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  story        Story?           @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  submission   VolunteerSubmission? @relation(fields: [submissionId], references: [id])
-  publisher    User             @relation("PublishedContent", fields: [publishedBy], references: [id])
-  
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  
+  book       Book?                @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  story      Story?               @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  submission VolunteerSubmission? @relation(fields: [submissionId], references: [id])
+  publisher  User                 @relation("PublishedContent", fields: [publishedBy], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status])
   @@index([publishedAt])
   @@index([featured])
@@ -2863,68 +2987,68 @@ model Publication {
 
 // Enhanced Product model for Shop system
 model ShopProduct {
-  id              String           @id @default(cuid())
-  sku             String           @unique
-  type            ShopProductType  @default(DIGITAL_BOOK)
-  
+  id   String          @id @default(cuid())
+  sku  String          @unique
+  type ShopProductType @default(DIGITAL_BOOK)
+
   // Basic information
-  title           String
-  description     String           @db.Text
+  title            String
+  description      String  @db.Text
   shortDescription String?
-  
+
   // Pricing
-  price           Decimal          @db.Decimal(10, 2)
-  compareAtPrice  Decimal?         @db.Decimal(10, 2)
-  currency        String           @default("USD")
-  
+  price          Decimal  @db.Decimal(10, 2)
+  compareAtPrice Decimal? @db.Decimal(10, 2)
+  currency       String   @default("USD")
+
   // Digital product specifics
-  bookId          String?          // Connected book
-  storyId         String?          // Legacy story support
-  downloadLimit   Int?             // Max downloads per purchase
-  accessDuration  Int?             // Days of access (null = permanent)
-  
+  bookId         String? // Connected book
+  storyId        String? // Legacy story support
+  downloadLimit  Int? // Max downloads per purchase
+  accessDuration Int? // Days of access (null = permanent)
+
   // Bundle support
-  bundleItems     String[]         // IDs of bundled products
-  bundleDiscount  Decimal?         @db.Decimal(5, 2) // Percentage discount
-  
+  bundleItems    String[] // IDs of bundled products
+  bundleDiscount Decimal? @db.Decimal(5, 2) // Percentage discount
+
   // Categorization and discovery
-  category        String[]
-  tags            String[]
-  featured        Boolean          @default(false)
-  
+  category String[]
+  tags     String[]
+  featured Boolean  @default(false)
+
   // Media and presentation
-  images          String[]
-  thumbnailUrl    String?
-  demoUrl         String?          // Preview/demo link
-  
+  images       String[]
+  thumbnailUrl String?
+  demoUrl      String? // Preview/demo link
+
   // Creator attribution
   creatorName     String?
   creatorAge      Int?
   creatorLocation String?
-  creatorStory    String?          @db.Text
-  
+  creatorStory    String? @db.Text
+
   // Impact metrics
-  impactMetric    String?          // "Children reached", "Stories published"
-  impactValue     String?          // "500+", "50 communities"
-  
+  impactMetric String? // "Children reached", "Stories published"
+  impactValue  String? // "500+", "50 communities"
+
   // Availability
-  status          ShopProductStatus @default(ACTIVE)
-  availableFrom   DateTime?
-  availableUntil  DateTime?
-  maxQuantity     Int?             // Purchase limit per user
-  
+  status         ShopProductStatus @default(ACTIVE)
+  availableFrom  DateTime?
+  availableUntil DateTime?
+  maxQuantity    Int? // Purchase limit per user
+
   // SEO and marketing
   metaTitle       String?
   metaDescription String?
   marketingTags   String[]
-  
+
   // Relations
-  book            Book?            @relation(fields: [bookId], references: [id])
-  story           Story?           @relation(fields: [storyId], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  book  Book?  @relation(fields: [bookId], references: [id])
+  story Story? @relation(fields: [storyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([status])
   @@index([type])
   @@index([featured])
@@ -2945,7 +3069,7 @@ enum BookVisibility {
 
 enum VolunteerSubmissionType {
   PDF_UPLOAD
-  TEXT_ASSISTANCE     // Optional text-based helper (no editor)
+  TEXT_ASSISTANCE // Optional text-based helper (no editor)
   TRANSLATION
   ILLUSTRATION
 }
@@ -3022,57 +3146,57 @@ enum ShopProductStatus {
 
 // User feedback collection for role system changes and general UX
 model UserFeedback {
-  id              String           @id @default(cuid())
-  userId          String?          // Null for anonymous feedback
-  sessionId       String?          // Track anonymous sessions
-  email           String?          // Optional contact info
-  
+  id        String  @id @default(cuid())
+  userId    String? // Null for anonymous feedback
+  sessionId String? // Track anonymous sessions
+  email     String? // Optional contact info
+
   // Feedback context
-  feedbackType    FeedbackType     @default(GENERAL)
-  category        FeedbackCategory @default(UX_FEEDBACK)
-  page            String?          // Page/route where feedback was given
-  userAgent       String?          // Browser/device info
-  viewport        String?          // Screen resolution
-  
+  feedbackType FeedbackType     @default(GENERAL)
+  category     FeedbackCategory @default(UX_FEEDBACK)
+  page         String? // Page/route where feedback was given
+  userAgent    String? // Browser/device info
+  viewport     String? // Screen resolution
+
   // Feedback content
-  rating          Int?             // 1-5 star rating
-  title           String?
-  message         String           @db.Text
-  sentiment       SentimentType?   // Auto-analyzed sentiment
-  
+  rating    Int? // 1-5 star rating
+  title     String?
+  message   String         @db.Text
+  sentiment SentimentType? // Auto-analyzed sentiment
+
   // Contextual data
-  userRole        UserRole?        // User's current role
-  previousRole    UserRole?        // For migration feedback
-  migrationDate   DateTime?        // When role migration occurred
-  sessionDuration Int?             // Time spent before feedback (seconds)
-  
+  userRole        UserRole? // User's current role
+  previousRole    UserRole? // For migration feedback
+  migrationDate   DateTime? // When role migration occurred
+  sessionDuration Int? // Time spent before feedback (seconds)
+
   // UI/UX specific data
-  clickPath       Json?            // User's click journey
-  scrollBehavior  Json?            // Scroll patterns
-  timeOnPage      Int?             // Seconds on current page
-  exitIntent      Boolean          @default(false)
-  
+  clickPath      Json? // User's click journey
+  scrollBehavior Json? // Scroll patterns
+  timeOnPage     Int? // Seconds on current page
+  exitIntent     Boolean @default(false)
+
   // Issue tracking
-  bugReport       Boolean          @default(false)
-  reproducible    Boolean?         // Can bug be reproduced
-  severity        FeedbackSeverity @default(LOW)
-  screenshotUrl   String?          // Screenshot of issue
-  
+  bugReport     Boolean          @default(false)
+  reproducible  Boolean? // Can bug be reproduced
+  severity      FeedbackSeverity @default(LOW)
+  screenshotUrl String? // Screenshot of issue
+
   // Response tracking
-  isResolved      Boolean          @default(false)
-  responseDate    DateTime?
-  respondedBy     String?
-  resolution      String?          @db.Text
-  
+  isResolved   Boolean   @default(false)
+  responseDate DateTime?
+  respondedBy  String?
+  resolution   String?   @db.Text
+
   // Analytics
-  tags            String[]         // For categorization
-  priority        Priority         @default(LOW)
-  
-  user            User?            @relation("UserFeedback", fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  tags     String[] // For categorization
+  priority Priority @default(LOW)
+
+  user User? @relation("UserFeedback", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([feedbackType, category])
   @@index([userRole, previousRole])
   @@index([page, createdAt])
@@ -3082,40 +3206,40 @@ model UserFeedback {
 
 // Micro-surveys for specific user journey stages
 model MicroSurvey {
-  id              String           @id @default(cuid())
-  name            String
-  description     String?          @db.Text
-  
+  id          String  @id @default(cuid())
+  name        String
+  description String? @db.Text
+
   // Survey configuration
-  trigger         SurveyTrigger    @default(PAGE_LOAD)
-  targetPage      String?          // Specific page to show survey
-  targetRole      UserRole[]       // Target user roles
-  frequency       SurveyFrequency  @default(ONCE)
-  
+  trigger    SurveyTrigger   @default(PAGE_LOAD)
+  targetPage String? // Specific page to show survey
+  targetRole UserRole[] // Target user roles
+  frequency  SurveyFrequency @default(ONCE)
+
   // Display settings
-  displayType     SurveyDisplayType @default(MODAL)
-  position        String           @default("bottom-right")
-  delay           Int              @default(5000) // Milliseconds
-  
+  displayType SurveyDisplayType @default(MODAL)
+  position    String            @default("bottom-right")
+  delay       Int               @default(5000) // Milliseconds
+
   // Questions configuration
-  questions       Json             // Survey questions structure
-  
+  questions Json // Survey questions structure
+
   // Scheduling
-  startDate       DateTime
-  endDate         DateTime?
-  isActive        Boolean          @default(true)
-  
+  startDate DateTime
+  endDate   DateTime?
+  isActive  Boolean   @default(true)
+
   // Analytics
-  impressions     Int              @default(0)
-  responseCount   Int              @default(0)
-  completionRate  Float            @default(0)
-  
+  impressions    Int   @default(0)
+  responseCount  Int   @default(0)
+  completionRate Float @default(0)
+
   // Relations
-  responses       SurveyResponse[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  responses SurveyResponse[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([isActive, startDate])
   @@index([targetPage, trigger])
   @@map("micro_surveys")
@@ -3123,26 +3247,26 @@ model MicroSurvey {
 
 // Individual survey responses
 model SurveyResponse {
-  id              String           @id @default(cuid())
-  surveyId        String
-  userId          String?
-  sessionId       String?
-  
+  id        String  @id @default(cuid())
+  surveyId  String
+  userId    String?
+  sessionId String?
+
   // Response data
-  answers         Json             // Question-answer pairs
-  completionTime  Int              // Time to complete (seconds)
-  isComplete      Boolean          @default(true)
-  
+  answers        Json // Question-answer pairs
+  completionTime Int // Time to complete (seconds)
+  isComplete     Boolean @default(true)
+
   // Context
-  userRole        UserRole?
-  page            String?
-  userAgent       String?
-  
-  survey          MicroSurvey      @relation(fields: [surveyId], references: [id], onDelete: Cascade)
-  user            User?            @relation("SurveyResponses", fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  userRole  UserRole?
+  page      String?
+  userAgent String?
+
+  survey MicroSurvey @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  user   User?       @relation("SurveyResponses", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@index([surveyId, userId])
   @@index([userRole, createdAt])
   @@map("survey_responses")
@@ -3150,50 +3274,50 @@ model SurveyResponse {
 
 // User behavior analytics for role system validation
 model UserAnalytics {
-  id              String           @id @default(cuid())
-  userId          String?
-  sessionId       String           @unique
-  
+  id        String  @id @default(cuid())
+  userId    String?
+  sessionId String  @unique
+
   // User context
-  userRole        UserRole?
-  isNewUser       Boolean          @default(false)
-  migrationDate   DateTime?        // Role migration date
-  
+  userRole      UserRole?
+  isNewUser     Boolean   @default(false)
+  migrationDate DateTime? // Role migration date
+
   // Session data
-  sessionStart    DateTime         @default(now())
-  sessionEnd      DateTime?
-  totalDuration   Int              @default(0) // Total session time
-  pageViews       Int              @default(0)
-  clickCount      Int              @default(0)
-  scrollDepth     Float            @default(0) // Average scroll depth
-  
+  sessionStart  DateTime  @default(now())
+  sessionEnd    DateTime?
+  totalDuration Int       @default(0) // Total session time
+  pageViews     Int       @default(0)
+  clickCount    Int       @default(0)
+  scrollDepth   Float     @default(0) // Average scroll depth
+
   // User journey
-  landingPage     String?
-  exitPage        String?
-  pageSequence    Json?            // Array of page visits with timestamps
-  
+  landingPage  String?
+  exitPage     String?
+  pageSequence Json? // Array of page visits with timestamps
+
   // Feature usage tracking
-  featuresUsed    String[]         // List of features accessed
-  actionsPerformed Json?           // Detailed action log
-  errorsEncountered String[]       // Error messages seen
-  
+  featuresUsed      String[] // List of features accessed
+  actionsPerformed  Json? // Detailed action log
+  errorsEncountered String[] // Error messages seen
+
   // Device and browser
-  userAgent       String?
-  deviceType      String?          // "desktop", "tablet", "mobile"
-  browserName     String?
-  operatingSystem String?
+  userAgent        String?
+  deviceType       String? // "desktop", "tablet", "mobile"
+  browserName      String?
+  operatingSystem  String?
   screenResolution String?
-  
+
   // Engagement metrics
-  engagementScore Float            @default(0) // 0-100 calculated score
-  bounceRate      Boolean          @default(false) // Single page visit
-  returnVisitor   Boolean          @default(false)
-  
-  user            User?            @relation("UserAnalytics", fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  engagementScore Float   @default(0) // 0-100 calculated score
+  bounceRate      Boolean @default(false) // Single page visit
+  returnVisitor   Boolean @default(false)
+
+  user User? @relation("UserAnalytics", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([userId, sessionStart])
   @@index([userRole, migrationDate])
   @@index([isNewUser, sessionStart])
@@ -3202,31 +3326,31 @@ model UserAnalytics {
 
 // A/B test tracking for role system changes
 model ABTestParticipant {
-  id              String           @id @default(cuid())
-  userId          String?
-  sessionId       String
-  
+  id        String  @id @default(cuid())
+  userId    String?
+  sessionId String
+
   // Test configuration
-  testName        String           // "role_migration_v1", "onboarding_flow_v2"
-  variant         String           // "control", "treatment_a", "treatment_b"
-  
+  testName String // "role_migration_v1", "onboarding_flow_v2"
+  variant  String // "control", "treatment_a", "treatment_b"
+
   // Participant data
-  userRole        UserRole?
-  assignedAt      DateTime         @default(now())
-  
+  userRole   UserRole?
+  assignedAt DateTime  @default(now())
+
   // Conversion tracking
-  primaryGoal     String?          // "signup_completion", "first_story_read"
-  goalAchieved    Boolean          @default(false)
+  primaryGoal     String? // "signup_completion", "first_story_read"
+  goalAchieved    Boolean   @default(false)
   goalAchievedAt  DateTime?
-  conversionValue Float?           // Quantified value of conversion
-  
+  conversionValue Float? // Quantified value of conversion
+
   // Secondary metrics
-  secondaryGoals  Json?            // Additional goals and their status
-  
-  user            User?            @relation("ABTestParticipants", fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  
+  secondaryGoals Json? // Additional goals and their status
+
+  user User? @relation("ABTestParticipants", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
   @@unique([testName, sessionId])
   @@index([testName, variant])
   @@index([goalAchieved, conversionValue])
@@ -3235,41 +3359,41 @@ model ABTestParticipant {
 
 // Role migration tracking for specific UX research
 model RoleMigration {
-  id              String           @id @default(cuid())
-  userId          String
-  
+  id     String @id @default(cuid())
+  userId String
+
   // Migration details
   fromRole        UserRole
   toRole          UserRole
-  migrationType   MigrationType    @default(SYSTEM_MIGRATION)
-  migrationReason String?          @db.Text
-  
+  migrationType   MigrationType @default(SYSTEM_MIGRATION)
+  migrationReason String?       @db.Text
+
   // Migration process tracking
-  initiatedAt     DateTime         @default(now())
-  completedAt     DateTime?
-  status          MigrationStatus  @default(IN_PROGRESS)
-  
+  initiatedAt DateTime        @default(now())
+  completedAt DateTime?
+  status      MigrationStatus @default(IN_PROGRESS)
+
   // User experience during migration
-  notificationSent Boolean         @default(false)
-  userAcknowledged Boolean         @default(false)
-  helpDocViewed   Boolean          @default(false)
-  supportContacted Boolean         @default(false)
-  
+  notificationSent Boolean @default(false)
+  userAcknowledged Boolean @default(false)
+  helpDocViewed    Boolean @default(false)
+  supportContacted Boolean @default(false)
+
   // Post-migration feedback
-  satisfactionRating Int?          // 1-5 rating
-  feedbackProvided Boolean         @default(false)
-  issuesReported  String[]         // List of reported issues
-  
+  satisfactionRating Int? // 1-5 rating
+  feedbackProvided   Boolean  @default(false)
+  issuesReported     String[] // List of reported issues
+
   // Feature usage comparison
-  preFeatureUsage Json?            // Features used before migration
-  postFeatureUsage Json?           // Features used after migration
-  adaptationPeriod Int?            // Days to adapt to new role
-  
-  user            User             @relation("RoleMigrations", fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  preFeatureUsage  Json? // Features used before migration
+  postFeatureUsage Json? // Features used after migration
+  adaptationPeriod Int? // Days to adapt to new role
+
+  user User @relation("RoleMigrations", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([fromRole, toRole])
   @@index([status, completedAt])
   @@index([userId, initiatedAt])
@@ -3278,34 +3402,34 @@ model RoleMigration {
 
 // Feature usage analytics
 model FeatureUsage {
-  id              String           @id @default(cuid())
-  userId          String?
-  sessionId       String?
-  
+  id        String  @id @default(cuid())
+  userId    String?
+  sessionId String?
+
   // Feature information
-  featureName     String           // "dashboard_overview", "story_library", "role_selector"
-  featureCategory String?          // "navigation", "content", "admin"
-  
+  featureName     String // "dashboard_overview", "story_library", "role_selector"
+  featureCategory String? // "navigation", "content", "admin"
+
   // Usage details
-  accessCount     Int              @default(1)
-  totalTimeSpent  Int              @default(0) // Total seconds
-  avgTimePerAccess Float           @default(0)
-  lastAccessed    DateTime         @default(now())
-  
+  accessCount      Int      @default(1)
+  totalTimeSpent   Int      @default(0) // Total seconds
+  avgTimePerAccess Float    @default(0)
+  lastAccessed     DateTime @default(now())
+
   // User context
-  userRole        UserRole?
-  deviceType      String?
-  
+  userRole   UserRole?
+  deviceType String?
+
   // Success metrics
-  taskCompleted   Boolean          @default(false)
-  errorEncountered Boolean         @default(false)
-  helpSought      Boolean          @default(false)
-  
-  user            User?            @relation("FeatureUsage", fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  taskCompleted    Boolean @default(false)
+  errorEncountered Boolean @default(false)
+  helpSought       Boolean @default(false)
+
+  user User? @relation("FeatureUsage", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, sessionId, featureName])
   @@index([featureName, userRole])
   @@index([lastAccessed, userRole])
@@ -3391,34 +3515,33 @@ enum MigrationStatus {
   REVERSED
 }
 
-
 // ==========================================
 // UNIFIED LEARNING SYSTEM
 // ==========================================
 
 // Track user interactions with content for recommendations
 model UserContentInteraction {
-  id              String           @id @default(cuid())
-  userId          String
-  contentId       String
-  contentType     String           // "book", "story", "material"
-  
+  id          String @id @default(cuid())
+  userId      String
+  contentId   String
+  contentType String // "book", "story", "material"
+
   // Interaction metrics
-  completed       Boolean          @default(false)
-  progress        Float            @default(0)  // 0-100 percentage
-  timeSpent       Int              @default(0)  // Minutes
-  rating          Int?             // 1-5 stars
-  
+  completed Boolean @default(false)
+  progress  Float   @default(0) // 0-100 percentage
+  timeSpent Int     @default(0) // Minutes
+  rating    Int? // 1-5 stars
+
   // Learning metrics
-  quizScore       Float?           // Quiz/test results if applicable
-  vocabulary      String[]         // New words learned
-  notes           String?          @db.Text
-  
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  quizScore  Float? // Quiz/test results if applicable
+  vocabulary String[] // New words learned
+  notes      String?  @db.Text
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, contentId])
   @@index([userId])
   @@index([completed])
@@ -3427,36 +3550,36 @@ model UserContentInteraction {
 
 // Unified content model for content pipeline
 model Content {
-  id              String           @id @default(cuid())
-  title           String
-  authorName      String
-  content         String           @db.Text
-  pdfUrl          String?
-  type            ContentType      // Uses existing ContentType enum
-  
+  id         String      @id @default(cuid())
+  title      String
+  authorName String
+  content    String      @db.Text
+  pdfUrl     String?
+  type       ContentType // Uses existing ContentType enum
+
   // Metadata
-  language        String           @default("en")
-  categories      String[]
-  tags            String[]
-  readingLevel    String?
-  wordCount       Int              @default(0)
-  estimatedReadTime Int            @default(0)
-  
+  language          String   @default("en")
+  categories        String[]
+  tags              String[]
+  readingLevel      String?
+  wordCount         Int      @default(0)
+  estimatedReadTime Int      @default(0)
+
   // Status and workflow
-  status          ContentStatus    @default(DRAFT)
-  destinations    String[]         // ["library", "education", "both"]
-  submittedById   String
-  reviewerId      String?
-  
+  status        ContentStatus @default(DRAFT)
+  destinations  String[] // ["library", "education", "both"]
+  submittedById String
+  reviewerId    String?
+
   // Relations
-  submittedBy     User             @relation("ContentSubmissions", fields: [submittedById], references: [id])
-  reviewer        User?            @relation("ContentReviews", fields: [reviewerId], references: [id])
-  contentReviews  ContentReview[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  publishedAt     DateTime?
-  
+  submittedBy    User            @relation("ContentSubmissions", fields: [submittedById], references: [id])
+  reviewer       User?           @relation("ContentReviews", fields: [reviewerId], references: [id])
+  contentReviews ContentReview[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishedAt DateTime?
+
   @@index([status])
   @@index([submittedById])
   @@map("contents")
@@ -3471,30 +3594,30 @@ enum ContentStatus {
 
 // Content review workflow
 model ContentReview {
-  id              String           @id @default(cuid())
-  contentId       String
-  reviewerId      String?
-  assignedTo      String?
-  
+  id         String  @id @default(cuid())
+  contentId  String
+  reviewerId String?
+  assignedTo String?
+
   // Review details
-  status          ContentReviewStatus @default(PENDING)
-  feedback        String?          @db.Text
-  rating          Int?             // Quality rating 1-5
-  corrections     Json?            // Suggested corrections
-  
+  status      ContentReviewStatus @default(PENDING)
+  feedback    String?             @db.Text
+  rating      Int? // Quality rating 1-5
+  corrections Json? // Suggested corrections
+
   // Review criteria
-  grammarCheck    Boolean          @default(false)
-  ageAppropriate  Boolean          @default(false)
-  culturalCheck   Boolean          @default(false)
-  educationalValue Boolean         @default(false)
-  
-  content         Content          @relation(fields: [contentId], references: [id], onDelete: Cascade)
-  reviewer        User?            @relation("ReviewerAssignments", fields: [reviewerId], references: [id])
-  assignee        User?            @relation("RevieweeAssignments", fields: [assignedTo], references: [id])
-  
-  createdAt       DateTime         @default(now())
-  completedAt     DateTime?
-  
+  grammarCheck     Boolean @default(false)
+  ageAppropriate   Boolean @default(false)
+  culturalCheck    Boolean @default(false)
+  educationalValue Boolean @default(false)
+
+  content  Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  reviewer User?   @relation("ReviewerAssignments", fields: [reviewerId], references: [id])
+  assignee User?   @relation("RevieweeAssignments", fields: [assignedTo], references: [id])
+
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
   @@index([status])
   @@index([contentId])
   @@map("content_reviews")
@@ -3510,72 +3633,81 @@ enum ContentReviewStatus {
 
 // Book submission workflow status
 enum BookSubmissionStatus {
-  DRAFT                    // Initial upload by volunteer
-  PENDING_REVIEW          // Waiting for volunteer review
-  REVIEWED                // Reviewed by volunteer
-  PENDING_COORDINATOR     // Waiting for coordinator approval
-  APPROVED_COORDINATOR    // Approved by coordinator
-  PENDING_ADMIN          // Waiting for admin approval
-  PUBLISHED              // Published to library
-  REJECTED               // Rejected at any stage
+  DRAFT // Initial upload by volunteer
+  PENDING_REVIEW // Waiting for volunteer review
+  REVIEWED // Reviewed by volunteer
+  PENDING_COORDINATOR // Waiting for coordinator approval
+  APPROVED_COORDINATOR // Approved by coordinator
+  PENDING_ADMIN // Waiting for admin approval
+  PUBLISHED // Published to library
+  REJECTED // Rejected at any stage
+}
+
+enum BookStatus {
+  DRAFT // Initial creation
+  PENDING // Submitted for review (Simple mode)
+  NEEDS_REVISION // Requires changes (Standard mode)
+  APPROVED // Approved for publishing (Standard mode) 
+  PUBLISHED // Live in library
+  ARCHIVED // Removed from active library
 }
 
 // Book submission for multi-stage approval workflow
 model BookSubmission {
-  id              String               @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   // Book details
-  title           String
-  authorName      String
-  authorAge       Int?
-  authorLocation  String?
-  summary         String?              @db.Text
-  language        String               @default("en")
-  ageRange        String?
-  readingLevel    String?
-  categories      String[]
-  tags            String[]
-  
+  title          String
+  authorName     String
+  authorAge      Int?
+  authorLocation String?
+  summary        String?  @db.Text
+  language       String   @default("en")
+  ageRange       String?
+  readingLevel   String?
+  categories     String[]
+  tags           String[]
+
   // File information
-  format          String               // "pdf", "md", "html", "txt"
-  filePath        String               // Path in public/books/submissions/
-  coverImagePath  String?
-  pageCount       Int?
-  wordCount       Int?
-  
+  format         String // "pdf", "md", "html", "txt"
+  filePath       String // Path in public/books/submissions/
+  coverImagePath String?
+  pageCount      Int?
+  wordCount      Int?
+
   // Workflow status
-  status          BookSubmissionStatus @default(DRAFT)
-  
+  status BookSubmissionStatus @default(DRAFT)
+
   // Approval chain
-  submittedById   String
-  reviewedById    String?
-  coordinatorId   String?
-  adminId         String?
-  
+  submittedById String
+  reviewedById  String?
+  coordinatorId String?
+  adminId       String?
+
   // Review notes
-  reviewNotes     String?              @db.Text
-  coordinatorNotes String?             @db.Text
-  adminNotes      String?              @db.Text
-  rejectionReason String?              @db.Text
-  
+  reviewNotes      String? @db.Text
+  coordinatorNotes String? @db.Text
+  adminNotes       String? @db.Text
+  rejectionReason  String? @db.Text
+
   // Relations
-  submittedBy     User                 @relation("BookSubmissions", fields: [submittedById], references: [id])
-  reviewedBy      User?                @relation("BookReviews", fields: [reviewedById], references: [id])
-  coordinator     User?                @relation("BookCoordination", fields: [coordinatorId], references: [id])
-  admin           User?                @relation("BookAdminApproval", fields: [adminId], references: [id])
-  
+  submittedBy User  @relation("BookSubmissions", fields: [submittedById], references: [id])
+  reviewedBy  User? @relation("BookReviews", fields: [reviewedById], references: [id])
+  coordinator User? @relation("BookCoordination", fields: [coordinatorId], references: [id])
+  admin       User? @relation("BookAdminApproval", fields: [adminId], references: [id])
+
   // Published book reference
-  publishedBookId String?              @unique
-  publishedBook   Book?                @relation("PublishedBook", fields: [publishedBookId], references: [id])
-  
+  publishedBookId String? @unique
+  publishedBook   Book?   @relation("PublishedBook", fields: [publishedBookId], references: [id])
+
   // Timestamps
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  reviewedAt      DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  reviewedAt            DateTime?
   coordinatorApprovedAt DateTime?
-  adminApprovedAt DateTime?
-  publishedAt     DateTime?
-  
+  adminApprovedAt       DateTime?
+  publishedAt           DateTime?
+
   @@index([status])
   @@index([submittedById])
   @@map("book_submissions")
@@ -3587,24 +3719,24 @@ model BookSubmission {
 
 // Learning Progress tracking
 model LearningProgress {
-  id              String           @id @default(cuid())
-  userId          String
-  bookId          String
-  pagesRead       Int              @default(0)
-  totalPages      Int              @default(0)
-  readingTime     Int              @default(0) // in minutes
-  lastPageRead    Int              @default(0)
-  startedAt       DateTime         @default(now())
-  completedAt     DateTime?
-  isCompleted     Boolean          @default(false)
-  metrics         Json?            // Additional metrics
-  
-  user            User             @relation("UserLearningProgress", fields: [userId], references: [id], onDelete: Cascade)
-  book            Book             @relation("BookLearningProgress", fields: [bookId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id           String    @id @default(cuid())
+  userId       String
+  bookId       String
+  pagesRead    Int       @default(0)
+  totalPages   Int       @default(0)
+  readingTime  Int       @default(0) // in minutes
+  lastPageRead Int       @default(0)
+  startedAt    DateTime  @default(now())
+  completedAt  DateTime?
+  isCompleted  Boolean   @default(false)
+  metrics      Json? // Additional metrics
+
+  user User @relation("UserLearningProgress", fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation("BookLearningProgress", fields: [bookId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, bookId])
   @@index([userId])
   @@index([bookId])
@@ -3613,26 +3745,26 @@ model LearningProgress {
 
 // Vocabulary management
 model Vocabulary {
-  id              String           @id @default(cuid())
-  userId          String
-  word            String           @db.VarChar(100)
-  definition      String           @db.Text
-  translations    Json?
-  pronunciation   String?
-  partOfSpeech    String?
-  contexts        Json[]           @default([])
-  bookId          String?
-  masteryLevel    Int              @default(0)
-  timesSeen       Int              @default(1)
-  timesCorrect    Int              @default(0)
-  lastSeen        DateTime         @default(now())
-  
-  user            User             @relation("UserVocabulary", fields: [userId], references: [id], onDelete: Cascade)
-  book            Book?            @relation("BookVocabulary", fields: [bookId], references: [id], onDelete: SetNull)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id            String   @id @default(cuid())
+  userId        String
+  word          String   @db.VarChar(100)
+  definition    String   @db.Text
+  translations  Json?
+  pronunciation String?
+  partOfSpeech  String?
+  contexts      Json[]   @default([])
+  bookId        String?
+  masteryLevel  Int      @default(0)
+  timesSeen     Int      @default(1)
+  timesCorrect  Int      @default(0)
+  lastSeen      DateTime @default(now())
+
+  user User  @relation("UserVocabulary", fields: [userId], references: [id], onDelete: Cascade)
+  book Book? @relation("BookVocabulary", fields: [bookId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, word])
   @@index([userId])
   @@index([bookId])
@@ -3641,63 +3773,63 @@ model Vocabulary {
 
 // User stats for gamification
 model UserStats {
-  id              String           @id @default(cuid())
-  userId          String           @unique
-  level           Int              @default(1)
-  xp              Int              @default(0)
-  totalReadingTime Int             @default(0) // in minutes
-  booksCompleted  Int              @default(0)
-  wordsLearned    Int              @default(0)
-  currentStreak   Int              @default(0)
-  longestStreak   Int              @default(0)
-  lastActiveDate  DateTime         @default(now())
-  
-  user            User             @relation("UserStats", fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  level            Int      @default(1)
+  xp               Int      @default(0)
+  totalReadingTime Int      @default(0) // in minutes
+  booksCompleted   Int      @default(0)
+  wordsLearned     Int      @default(0)
+  currentStreak    Int      @default(0)
+  longestStreak    Int      @default(0)
+  lastActiveDate   DateTime @default(now())
+
+  user User @relation("UserStats", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("user_stats")
 }
 
 // Quiz model
 model Quiz {
-  id              String           @id @default(cuid())
-  bookId          String
-  title           String
-  description     String?          @db.Text
-  type            String           @default("COMPREHENSION")
-  difficulty      String?
-  questions       Json
-  passingScore    Int              @default(70)
-  timeLimit       Int?             // in minutes
-  
-  book            Book             @relation("BookQuizzes", fields: [bookId], references: [id], onDelete: Cascade)
-  attempts        QuizAttempt[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id           String  @id @default(cuid())
+  bookId       String
+  title        String
+  description  String? @db.Text
+  type         String  @default("COMPREHENSION")
+  difficulty   String?
+  questions    Json
+  passingScore Int     @default(70)
+  timeLimit    Int? // in minutes
+
+  book     Book          @relation("BookQuizzes", fields: [bookId], references: [id], onDelete: Cascade)
+  attempts QuizAttempt[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([bookId])
   @@map("quizzes")
 }
 
 // Quiz attempts
 model QuizAttempt {
-  id              String           @id @default(cuid())
-  userId          String
-  quizId          String
-  score           Int
-  answers         Json
-  timeSpent       Int?             // in seconds
-  passed          Boolean
-  feedback        Json?
-  attemptNumber   Int              @default(1)
-  completedAt     DateTime         @default(now())
-  
-  user            User             @relation("UserQuizAttempts", fields: [userId], references: [id], onDelete: Cascade)
-  quiz            Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  
+  id            String   @id @default(cuid())
+  userId        String
+  quizId        String
+  score         Int
+  answers       Json
+  timeSpent     Int? // in seconds
+  passed        Boolean
+  feedback      Json?
+  attemptNumber Int      @default(1)
+  completedAt   DateTime @default(now())
+
+  user User @relation("UserQuizAttempts", fields: [userId], references: [id], onDelete: Cascade)
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([quizId])
   @@map("quiz_attempts")
@@ -3705,30 +3837,30 @@ model QuizAttempt {
 
 // Book Club
 model BookClub {
-  id              String           @id @default(cuid())
-  bookId          String
-  creatorId       String
-  name            String
-  description     String?          @db.Text
-  isActive        Boolean          @default(true)
-  isPublic        Boolean          @default(true)
-  maxMembers      Int?
-  language        String?
-  level           String?
-  joinCode        String?          // Join code for private clubs
-  classId         String?          // Associated class (if any)
-  startDate       DateTime         @default(now())
-  endDate         DateTime?
-  settings        Json?            // Club settings
-  
-  book            Book             @relation("BookClubs", fields: [bookId], references: [id], onDelete: Cascade)
-  creator         User             @relation("BookClubsCreated", fields: [creatorId], references: [id])
-  members         BookClubMember[]
-  posts           BookClubPost[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id          String    @id @default(cuid())
+  bookId      String
+  creatorId   String
+  name        String
+  description String?   @db.Text
+  isActive    Boolean   @default(true)
+  isPublic    Boolean   @default(true)
+  maxMembers  Int?
+  language    String?
+  level       String?
+  joinCode    String? // Join code for private clubs
+  classId     String? // Associated class (if any)
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  settings    Json? // Club settings
+
+  book    Book             @relation("BookClubs", fields: [bookId], references: [id], onDelete: Cascade)
+  creator User             @relation("BookClubsCreated", fields: [creatorId], references: [id])
+  members BookClubMember[]
+  posts   BookClubPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([bookId])
   @@index([creatorId])
   @@map("book_clubs")
@@ -3736,15 +3868,15 @@ model BookClub {
 
 // Book Club Members
 model BookClubMember {
-  id              String           @id @default(cuid())
-  clubId          String
-  userId          String
-  role            String           @default("MEMBER") // MEMBER, MODERATOR
-  joinedAt        DateTime         @default(now())
-  
-  club            BookClub         @relation(fields: [clubId], references: [id], onDelete: Cascade)
-  user            User             @relation("BookClubMemberships", fields: [userId], references: [id], onDelete: Cascade)
-  
+  id       String   @id @default(cuid())
+  clubId   String
+  userId   String
+  role     String   @default("MEMBER") // MEMBER, MODERATOR
+  joinedAt DateTime @default(now())
+
+  club BookClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user User     @relation("BookClubMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([clubId, userId])
   @@index([userId])
   @@map("book_club_members")
@@ -3752,21 +3884,21 @@ model BookClubMember {
 
 // Book Club Posts
 model BookClubPost {
-  id              String           @id @default(cuid())
-  clubId          String
-  userId          String
-  parentId        String?          // For replies
-  content         String           @db.Text
-  likes           Int              @default(0)
-  
-  club            BookClub         @relation(fields: [clubId], references: [id], onDelete: Cascade)
-  user            User             @relation("BookClubPosts", fields: [userId], references: [id], onDelete: Cascade)
-  parent          BookClubPost?    @relation("PostReplies", fields: [parentId], references: [id])
-  replies         BookClubPost[]   @relation("PostReplies")
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+  id       String  @id @default(cuid())
+  clubId   String
+  userId   String
+  parentId String? // For replies
+  content  String  @db.Text
+  likes    Int     @default(0)
+
+  club    BookClub       @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user    User           @relation("BookClubPosts", fields: [userId], references: [id], onDelete: Cascade)
+  parent  BookClubPost?  @relation("PostReplies", fields: [parentId], references: [id])
+  replies BookClubPost[] @relation("PostReplies")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([clubId])
   @@index([userId])
   @@index([parentId])
@@ -3775,34 +3907,34 @@ model BookClubPost {
 
 // Achievements
 model Achievement {
-  id              String           @id @default(cuid())
-  name            String
-  description     String
-  icon            String?
-  category        String           // READING, VOCABULARY, SOCIAL, STREAK
-  requirement     Json             // Conditions to unlock
-  xpReward        Int              @default(0)
-  
+  id          String  @id @default(cuid())
+  name        String
+  description String
+  icon        String?
+  category    String // READING, VOCABULARY, SOCIAL, STREAK
+  requirement Json // Conditions to unlock
+  xpReward    Int     @default(0)
+
   userAchievements UserAchievement[]
-  
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("achievements")
 }
 
 // User Achievements
 model UserAchievement {
-  id              String           @id @default(cuid())
-  userId          String
-  achievementId   String
-  unlockedAt      DateTime         @default(now())
-  progress        Int              @default(0)
-  isComplete      Boolean          @default(false)
-  
-  user            User             @relation("UserAchievements", fields: [userId], references: [id], onDelete: Cascade)
-  achievement     Achievement      @relation(fields: [achievementId], references: [id])
-  
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+  progress      Int      @default(0)
+  isComplete    Boolean  @default(false)
+
+  user        User        @relation("UserAchievements", fields: [userId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
   @@unique([userId, achievementId])
   @@index([userId])
   @@map("user_achievements")
@@ -3810,21 +3942,21 @@ model UserAchievement {
 
 // Learning Sessions
 model LearningSession {
-  id              String           @id @default(cuid())
-  userId          String
-  bookId          String?
-  startTime       DateTime         @default(now())
-  endTime         DateTime?
-  duration        Int?             // in seconds
-  pagesRead       Int              @default(0)
-  wordsLearned    Int              @default(0)
-  xpEarned        Int              @default(0)
-  
-  user            User             @relation("UserLearningSessions", fields: [userId], references: [id], onDelete: Cascade)
-  book            Book?            @relation("BookLearningSessions", fields: [bookId], references: [id], onDelete: SetNull)
-  
-  createdAt       DateTime         @default(now())
-  
+  id           String    @id @default(cuid())
+  userId       String
+  bookId       String?
+  startTime    DateTime  @default(now())
+  endTime      DateTime?
+  duration     Int? // in seconds
+  pagesRead    Int       @default(0)
+  wordsLearned Int       @default(0)
+  xpEarned     Int       @default(0)
+
+  user User  @relation("UserLearningSessions", fields: [userId], references: [id], onDelete: Cascade)
+  book Book? @relation("BookLearningSessions", fields: [bookId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
   @@index([userId])
   @@index([bookId])
   @@map("learning_sessions")
@@ -3836,21 +3968,21 @@ model LearningSession {
 
 // Featured book sets for public reading
 model FeaturedSet {
-  id              String           @id @default(cuid())
-  bookIds         String[]         // Exactly 3 book IDs
-  startsAt        DateTime
-  endsAt          DateTime
-  createdBy       String
-  createdAt       DateTime         @default(now())
-  isActive        Boolean          @default(true)
-  
+  id        String   @id @default(cuid())
+  bookIds   String[] // Exactly 3 book IDs
+  startsAt  DateTime
+  endsAt    DateTime
+  createdBy String
+  createdAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+
   // Metadata for rotation
-  rotationType    String           @default("MONTHLY") // MONTHLY, MANUAL, SEASONAL
-  selectionMethod String           @default("RANDOM")  // RANDOM, CURATED, POPULARITY
-  
+  rotationType    String @default("MONTHLY") // MONTHLY, MANUAL, SEASONAL
+  selectionMethod String @default("RANDOM") // RANDOM, CURATED, POPULARITY
+
   // Relations
-  creator         User             @relation("FeaturedSetsCreated", fields: [createdBy], references: [id])
-  
+  creator User @relation("FeaturedSetsCreated", fields: [createdBy], references: [id])
+
   @@index([isActive])
   @@index([startsAt])
   @@index([createdBy])
@@ -3859,15 +3991,15 @@ model FeaturedSet {
 
 // Platform-wide settings
 model PlatformSetting {
-  key             String           @id
-  valueJson       Json
-  description     String?          @db.Text
-  updatedBy       String?
-  updatedAt       DateTime         @default(now())
-  
+  key         String   @id
+  valueJson   Json
+  description String?  @db.Text
+  updatedBy   String?
+  updatedAt   DateTime @default(now())
+
   // Relations
-  updater         User?            @relation("PlatformSettingsUpdated", fields: [updatedBy], references: [id])
-  
+  updater User? @relation("PlatformSettingsUpdated", fields: [updatedBy], references: [id])
+
   @@map("platform_settings")
 }
 
@@ -3877,30 +4009,30 @@ model PlatformSetting {
 
 // Program types enumeration
 enum ProgramType {
-  PARTNERSHIP_NETWORK    // Schools, NGOs, companies, universities seeking partnerships
-  ENGLISH_EDUCATION      // Teachers, students, mentors for English language programs
-  MENTORSHIP            // Mentor-mentee matching for various expertise domains
+  PARTNERSHIP_NETWORK // Schools, NGOs, companies, universities seeking partnerships
+  ENGLISH_EDUCATION // Teachers, students, mentors for English language programs
+  MENTORSHIP // Mentor-mentee matching for various expertise domains
 }
 
 // Application status enumeration
 enum ProgramApplicationStatus {
-  DRAFT                 // Application being worked on
-  SUBMITTED             // Application submitted for review
-  UNDER_REVIEW          // Being reviewed by program staff
+  DRAFT // Application being worked on
+  SUBMITTED // Application submitted for review
+  UNDER_REVIEW // Being reviewed by program staff
   ADDITIONAL_INFO_REQUESTED // Reviewer needs more information
-  INTERVIEW_SCHEDULED   // Interview/call scheduled
-  ACCEPTED              // Application accepted
-  REJECTED              // Application rejected
-  WAITLISTED           // Application waitlisted
-  WITHDRAWN            // Applicant withdrew
+  INTERVIEW_SCHEDULED // Interview/call scheduled
+  ACCEPTED // Application accepted
+  REJECTED // Application rejected
+  WAITLISTED // Application waitlisted
+  WITHDRAWN // Applicant withdrew
 }
 
 // Application review status
 enum ReviewStatus {
-  PENDING               // Awaiting review assignment
-  IN_PROGRESS          // Currently being reviewed
-  COMPLETED            // Review completed
-  ESCALATED            // Escalated to senior reviewer
+  PENDING // Awaiting review assignment
+  IN_PROGRESS // Currently being reviewed
+  COMPLETED // Review completed
+  ESCALATED // Escalated to senior reviewer
 }
 
 // File upload types
@@ -3916,149 +4048,342 @@ enum AttachmentType {
 
 // Main program application model
 model ProgramApplication {
-  id                    String                   @id @default(cuid())
-  
+  id String @id @default(cuid())
+
   // Program and user information
-  programType           ProgramType
-  applicantId           String
-  status                ProgramApplicationStatus @default(DRAFT)
-  
+  programType ProgramType
+  applicantId String
+  status      ProgramApplicationStatus @default(DRAFT)
+
   // Common applicant profile fields
-  fullName              String
-  email                 String
-  phone                 String?
-  country               String
-  city                  String
-  timezone              String?
-  languages             String[]                 // JSON array of language codes
-  
+  fullName  String
+  email     String
+  phone     String?
+  country   String
+  city      String
+  timezone  String?
+  languages String[] // JSON array of language codes
+
   // Affiliation information
-  organizationName      String?
-  organizationType      String?                  // school, ngo, company, university, individual
-  jobTitle              String?
-  experienceYears       Int?
-  
+  organizationName String?
+  organizationType String? // school, ngo, company, university, individual
+  jobTitle         String?
+  experienceYears  Int?
+
   // Availability information
-  weeklyHours           Int?                     // Available hours per week
-  availableDays         String[]                 // Days of week available
-  timeWindows           Json?                    // Available time windows with timezone
-  
+  weeklyHours   Int? // Available hours per week
+  availableDays String[] // Days of week available
+  timeWindows   Json? // Available time windows with timezone
+
   // Personal information
-  interests             String[]
-  skills                String[]
-  languageProficiency   Json?                    // Language proficiency levels (CEFR, etc.)
-  goals                 String?                  @db.Text
-  motivation            String?                  @db.Text
-  preferredModality     String?                  // online, in-person, hybrid
-  
+  interests           String[]
+  skills              String[]
+  languageProficiency Json? // Language proficiency levels (CEFR, etc.)
+  goals               String?  @db.Text
+  motivation          String?  @db.Text
+  preferredModality   String? // online, in-person, hybrid
+
   // Program-specific data (flexible JSON storage)
-  programSpecificData   Json?                    // Varies by program type
-  
+  programSpecificData Json? // Varies by program type
+
   // Consent and agreements
-  dataProcessingConsent Boolean                  @default(false)
-  codeOfConductAccepted Boolean                  @default(false)
-  backgroundCheckConsent Boolean                 @default(false)
-  
+  dataProcessingConsent  Boolean @default(false)
+  codeOfConductAccepted  Boolean @default(false)
+  backgroundCheckConsent Boolean @default(false)
+
   // Internal tracking
-  matchScore            Float?                   // Calculated match score
-  internalNotes         String?                  @db.Text
-  assignedReviewerId    String?
-  priority              Int                      @default(3) // 1=high, 3=normal, 5=low
-  
+  matchScore         Float? // Calculated match score
+  internalNotes      String? @db.Text
+  assignedReviewerId String?
+  priority           Int     @default(3) // 1=high, 3=normal, 5=low
+
   // Timestamps
-  createdAt             DateTime                 @default(now())
-  updatedAt             DateTime                 @updatedAt
-  submittedAt           DateTime?
-  reviewedAt            DateTime?
-  decidedAt             DateTime?
-  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  submittedAt DateTime?
+  reviewedAt  DateTime?
+  decidedAt   DateTime?
+
   // Relations
-  applicant             User                     @relation("ProgramApplications", fields: [applicantId], references: [id], onDelete: Cascade)
-  assignedReviewer      User?                    @relation("AssignedProgramReviews", fields: [assignedReviewerId], references: [id])
-  attachments           ApplicationAttachment[]
-  reviews               ApplicationReview[]
-  statusHistory         ApplicationStatusHistory[]
-  
-  @@map("program_applications")
+  applicant        User                       @relation("ProgramApplications", fields: [applicantId], references: [id], onDelete: Cascade)
+  assignedReviewer User?                      @relation("AssignedProgramReviews", fields: [assignedReviewerId], references: [id])
+  attachments      ApplicationAttachment[]
+  reviews          ApplicationReview[]
+  statusHistory    ApplicationStatusHistory[]
+
   @@index([programType, status])
   @@index([assignedReviewerId])
   @@index([createdAt])
+  @@map("program_applications")
 }
 
 // File attachments for applications
 model ApplicationAttachment {
-  id                    String              @id @default(cuid())
-  applicationId         String
-  
+  id            String @id @default(cuid())
+  applicationId String
+
   // File information
-  filename              String
-  originalName          String
-  filePath              String              // Storage path
-  fileSize              Int                 // Size in bytes
-  mimeType              String
-  attachmentType        AttachmentType
-  
+  filename       String
+  originalName   String
+  filePath       String // Storage path
+  fileSize       Int // Size in bytes
+  mimeType       String
+  attachmentType AttachmentType
+
   // Metadata
-  description           String?
-  uploadedAt            DateTime            @default(now())
-  
+  description String?
+  uploadedAt  DateTime @default(now())
+
   // Relations
-  application           ProgramApplication  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  
+  application ProgramApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
   @@map("application_attachments")
 }
 
 // Application review tracking
 model ApplicationReview {
-  id                    String              @id @default(cuid())
-  applicationId         String
-  reviewerId            String
-  
+  id            String @id @default(cuid())
+  applicationId String
+  reviewerId    String
+
   // Review information
-  status                ReviewStatus        @default(PENDING)
-  score                 Int?                // 1-10 rating
-  strengths             String?             @db.Text
-  concerns              String?             @db.Text
-  recommendations       String?             @db.Text
-  decision              String?             // accept, reject, request_info, interview
-  
+  status          ReviewStatus @default(PENDING)
+  score           Int? // 1-10 rating
+  strengths       String?      @db.Text
+  concerns        String?      @db.Text
+  recommendations String?      @db.Text
+  decision        String? // accept, reject, request_info, interview
+
   // Follow-up actions
-  followUpRequired      Boolean             @default(false)
-  followUpNotes         String?             @db.Text
-  nextReviewDate        DateTime?
-  
+  followUpRequired Boolean   @default(false)
+  followUpNotes    String?   @db.Text
+  nextReviewDate   DateTime?
+
   // Timestamps
-  assignedAt            DateTime            @default(now())
-  startedAt             DateTime?
-  completedAt           DateTime?
-  
+  assignedAt  DateTime  @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+
   // Relations
-  application           ProgramApplication  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  reviewer              User                @relation("ProgramReviews", fields: [reviewerId], references: [id])
-  
-  @@map("application_reviews")
+  application ProgramApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  reviewer    User               @relation("ProgramReviews", fields: [reviewerId], references: [id])
+
   @@index([reviewerId, status])
+  @@map("application_reviews")
 }
 
 // Application status change history (audit trail)
 model ApplicationStatusHistory {
-  id                    String                   @id @default(cuid())
-  applicationId         String
-  
+  id            String @id @default(cuid())
+  applicationId String
+
   // Status change information
-  fromStatus            ProgramApplicationStatus?
-  toStatus              ProgramApplicationStatus
-  changedById           String?
-  reason                String?                  @db.Text
-  automaticChange       Boolean                  @default(false)
-  
+  fromStatus      ProgramApplicationStatus?
+  toStatus        ProgramApplicationStatus
+  changedById     String?
+  reason          String?                   @db.Text
+  automaticChange Boolean                   @default(false)
+
   // Timestamp
-  changedAt             DateTime                 @default(now())
-  
+  changedAt DateTime @default(now())
+
   // Relations
-  application           ProgramApplication       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  changedBy             User?                    @relation("ApplicationStatusChanges", fields: [changedById], references: [id])
-  
-  @@map("application_status_history")
+  application ProgramApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  changedBy   User?              @relation("ApplicationStatusChanges", fields: [changedById], references: [id])
+
   @@index([applicationId, changedAt])
+  @@map("application_status_history")
 }
+
+// =============================================================================
+// PUBLISHING WORKFLOW EXTENSIONS
+// =============================================================================
+
+// Rejection reason templates for consistent feedback
+model RejectionTemplate {
+  id          String            @id @default(cuid())
+  category    RejectionCategory
+  title       String
+  description String            @db.Text
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  createdBy   String? // Admin who created template
+
+  // Usage tracking
+  feedback SubmissionFeedback[]
+
+  // Relations
+  creator User? @relation("CreatedRejectionTemplates", fields: [createdBy], references: [id])
+
+  @@map("rejection_templates")
+}
+
+enum RejectionCategory {
+  CONTENT_QUALITY
+  AGE_INAPPROPRIATE
+  POLICY_VIOLATION
+  TECHNICAL_ISSUES
+  OTHER
+}
+
+// Enhanced audit logging for all publishing workflow actions
+model AuditEvent {
+  id            String      @id @default(cuid())
+  entityType    String // "StorySubmission", "User", etc.
+  entityId      String
+  actorId       String
+  actorRole     UserRole
+  action        AuditAction
+  previousState Json? // State before action
+  newState      Json? // State after action
+  metadata      Json? // Additional context
+  timestamp     DateTime    @default(now())
+  bookId        String? // Book reference for audit
+
+  // Relations
+  actor User  @relation("ActorAuditEvents", fields: [actorId], references: [id])
+  book  Book? @relation("BookAuditEvents", fields: [bookId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([actorId, timestamp])
+  @@index([bookId, timestamp])
+  @@map("audit_events")
+}
+
+enum AuditAction {
+  CREATED
+  SUBMITTED
+  APPROVED
+  REJECTED
+  PUBLISHED
+  EDITED
+  ASSIGNED
+  VIEWED
+  DOWNLOADED
+}
+
+// Draft auto-save tracking for writer interface
+model DraftSession {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String   @db.Text
+  title     String?
+  lastSaved DateTime @default(now())
+  sessionId String   @unique // Browser session ID
+
+  user User @relation("DraftSessions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, lastSaved])
+  @@map("draft_sessions")
+}
+
+// Enhanced submission feedback with template support
+model SubmissionFeedback {
+  id            String   @id @default(cuid())
+  submissionId  String
+  reviewerId    String
+  templateId    String? // Optional rejection template
+  customMessage String?  @db.Text
+  revisionRound Int      @default(1)
+  createdAt     DateTime @default(now())
+
+  submission StorySubmission    @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewer   User               @relation("SubmissionFeedback", fields: [reviewerId], references: [id])
+  template   RejectionTemplate? @relation(fields: [templateId], references: [id])
+
+  @@index([submissionId, revisionRound])
+  @@map("submission_feedback")
+}
+
+// Terms and disclosures acceptance tracking
+model TermsAcceptance {
+  id                String   @id @default(cuid())
+  userId            String
+  termsVersion      String // Version of terms accepted
+  personalInfoAck   Boolean // Acknowledged no personal info policy
+  respectfulLangAck Boolean // Acknowledged respectful language policy
+  acceptedAt        DateTime @default(now())
+  ipAddress         String? // For audit purposes
+
+  user User @relation("TermsAcceptances", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, termsVersion])
+  @@map("terms_acceptances")
+}
+
+// ==========================================
+// PHASE 5: DUAL-MODE PUBLISHING WORKFLOW
+// ==========================================
+
+// Global workflow configuration settings
+model WorkflowSettings {
+  id             String  @id @default(cuid())
+  organizationId String? // For multi-tenant setups
+
+  // Workflow mode configuration
+  defaultMode       String  @default("STANDARD") // "SIMPLE" or "STANDARD"
+  allowModeOverride Boolean @default(false) // Can individual books override mode?
+
+  // SLA configurations
+  reviewDeadlineHours   Int @default(48) // Review SLA in hours
+  revisionDeadlineDays  Int @default(7) // Revision SLA in days
+  reminderIntervalHours Int @default(24) // How often to send reminders
+
+  // Escalation settings
+  escalationRoles      String[] // Roles to notify on SLA violations
+  enableAutoEscalation Boolean  @default(true)
+
+  // Notification preferences  
+  enableEmailNotifications   Boolean  @default(true)
+  enableWebhookNotifications Boolean  @default(false)
+  webhookEndpoints           String[] // Webhook URLs
+
+  // Approval chain settings
+  requireDualApproval Boolean @default(false) // Two approvers required
+  allowSelfApproval   Boolean @default(false) // Can authors approve own work
+
+  // Bulk operation limits
+  maxBulkOperationSize Int     @default(100)
+  enableDryRunMode     Boolean @default(true)
+
+  // Audit and compliance
+  retentionPeriodDays   Int     @default(2555) // 7 years default
+  enableIntegrityChecks Boolean @default(true)
+
+  // Metadata
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  creator User @relation("CreatedWorkflowSettings", fields: [createdBy], references: [id])
+
+  @@index([organizationId])
+  @@map("workflow_settings")
+}
+
+// Extended enum for publishing workflow statuses
+enum PublishingWorkflowStatus {
+  DRAFT // Initial state - being written
+  PENDING // Submitted for review
+  NEEDS_REVISION // Rejected - needs changes
+  APPROVED // Approved but not published (STANDARD mode only)
+  PUBLISHED // Live in library
+  ARCHIVED // Removed from active workflow
+}
+
+// Extended enum for workflow modes
+enum WorkflowModeType {
+  SIMPLE // DRAFT -> PENDING -> PUBLISHED
+  STANDARD // DRAFT -> PENDING -> APPROVED -> PUBLISHED
+}
+
+// New relations need to be added to existing models
+// Add these to the User model relations:
+// auditEventsAsActor       AuditEvent[] @relation("ActorAuditEvents")
+// createdRejectionTemplates RejectionTemplate[] @relation("CreatedRejectionTemplates") 
+// createdWorkflowSettings  WorkflowSettings[] @relation("CreatedWorkflowSettings")
+
+// Add these to the Book model relations:
+// auditEvents              AuditEvent[] @relation("BookAuditEvents")

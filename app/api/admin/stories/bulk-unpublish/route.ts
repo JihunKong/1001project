@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { storyIds, unpublishAll = false } = body;
 
-    let whereClause: any = {
+    const whereClause: any = {
       isPublished: true
     };
 

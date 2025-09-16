@@ -29,7 +29,7 @@ export async function GET(
     const session = await getServerSession(authOptions);
     const currentUserId = session?.user?.id;
 
-    // Fetch book from database
+    // Fetch book from database with TextSubmission relation
     const book = await prisma.book.findUnique({
       where: { id },
       select: {
@@ -63,7 +63,15 @@ export async function GET(
         isPublished: true,
         createdAt: true,
         updatedAt: true,
-        pdfKey: true
+        pdfKey: true,
+        primaryTextId: true,
+        primaryText: {
+          select: {
+            contentMd: true,
+            summary: true,
+            chaptersJson: true
+          }
+        }
       }
     });
 

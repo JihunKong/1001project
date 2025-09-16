@@ -19,16 +19,34 @@ interface Submission {
   id: string;
   title: string;
   status: string;
-  type: string;
+  source: string;
   language: string;
+  ageRange?: string;
+  category: string[];
+  tags: string[];
+  summary?: string;
+  revisionNo: number;
   createdAt: string;
   updatedAt: string;
-  reviewNotes?: string;
-  rejectionReason?: string;
-  publishDate?: string;
-  reviewer?: {
+  author: {
+    id: string;
     name: string;
+    email: string;
+    role: string;
   };
+  lastTransition?: {
+    id: string;
+    fromStatus: string;
+    toStatus: string;
+    reason: string;
+    createdAt: string;
+    performedBy: {
+      id: string;
+      name: string;
+      role: string;
+    };
+  };
+  transitionCount: number;
 }
 
 interface SubmissionHistoryProps {
@@ -47,7 +65,7 @@ export default function SubmissionHistory({ onViewDetails }: SubmissionHistoryPr
 
   const fetchSubmissions = async () => {
     try {
-      const response = await fetch('/api/volunteer/submit-pdf');
+      const response = await fetch('/api/submissions/text');
       const data = await response.json();
 
       if (!response.ok) {
@@ -64,18 +82,18 @@ export default function SubmissionHistory({ onViewDetails }: SubmissionHistoryPr
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'SUBMITTED':
+      case 'DRAFT':
+        return <FileText className="w-5 h-5 text-gray-500" />;
+      case 'PENDING':
         return <Clock className="w-5 h-5 text-blue-500" />;
-      case 'IN_REVIEW':
-        return <Eye className="w-5 h-5 text-yellow-500" />;
+      case 'NEEDS_REVISION':
+        return <AlertCircle className="w-5 h-5 text-orange-500" />;
       case 'APPROVED':
         return <CheckCircle className="w-5 h-5 text-green-500" />;
       case 'PUBLISHED':
         return <CheckCircle className="w-5 h-5 text-green-600" />;
-      case 'REJECTED':
-        return <XCircle className="w-5 h-5 text-red-500" />;
-      case 'NEEDS_CHANGES':
-        return <AlertCircle className="w-5 h-5 text-orange-500" />;
+      case 'ARCHIVED':
+        return <XCircle className="w-5 h-5 text-gray-400" />;
       default:
         return <FileText className="w-5 h-5 text-gray-500" />;
     }
@@ -83,18 +101,18 @@ export default function SubmissionHistory({ onViewDetails }: SubmissionHistoryPr
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'SUBMITTED':
+      case 'DRAFT':
+        return 'bg-gray-100 text-gray-800';
+      case 'PENDING':
         return 'bg-blue-100 text-blue-800';
-      case 'IN_REVIEW':
-        return 'bg-yellow-100 text-yellow-800';
+      case 'NEEDS_REVISION':
+        return 'bg-orange-100 text-orange-800';
       case 'APPROVED':
         return 'bg-green-100 text-green-800';
       case 'PUBLISHED':
         return 'bg-green-100 text-green-800';
-      case 'REJECTED':
-        return 'bg-red-100 text-red-800';
-      case 'NEEDS_CHANGES':
-        return 'bg-orange-100 text-orange-800';
+      case 'ARCHIVED':
+        return 'bg-gray-100 text-gray-600';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -102,18 +120,18 @@ export default function SubmissionHistory({ onViewDetails }: SubmissionHistoryPr
 
   const formatStatus = (status: string) => {
     switch (status) {
-      case 'SUBMITTED':
-        return 'Submitted';
-      case 'IN_REVIEW':
-        return 'In Review';
+      case 'DRAFT':
+        return 'Draft';
+      case 'PENDING':
+        return 'Under Review';
+      case 'NEEDS_REVISION':
+        return 'Needs Revision';
       case 'APPROVED':
         return 'Approved';
       case 'PUBLISHED':
         return 'Published';
-      case 'REJECTED':
-        return 'Rejected';
-      case 'NEEDS_CHANGES':
-        return 'Needs Changes';
+      case 'ARCHIVED':
+        return 'Archived';
       default:
         return status;
     }
@@ -166,7 +184,7 @@ export default function SubmissionHistory({ onViewDetails }: SubmissionHistoryPr
         <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
         <h3 className="text-xl font-semibold text-gray-900 mb-2">No Submissions Yet</h3>
         <p className="text-gray-600">
-          You haven't submitted any PDFs yet. Upload your first story to get started!
+          You haven't written any stories yet. Create your first story to get started!
         </p>
       </div>
     );
@@ -212,49 +230,53 @@ export default function SubmissionHistory({ onViewDetails }: SubmissionHistoryPr
                     <span>{submission.language.toUpperCase()}</span>
                   </div>
 
-                  {submission.reviewer && (
+                  {submission.lastTransition && submission.lastTransition.performedBy && (
                     <div className="flex items-center gap-1">
                       <User className="w-4 h-4" />
-                      <span>Reviewed by {submission.reviewer.name}</span>
+                      <span>Last updated by {submission.lastTransition.performedBy.name}</span>
                     </div>
                   )}
                 </div>
 
-                {/* Show review notes or rejection reason if available */}
-                {submission.reviewNotes && (
-                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                {/* Show latest transition feedback if available */}
+                {submission.lastTransition && submission.lastTransition.reason && submission.status === 'NEEDS_REVISION' && (
+                  <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
                     <div className="flex items-start gap-2">
-                      <MessageSquare className="w-4 h-4 text-blue-600 mt-0.5" />
+                      <AlertCircle className="w-4 h-4 text-orange-600 mt-0.5" />
                       <div>
-                        <p className="text-sm font-medium text-blue-900">Review Notes:</p>
-                        <p className="text-sm text-blue-800">{submission.reviewNotes}</p>
+                        <p className="text-sm font-medium text-orange-900">Revision Needed:</p>
+                        <p className="text-sm text-orange-800">{submission.lastTransition.reason}</p>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {submission.rejectionReason && (
-                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-start gap-2">
-                      <XCircle className="w-4 h-4 text-red-600 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-red-900">Rejection Reason:</p>
-                        <p className="text-sm text-red-800">{submission.rejectionReason}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {submission.publishDate && (
+                {submission.status === 'PUBLISHED' && (
                   <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
                       <div>
                         <p className="text-sm font-medium text-green-900">
-                          Published on {formatDate(submission.publishDate)}
+                          Published Story
                         </p>
                         <p className="text-sm text-green-800">
                           Your story is now available to readers worldwide!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {submission.status === 'APPROVED' && (
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-green-900">
+                          Story Approved
+                        </p>
+                        <p className="text-sm text-green-800">
+                          Your story has been approved and is ready for publication!
                         </p>
                       </div>
                     </div>
@@ -321,42 +343,64 @@ export default function SubmissionHistory({ onViewDetails }: SubmissionHistoryPr
                   <p className="text-gray-600">{formatDate(selectedSubmission.updatedAt)}</p>
                 </div>
                 <div>
-                  <span className="font-medium text-gray-700">Type:</span>
-                  <p className="text-gray-600">{selectedSubmission.type}</p>
+                  <span className="font-medium text-gray-700">Source:</span>
+                  <p className="text-gray-600 capitalize">{selectedSubmission.source}</p>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Language:</span>
                   <p className="text-gray-600">{selectedSubmission.language.toUpperCase()}</p>
                 </div>
+                {selectedSubmission.ageRange && (
+                  <div>
+                    <span className="font-medium text-gray-700">Age Range:</span>
+                    <p className="text-gray-600">{selectedSubmission.ageRange}</p>
+                  </div>
+                )}
+                <div>
+                  <span className="font-medium text-gray-700">Revision:</span>
+                  <p className="text-gray-600">#{selectedSubmission.revisionNo}</p>
+                </div>
               </div>
 
-              {selectedSubmission.reviewer && (
+              {selectedSubmission.category && selectedSubmission.category.length > 0 && (
                 <div>
-                  <span className="font-medium text-gray-700">Reviewer:</span>
-                  <p className="text-gray-600">{selectedSubmission.reviewer.name}</p>
+                  <span className="font-medium text-gray-700">Categories:</span>
+                  <p className="text-gray-600">{selectedSubmission.category.join(', ')}</p>
                 </div>
               )}
 
-              {selectedSubmission.reviewNotes && (
+              {selectedSubmission.tags && selectedSubmission.tags.length > 0 && (
                 <div>
-                  <span className="font-medium text-gray-700">Review Notes:</span>
-                  <p className="text-gray-600 mt-1">{selectedSubmission.reviewNotes}</p>
+                  <span className="font-medium text-gray-700">Tags:</span>
+                  <p className="text-gray-600">{selectedSubmission.tags.join(', ')}</p>
                 </div>
               )}
 
-              {selectedSubmission.rejectionReason && (
+              {selectedSubmission.summary && (
                 <div>
-                  <span className="font-medium text-gray-700">Rejection Reason:</span>
-                  <p className="text-gray-600 mt-1">{selectedSubmission.rejectionReason}</p>
+                  <span className="font-medium text-gray-700">Summary:</span>
+                  <p className="text-gray-600 mt-1">{selectedSubmission.summary}</p>
                 </div>
               )}
 
-              {selectedSubmission.publishDate && (
+              {selectedSubmission.lastTransition && selectedSubmission.lastTransition.performedBy && (
                 <div>
-                  <span className="font-medium text-gray-700">Published:</span>
-                  <p className="text-gray-600">{formatDate(selectedSubmission.publishDate)}</p>
+                  <span className="font-medium text-gray-700">Last Reviewed By:</span>
+                  <p className="text-gray-600">{selectedSubmission.lastTransition.performedBy.name}</p>
                 </div>
               )}
+
+              {selectedSubmission.lastTransition && selectedSubmission.lastTransition.reason && (
+                <div>
+                  <span className="font-medium text-gray-700">Latest Feedback:</span>
+                  <p className="text-gray-600 mt-1">{selectedSubmission.lastTransition.reason}</p>
+                </div>
+              )}
+
+              <div>
+                <span className="font-medium text-gray-700">Total Transitions:</span>
+                <p className="text-gray-600">{selectedSubmission.transitionCount}</p>
+              </div>
             </div>
           </motion.div>
         </div>

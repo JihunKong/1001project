@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Raleway } from "next/font/google";
 import "./globals.css";
 import "@/styles/input-fix.css"; // Critical fix for input text visibility
+import "@/lib/promise-polyfill"; // Promise.withResolvers polyfill for Node.js < 22
 import I18nProvider from "@/components/providers/I18nProvider";
 import UXResearchProvider from "@/components/providers/UXResearchProvider";
 import AuthProvider from "@/components/auth/AuthProvider";

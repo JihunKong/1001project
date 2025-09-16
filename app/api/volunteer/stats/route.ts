@@ -19,11 +19,12 @@ export async function GET(request: NextRequest) {
 
     const userId = session.user.id;
 
-    // Get submission stats
-    const submissionStats = await prisma.volunteerSubmission.groupBy({
+    // Get submission stats from text submissions (for volunteers who now use text submissions)
+    const submissionStats = await prisma.textSubmission.groupBy({
       by: ['status'],
       where: {
-        volunteerId: userId
+        authorId: userId,
+        authorRole: UserRole.VOLUNTEER
       },
       _count: {
         id: true
@@ -35,29 +36,47 @@ export async function GET(request: NextRequest) {
     const approvedSubmissions = submissionStats.find(s => s.status === 'APPROVED')?._count.id || 0;
     const publishedSubmissions = submissionStats.find(s => s.status === 'PUBLISHED')?._count.id || 0;
 
-    // Get published content to calculate readers reached
-    const publishedContent = await prisma.publication.findMany({
+    // Get published books that were created from volunteer's text submissions
+    // First, get the volunteer's published text submissions
+    const publishedTextSubmissions = await prisma.textSubmission.findMany({
       where: {
-        book: {
-          createdBy: userId
-        }
+        authorId: userId,
+        authorRole: UserRole.VOLUNTEER,
+        status: 'PUBLISHED'
+      },
+      select: { id: true }
+    });
+
+    const publishedSubmissionIds = publishedTextSubmissions.map(submission => submission.id);
+
+    // Then find books that were created from these text submissions
+    const publishedContent = await prisma.book.findMany({
+      where: {
+        primaryTextId: { in: publishedSubmissionIds },
+        isPublished: true
       },
       include: {
-        book: {
-          include: {
-            _count: {
-              select: {
-                readings: true // Assuming there's a readings relation
-              }
-            }
+        _count: {
+          select: {
+            bookAssignments: true, // Students assigned to read
+            bookClubs: true, // Book clubs reading this book
+            readingProgress: true, // Users who have reading progress
           }
         }
       }
     });
 
-    // Calculate total readers reached (simplified - could be more sophisticated)
-    const readersReached = publishedContent.reduce((total, pub) => {
-      return total + (pub.book?._count?.readings || 0);
+    // Calculate total readers reached using multiple metrics
+    const readersReached = publishedContent.reduce((total, book) => {
+      // Count book assignments (each assignment could reach multiple students in a class)
+      const assignments = book._count.bookAssignments;
+      // Count users with reading progress (actual readers)
+      const activeReaders = book._count.readingProgress;
+      // Count book club members (estimated based on clubs)
+      const bookClubs = book._count.bookClubs;
+      
+      // Use the highest number as the best estimate of reach
+      return total + Math.max(assignments * 25, activeReaders, bookClubs * 10); // Estimate 25 students per assignment, 10 members per club
     }, 0);
 
     // Get achievements (simplified calculation)
@@ -82,7 +101,7 @@ export async function GET(request: NextRequest) {
       submissionsTotal: totalSubmissions,
       submissionsApproved: approvedSubmissions,
       submissionsPublished: publishedSubmissions,
-      readersReached: readersReached || Math.floor(Math.random() * 2000) + 500, // Fallback with realistic number
+      readersReached: readersReached, // Use actual calculated value, 0 if no data
       totalContributions,
       rank,
       achievements: [

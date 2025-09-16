@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+// Note: Types are imported from react-pdf's bundled pdfjs-dist to avoid version conflicts
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -59,7 +59,7 @@ export default function EnhancedPDFViewer({
   canAccessFull = false
 }: PDFViewerProps) {
   const router = useRouter();
-  const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null);
+  const [pdf, setPdf] = useState<any | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [scale, setScale] = useState(1.0);
@@ -124,8 +124,8 @@ export default function EnhancedPDFViewer({
         throw new Error('PDF viewer must be rendered on client side');
       }
 
-      // Import pdfjs-dist 
-      const pdfLib = await import('pdfjs-dist/build/pdf.mjs');
+      // Import pdfjs-dist from react-pdf bundle
+      const pdfLib = await import('react-pdf/node_modules/pdfjs-dist');
       
       // Configure worker once
       if (!workerConfigured) {
@@ -228,7 +228,7 @@ export default function EnhancedPDFViewer({
   }, [pdfUrl, loadPDF]);
 
   // Render single page
-  const renderSinglePage = async (pdfDoc: PDFDocumentProxy, pageNum: number) => {
+  const renderSinglePage = async (pdfDoc: any, pageNum: number) => {
     if (!singleCanvasRef.current) return;
     
     // Cancel any existing render task
@@ -244,7 +244,7 @@ export default function EnhancedPDFViewer({
     setPageRendering(true);
     
     try {
-      const page: PDFPageProxy = await pdfDoc.getPage(pageNum);
+      const page: any = await pdfDoc.getPage(pageNum);
       const canvas = singleCanvasRef.current;
       const context = canvas.getContext('2d');
       
@@ -279,7 +279,7 @@ export default function EnhancedPDFViewer({
   };
 
   // Render page spread (two pages side by side)
-  const renderSpread = async (pdfDoc: PDFDocumentProxy, startPage: number) => {
+  const renderSpread = async (pdfDoc: any, startPage: number) => {
     if ((!leftCanvasRef.current || !rightCanvasRef.current) || pageRendering) return;
     
     setPageRendering(true);
@@ -323,8 +323,8 @@ export default function EnhancedPDFViewer({
   };
 
   // Helper function to render a page on a specific canvas
-  const renderPageOnCanvas = async (pdfDoc: PDFDocumentProxy, pageNum: number, canvas: HTMLCanvasElement) => {
-    const page: PDFPageProxy = await pdfDoc.getPage(pageNum);
+  const renderPageOnCanvas = async (pdfDoc: any, pageNum: number, canvas: HTMLCanvasElement) => {
+    const page: any = await pdfDoc.getPage(pageNum);
     const context = canvas.getContext('2d');
     
     if (!context) {

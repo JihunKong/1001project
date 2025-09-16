@@ -23,12 +23,14 @@ import {
 import Link from 'next/link';
 import { eslActivityTemplates, ActivityTemplate } from '@/components/esl/ActivityTemplates';
 import ActivityWorkspace from '@/components/esl/ActivityWorkspace';
+import TextReader from '@/components/esl/TextReader';
 
 interface Book {
   id: string;
   title: string;
   subtitle?: string;
   summary?: string;
+  content?: string; // Text content for text-based stories
   author: {
     id: string;
     name: string;
@@ -44,6 +46,10 @@ interface Book {
   pdfKey?: string;
   fullPdf?: string;
   samplePdf?: string;
+  TextSubmission?: {
+    contentMd?: string;
+    summary?: string;
+  };
 }
 
 interface ChatMessage {
@@ -72,6 +78,7 @@ export default function ESLBookPage() {
   // State management
   const [book, setBook] = useState<Book | null>(null);
   const [extractedText, setExtractedText] = useState<string>('');
+  const [hasTextContent, setHasTextContent] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [textExtracting, setTextExtracting] = useState(false);
@@ -82,7 +89,7 @@ export default function ESLBookPage() {
   const [isTyping, setIsTyping] = useState(false);
   
   // Activity state
-  const [activeTab, setActiveTab] = useState<'reading' | 'vocabulary' | 'comprehension' | 'discussion' | 'writing'>('reading');
+  const [activeTab, setActiveTab] = useState<'reading' | 'text' | 'vocabulary' | 'comprehension' | 'discussion' | 'writing'>('reading');
   const [activities, setActivities] = useState<Activity[]>([]);
   const [currentActivityTemplate, setCurrentActivityTemplate] = useState<ActivityTemplate | null>(null);
 
@@ -120,6 +127,15 @@ export default function ESLBookPage() {
 
       const data = await response.json();
       setBook(data);
+      
+      // Check if book has text content (from primaryText relation)
+      const textContent = data.content || data.primaryText?.contentMd || data.TextSubmission?.contentMd;
+      if (textContent) {
+        setHasTextContent(true);
+        setExtractedText(textContent);
+        // Default to text mode if available
+        setActiveTab('text');
+      }
       
       // Extract text from PDF
       if (data.pdfKey || data.fullPdf || data.samplePdf) {
@@ -436,6 +452,21 @@ export default function ESLBookPage() {
                 Reading Mode
               </div>
             </button>
+            {hasTextContent && (
+              <button
+                onClick={() => setActiveTab('text')}
+                className={`py-4 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'text'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Text Reader
+                </div>
+              </button>
+            )}
             {activities.map(activity => (
               <button
                 key={activity.id}
@@ -596,8 +627,20 @@ export default function ESLBookPage() {
           </div>
         )}
 
+        {/* Text Reader Tab */}
+        {activeTab === 'text' && hasTextContent && (
+          <div className="bg-white rounded-lg shadow-sm">
+            <TextReader
+              text={extractedText}
+              bookTitle={book.title}
+              bookId={bookId}
+              language={book.language || 'en'}
+            />
+          </div>
+        )}
+
         {/* Activity Panels */}
-        {activeTab !== 'reading' && currentActivityTemplate && (
+        {activeTab !== 'reading' && activeTab !== 'text' && currentActivityTemplate && (
           <ActivityWorkspace
             template={currentActivityTemplate}
             bookId={bookId}

@@ -115,8 +115,8 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    // Await the params promise
-    const resolvedParams = await params;
+    // Await the params promise with polyfill support
+    const resolvedParams = await Promise.resolve(params);
     
     // Join the path segments
     const filePath = resolvedParams.path.join('/');

@@ -46,6 +46,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./nginx/logs:/var/log/nginx
+      - ./public/books:/var/books:ro
+      - ./public:/var/static:ro
     depends_on:
       - app
     networks:

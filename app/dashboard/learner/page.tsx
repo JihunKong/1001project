@@ -13,13 +13,16 @@ import {
   Calendar,
   Star,
   ChevronRight,
-  Loader2
+  Loader2,
+  PenTool,
+  Plus
 } from 'lucide-react';
 import Link from 'next/link';
 import LibrarySection from '@/components/dashboard/LibrarySection';
 import AIBriefing from '@/components/dashboard/AIBriefing';
 import TeacherAssignments from '@/components/dashboard/TeacherAssignments';
 import TeacherRecommendations from '@/components/dashboard/TeacherRecommendations';
+import MyStoriesCard from '@/components/learner/MyStoriesCard';
 
 interface LearnerStats {
   user: {
@@ -195,12 +198,23 @@ export default function LearnerDashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {t('dashboard.learner.title')}
-          </h1>
-          <p className="text-gray-600">
-            Welcome back, {data.user.name}!
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {t('dashboard.learner.title')}
+              </h1>
+              <p className="text-gray-600">
+                Welcome back, {data.user.name}!
+              </p>
+            </div>
+            <Link
+              href="/dashboard/learner/submit"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              <PenTool className="w-5 h-5" />
+              <span className="font-medium">Write a Story</span>
+            </Link>
+          </div>
         </motion.div>
         
         {/* Error Message */}
@@ -368,11 +382,20 @@ export default function LearnerDashboard() {
 
           {/* Right Column - Goals & Achievements */}
           <div className="space-y-6">
+            {/* My Stories Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.35 }}
+            >
+              <MyStoriesCard maxItems={2} showStats={true} />
+            </motion.div>
+
             {/* Daily Goals */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.45 }}
               className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
             >
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Daily Goals</h2>
@@ -414,7 +437,7 @@ export default function LearnerDashboard() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.45 }}
+              transition={{ delay: 0.5 }}
               className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
             >
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Achievements</h2>

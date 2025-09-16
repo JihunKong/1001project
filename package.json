@@ -16,6 +16,8 @@
     "test:a11y": "docker-compose -f docker-compose.test.yml run --rm playwright npx playwright test --project=accessibility",
     "test:visual": "docker-compose -f docker-compose.test.yml run --rm playwright npx playwright test --project=visual",
     "test:mobile": "docker-compose -f docker-compose.test.yml run --rm playwright npx playwright test --project=mobile-chrome --project=mobile-safari",
+    "test:phase5": "npx playwright test --config=playwright.config.phase5.ts",
+    "test:phase5:full": "./run-phase5-tests.sh",
     "test:setup": "docker-compose -f docker-compose.test.yml up -d && docker-compose -f docker-compose.test.yml exec test-app npx prisma migrate deploy && docker-compose -f docker-compose.test.yml exec test-app npx prisma db seed",
     "test:cleanup": "docker-compose -f docker-compose.test.yml down -v",
     "test:report": "npx playwright show-report",
