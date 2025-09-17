@@ -391,12 +391,6 @@ export default function Library() {
                     >
                       📚 Explore All Books
                     </Link>
-                    <Link 
-                      href="/demo/library"
-                      className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                    >
-                      🎭 Try Demo
-                    </Link>
                   </div>
                   <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
                     <div className="flex items-center gap-2 text-green-800 mb-2">
@@ -404,7 +398,7 @@ export default function Library() {
                       <span className="font-medium">Free Access Available!</span>
                     </div>
                     <p className="text-sm text-yellow-700">
-                      Try our demo account to preview sample books before purchasing.
+                      Create an account to access our full collection of stories.
                     </p>
                   </div>
                 </>
@@ -421,12 +415,6 @@ export default function Library() {
                       className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
                       🔐 Sign In
-                    </Link>
-                    <Link 
-                      href="/demo/library"
-                      className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                    >
-                      🎭 Try Demo
                     </Link>
                   </div>
                 </>

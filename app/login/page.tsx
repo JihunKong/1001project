@@ -52,7 +52,7 @@ function validateCallbackUrl(url: string | null): string {
     // Allow only specific safe paths
     const allowedPaths = [
       '/dashboard', '/admin', '/login', '/signup', '/library', '/shop',
-      '/settings', '/volunteer', '/donate', '/onboarding'
+      '/settings', '/volunteer', '/donate'
     ];
     
     // Check if it's an allowed path or starts with an allowed path + /

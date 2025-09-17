@@ -63,17 +63,6 @@ export default function Header() {
     { name: t('navigation.library'), href: '/library', icon: BookOpen },
   ];
 
-  // Add onboarding zone for users who need approval
-  const getOnboardingNavigation = () => {
-    if (!session?.user) return [];
-    
-    // Show onboarding zone if user is not email verified (pending approval)
-    if (!session.user.emailVerified) {
-      return [{ name: 'Onboarding Zone', href: '/onboarding', icon: GraduationCap }];
-    }
-    
-    return [];
-  };
 
   // Additional navigation based on role
   const getRoleBasedNavigation = () => {
@@ -120,7 +109,6 @@ export default function Header() {
 
   const navigation = [
     ...baseNavigation,
-    ...getOnboardingNavigation(),
     ...getRoleBasedNavigation(),
     ...(session ? [] : publicNavigation)
   ];
