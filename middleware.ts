@@ -1,134 +1,68 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
-import type { NextRequest } from 'next/server';
 
-// Define proper type interface for NextAuth middleware
-interface NextRequestWithAuth extends NextRequest {
-  nextauth?: {
-    token?: {
-      role?: string;
-      id?: string;
-      email?: string;
-    };
-  };
-}
-
-// This middleware combines authentication with existing functionality
 export default withAuth(
-  function middleware(req: NextRequest) {
-    const token = (req as NextRequestWithAuth).nextauth?.token;
+  function middleware(req) {
+    const token = req.nextauth.token;
     const pathname = req.nextUrl.pathname;
     
-    // Debug log for development
-    if (process.env.NODE_ENV === "development") {
-      console.log("[Middleware] Path:", pathname, "Role:", token?.role);
-    }
-
-    // Role-based dashboard redirects
-    if (pathname === "/dashboard" && token) {
-      const role = token.role;
-      let dashboardPath = "/dashboard/learner";
-      
-      switch (role) {
-        case "TEACHER":
-          dashboardPath = "/dashboard/teacher";
-          break;
-        case "INSTITUTION":
-          dashboardPath = "/dashboard/institution";
-          break;
-        case "VOLUNTEER":
-          dashboardPath = "/dashboard/volunteer";  // Changed from "/volunteer" to "/dashboard/volunteer"
-          break;
-        case "ADMIN":
-          dashboardPath = "/admin";
-          break;
-        default:
-          dashboardPath = "/dashboard/learner";
-      }
-      
-      console.log(`[Middleware] Redirecting from /dashboard to ${dashboardPath} for role ${role}`);
-      return NextResponse.redirect(new URL(dashboardPath, req.url));
+    // Basic response
+    const response = NextResponse.next();
+    
+    // Basic security headers
+    response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    
+    // MVP: Remove all CSP headers to fix resource loading issues
+    response.headers.delete('Content-Security-Policy');
+    response.headers.delete('content-security-policy');
+    
+    // Admin route protection
+    if (pathname.startsWith("/admin") && token?.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
     
-    // Check access to specific dashboards
-    if (token) {
-      const role = token.role;
-      
-      if (pathname.startsWith("/dashboard/teacher") && role !== "TEACHER" && role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
-      
-      if (pathname.startsWith("/dashboard/institution") && role !== "INSTITUTION" && role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
-      
-      if (pathname.startsWith("/dashboard/volunteer") && role !== "VOLUNTEER" && role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-      }
-      
-      if (pathname.startsWith("/admin") && role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
+    // Admin API protection
+    if (pathname.startsWith("/api/admin") && token?.role !== "ADMIN") {
+      return NextResponse.json(
+        { error: 'Admin access required' },
+        { status: 403 }
+      );
     }
-
-    return NextResponse.next();
+    
+    return response;
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
         const pathname = req.nextUrl.pathname;
         
-        // Public routes that don't require authentication
-        const publicRoutes = [
+        // Always allow public routes and static files
+        const publicPaths = [
           "/",
           "/login",
-          "/signup",
-          "/verify-email",
+          "/signup", 
           "/about",
           "/contact",
           "/library",
-          "/mission",
-          "/partners",
-          "/programs",
-          "/shop",
-          "/team",
-          "/terms",
-          "/privacy",
-          "/donate",
-          "/ko",
-          "/es",
-          "/fr",
-          "/zh",
-          // Demo routes (safe, read-only with sample data)
-          "/demo",
-          "/demo/learner",
-          "/demo/teacher",
-          "/demo/institution",
-          "/demo/volunteer"
+          "/api/auth",
+          "/api/health",
+          "/api/books",
+          "/api/library",
+          "/api/thumbnails"
         ];
         
-        // API routes that don't require authentication
-        if (pathname.startsWith("/api/auth") || 
-            pathname.startsWith("/api/health") ||
-            pathname.startsWith("/api/library/stories") ||
-            pathname.startsWith("/api/library/books") ||
-            pathname.startsWith("/api/shop/products") ||
-            pathname.startsWith("/api/shop/cart") ||
-            pathname.startsWith("/api/pdf") ||
-            pathname.startsWith("/api/covers")) {
+        // Check if it's a public route
+        if (publicPaths.some(path => pathname.startsWith(path))) {
           return true;
         }
         
-        // Check if the route is public
-        const isPublicRoute = publicRoutes.some(route => 
-          pathname === route || pathname.startsWith(`${route}/`)
-        );
-        
-        if (isPublicRoute) {
+        // Allow static files
+        if (pathname.includes('.') || pathname.startsWith('/_next')) {
           return true;
         }
         
-        // Protected routes require authentication
+        // All other routes require authentication
         return !!token;
       },
     },
@@ -138,18 +72,8 @@ export default withAuth(
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - images and other static assets
-     * - PDF files (for thumbnails and reading)
-     * - api/auth routes (handled by NextAuth)
-     * - api/admin routes (handle authentication internally)
-     * - api/pdf routes (public PDF serving)
-     * - api/covers routes (book cover serving)
+     * Match all request paths except for static files
      */
-    "/((?!_next/static|_next/image|favicon.ico|public|api/auth|api/admin|api/pdf|api/covers|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.webp|.*\\.pdf|.*\\.js).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg|.*\\.webp|.*\\.js|.*\\.css|.*\\.woff|.*\\.woff2).*)",
   ],
 };

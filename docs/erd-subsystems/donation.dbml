@@ -1,0 +1,158 @@
+// ==========================================
+// DONATION SYSTEM SUBSYSTEM
+// ==========================================
+// This subsystem handles individual donations, recurring donations,
+// fundraising campaigns, and the Seeds of Empowerment program.
+
+// Individual donations
+Table donations {
+  id String [primary key]
+  donorId String
+  campaignId String
+  amount Decimal [not null]
+  currency String [default: 'USD']
+  type DonationType [default: 'ONE_TIME']
+  paymentMethod String
+  stripePaymentId String
+  anonymous Boolean [default: false]
+  donorName String
+  donorEmail String [not null]
+  message String
+  taxDeductible Boolean [default: true]
+  receiptUrl String
+  status DonationStatus [default: 'PENDING']
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    donorId
+    campaignId
+    status
+    createdAt
+  }
+}
+
+// Subscription donations
+Table recurring_donations {
+  id String [primary key]
+  donorId String [not null]
+  amount Decimal [not null]
+  currency String [default: 'USD']
+  frequency DonationFrequency [default: 'MONTHLY']
+  dayOfMonth Int // For monthly donations
+  stripeSubscriptionId String [unique]
+  status RecurringStatus [default: 'ACTIVE']
+  startDate DateTime [default: `now()`]
+  pausedAt DateTime
+  cancelledAt DateTime
+  totalContributed Decimal [default: 0]
+  lastPaymentDate DateTime
+  nextPaymentDate DateTime
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    donorId
+    status
+    nextPaymentDate
+  }
+}
+
+// Fundraising campaigns
+Table donation_campaigns {
+  id String [primary key]
+  title String [not null]
+  description String [not null]
+  goal Decimal [not null]
+  raised Decimal [default: 0]
+  currency String [default: 'USD']
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  category String [not null]
+  beneficiary String [not null] // Who benefits
+  impactStatement String [not null]
+  images String[]
+  videoUrl String
+  status CampaignStatus [default: 'DRAFT']
+  featured Boolean [default: false]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    status
+    featured
+    (startDate, endDate)
+  }
+}
+
+// Campaign progress updates
+Table campaign_updates {
+  id String [primary key]
+  campaignId String [not null]
+  title String [not null]
+  content String [not null]
+  images String[]
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    campaignId
+    createdAt
+  }
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+Enum DonationType {
+  ONE_TIME
+  RECURRING
+  PLEDGE
+}
+
+Enum DonationStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+Enum DonationFrequency {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+Enum RecurringStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  FAILED
+}
+
+Enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  PAUSED
+}
+
+// ==========================================
+// RELATIONSHIPS
+// ==========================================
+
+// Donation relationships
+Ref: donations.donorId > users.id
+Ref: donations.campaignId > donation_campaigns.id
+
+// Recurring donations
+Ref: recurring_donations.donorId > users.id
+
+// Campaign updates
+Ref: campaign_updates.campaignId > donation_campaigns.id

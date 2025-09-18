@@ -47,3 +47,6 @@ __tests__
 .eslintrc*
 .prettierrc*
 tsconfig.tsbuildinfo
+
+# Temporary cleanup folder
+temp_cleanup

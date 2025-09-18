@@ -74,9 +74,8 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Validate role
-      const validRoles = Object.values(UserRole);
-      const userRole = validRoles.includes(role as UserRole) ? (role as UserRole) : UserRole.LEARNER;
+      // All new users start as CUSTOMER
+      const userRole = UserRole.CUSTOMER;
 
       // Create new user with COPPA compliance data
       const user = await client.user.create({
@@ -111,7 +110,7 @@ export async function POST(request: NextRequest) {
               maxDownloads: 10,
               canAccessPremium: false,
               canDownloadPDF: false,
-              canCreateClasses: userRole === UserRole.TEACHER || userRole === UserRole.INSTITUTION,
+              canCreateClasses: false, // Admin assigns elevated roles and permissions later
             },
           },
         },

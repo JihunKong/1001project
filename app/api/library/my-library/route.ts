@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth'
 /**
  * GET /api/library/my-library
  * 
- * Returns user's purchased stories and subscription content
+ * Returns user's purchased books and subscription content
  */
 export async function GET(request: NextRequest) {
   try {
@@ -28,66 +28,16 @@ export async function GET(request: NextRequest) {
     
     const skip = (page - 1) * limit
     
-    // Get user's subscription
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId: session.user.id },
-      select: {
-        id: true,
-        plan: true,
-        status: true,
-        canAccessPremium: true,
-        unlimitedReading: true,
-        startDate: true,
-        endDate: true
-      }
-    })
+    // Get user's subscription - disabled, all books are free
+    const subscription = null;
     
-    // Get user's purchased stories
-    const purchasedStoryIds = await prisma.order.findMany({
-      where: {
-        userId: session.user.id,
-        status: { in: ['DELIVERED', 'PROCESSING'] },
-        items: {
-          some: {
-            product: {
-              type: 'DIGITAL_BOOK'
-            }
-          }
-        }
-      },
-      include: {
-        items: {
-          where: {
-            product: {
-              type: 'DIGITAL_BOOK'
-            }
-          },
-          select: {
-            productId: true,
-            title: true,
-            price: true,
-            createdAt: true
-          }
-        }
-      }
-    }).then(orders => 
-      orders.flatMap(order => 
-        order.items.map(item => ({
-          storyId: item.productId,
-          purchaseDate: item.createdAt,
-          price: item.price
-        }))
-      )
-    )
+    // Get user's purchased stories - disabled, all books are free
+    const purchasedStoryIds: string[] = [];
+    const purchasedIds: string[] = [];
     
-    const purchasedIds = purchasedStoryIds.map(p => p.storyId)
-    
-    // Build where clause for stories
+    // Build where clause for books
     const whereClause: any = {
       isPublished: true,
-      author: {
-        deletedAt: null
-      },
       OR: []
     }
     
@@ -98,13 +48,10 @@ export async function GET(request: NextRequest) {
       })
     }
     
-    // Add subscription accessible stories
-    if (subscription?.canAccessPremium && subscription.status === 'ACTIVE' && 
-        (type === 'subscription' || type === 'all' || !type)) {
-      whereClause.OR.push({
-        isPremium: true
-      })
-    }
+    // Add all stories - everything is free
+    whereClause.OR.push({
+      isPremium: true
+    });
     
     // If no access, return empty
     if (whereClause.OR.length === 0) {
@@ -137,7 +84,7 @@ export async function GET(request: NextRequest) {
         readingProgress: {
           some: {
             userId: session.user.id,
-            progress: 100
+            percentComplete: 100
           }
         }
       }
@@ -153,17 +100,11 @@ export async function GET(request: NextRequest) {
     
     Object.assign(whereClause, progressFilter)
     
-    // Query stories
-    const [stories, totalCount] = await Promise.all([
-      prisma.story.findMany({
+    // Query books
+    const [books, totalCount] = await Promise.all([
+      prisma.book.findMany({
         where: whereClause,
         include: {
-          author: {
-            select: {
-              id: true,
-              name: true
-            }
-          },
           readingProgress: {
             where: { userId: session.user.id },
             select: {
@@ -191,46 +132,45 @@ export async function GET(request: NextRequest) {
         skip,
         take: limit
       }),
-      prisma.story.count({ where: whereClause })
+      prisma.book.count({ where: whereClause })
     ])
     
-    // Transform stories with access information
-    const transformedStories = stories.map(story => {
-      const isPurchased = purchasedIds.includes(story.id)
-      const purchaseInfo = purchasedStoryIds.find(p => p.storyId === story.id)
-      const hasSubscriptionAccess = subscription?.canAccessPremium && story.isPremium
+    // Transform books with access information
+    const transformedStories = books.map(book => {
+      const isPurchased = false; // All books are free
+      const purchaseInfo = null;
+      const hasSubscriptionAccess = true; // All books are accessible
       
       return {
-        id: story.id,
-        title: story.title,
-        subtitle: story.subtitle,
-        summary: story.summary,
-        authorName: story.authorName,
-        authorAge: story.authorAge,
-        authorLocation: story.authorLocation,
-        language: story.language,
-        category: story.category,
-        tags: story.tags,
-        readingLevel: story.readingLevel,
-        readingTime: story.readingTime,
-        coverImage: story.coverImage,
-        isPremium: story.isPremium,
-        price: story.price,
-        rating: story.rating,
+        id: book.id,
+        title: book.title,
+        subtitle: book.subtitle,
+        summary: book.summary,
+        authorName: book.authorName,
+        authorAge: book.authorAge,
+        authorLocation: book.authorLocation,
+        language: book.language,
+        category: book.category,
+        tags: book.tags,
+        readingLevel: book.readingLevel,
+        readingTime: book.readingTime,
+        coverImage: book.coverImage,
+        isPremium: book.isPremium,
+        price: book.price,
+        rating: book.rating,
         accessType: isPurchased ? 'purchased' : 'subscription',
-        purchaseDate: purchaseInfo?.purchaseDate || null,
-        purchasePrice: purchaseInfo?.price || null,
-        progress: story.readingProgress[0] || null,
-        latestBookmark: story.bookmarks[0] || null,
-        canDownload: isPurchased || (hasSubscriptionAccess && subscription?.unlimitedReading)
+        purchaseDate: null,
+        purchasePrice: null,
+        progress: book.readingProgress[0] || null,
+        latestBookmark: book.bookmarks[0] || null,
+        canDownload: true
       }
     })
     
     // Calculate stats
     const stats = {
       totalPurchased: purchasedIds.length,
-      totalSubscriptionAccess: subscription?.canAccessPremium ? 
-        await prisma.story.count({ where: { isPremium: true, isPublished: true } }) : 0,
+      totalSubscriptionAccess: await prisma.book.count({ where: { isPremium: true, isPublished: true } }),
       currentlyReading: await prisma.readingProgress.count({
         where: {
           userId: session.user.id,

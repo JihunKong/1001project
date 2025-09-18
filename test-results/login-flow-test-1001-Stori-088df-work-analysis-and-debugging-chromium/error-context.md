@@ -1,0 +1,75 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - navigation:
+    - link "Seeds of Empowerment 1001 Stories":
+      - /url: /
+      - img "Seeds of Empowerment"
+      - text: 1001 Stories
+    - link "Home":
+      - /url: /
+    - link "Library":
+      - /url: /library
+    - link "About":
+      - /url: /about
+    - button "Programs"
+    - button "Select language":
+      - text: 🇺🇸 English
+      - img
+    - link "Login":
+      - /url: /login
+    - link "Sign Up":
+      - /url: /signup
+- main:
+  - text: Global Education Platform for Peace
+  - heading "Empower Young Voices Inspire the World" [level=1]
+  - paragraph: Discover, publish, and share stories from children in underserved communities
+  - link "Join Our Community":
+    - /url: /signup
+  - link "Explore Stories":
+    - /url: /library
+  - heading "Global Stories" [level=3]
+  - paragraph: Access stories from children around the world
+  - heading "Interactive Learning" [level=3]
+  - paragraph: Engage with content through interactive features
+  - heading "Community Impact" [level=3]
+  - paragraph: Make a real difference in children's lives
+  - text: 500+ Stories Published 10K+ Children Reached 50+ Countries 100+ Volunteers Join Our Community
+  - heading "Start Your Journey Today" [level=2]
+  - paragraph: Discover amazing stories from children around the world. Whether you're here to learn, teach, volunteer, or support our mission, your journey begins with a single step.
+  - link "Start Your Journey":
+    - /url: /signup
+  - link "Explore Stories":
+    - /url: /library
+  - paragraph: Free to join • No commitment • Access granted instantly
+  - text: Seeds of Empowerment
+  - heading "Plant Seeds of Hope" [level=2]
+  - paragraph: Every contribution plants seeds of hope and opportunity for children worldwide. Join us in creating a world where every child's voice is heard.
+  - link "Support Our Mission":
+    - /url: /donate
+  - link "Become a Volunteer":
+    - /url: /volunteer
+- contentinfo:
+  - link "Seeds of Empowerment 1001 Stories":
+    - /url: /
+    - img "Seeds of Empowerment"
+    - text: 1001 Stories
+  - link:
+    - /url: "#"
+  - link:
+    - /url: "#"
+  - link:
+    - /url: "#"
+  - link:
+    - /url: "#"
+  - link "Privacy Policy":
+    - /url: /privacy
+  - link "Contact Us":
+    - /url: /contact
+  - link "About Us":
+    - /url: /about
+  - paragraph: © 2024 1001 Stories by Seeds of Empowerment. All rights reserved.
+- button "Give feedback"
+- alert
+```

@@ -16,13 +16,18 @@ import {
   BookOpen,
   Clock,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  RefreshCw,
+  History
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { UserRole } from '@prisma/client';
 import UserFormModal from '@/components/admin/UserFormModal';
 import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal';
+import BulkRoleChangeModal from '@/components/admin/BulkRoleChangeModal';
+import RoleHistoryModal from '@/components/admin/RoleHistoryModal';
+import { useSecureFetch } from '@/lib/csrf-context';
 
 interface User {
   id: string;
@@ -47,24 +52,34 @@ interface User {
 
 interface UserStats {
   totalUsers: number;
+  totalCustomers: number;
   totalLearners: number;
   totalAdmins: number;
   totalVolunteers: number;
 }
 
 const roleConfig = {
-  ADMIN: { label: 'Admin', color: 'bg-purple-100 text-purple-800', icon: Shield },
+  CUSTOMER: { label: 'Customer', color: 'bg-indigo-100 text-indigo-800', icon: Users },
   LEARNER: { label: 'Learner', color: 'bg-blue-100 text-blue-800', icon: BookOpen },
-  VOLUNTEER: { label: 'Volunteer', color: 'bg-green-100 text-green-800', icon: Clock },
   TEACHER: { label: 'Teacher', color: 'bg-orange-100 text-orange-800', icon: CheckCircle },
   INSTITUTION: { label: 'Institution', color: 'bg-gray-100 text-gray-800', icon: AlertTriangle },
+  VOLUNTEER: { label: 'Volunteer', color: 'bg-green-100 text-green-800', icon: Clock },
+  EDITOR: { label: 'Editor', color: 'bg-purple-100 text-purple-800', icon: BookOpen },
+  PUBLISHER: { label: 'Publisher', color: 'bg-emerald-100 text-emerald-800', icon: CheckCircle },
+  STORY_MANAGER: { label: 'Story Manager', color: 'bg-teal-100 text-teal-800', icon: BookOpen },
+  BOOK_MANAGER: { label: 'Book Manager', color: 'bg-cyan-100 text-cyan-800', icon: CheckCircle },
+  CONTENT_ADMIN: { label: 'Content Admin', color: 'bg-violet-100 text-violet-800', icon: Shield },
+  PROGRAM_LEAD: { label: 'Program Lead', color: 'bg-indigo-100 text-indigo-800', icon: Users },
+  ADMIN: { label: 'Admin', color: 'bg-red-100 text-red-800', icon: Shield },
 };
 
 export default function UsersPage() {
   const { data: session, status } = useSession();
+  const secureFetch = useSecureFetch();
   const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<UserStats>({
     totalUsers: 0,
+    totalCustomers: 0,
     totalLearners: 0,
     totalAdmins: 0,
     totalVolunteers: 0,
@@ -79,6 +94,10 @@ export default function UsersPage() {
   // Modal states
   const [isUserFormModalOpen, setIsUserFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isBulkRoleChangeModalOpen, setIsBulkRoleChangeModalOpen] = useState(false);
+  const [isRoleHistoryModalOpen, setIsRoleHistoryModalOpen] = useState(false);
+  const [historyUserId, setHistoryUserId] = useState<string | null>(null);
+  const [historyUserName, setHistoryUserName] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [usersToDelete, setUsersToDelete] = useState<User[]>([]);
   const [isOperationLoading, setIsOperationLoading] = useState(false);
@@ -95,12 +114,13 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/users');
+      const response = await secureFetch('/api/admin/users');
       if (response.ok) {
         const data = await response.json();
         setUsers(data.users || []);
         setStats({
           totalUsers: data.users?.length || 0,
+          totalCustomers: data.users?.filter((u: User) => u.role === 'CUSTOMER').length || 0,
           totalLearners: data.users?.filter((u: User) => u.role === 'LEARNER').length || 0,
           totalAdmins: data.users?.filter((u: User) => u.role === 'ADMIN').length || 0,
           totalVolunteers: data.users?.filter((u: User) => u.role === 'VOLUNTEER').length || 0,
@@ -121,11 +141,8 @@ export default function UsersPage() {
   const handleCreateUser = async (userData: any) => {
     setIsOperationLoading(true);
     try {
-      const response = await fetch('/api/admin/users', {
+      const response = await secureFetch('/api/admin/users', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(userData),
       });
 
@@ -150,11 +167,8 @@ export default function UsersPage() {
     
     setIsOperationLoading(true);
     try {
-      const response = await fetch(`/api/admin/users/${editingUser.id}`, {
+      const response = await secureFetch(`/api/admin/users/${editingUser.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(userData),
       });
 
@@ -180,7 +194,7 @@ export default function UsersPage() {
     setIsOperationLoading(true);
     try {
       const deletePromises = usersToDelete.map(user =>
-        fetch(`/api/admin/users/${user.id}`, {
+        secureFetch(`/api/admin/users/${user.id}`, {
           method: 'DELETE',
         })
       );
@@ -204,6 +218,43 @@ export default function UsersPage() {
     }
   };
 
+  const handleBulkRoleChange = async (newRole: UserRole) => {
+    if (selectedUsers.length === 0) return;
+
+    setIsOperationLoading(true);
+    try {
+      const response = await secureFetch('/api/admin/users/bulk-update', {
+        method: 'POST',
+        body: JSON.stringify({
+          userIds: selectedUsers,
+          newRole: newRole,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        await fetchUsers();
+        setIsBulkRoleChangeModalOpen(false);
+        setSelectedUsers([]);
+        
+        // Show success message with details
+        let message = result.message || `Successfully updated ${result.updatedCount} user(s)`;
+        if (result.errors && result.errors.length > 0) {
+          message += `\n\nWarnings:\n${result.errors.join('\n')}`;
+        }
+        alert(message);
+      } else {
+        throw new Error(result.error || 'Failed to update user roles');
+      }
+    } catch (error) {
+      console.error('Error updating user roles:', error);
+      alert('Failed to update user roles. Please try again.');
+    } finally {
+      setIsOperationLoading(false);
+    }
+  };
+
   // Modal handlers
   const openCreateModal = () => {
     setEditingUser(null);
@@ -220,9 +271,23 @@ export default function UsersPage() {
     setIsDeleteModalOpen(true);
   };
 
+  const openBulkRoleChangeModal = () => {
+    setIsBulkRoleChangeModalOpen(true);
+  };
+
+  const openRoleHistoryModal = (userId?: string, userName?: string) => {
+    setHistoryUserId(userId || null);
+    setHistoryUserName(userName || null);
+    setIsRoleHistoryModalOpen(true);
+  };
+
   const closeModals = () => {
     setIsUserFormModalOpen(false);
     setIsDeleteModalOpen(false);
+    setIsBulkRoleChangeModalOpen(false);
+    setIsRoleHistoryModalOpen(false);
+    setHistoryUserId(null);
+    setHistoryUserName(null);
     setEditingUser(null);
     setUsersToDelete([]);
   };
@@ -243,6 +308,7 @@ export default function UsersPage() {
 
   const statsDisplay = [
     { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'bg-blue-500' },
+    { label: 'Customers', value: stats.totalCustomers, icon: Users, color: 'bg-indigo-500' },
     { label: 'Learners', value: stats.totalLearners, icon: BookOpen, color: 'bg-green-500' },
     { label: 'Volunteers', value: stats.totalVolunteers, icon: Clock, color: 'bg-purple-500' },
     { label: 'Admins', value: stats.totalAdmins, icon: Shield, color: 'bg-red-500' },
@@ -278,6 +344,13 @@ export default function UsersPage() {
               <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                 <Download className="w-4 h-4" />
                 Export
+              </button>
+              <button 
+                onClick={() => openRoleHistoryModal()}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <History className="w-4 h-4" />
+                Role History
               </button>
               <button 
                 onClick={openCreateModal}
@@ -334,9 +407,11 @@ export default function UsersPage() {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="ALL">All Roles</option>
+              <option value="CUSTOMER">Customers</option>
               <option value="LEARNER">Learners</option>
-              <option value="VOLUNTEER">Volunteers</option>
               <option value="TEACHER">Teachers</option>
+              <option value="INSTITUTION">Institutions</option>
+              <option value="VOLUNTEER">Volunteers</option>
               <option value="ADMIN">Admins</option>
             </select>
           </div>
@@ -359,6 +434,13 @@ export default function UsersPage() {
               </div>
               {selectedUsers.length > 0 && (
                 <div className="flex items-center gap-2">
+                  <button 
+                    onClick={openBulkRoleChangeModal}
+                    className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded flex items-center gap-1"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    Change Role
+                  </button>
                   <button 
                     onClick={() => {
                       const usersToDelete = paginatedUsers.filter(user => selectedUsers.includes(user.id));
@@ -460,6 +542,13 @@ export default function UsersPage() {
                               <Edit className="w-4 h-4" />
                             </button>
                             <button 
+                              onClick={() => openRoleHistoryModal(user.id, user.name)}
+                              className="text-purple-600 hover:text-purple-900"
+                              title="View Role History"
+                            >
+                              <History className="w-4 h-4" />
+                            </button>
+                            <button 
                               onClick={() => openDeleteModal([user])}
                               className="text-red-600 hover:text-red-900"
                               title="Delete User"
@@ -526,6 +615,21 @@ export default function UsersPage() {
         onConfirm={handleDeleteUsers}
         users={usersToDelete}
         isLoading={isOperationLoading}
+      />
+
+      <BulkRoleChangeModal
+        isOpen={isBulkRoleChangeModalOpen}
+        onClose={closeModals}
+        selectedUsers={users.filter(user => selectedUsers.includes(user.id))}
+        onRoleChange={handleBulkRoleChange}
+        isLoading={isOperationLoading}
+      />
+
+      <RoleHistoryModal
+        isOpen={isRoleHistoryModalOpen}
+        onClose={closeModals}
+        userId={historyUserId}
+        userName={historyUserName ?? undefined}
       />
     </div>
   );

@@ -1,426 +1,312 @@
+/**
+ * Content Access Control Module
+ * 
+ * Manages access to stories and content in the free library system.
+ * All content is now freely accessible to authenticated users.
+ */
+
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-/**
- * Content Access Control System
- * 
- * Manages tiered access to stories and content based on user subscription,
- * purchases, and preview limits.
- */
-
 export enum ContentAccess {
-  PREVIEW = 'preview',     // First 20% free
-  PURCHASED = 'purchased', // One-time purchase
-  SUBSCRIBED = 'subscribed', // Active subscription
-  RESTRICTED = 'restricted' // No access
+  NONE = 'none',
+  FREE = 'free',
+  PREVIEW = 'preview',
+  SUBSCRIBED = 'subscribed', 
+  PURCHASED = 'purchased'
 }
 
-export interface AccessResult {
+export interface ContentAccessLevel {
   level: ContentAccess
-  canRead: boolean
+  canReadFull: boolean
   canDownload: boolean
-  previewPercentage: number
+  canPrint: boolean
+  previewPages: number
+  totalPages?: number
   message?: string
-  upgradeOptions?: {
-    purchase?: {
-      price: number
-      currency: string
-    }
-    subscription?: {
-      plan: string
-      price: number
-      currency: string
-    }
-  }
 }
 
-export interface ContentPreview {
-  content: string
-  isComplete: boolean
-  previewPercentage: number
-  remainingCharacters: number
+export interface ContentAccessOptions {
+  userId?: string
+  storyId: string
 }
 
 /**
- * Check user's access level for a specific story
+ * Check access level for a single story
+ * All authenticated users now have full access to all content
  */
-export async function checkStoryAccess(
-  storyId: string, 
-  userId?: string
-): Promise<AccessResult> {
+export async function checkContentAccess({
+  userId,
+  storyId,
+}: ContentAccessOptions): Promise<ContentAccessLevel> {
   try {
     // Get story details
-    const story = await prisma.story.findFirst({
-      where: {
-        id: storyId,
-        isPublished: true,
-        author: {
-          deletedAt: null
-        }
-      },
+    const story = await prisma.story.findUnique({
+      where: { id: storyId },
       select: {
         id: true,
         title: true,
+        price: true,
         isPremium: true,
-        price: true
       }
     })
     
     if (!story) {
       return {
-        level: ContentAccess.RESTRICTED,
-        canRead: false,
+        level: ContentAccess.NONE,
+        canReadFull: false,
         canDownload: false,
-        previewPercentage: 0,
-        message: 'Story not found or unavailable'
+        canPrint: false,
+        previewPages: 0,
+        totalPages: 0,
+        message: 'Story not found'
       }
     }
     
-    // Free stories are always accessible
-    if (!story.isPremium) {
-      return {
-        level: ContentAccess.SUBSCRIBED,
-        canRead: true,
-        canDownload: true,
-        previewPercentage: 100
-      }
-    }
-    
-    // For premium stories, check user access
+    // Non-authenticated users get preview only
     if (!userId) {
       return {
         level: ContentAccess.PREVIEW,
-        canRead: true,
+        canReadFull: false,
         canDownload: false,
-        previewPercentage: 20,
-        message: 'Preview available. Sign up to read the full story.',
-        upgradeOptions: {
-          purchase: story.price ? {
-            price: Number(story.price),
-            currency: 'USD'
-          } : undefined,
-          subscription: {
-            plan: 'basic',
-            price: 9.99,
-            currency: 'USD'
-          }
-        }
+        canPrint: false,
+        previewPages: 1,
+        totalPages: 10,
+        message: 'Sign in to read the full story for free'
       }
     }
     
-    // Check user's subscription
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId },
-      select: {
-        status: true,
-        canAccessPremium: true,
-        unlimitedReading: true
-      }
-    })
-    
-    if (subscription?.status === 'ACTIVE' && subscription.canAccessPremium) {
-      return {
-        level: ContentAccess.SUBSCRIBED,
-        canRead: true,
-        canDownload: subscription.unlimitedReading,
-        previewPercentage: 100
-      }
+    // All stories are now free to access in the library
+    // Return full access for all authenticated users
+    return {
+      level: ContentAccess.FREE,
+      canReadFull: true,
+      canDownload: true,
+      canPrint: true,
+      previewPages: 999,
+      totalPages: 999
     }
     
-    // Check if user has purchased this story
-    const purchase = await prisma.order.findFirst({
+  } catch (error) {
+    console.error('Error checking content access:', error)
+    return {
+      level: ContentAccess.NONE,
+      canReadFull: false,
+      canDownload: false,
+      canPrint: false,
+      previewPages: 0,
+      totalPages: 0,
+      message: 'Error checking access'
+    }
+  }
+}
+
+/**
+ * Check if a user can access a story (simplified check)
+ * All authenticated users can access all stories
+ */
+export async function canAccessContent(
+  userId: string | undefined,
+  storyId: string
+): Promise<boolean> {
+  if (!userId) return false
+  
+  // All authenticated users can access all content
+  const story = await prisma.story.findUnique({
+    where: { id: storyId },
+    select: { id: true }
+  })
+  
+  return !!story
+}
+
+/**
+ * Check if a user can download content
+ * All authenticated users can download content
+ */
+export async function canDownloadContent(
+  userId: string | undefined,
+  storyId: string
+): Promise<boolean> {
+  return userId ? true : false
+}
+
+/**
+ * Get all accessible stories for a user
+ * All stories are accessible for authenticated users
+ */
+export async function getAccessibleContent(userId: string | undefined) {
+  // For non-authenticated users, return preview-only content
+  if (!userId) {
+    return await prisma.story.findMany({
       where: {
-        userId,
-        status: { in: ['DELIVERED', 'PROCESSING'] },
-        items: {
-          some: {
-            productId: storyId
-          }
-        }
-      }
-    })
-    
-    if (purchase) {
-      return {
-        level: ContentAccess.PURCHASED,
-        canRead: true,
-        canDownload: true,
-        previewPercentage: 100
-      }
-    }
-    
-    // Default to preview for authenticated users
-    return {
-      level: ContentAccess.PREVIEW,
-      canRead: true,
-      canDownload: false,
-      previewPercentage: 20,
-      message: 'Preview available. Purchase or subscribe to read the full story.',
-      upgradeOptions: {
-        purchase: story.price ? {
-          price: Number(story.price),
-          currency: 'USD'
-        } : undefined,
-        subscription: {
-          plan: 'basic',
-          price: 9.99,
-          currency: 'USD'
-        }
-      }
-    }
-    
-  } catch (error) {
-    console.error('Error checking story access:', error)
-    return {
-      level: ContentAccess.RESTRICTED,
-      canRead: false,
-      canDownload: false,
-      previewPercentage: 0,
-      message: 'Error checking access permissions'
-    }
-  }
-}
-
-/**
- * Get content preview based on access level
- */
-export function getContentPreview(
-  content: string,
-  accessLevel: ContentAccess,
-  previewPercentage: number = 20
-): ContentPreview {
-  if (accessLevel === ContentAccess.SUBSCRIBED || accessLevel === ContentAccess.PURCHASED) {
-    return {
-      content,
-      isComplete: true,
-      previewPercentage: 100,
-      remainingCharacters: 0
-    }
-  }
-  
-  if (accessLevel === ContentAccess.PREVIEW) {
-    const previewLength = Math.floor(content.length * (previewPercentage / 100))
-    const previewContent = content.substring(0, previewLength)
-    
-    // Try to end at a sentence or paragraph break for better UX
-    const lastSentence = previewContent.lastIndexOf('.')
-    const lastParagraph = previewContent.lastIndexOf('\n\n')
-    const cutoff = Math.max(lastSentence, lastParagraph)
-    
-    const finalContent = cutoff > previewLength * 0.8 
-      ? previewContent.substring(0, cutoff + 1)
-      : previewContent
-    
-    return {
-      content: finalContent,
-      isComplete: false,
-      previewPercentage,
-      remainingCharacters: content.length - finalContent.length
-    }
-  }
-  
-  return {
-    content: '',
-    isComplete: false,
-    previewPercentage: 0,
-    remainingCharacters: content.length
-  }
-}
-
-/**
- * Track preview usage for analytics and rate limiting
- */
-export async function trackPreviewUsage(
-  storyId: string,
-  userId: string | null,
-  sessionId: string | null,
-  metadata: {
-    timeSpent: number
-    scrollPercentage: number
-    source: string
-    userAgent?: string
-  }
-): Promise<void> {
-  try {
-    const baseData = {
-      storyId,
-      ...metadata,
-      timestamp: new Date()
-    }
-    
-    if (userId) {
-      // Track for authenticated users
-      await prisma.activityLog.create({
-        data: {
-          userId,
-          action: 'STORY_PREVIEW_TRACKED',
-          entity: 'STORY',
-          entityId: storyId,
-          metadata: baseData
-        }
-      })
-    } else if (sessionId) {
-      // Track for anonymous users (could use a separate analytics table)
-      console.log('Anonymous preview tracking:', { sessionId, ...baseData })
-    }
-  } catch (error) {
-    console.error('Error tracking preview usage:', error)
-  }
-}
-
-/**
- * Check if user has reached preview limits (anti-abuse)
- */
-export async function checkPreviewLimits(
-  userId: string | null,
-  sessionId: string | null
-): Promise<{ exceeded: boolean; remaining: number; resetTime: Date }> {
-  const hourlyLimit = 10 // Max 10 preview sessions per hour
-  const now = new Date()
-  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
-  
-  try {
-    let previewCount = 0
-    
-    if (userId) {
-      previewCount = await prisma.activityLog.count({
-        where: {
-          userId,
-          action: 'STORY_PREVIEW_TRACKED',
-          createdAt: {
-            gte: oneHourAgo
-          }
-        }
-      })
-    } else {
-      // For anonymous users, implement session-based tracking
-      // This is a placeholder - you might want to use Redis or another solution
-      previewCount = 0
-    }
-    
-    const exceeded = previewCount >= hourlyLimit
-    const remaining = Math.max(0, hourlyLimit - previewCount)
-    const resetTime = new Date(now.getTime() + 60 * 60 * 1000)
-    
-    return {
-      exceeded,
-      remaining,
-      resetTime
-    }
-    
-  } catch (error) {
-    console.error('Error checking preview limits:', error)
-    return {
-      exceeded: false,
-      remaining: hourlyLimit,
-      resetTime: new Date(now.getTime() + 60 * 60 * 1000)
-    }
-  }
-}
-
-/**
- * Get user's subscription status and features
- */
-export async function getUserSubscriptionFeatures(userId: string): Promise<{
-  hasActiveSubscription: boolean
-  plan: string
-  features: {
-    canAccessPremium: boolean
-    canDownloadPDF: boolean
-    canCreateClasses: boolean
-    unlimitedReading: boolean
-    maxStudents: number
-    maxDownloads: number
-  }
-}> {
-  try {
-    const subscription = await prisma.subscription.findUnique({
-      where: { userId },
+        isPremium: false
+      },
       select: {
-        plan: true,
-        status: true,
-        canAccessPremium: true,
-        canDownloadPDF: true,
-        canCreateClasses: true,
-        unlimitedReading: true,
-        maxStudents: true,
-        maxDownloads: true
+        id: true,
+        title: true,
+        author: true,
+        coverImage: true,
+        summary: true,
+      }
+    })
+  }
+  
+  // For authenticated users, return all stories
+  return await prisma.story.findMany({
+    select: {
+      id: true,
+      title: true,
+      author: true,
+      coverImage: true,
+      summary: true,
+      category: true,
+      language: true,
+      publishedDate: true
+    }
+  })
+}
+
+/**
+ * Record content access/reading activity
+ */
+export async function recordContentAccess(
+  userId: string,
+  storyId: string,
+  action: 'view' | 'download' | 'print' = 'view'
+) {
+  try {
+    // Record the access in ReadingProgress
+    await prisma.readingProgress.upsert({
+      where: {
+        userId_storyId: {
+          userId,
+          storyId
+        }
+      },
+      update: {
+        lastReadAt: new Date(),
+        totalReadingTime: { increment: 1 }
+      },
+      create: {
+        userId,
+        storyId,
+        currentChapter: 1,
+        percentComplete: 0,
+        lastReadAt: new Date(),
+        totalReadingTime: 1
       }
     })
     
-    if (!subscription || subscription.status !== 'ACTIVE') {
-      return {
-        hasActiveSubscription: false,
-        plan: 'free',
-        features: {
-          canAccessPremium: false,
-          canDownloadPDF: false,
-          canCreateClasses: false,
-          unlimitedReading: false,
-          maxStudents: 0,
-          maxDownloads: 3
-        }
-      }
-    }
-    
-    return {
-      hasActiveSubscription: true,
-      plan: subscription.plan.toLowerCase(),
-      features: {
-        canAccessPremium: subscription.canAccessPremium,
-        canDownloadPDF: subscription.canDownloadPDF,
-        canCreateClasses: subscription.canCreateClasses,
-        unlimitedReading: subscription.unlimitedReading,
-        maxStudents: subscription.maxStudents,
-        maxDownloads: subscription.maxDownloads
-      }
-    }
-    
+    console.log(`Recorded ${action} access for story ${storyId} by user ${userId}`)
   } catch (error) {
-    console.error('Error getting subscription features:', error)
-    return {
-      hasActiveSubscription: false,
-      plan: 'free',
-      features: {
-        canAccessPremium: false,
-        canDownloadPDF: false,
-        canCreateClasses: false,
-        unlimitedReading: false,
-        maxStudents: 0,
-        maxDownloads: 3
-      }
-    }
+    console.error('Error recording content access:', error)
   }
 }
 
 /**
- * Helper function to get current user session and access info
+ * Get user's reading history
  */
-export async function getCurrentUserAccess(): Promise<{
-  userId: string | null
-  subscription: Awaited<ReturnType<typeof getUserSubscriptionFeatures>>
-}> {
-  const session = await getServerSession(authOptions)
-  const userId = session?.user?.id || null
-  
-  const subscription = userId 
-    ? await getUserSubscriptionFeatures(userId)
-    : {
-        hasActiveSubscription: false,
-        plan: 'free',
-        features: {
-          canAccessPremium: false,
-          canDownloadPDF: false,
-          canCreateClasses: false,
-          unlimitedReading: false,
-          maxStudents: 0,
-          maxDownloads: 3
+export async function getUserContentHistory(userId: string) {
+  return await prisma.readingProgress.findMany({
+    where: { userId },
+    include: {
+      story: {
+        select: {
+          id: true,
+          title: true,
+          author: true,
+          coverImage: true,
+          category: true
         }
       }
+    },
+    orderBy: {
+      lastReadAt: 'desc'
+    }
+  })
+}
+
+/**
+ * Update reading progress
+ */
+export async function updateContentProgress(
+  userId: string,
+  storyId: string,
+  currentChapter: number,
+  totalPages?: number
+) {
+  const progress = totalPages ? Math.round((currentChapter / totalPages) * 100) : 0
+  
+  return await prisma.readingProgress.upsert({
+    where: {
+      userId_storyId: {
+        userId,
+        storyId
+      }
+    },
+    update: {
+      currentChapter,
+      percentComplete: progress,
+      lastReadAt: new Date()
+    },
+    create: {
+      userId,
+      storyId,
+      currentChapter,
+      percentComplete: progress,
+      lastReadAt: new Date(),
+      totalReadingTime: 1
+    }
+  })
+}
+
+/**
+ * Get preview content for a story
+ */
+export async function getContentPreview(storyId: string, maxChapters: number = 1) {
+  const story = await prisma.story.findUnique({
+    where: { id: storyId },
+    select: {
+      id: true,
+      title: true,
+      author: true,
+      summary: true,
+      coverImage: true,
+    }
+  })
+  
+  if (!story) {
+    throw new Error('Story not found')
+  }
+  
+  const previewChapters = maxChapters
   
   return {
-    userId,
-    subscription
+    ...story,
+    previewChapters: maxChapters,
+    isPreview: true
   }
+}
+
+/**
+ * Check if content requires premium access (legacy - now always returns false)
+ */
+export async function requiresPremiumContent(storyId: string): Promise<boolean> {
+  // All content is free now
+  return false
+}
+
+export default {
+  checkContentAccess,
+  canAccessContent,
+  canDownloadContent,
+  getAccessibleContent,
+  recordContentAccess,
+  getUserContentHistory,
+  updateContentProgress,
+  getContentPreview,
+  requiresPremiumContent,
+  ContentAccess
 }

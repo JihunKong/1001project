@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { checkBatchBookAccess } from '@/lib/book-access'
+
+export const maxDuration = 60; // 1 minute
+export const runtime = 'nodejs';
 
 /**
  * GET /api/library/books
  * 
- * Returns list of published books (combining Book and Story models)
- * Accessible without authentication (public books)
+ * Returns list of published books with access control and thumbnails
+ * Uses the Book model (not Story model)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -16,189 +20,162 @@ export async function GET(request: NextRequest) {
     // Query parameters
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
+    const userId = searchParams.get('userId') || undefined
     const category = searchParams.get('category')
     const language = searchParams.get('language')
-    const ageGroup = searchParams.get('ageGroup')
     const search = searchParams.get('search')
-    const featured = searchParams.get('featured')
-    const premium = searchParams.get('premium')
+    const sort = searchParams.get('sort') || 'createdAt'
+    const order = searchParams.get('order') || 'desc'
     
     const skip = (page - 1) * limit
     
-    // Get current user session to check subscription status
+    // Get current user session
     const session = await getServerSession(authOptions)
-    let userSubscription = null
+    const currentUserId = session?.user?.id || userId
     
-    if (session?.user?.id) {
-      userSubscription = await prisma.subscription.findUnique({
-        where: { userId: session.user.id },
-        select: {
-          plan: true,
-          status: true,
-          canAccessPremium: true,
-          unlimitedReading: true
-        }
-      })
+    // Build where clause for books
+    const where: any = {
+      isPublished: true
     }
     
-    // Build where clause for stories (books are managed as Story records)
-    const whereClause: any = {
-      isPublished: true,
-      fullPdf: { not: null } // Only show books with PDF files
-    }
-    
-    // Apply filters
-    if (category && category !== 'all') {
-      whereClause.category = {
+    if (category) {
+      where.category = {
         has: category
       }
     }
     
-    if (language && language !== 'all') {
-      whereClause.language = language
-    }
-    
-    if (ageGroup && ageGroup !== 'all') {
-      // Note: Story model uses readingLevel, not ageRange
-      whereClause.readingLevel = ageGroup
+    if (language) {
+      where.language = language
     }
     
     if (search) {
-      whereClause.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { subtitle: { contains: search, mode: 'insensitive' } },
-        { authorName: { contains: search, mode: 'insensitive' } },
-        { summary: { contains: search, mode: 'insensitive' } },
-        { tags: { has: search } }
+      const searchTerm = search.toLowerCase()
+      where.OR = [
+        {
+          title: {
+            contains: searchTerm,
+            mode: 'insensitive'
+          }
+        },
+        {
+          authorName: {
+            contains: searchTerm,
+            mode: 'insensitive'
+          }
+        },
+        {
+          summary: {
+            contains: searchTerm,
+            mode: 'insensitive'
+          }
+        }
       ]
     }
     
-    if (featured === 'true') {
-      whereClause.featured = true
-    }
+    // Build orderBy clause
+    const validSortFields = ['title', 'authorName', 'createdAt', 'viewCount', 'price']
+    const sortField = validSortFields.includes(sort) ? sort : 'createdAt'
+    const sortOrder = order === 'asc' ? 'asc' : 'desc'
     
-    if (premium === 'true') {
-      whereClause.isPremium = true
-    } else if (premium === 'false') {
-      whereClause.isPremium = false
-    }
+    const orderBy: any = {}
+    orderBy[sortField] = sortOrder
     
-    // Query stories (books are managed as Story records)
-    const [stories, totalCount] = await Promise.all([
-      prisma.story.findMany({
-        where: whereClause,
-        include: {
-          author: {
-            select: {
-              id: true,
-              name: true
-            }
-          }
-        },
-        orderBy: [
-          { featured: 'desc' },
-          { publishedDate: 'desc' },
-          { createdAt: 'desc' }
-        ],
+    // Fetch books and total count
+    const [books, totalCount] = await Promise.all([
+      prisma.book.findMany({
+        where,
         skip,
-        take: limit
+        take: limit,
+        orderBy,
+        select: {
+          id: true,
+          title: true,
+          authorName: true,
+          summary: true,
+          language: true,
+          category: true,
+          tags: true,
+          isPremium: true,
+          price: true,
+          currency: true,
+          // thumbnails: true, // Will be added when schema is ready
+          coverImage: true,
+          content: true, // Add content field for PDF paths
+          previewPages: true,
+          pageCount: true,
+          viewCount: true,
+          downloadCount: true,
+          rating: true,
+          createdAt: true,
+          featured: true
+        }
       }),
-      prisma.story.count({ where: whereClause })
+      prisma.book.count({ where })
     ])
     
-    // Transform stories to books for response
-    const transformedBooks = await Promise.all(stories.map(async (story) => {
-      // Determine access level
-      let accessLevel = 'preview'
-      
-      // Admin users have full access to all books
-      if (session?.user?.role === 'ADMIN') {
-        accessLevel = 'full'
-      }
-      // Free books get full access for logged-in users
-      else if (!story.isPremium) {
-        accessLevel = 'full'
-      }
-      // Premium books require subscription or purchase
-      else if (userSubscription?.canAccessPremium && userSubscription?.status === 'ACTIVE') {
-        accessLevel = 'full'
-      }
-      // For now, individual purchases are handled via subscription
-      // TODO: Implement individual book purchase checking when product-story linking is available
-      
-      // Get user progress if logged in
-      let userProgress = null
-      // This will be fetched separately for each book when needed
-      
-      return {
-        id: story.id,
-        title: story.title,
-        subtitle: story.subtitle,
-        summary: story.summary,
-        author: {
-          id: story.author.id,
-          name: story.authorName,
-          age: story.authorAge,
-          location: story.authorLocation
-        },
-        publishedDate: story.publishedDate,
-        language: story.language,
-        ageRange: story.readingLevel, // Story uses readingLevel instead of ageRange
-        pageCount: story.pageCount,
-        readingTime: story.readingTime || Math.ceil((story.pageCount || 20) / 2), // Use story readingTime or estimate
-        category: story.category,
-        genres: story.genres,
-        subjects: story.subjects,
-        tags: story.tags,
-        coverImage: story.coverImage,
-        samplePdf: `/api/pdf/books/${story.id}/main.pdf`, // Use API route for preview
-        fullPdf: accessLevel === 'full' ? `/api/pdf/books/${story.id}/main.pdf` : `/api/pdf/books/${story.id}/main.pdf`,
-        isPremium: story.isPremium,
-        isFeatured: story.featured,
-        price: story.price ? Number(story.price.toNumber()) : 0,
-        rating: story.rating,
-        accessLevel,
-        stats: {
-          readers: 0, // TODO: Count from ReadingProgress where storyId = story.id
-          bookmarks: 0, // TODO: Count from Bookmark where storyId = story.id
-          reviews: 0, // Placeholder
-          views: story.viewCount,
-          likes: story.likeCount
-        },
-        // Additional fields for compatibility
-        bookId: story.id,
-        storyId: story.id,
-        pdfKey: `/api/pdf/books/${story.id}/main.pdf`, // Add pdfKey for SimpleBookCard compatibility
-        pdfFrontCover: `/api/pdf/books/${story.id}/front.pdf`, // Add pdfFrontCover field
-        pdfBackCover: `/api/pdf/books/${story.id}/back.pdf`, // Add pdfBackCover field
-        pageLayout: 'standard', // Add pageLayout field
-        previewPages: 5, // Add previewPages field
-        fullPdfUrl: `/api/pdf/books/${story.id}/main.pdf`,
-        samplePdfUrl: `/api/pdf/books/${story.id}/main.pdf`,
-        viewCount: story.viewCount,
-        likeCount: story.likeCount
-      }
+    // Get access information for all books
+    const bookIds = books.map(book => book.id)
+    const batchAccessResults = currentUserId ? await checkBatchBookAccess({ userId: currentUserId, bookIds }) : {}
+    
+    // Transform books with access information
+    const booksWithAccess = books.map(book => ({
+      id: book.id,
+      title: book.title,
+      authorName: book.authorName,
+      summary: book.summary || undefined,
+      language: book.language,
+      category: book.category,
+      tags: book.tags,
+      isPremium: book.isPremium,
+      price: book.price ? Number(book.price) : undefined,
+      currency: book.currency,
+      // thumbnails: book.thumbnails, // Will be added when schema is ready
+      coverImage: book.coverImage || undefined,
+      content: book.content || undefined, // Include content field
+      previewPages: book.previewPages,
+      pageCount: book.pageCount || undefined,
+      viewCount: book.viewCount,
+      downloadCount: book.downloadCount,
+      rating: book.rating || undefined,
+      featured: book.featured,
+      createdAt: book.createdAt.toISOString(),
+      hasAccess: currentUserId ? (
+        batchAccessResults[book.id]?.level === 'free' ||
+        batchAccessResults[book.id]?.level === 'purchased' ||
+        batchAccessResults[book.id]?.level === 'subscribed'
+      ) : false,
+      accessLevel: batchAccessResults[book.id]?.level || 'preview'
     }))
     
-    // Calculate pagination
     const totalPages = Math.ceil(totalCount / limit)
-    const hasMore = page < totalPages
     
     return NextResponse.json({
-      books: transformedBooks,
+      success: true,
+      books: booksWithAccess,
       pagination: {
-        currentPage: page,
-        totalPages,
+        page,
+        limit,
         totalCount,
-        hasMore,
-        limit
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1
+      },
+      filters: {
+        category,
+        language,
+        search,
+        sort,
+        order
       }
     })
     
   } catch (error) {
-    console.error('Error fetching library books:', error)
+    console.error('Error fetching books:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch library books' },
+      { 
+        error: 'Failed to fetch books',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

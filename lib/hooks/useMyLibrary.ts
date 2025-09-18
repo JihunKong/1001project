@@ -252,7 +252,7 @@ export function useLibraryStory(storyId: string) {
     setError(null)
 
     try {
-      const response = await fetch(`/api/library/stories/${storyId}`)
+      const response = await fetch(`/api/library/books/${storyId}`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch story')

@@ -1,0 +1,433 @@
+// ==========================================
+// E-COMMERCE SUBSYSTEM
+// ==========================================
+// This subsystem handles products, shopping cart, orders, payments,
+// inventory management, and the shop system for digital and physical goods.
+
+// Product categories
+Table categories {
+  id String [primary key]
+  name String [not null]
+  slug String [unique, not null]
+  description String
+  parentId String
+  image String
+  order Int [default: 0]
+  isActive Boolean [default: true]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+// Physical and digital products for sale
+Table products {
+  id String [primary key]
+  sku String [unique, not null]
+  type ProductType [not null]
+  title String [not null]
+  description String [not null]
+  price Decimal [not null]
+  compareAtPrice Decimal
+  cost Decimal
+  currency String [default: 'USD']
+  weight Float
+  status ProductStatus [default: 'DRAFT']
+  featured Boolean [default: false]
+  
+  // Creator information
+  creatorId String
+  creatorName String
+  creatorAge Int
+  creatorLocation String
+  creatorStory String
+  
+  // Categorization
+  categoryId String [not null]
+  tags String[]
+  
+  // Impact metrics
+  impactMetric String
+  impactValue String
+  
+  // Digital product fields
+  digitalFileUrl String
+  downloadLimit Int
+  
+  // SEO
+  metaTitle String
+  metaDescription String
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    status
+    type
+    featured
+    categoryId
+  }
+}
+
+// Product variations (size, color, format)
+Table product_variants {
+  id String [primary key]
+  productId String [not null]
+  title String [not null]
+  sku String [unique, not null]
+  price Decimal [not null]
+  compareAtPrice Decimal
+  inventoryQuantity Int [default: 0]
+  weight Float
+  attributes Json [not null]
+  position Int [default: 0]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+// Product images
+Table product_images {
+  id String [primary key]
+  productId String [not null]
+  url String [not null]
+  alt String
+  position Int [default: 0]
+  
+  createdAt DateTime [default: `now()`]
+}
+
+// Stock management for products
+Table inventory {
+  id String [primary key]
+  productId String [not null]
+  variantId String
+  quantity Int [default: 0]
+  reserved Int [default: 0]
+  location String [default: 'main']
+  reorderPoint Int [default: 10]
+  reorderQuantity Int [default: 50]
+  
+  updatedAt DateTime
+  
+  indexes {
+    (productId, variantId, location) [unique]
+  }
+}
+
+// User shopping cart
+Table carts {
+  id String [primary key]
+  userId String [unique]
+  sessionId String
+  expiresAt DateTime [default: `now() + interval '7 days'`]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    sessionId
+  }
+}
+
+// Individual items in cart
+Table cart_items {
+  id String [primary key]
+  cartId String [not null]
+  productId String [not null]
+  variantId String
+  quantity Int [default: 1]
+  price Decimal [not null]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (cartId, productId, variantId) [unique]
+  }
+}
+
+// Completed purchases
+Table orders {
+  id String [primary key]
+  orderNumber String [unique, not null]
+  userId String
+  email String [not null]
+  phone String
+  
+  // Financial
+  subtotal Decimal [not null]
+  tax Decimal [default: 0]
+  shipping Decimal [default: 0]
+  discount Decimal [default: 0]
+  total Decimal [not null]
+  currency String [default: 'USD']
+  
+  // Status
+  status OrderStatus [default: 'PENDING']
+  paymentStatus PaymentStatus [default: 'PENDING']
+  fulfillmentStatus FulfillmentStatus [default: 'UNFULFILLED']
+  
+  // Payment
+  paymentMethod String
+  stripePaymentId String
+  
+  // Shipping
+  shippingAddress Json
+  billingAddress Json
+  shippingMethod String
+  trackingNumber String
+  
+  // Additional
+  notes String
+  tags String[]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    userId
+    status
+    orderNumber
+  }
+}
+
+// Products within an order
+Table order_items {
+  id String [primary key]
+  orderId String [not null]
+  productId String [not null]
+  variantId String
+  title String [not null]
+  variantTitle String
+  quantity Int [not null]
+  price Decimal [not null]
+  total Decimal [not null]
+  fulfillmentStatus String
+  
+  createdAt DateTime [default: `now()`]
+}
+
+// Enhanced Product model for Shop system
+Table shop_products {
+  id String [primary key]
+  sku String [unique, not null]
+  type ShopProductType [default: 'DIGITAL_BOOK']
+  
+  // Basic information
+  title String [not null]
+  description String [not null]
+  shortDescription String
+  
+  // Pricing
+  price Decimal [not null]
+  compareAtPrice Decimal
+  currency String [default: 'USD']
+  
+  // Digital product specifics
+  bookId String // Connected book
+  storyId String // Legacy story support
+  downloadLimit Int // Max downloads per purchase
+  accessDuration Int // Days of access (null = permanent)
+  
+  // Bundle support
+  bundleItems String[] // IDs of bundled products
+  bundleDiscount Decimal // Percentage discount
+  
+  // Categorization and discovery
+  category String[]
+  tags String[]
+  featured Boolean [default: false]
+  
+  // Media and presentation
+  images String[]
+  thumbnailUrl String
+  demoUrl String // Preview/demo link
+  
+  // Creator attribution
+  creatorName String
+  creatorAge Int
+  creatorLocation String
+  creatorStory String
+  
+  // Impact metrics
+  impactMetric String // "Children reached", "Stories published"
+  impactValue String // "500+", "50 communities"
+  
+  // Availability
+  status ShopProductStatus [default: 'ACTIVE']
+  availableFrom DateTime
+  availableUntil DateTime
+  maxQuantity Int // Purchase limit per user
+  
+  // SEO and marketing
+  metaTitle String
+  metaDescription String
+  marketingTags String[]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    status
+    type
+    featured
+    bookId
+  }
+}
+
+// User entitlements for accessing premium content
+Table entitlements {
+  id String [primary key]
+  userId String // Null for guest purchases
+  email String // For guest purchase tracking
+  bookId String // For individual book access
+  storyId String // For legacy Story compatibility
+  
+  // Purchase/grant details
+  orderId String // Connected to purchase
+  subscriptionId String // Connected to subscription
+  licenseId String // Connected to classroom license
+  grantReason String // "purchase", "subscription", "license", "promotional"
+  
+  // Entitlement type and scope
+  type EntitlementType [default: 'PURCHASE']
+  scope EntitlementScope [default: 'BOOK']
+  
+  // Validity and timing
+  grantedAt DateTime [default: `now()`]
+  expiresAt DateTime // Null = permanent
+  isActive Boolean [default: true]
+  activatedAt DateTime // When first accessed
+  
+  // Usage tracking
+  lastAccessedAt DateTime
+  accessCount Int [default: 0]
+  downloadCount Int [default: 0]
+  
+  // Restrictions
+  maxDownloads Int // Download limit
+  ipRestrictions String[] // Allowed IP ranges
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    userId
+    email
+    bookId
+    isActive
+    expiresAt
+  }
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+Enum ProductType {
+  PHYSICAL_BOOK
+  DIGITAL_BOOK
+  MERCHANDISE
+  ARTWORK
+  DONATION_ITEM
+}
+
+Enum ProductStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVED
+}
+
+Enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+Enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+Enum FulfillmentStatus {
+  UNFULFILLED
+  PARTIALLY_FULFILLED
+  FULFILLED
+  CANCELLED
+}
+
+Enum ShopProductType {
+  DIGITAL_BOOK
+  BOOK_BUNDLE
+  SUBSCRIPTION
+  CLASSROOM_LICENSE
+  DONATION_ITEM
+  MERCHANDISE
+}
+
+Enum ShopProductStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+  OUT_OF_STOCK
+}
+
+Enum EntitlementType {
+  PURCHASE
+  SUBSCRIPTION
+  LICENSE
+  PROMOTIONAL
+  FREE_ACCESS
+  TRIAL
+}
+
+Enum EntitlementScope {
+  BOOK
+  CATEGORY
+  UNLIMITED
+  BUNDLE
+}
+
+// ==========================================
+// RELATIONSHIPS
+// ==========================================
+
+// Category hierarchy
+Ref: categories.parentId > categories.id
+
+// Product relationships
+Ref: products.categoryId > categories.id
+Ref: product_variants.productId > products.id
+Ref: product_images.productId > products.id
+Ref: inventory.productId > products.id
+Ref: inventory.variantId > product_variants.id
+
+// Shopping cart
+Ref: carts.userId > users.id
+Ref: cart_items.cartId > carts.id
+Ref: cart_items.productId > products.id
+Ref: cart_items.variantId > product_variants.id
+
+// Orders
+Ref: orders.userId > users.id
+Ref: order_items.orderId > orders.id
+Ref: order_items.productId > products.id
+Ref: order_items.variantId > product_variants.id
+
+// Shop products
+Ref: shop_products.bookId > books.id
+Ref: shop_products.storyId > stories.id
+
+// Entitlements
+Ref: entitlements.userId > users.id
+Ref: entitlements.bookId > books.id
+Ref: entitlements.storyId > stories.id
+Ref: entitlements.orderId > orders.id
+Ref: entitlements.subscriptionId > subscriptions.id

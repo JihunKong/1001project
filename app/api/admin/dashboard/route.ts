@@ -67,18 +67,8 @@ export async function GET(request: NextRequest) {
         }
       }),
       
-      // Monthly orders revenue
-      prisma.order.aggregate({
-        where: {
-          createdAt: {
-            gte: startOfMonth
-          },
-          status: 'DELIVERED'
-        },
-        _sum: {
-          total: true
-        }
-      }),
+      // Monthly orders revenue - disabled, using donations
+      Promise.resolve({ _sum: { total: 0 } }),
       
       // Monthly donations - skip for now since Donation table structure needs review
       Promise.resolve({ _sum: { amount: null } }), // Placeholder until donation system is implemented

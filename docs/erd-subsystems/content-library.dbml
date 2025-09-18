@@ -1,0 +1,599 @@
+// ==========================================
+// CONTENT LIBRARY SUBSYSTEM
+// ==========================================
+// This subsystem handles stories, books, chapters, translations, 
+// reading progress, bookmarks, and all content-related functionality.
+
+// Enhanced story model for digital books
+Table stories {
+  id String [primary key]
+  isbn String [unique]
+  title String [not null]
+  subtitle String
+  content String [not null]
+  summary String
+  
+  // Author information
+  authorId String [not null]
+  authorName String [not null]
+  coAuthors String[]
+  authorAge Int
+  authorLocation String
+  illustratorId String
+  
+  // Publication details
+  publishedDate DateTime
+  publisher String
+  language String [default: 'en']
+  pageCount Int
+  readingLevel String
+  readingTime Int // Estimated minutes
+  
+  // Categorization
+  category String[]
+  genres String[]
+  subjects String[]
+  tags String[]
+  
+  // Media
+  coverImage String
+  illustrations String[]
+  samplePdf String
+  fullPdf String
+  epubFile String
+  audioFile String
+  
+  // Access control
+  isPremium Boolean [default: false]
+  isPublished Boolean [default: false]
+  featured Boolean [default: false]
+  price Decimal
+  
+  // Metrics
+  viewCount Int [default: 0]
+  likeCount Int [default: 0]
+  rating Float
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    isPublished
+    isPremium
+    language
+    authorId
+  }
+}
+
+// Enhanced Book model for PDF-based digital books
+Table books {
+  id String [primary key]
+  title String [not null]
+  subtitle String
+  summary String
+  
+  // Author information
+  authorName String [not null]
+  authorAlias String // For privacy/anonymity
+  authorAge Int
+  authorLocation String
+  coAuthors String[]
+  
+  // Publication details
+  language String [default: 'en']
+  ageRange String // "5-8", "9-12", etc.
+  readingLevel String
+  category String[]
+  genres String[]
+  subjects String[]
+  tags String[]
+  
+  // PDF and media
+  coverImage String
+  pdfKey String // Storage key for main PDF file
+  pdfFrontCover String // Storage key for front cover PDF
+  pdfBackCover String // Storage key for back cover PDF
+  pageLayout String [default: 'single'] // "single" or "double" for spread view
+  pageCount Int
+  previewPages Int [default: 10] // Number of pages available for preview
+  
+  // Thumbnail storage and management
+  thumbnails Json // {"frontCover": "/thumbnails/book1/front-page-1.png", ...}
+  thumbnailGeneratedAt DateTime // When thumbnails were last generated
+  thumbnailConfig Json // {"frontCover": {"width": 400, "height": 533, ...}}
+  
+  // DRM and access control
+  drm Json // {"watermark":true,"downloadAllowed":false,"printAllowed":false}
+  downloadAllowed Boolean [default: false]
+  printAllowed Boolean [default: false]
+  
+  // Publishing status
+  isPublished Boolean [default: false]
+  publishedAt DateTime
+  featured Boolean [default: false]
+  
+  // Pricing and access
+  isPremium Boolean [default: false]
+  price Decimal
+  currency String [default: 'USD']
+  
+  // Visibility and permissions
+  visibility BookVisibility [default: 'PUBLIC']
+  
+  // Metrics
+  viewCount Int [default: 0]
+  downloadCount Int [default: 0]
+  rating Float
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    isPublished
+    isPremium
+    language
+    visibility
+    thumbnailGeneratedAt
+  }
+}
+
+// Book chapters for sequential reading
+Table chapters {
+  id String [primary key]
+  storyId String [not null]
+  chapterNumber Int [not null]
+  title String [not null]
+  content String [not null]
+  audioUrl String
+  illustrations String[]
+  readingTime Int // Estimated minutes
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (storyId, chapterNumber) [unique]
+  }
+}
+
+// User's reading progress tracking
+Table reading_progress {
+  id String [primary key]
+  userId String [not null]
+  storyId String [not null]
+  currentChapter Int [default: 1]
+  currentPage Int
+  totalPages Int
+  currentPosition String // Text position for continue reading
+  percentComplete Float [default: 0]
+  totalReadingTime Int [default: 0] // Minutes
+  lastReadAt DateTime [default: `now()`]
+  startedAt DateTime [default: `now()`]
+  completedAt DateTime
+  isCompleted Boolean [default: false]
+  notes String[]
+  
+  indexes {
+    (userId, storyId) [unique]
+    userId
+    lastReadAt
+  }
+}
+
+// Saved positions in books
+Table bookmarks {
+  id String [primary key]
+  userId String [not null]
+  storyId String [not null]
+  chapterId Int
+  position String // Text position
+  note String
+  color String // Highlight color
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (userId, storyId) [unique]
+    userId
+  }
+}
+
+// User's reading lists/collections
+Table reading_lists {
+  id String [primary key]
+  userId String [not null]
+  name String [not null]
+  description String
+  isPublic Boolean [default: false]
+  storyIds String[]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    userId
+  }
+}
+
+// User story submissions
+Table story_submissions {
+  id String [primary key]
+  authorId String [not null]
+  title String [not null]
+  content String [not null]
+  summary String
+  language String [not null]
+  category String [not null]
+  ageGroup String [not null]
+  status StorySubmissionStatus [default: 'DRAFT']
+  priority Priority [default: 'MEDIUM']
+  reviewerId String
+  assigneeId String
+  dueDate DateTime
+  reviewNotes String
+  editorialNotes String
+  publishDate DateTime
+  compensation Decimal
+  tags String[]
+  
+  // Media files
+  coverImageId String
+  attachments String[]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    status
+    priority
+    assigneeId
+    authorId
+  }
+}
+
+// Story translations
+Table translations {
+  id String [primary key]
+  storyId String [not null]
+  translatorId String [not null]
+  fromLanguage String [not null]
+  toLanguage String [not null]
+  title String [not null]
+  content String [not null]
+  status TranslationStatus [default: 'IN_PROGRESS']
+  qualityScore Float
+  reviewerId String
+  reviewNotes String
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (storyId, toLanguage) [unique]
+    status
+    translatorId
+  }
+}
+
+// Story illustrations
+Table illustrations {
+  id String [primary key]
+  storyId String [not null]
+  artistId String [not null]
+  title String [not null]
+  description String
+  fileUrl String [not null]
+  thumbnailUrl String
+  position Int
+  status IllustrationStatus [default: 'DRAFT']
+  compensation Decimal
+  license String [not null]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    storyId
+    artistId
+  }
+}
+
+// Volunteer PDF submission system
+Table volunteer_submissions {
+  id String [primary key]
+  volunteerId String [not null]
+  projectId String
+  
+  // Submission type and content
+  type VolunteerSubmissionType [default: 'PDF_UPLOAD']
+  pdfRef String // Storage key for uploaded PDF
+  originalName String // Original filename
+  fileSize Int // File size in bytes
+  
+  // Content metadata
+  title String [not null]
+  authorAlias String [not null] // Author's chosen name/pseudonym
+  language String [default: 'en']
+  ageRange String
+  category String[]
+  tags String[]
+  summary String [not null]
+  
+  // Visibility and access
+  visibility ContentVisibility [default: 'PUBLIC']
+  targetAudience String // Who this content is for
+  
+  // Copyright and permissions
+  copyrightConfirmed Boolean [default: false]
+  portraitRightsConfirmed Boolean [default: false]
+  originalWork Boolean [default: true]
+  licenseType String // "CC-BY", "CC-BY-SA", etc.
+  
+  // Review and approval workflow
+  status VolunteerSubmissionStatus [default: 'SUBMITTED']
+  priority Priority [default: 'MEDIUM']
+  reviewerId String
+  assigneeId String
+  dueDate DateTime
+  reviewNotes String
+  rejectionReason String
+  
+  // Publishing information
+  publishDate DateTime
+  compensation Decimal
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    status
+    volunteerId
+    reviewerId
+    priority
+  }
+}
+
+// Publication management (Approval → Library)
+Table publications {
+  id String [primary key]
+  bookId String
+  storyId String // Legacy support
+  submissionId String // Source submission
+  
+  // Publication settings
+  visibility ContentVisibility [default: 'PUBLIC']
+  isPremium Boolean [default: false]
+  unlockPolicy UnlockPolicy [default: 'PURCHASE']
+  price Decimal
+  currency String [default: 'USD']
+  
+  // Version control
+  version Int [default: 1]
+  changelog String
+  
+  // Publishing workflow
+  status PublicationStatus [default: 'DRAFT']
+  publishedAt DateTime
+  publishedBy String [not null] // Admin user ID
+  
+  // Content organization
+  featured Boolean [default: false]
+  category String[]
+  tags String[]
+  sortOrder Int [default: 0]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    status
+    publishedAt
+    featured
+    isPremium
+  }
+}
+
+// Content reviews and ratings
+Table reviews {
+  id String [primary key]
+  userId String [not null]
+  contentType ContentType [not null]
+  contentId String [not null]
+  rating Int [not null] // 1-5 stars
+  title String
+  comment String
+  helpful Int [default: 0]
+  verified Boolean [default: false]
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    (userId, contentType, contentId) [unique]
+    userId
+    (contentType, contentId)
+  }
+}
+
+// Sample content access tracking
+Table sample_content_access {
+  id String [primary key]
+  userId String [not null]
+  storyId String [not null]
+  viewCount Int [default: 0]
+  totalTimeSpent Int [default: 0] // Minutes
+  lastAccessed DateTime [default: `now()`]
+  
+  indexes {
+    (userId, storyId) [unique]
+  }
+}
+
+// Media file library for CMS
+Table media_files {
+  id String [primary key]
+  filename String [not null]
+  originalName String [not null]
+  mimeType String [not null]
+  size Int [not null] // File size in bytes
+  url String [not null]
+  thumbnailUrl String
+  altText String
+  description String
+  
+  // Image processing details
+  width Int
+  height Int
+  format String
+  
+  // Organization
+  folder String [default: '/']
+  tags String[]
+  
+  // Relationships
+  uploadedById String [not null]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    uploadedById
+    mimeType
+    folder
+  }
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+Enum BookVisibility {
+  PUBLIC
+  RESTRICTED
+  CLASSROOM
+  PRIVATE
+}
+
+Enum VolunteerSubmissionType {
+  PDF_UPLOAD
+  TEXT_ASSISTANCE
+  TRANSLATION
+  ILLUSTRATION
+}
+
+Enum ContentVisibility {
+  PUBLIC
+  RESTRICTED
+  CLASSROOM
+  PRIVATE
+}
+
+Enum StorySubmissionStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  REJECTED
+}
+
+Enum VolunteerSubmissionStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  NEEDS_CHANGES
+  APPROVED
+  REJECTED
+  PUBLISHED
+}
+
+Enum TranslationStatus {
+  IN_PROGRESS
+  REVIEW
+  APPROVED
+  PUBLISHED
+  REJECTED
+}
+
+Enum IllustrationStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  PUBLISHED
+  REJECTED
+}
+
+Enum PublicationStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+  WITHDRAWN
+}
+
+Enum UnlockPolicy {
+  FREE
+  PURCHASE
+  SUBSCRIPTION
+  CLASSROOM_LICENSE
+  INSTITUTIONAL
+}
+
+Enum ContentType {
+  BOOK
+  PRODUCT
+  STORY
+  COURSE
+}
+
+Enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// ==========================================
+// RELATIONSHIPS
+// ==========================================
+
+// Core content relationships
+Ref: stories.authorId > users.id
+Ref: chapters.storyId > stories.id
+Ref: reading_progress.userId > users.id
+Ref: reading_progress.storyId > stories.id
+Ref: bookmarks.userId > users.id
+Ref: bookmarks.storyId > stories.id
+Ref: reading_lists.userId > users.id
+
+// Story submissions and workflow
+Ref: story_submissions.authorId > users.id
+Ref: story_submissions.reviewerId > users.id
+Ref: story_submissions.assigneeId > users.id
+Ref: story_submissions.coverImageId > media_files.id
+
+// Translations and illustrations
+Ref: translations.storyId > stories.id
+Ref: translations.translatorId > users.id
+Ref: translations.reviewerId > users.id
+Ref: illustrations.storyId > stories.id
+Ref: illustrations.artistId > users.id
+
+// Volunteer submissions
+Ref: volunteer_submissions.volunteerId > users.id
+Ref: volunteer_submissions.reviewerId > users.id
+Ref: volunteer_submissions.assigneeId > users.id
+
+// Publications
+Ref: publications.bookId > books.id
+Ref: publications.storyId > stories.id
+Ref: publications.submissionId > volunteer_submissions.id
+Ref: publications.publishedBy > users.id
+
+// Reviews and access tracking
+Ref: reviews.userId > users.id
+Ref: sample_content_access.userId > users.id
+Ref: sample_content_access.storyId > stories.id
+
+// Media files
+Ref: media_files.uploadedById > users.id

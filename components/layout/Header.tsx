@@ -12,8 +12,6 @@ import {
   Heart, 
   Users, 
   Home, 
-  ShoppingBag, 
-  ShoppingCart,
   User,
   LogOut,
   Settings,
@@ -21,10 +19,12 @@ import {
   Shield,
   GraduationCap,
   School,
-  ChevronDown
+  ChevronDown,
+  Globe,
+  Handshake,
+  BookOpenCheck
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher';
-import useCartStore from '@/lib/cart-store';
 import { UserRole } from '@prisma/client';
 
 export default function Header() {
@@ -33,20 +33,23 @@ export default function Header() {
   const { data: session, status } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isProgramsMenuOpen, setIsProgramsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const cartItems = useCartStore((state) => state.getTotalItems());
   
   // Avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Close user menu when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       if (!target.closest('.user-menu-container')) {
         setIsUserMenuOpen(false);
+      }
+      if (!target.closest('.programs-menu-container')) {
+        setIsProgramsMenuOpen(false);
       }
     };
 
@@ -58,20 +61,8 @@ export default function Header() {
   const baseNavigation = [
     { name: t('navigation.home'), href: '/', icon: Home },
     { name: t('navigation.library'), href: '/library', icon: BookOpen },
-    { name: t('navigation.shop'), href: '/shop', icon: ShoppingBag },
   ];
 
-  // Add onboarding zone for users who need approval
-  const getOnboardingNavigation = () => {
-    if (!session?.user) return [];
-    
-    // Show onboarding zone if user is not email verified (pending approval)
-    if (!session.user.emailVerified) {
-      return [{ name: 'Onboarding Zone', href: '/onboarding', icon: GraduationCap }];
-    }
-    
-    return [];
-  };
 
   // Additional navigation based on role
   const getRoleBasedNavigation = () => {
@@ -80,12 +71,14 @@ export default function Header() {
     const role = session.user.role;
     const roleNav = [];
 
-    // Add dashboard link for all authenticated users
-    roleNav.push({ 
-      name: 'Dashboard', 
-      href: '/dashboard', 
-      icon: LayoutDashboard 
-    });
+    // Add dashboard link for non-learner users
+    if (role !== UserRole.LEARNER) {
+      roleNav.push({ 
+        name: 'Dashboard', 
+        href: '/dashboard', 
+        icon: LayoutDashboard 
+      });
+    }
 
     // Add role-specific navigation
     switch (role) {
@@ -102,7 +95,7 @@ export default function Header() {
         roleNav.push({ name: 'Volunteer Hub', href: '/dashboard/volunteer', icon: Users });
         break;
       case UserRole.LEARNER:
-        roleNav.push({ name: 'My Learning', href: '/dashboard/learner', icon: BookOpen });
+        roleNav.push({ name: 'My Learning', href: '/learn', icon: BookOpen });
         break;
     }
 
@@ -111,13 +104,11 @@ export default function Header() {
 
   // Public navigation (when not logged in)
   const publicNavigation = [
-    { name: t('navigation.volunteer'), href: '/volunteer', icon: Users },
     { name: t('navigation.about'), href: '/about', icon: Heart },
   ];
 
   const navigation = [
     ...baseNavigation,
-    ...getOnboardingNavigation(),
     ...getRoleBasedNavigation(),
     ...(session ? [] : publicNavigation)
   ];
@@ -136,22 +127,28 @@ export default function Header() {
 
   const getRoleLabel = (role: UserRole) => {
     const labels = {
-      [UserRole.ADMIN]: 'Administrator',
-      [UserRole.TEACHER]: 'Teacher',
+      [UserRole.CUSTOMER]: 'Customer',
       [UserRole.LEARNER]: 'Learner',
+      [UserRole.TEACHER]: 'Teacher',
       [UserRole.INSTITUTION]: 'Institution',
       [UserRole.VOLUNTEER]: 'Volunteer',
+      [UserRole.EDITOR]: 'Editor',
+      [UserRole.PUBLISHER]: 'Publisher',
+      [UserRole.ADMIN]: 'Administrator',
     };
     return labels[role] || 'User';
   };
 
   const getRoleColor = (role: UserRole) => {
     const colors = {
-      [UserRole.ADMIN]: 'bg-red-100 text-red-800',
-      [UserRole.TEACHER]: 'bg-green-100 text-green-800',
+      [UserRole.CUSTOMER]: 'bg-indigo-100 text-indigo-800',
       [UserRole.LEARNER]: 'bg-blue-100 text-blue-800',
+      [UserRole.TEACHER]: 'bg-green-100 text-green-800',
       [UserRole.INSTITUTION]: 'bg-purple-100 text-purple-800',
       [UserRole.VOLUNTEER]: 'bg-pink-100 text-pink-800',
+      [UserRole.EDITOR]: 'bg-orange-100 text-orange-800',
+      [UserRole.PUBLISHER]: 'bg-emerald-100 text-emerald-800',
+      [UserRole.ADMIN]: 'bg-red-100 text-red-800',
     };
     return colors[role] || 'bg-gray-100 text-gray-800';
   };
@@ -161,9 +158,13 @@ export default function Header() {
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <BookOpen className="h-8 w-8 text-blue-600" />
-            <span className="text-xl font-bold gradient-text">1001 Stories</span>
+          <Link href="/" className="flex items-center space-x-3">
+            <img 
+              src="/seeds-of-empowerment-logo.png" 
+              alt="Seeds of Empowerment" 
+              className="h-10 w-auto"
+            />
+            <span className="text-xl font-bold text-brand-primary">1001 Stories</span>
           </Link>
           
           {/* Desktop Navigation */}
@@ -172,27 +173,59 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-brand-primary transition-colors"
               >
                 <item.icon className="w-4 h-4" />
                 {item.name}
               </Link>
             ))}
+            
+            {/* Programs Dropdown */}
+            <div className="relative programs-menu-container">
+              <button
+                onClick={() => setIsProgramsMenuOpen(!isProgramsMenuOpen)}
+                className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-brand-primary transition-colors"
+              >
+                <Globe className="w-4 h-4" />
+                Programs
+                <ChevronDown className={`w-3 h-3 transition-transform ${isProgramsMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {isProgramsMenuOpen && (
+                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <Link
+                    href="/programs/partnership"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-primary transition-colors"
+                    onClick={() => setIsProgramsMenuOpen(false)}
+                  >
+                    <Handshake className="w-4 h-4" />
+                    Partnership Network
+                  </Link>
+                  <Link
+                    href="/programs/english-education"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-primary transition-colors"
+                    onClick={() => setIsProgramsMenuOpen(false)}
+                  >
+                    <BookOpenCheck className="w-4 h-4" />
+                    English Education
+                  </Link>
+                  <Link
+                    href="/programs/mentorship"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-brand-primary transition-colors"
+                    onClick={() => setIsProgramsMenuOpen(false)}
+                  >
+                    <Users className="w-4 h-4" />
+                    Mentorship
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
           
           {/* Right side buttons */}
           <div className="flex items-center gap-4">
             <LanguageSwitcher />
             
-            {/* Shopping Cart */}
-            <Link href="/shop/cart" className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors">
-              <ShoppingCart className="w-6 h-6" />
-              {mounted && cartItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartItems}
-                </span>
-              )}
-            </Link>
             
             {/* User Menu or Auth Buttons */}
             {status === 'loading' ? (
@@ -204,7 +237,7 @@ export default function Header() {
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
+                  <div className="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center text-white font-medium">
                     {session.user.name?.[0]?.toUpperCase() || session.user.email?.[0]?.toUpperCase() || 'U'}
                   </div>
                   <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
@@ -275,7 +308,7 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="btn-brand-primary px-4 py-2 text-sm"
                 >
                   {t('navigation.signup')}
                 </Link>
@@ -347,7 +380,7 @@ export default function Header() {
                     </Link>
                     <Link
                       href="/signup"
-                      className="px-3 py-2 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors text-center"
+                      className="btn-brand-primary px-3 py-2 text-base text-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {t('navigation.signup')}

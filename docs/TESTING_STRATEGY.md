@@ -470,7 +470,7 @@ For issues or questions regarding the E2E testing infrastructure:
 # Test Environment Variables
 NODE_ENV=test
 TEST_BASE_URL=http://localhost:3001
-DATABASE_URL=postgresql://test_user:***REMOVED***_123@test-db:5432/stories_test_db
+DATABASE_URL=postgresql://test_user:test_password_123@test-db:5432/stories_test_db
 NEXTAUTH_URL=http://localhost:3001
 NEXTAUTH_SECRET=test-secret-key
 SMTP_HOST=mailhog

@@ -1,0 +1,688 @@
+// ==========================================
+// VOLUNTEER MANAGEMENT SUBSYSTEM
+// ==========================================
+// This subsystem handles comprehensive volunteer management including
+// profiles, quest system, applications, evidence submission, points,
+// rewards, mentorship, and performance tracking.
+
+// Enhanced volunteer profile with comprehensive information
+Table volunteer_profiles {
+  id String [primary key]
+  userId String [unique, not null]
+  
+  // Skills and qualifications
+  languages String[] // Spoken languages
+  languageLevels Json // {"en": "native", "es": "advanced"}
+  skills String[] // Technical and soft skills
+  qualifications String[] // Certifications, degrees
+  experience String
+  portfolio String // Portfolio URL
+  
+  // Availability and preferences
+  timezone String [default: 'UTC']
+  availableSlots Json // Weekly availability slots
+  maxHoursPerWeek Int [default: 10]
+  remoteOnly Boolean [default: true]
+  preferredTypes VolunteerType[] // Preferred activity types
+  
+  // Verification and approval
+  verificationStatus VerificationStatus [default: 'PENDING']
+  backgroundCheck Boolean [default: false]
+  documentUrl String // ID or background check document
+  verifiedAt DateTime
+  verifiedById String
+  
+  // Performance tracking
+  totalHours Float [default: 0]
+  totalPoints Int [default: 0]
+  currentLevel VolunteerLevel [default: 'BRONZE']
+  rating Float [default: 5.0]
+  reliability Float [default: 100.0] // Percentage
+  
+  // Mentorship
+  isMentor Boolean [default: false]
+  mentorLevel MentorLevel
+  canAcceptMentees Boolean [default: false]
+  maxMentees Int [default: 0]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+// Volunteer opportunities and projects (Legacy system)
+Table volunteer_projects {
+  id String [primary key]
+  title String [not null]
+  description String [not null]
+  type VolunteerType [not null]
+  skills String[] [not null]
+  location String [not null] // Remote or physical location
+  timeCommitment String [not null] // Hours per week
+  startDate DateTime [not null]
+  endDate DateTime
+  maxVolunteers Int [not null]
+  currentVolunteers Int [default: 0]
+  status ProjectStatus [default: 'OPEN']
+  impact String [not null] // Expected impact
+  coordinatorId String [not null]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    status
+    coordinatorId
+  }
+}
+
+// Enhanced quest/class system for scheduling and matching
+Table quests {
+  id String [primary key]
+  title String [not null]
+  description String [not null]
+  type VolunteerType [not null]
+  category QuestCategory [default: 'EDUCATION']
+  difficulty DifficultyLevel [default: 'BEGINNER']
+  
+  // Requirements
+  requiredSkills String[]
+  requiredLanguages String[] // Required languages
+  minimumLevel VolunteerLevel [default: 'BRONZE']
+  experienceRequired Boolean [default: false]
+  
+  // Scheduling
+  startDate DateTime [not null]
+  endDate DateTime
+  duration Int [not null] // Expected hours
+  isRecurring Boolean [default: false]
+  recurringPattern String // e.g., "weekly", "biweekly"
+  timezone String [default: 'UTC']
+  timeSlots Json // Available time slots
+  
+  // Capacity and urgency
+  maxVolunteers Int [default: 1]
+  currentVolunteers Int [default: 0]
+  urgency UrgencyLevel [default: 'MEDIUM']
+  priority Int [default: 1]
+  
+  // Rewards
+  pointsReward Int [default: 10]
+  additionalRewards String[] // Badges, certificates, etc.
+  
+  // Content and location
+  location String [default: 'Remote']
+  materials String[] // Required materials/resources
+  targetAudience String // Who this quest helps
+  expectedImpact String // Expected outcome
+  
+  // Creator and approval
+  creatorId String [not null]
+  createdByRole UserRole [default: 'ADMIN']
+  approvalRequired Boolean [default: false]
+  isApproved Boolean [default: true]
+  approvedById String
+  approvedAt DateTime
+  
+  // Status
+  status QuestStatus [default: 'OPEN']
+  isActive Boolean [default: true]
+  isFeatured Boolean [default: false]
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (status, type)
+    (urgency, startDate)
+    creatorId
+  }
+}
+
+// Volunteer applications for projects/quests
+Table volunteer_applications {
+  id String [primary key]
+  projectId String // Old projects
+  questId String // New quest system
+  volunteerId String [not null]
+  volunteerUserId String [not null] // Link to User for backward compatibility
+  
+  // Application content
+  motivation String [not null]
+  experience String [not null]
+  availability String [not null]
+  coverLetter String
+  
+  // Status and review
+  status ApplicationStatus [default: 'PENDING']
+  reviewedBy String
+  reviewedAt DateTime
+  notes String
+  rejectionReason String
+  
+  // Matching and selection
+  matchScore Float // Auto-calculated match score
+  isRecommended Boolean [default: false]
+  selectionReason String
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (projectId, volunteerId) [unique]
+    (questId, volunteerId) [unique]
+    volunteerUserId
+    status
+  }
+}
+
+// Assignment relationship between volunteers and quests
+Table quest_assignments {
+  id String [primary key]
+  questId String [not null]
+  volunteerId String [not null]
+  
+  // Assignment details
+  assignedAt DateTime [default: `now()`]
+  startedAt DateTime
+  completedAt DateTime
+  status AssignmentStatus [default: 'ASSIGNED']
+  
+  // Performance tracking
+  hoursLogged Float [default: 0]
+  progressPercent Int [default: 0]
+  qualityScore Float
+  
+  // Notes and feedback
+  volunteerNotes String
+  supervisorNotes String
+  finalFeedback String
+  rating Int // 1-5 rating
+  
+  indexes {
+    (questId, volunteerId) [unique]
+    volunteerId
+  }
+}
+
+// Evidence submission and verification system
+Table volunteer_evidence {
+  id String [primary key]
+  assignmentId String [not null]
+  volunteerId String [not null]
+  questId String [not null]
+  
+  // Evidence details
+  type EvidenceType [not null]
+  title String [not null]
+  description String
+  fileUrls String[] // Multiple files supported
+  metadata Json // OCR results, timestamps, etc.
+  
+  // Verification
+  status EvidenceStatus [default: 'PENDING']
+  submittedAt DateTime [default: `now()`]
+  reviewedAt DateTime
+  reviewerId String
+  reviewNotes String
+  
+  // Hours and points
+  hoursSubmitted Float [not null]
+  hoursApproved Float [default: 0]
+  pointsAwarded Int [default: 0]
+  
+  // Auto-verification
+  autoVerified Boolean [default: false]
+  verificationScore Float // Confidence score for auto-verification
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (status, submittedAt)
+    (volunteerId, status)
+    assignmentId
+  }
+}
+
+// Point transaction history
+Table volunteer_points {
+  id String [primary key]
+  volunteerId String [not null]
+  
+  // Transaction details
+  type PointTransactionType [not null]
+  amount Int [not null] // Positive for earning, negative for spending
+  reason String [not null]
+  description String
+  referenceId String // Quest ID, reward ID, etc.
+  referenceType String // "quest", "reward", "bonus", etc.
+  
+  // Balance tracking
+  balanceAfter Int [not null]
+  
+  // Metadata
+  metadata Json
+  issuedById String
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    (volunteerId, createdAt)
+    volunteerId
+  }
+}
+
+// Reward system
+Table volunteer_rewards {
+  id String [primary key]
+  name String [not null]
+  description String [not null]
+  type RewardType [not null]
+  category RewardCategory [default: 'DIGITAL']
+  
+  // Cost and availability
+  pointsCost Int [not null]
+  levelRequired VolunteerLevel [default: 'BRONZE']
+  maxRedemptions Int // Null = unlimited
+  currentRedemptions Int [default: 0]
+  
+  // Reward details
+  value String // "$25", "Certificate", etc.
+  imageUrl String
+  terms String
+  
+  // Availability
+  isActive Boolean [default: true]
+  validFrom DateTime [default: `now()`]
+  validUntil DateTime
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+// Reward redemption tracking
+Table volunteer_redemptions {
+  id String [primary key]
+  volunteerId String [not null]
+  rewardId String [not null]
+  
+  // Redemption details
+  pointsUsed Int [not null]
+  status RedemptionStatus [default: 'PENDING']
+  
+  // Fulfillment
+  fulfilledAt DateTime
+  fulfilledById String
+  fulfillmentNotes String
+  trackingInfo String // Tracking number, download link, etc.
+  
+  // Digital delivery
+  deliveryMethod String // "email", "download", "physical"
+  recipientEmail String
+  shippingAddress Json
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    volunteerId
+    rewardId
+  }
+}
+
+// Volunteer time tracking (Legacy system)
+Table volunteer_hours {
+  id String [primary key]
+  volunteerId String [not null]
+  projectId String [not null]
+  date DateTime [not null]
+  hours Float [not null]
+  activity String [not null]
+  impact String
+  verified Boolean [default: false]
+  verifiedBy String
+  verifiedAt DateTime
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    volunteerId
+    projectId
+  }
+}
+
+// Volunteer recognition certificates
+Table volunteer_certificates {
+  id String [primary key]
+  volunteerId String [not null]
+  type CertificateType [not null]
+  title String [not null]
+  description String [not null]
+  hoursContributed Float [not null]
+  projectCount Int [not null]
+  issuedDate DateTime [default: `now()`]
+  certificateUrl String
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    volunteerId
+  }
+}
+
+// Mentor-mentee relationships
+Table mentor_relations {
+  id String [primary key]
+  mentorId String [not null]
+  menteeId String [not null]
+  
+  // Relationship details
+  status MentorshipStatus [default: 'ACTIVE']
+  startDate DateTime [default: `now()`]
+  endDate DateTime
+  
+  // Goals and progress
+  goals String[]
+  progress Json // Goal progress tracking
+  meetingSchedule String // "weekly", "biweekly", etc.
+  lastMeeting DateTime
+  nextMeeting DateTime
+  
+  // Feedback and notes
+  mentorNotes String
+  menteeNotes String
+  adminNotes String
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (mentorId, menteeId) [unique]
+    mentorId
+    menteeId
+  }
+}
+
+// Matching algorithm support
+Table volunteer_matches {
+  id String [primary key]
+  volunteerId String [not null]
+  questId String [not null]
+  
+  // Matching scores
+  overallScore Float [not null] // 0-100
+  languageScore Float [default: 0]
+  skillScore Float [default: 0]
+  availabilityScore Float [default: 0]
+  experienceScore Float [default: 0]
+  locationScore Float [default: 0]
+  
+  // Matching metadata
+  reasons String[] // Why this match was made
+  concerns String[] // Potential issues
+  confidence Float [default: 0] // 0-1
+  
+  // Selection tracking
+  isRecommended Boolean [default: false]
+  wasSelected Boolean [default: false]
+  selectionReason String
+  
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  
+  indexes {
+    (volunteerId, questId) [unique]
+    (questId, overallScore)
+  }
+}
+
+// Quest reviews and feedback
+Table quest_reviews {
+  id String [primary key]
+  questId String [not null]
+  reviewerId String [not null]
+  reviewerRole UserRole [not null]
+  
+  // Review content
+  rating Int [not null] // 1-5 stars
+  title String
+  content String [not null]
+  
+  // Categories
+  difficultyRating Int // Was difficulty accurate?
+  clarityRating Int // Was description clear?
+  supportRating Int // Was support adequate?
+  
+  // Recommendation
+  wouldRecommend Boolean [default: true]
+  improvementSuggestions String
+  
+  createdAt DateTime [default: `now()`]
+  
+  indexes {
+    questId
+    reviewerId
+  }
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+Enum VolunteerType {
+  TRANSLATION
+  ILLUSTRATION
+  TEACHING
+  CONTENT_CREATION
+  TECHNICAL
+  ADMINISTRATIVE
+  FUNDRAISING
+  OTHER
+}
+
+Enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+Enum VolunteerLevel {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+Enum MentorLevel {
+  JUNIOR_MENTOR
+  SENIOR_MENTOR
+  LEAD_MENTOR
+  MASTER_MENTOR
+}
+
+Enum ProjectStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+Enum QuestCategory {
+  EDUCATION
+  TRANSLATION
+  CONTENT_CREATION
+  COMMUNITY
+  TECHNICAL
+  ADMINISTRATIVE
+  SPECIAL_EVENTS
+}
+
+Enum QuestStatus {
+  DRAFT
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  PAUSED
+}
+
+Enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+Enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+Enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+Enum AssignmentStatus {
+  ASSIGNED
+  STARTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  FAILED
+}
+
+Enum EvidenceType {
+  TIME_LOG
+  PHOTO
+  VIDEO
+  DOCUMENT
+  LINK
+  SCREENSHOT
+  RECORDING
+  OTHER
+}
+
+Enum EvidenceStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_REVISION
+}
+
+Enum PointTransactionType {
+  EARNED_QUEST
+  EARNED_BONUS
+  EARNED_REFERRAL
+  SPENT_REWARD
+  PENALTY
+  ADJUSTMENT
+  REFUND
+}
+
+Enum RewardType {
+  DIGITAL_GOOD
+  PHYSICAL_GOOD
+  EXPERIENCE
+  RECOGNITION
+  ACCESS_PRIVILEGE
+  DONATION
+  CREDIT
+}
+
+Enum RewardCategory {
+  DIGITAL
+  PHYSICAL
+  EXPERIENCE
+  EDUCATION
+  RECOGNITION
+}
+
+Enum RedemptionStatus {
+  PENDING
+  PROCESSING
+  FULFILLED
+  CANCELLED
+  FAILED
+}
+
+Enum CertificateType {
+  PARTICIPATION
+  ACHIEVEMENT
+  MILESTONE
+  EXCELLENCE
+  LEADERSHIP
+}
+
+Enum MentorshipStatus {
+  REQUESTED
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+Enum UserRole {
+  CUSTOMER
+  LEARNER
+  TEACHER
+  INSTITUTION
+  VOLUNTEER
+  ADMIN
+}
+
+// ==========================================
+// RELATIONSHIPS
+// ==========================================
+
+// Core volunteer profile
+Ref: volunteer_profiles.userId - users.id
+
+// Legacy project system
+Ref: volunteer_projects.coordinatorId > users.id
+Ref: volunteer_hours.volunteerId > users.id
+Ref: volunteer_hours.projectId > volunteer_projects.id
+Ref: volunteer_certificates.volunteerId > users.id
+
+// Quest system
+Ref: quests.creatorId > users.id
+Ref: quests.approvedById > users.id
+
+// Applications
+Ref: volunteer_applications.projectId > volunteer_projects.id
+Ref: volunteer_applications.questId > quests.id
+Ref: volunteer_applications.volunteerId > volunteer_profiles.id
+Ref: volunteer_applications.volunteerUserId > users.id
+Ref: volunteer_applications.reviewedBy > users.id
+
+// Quest assignments and evidence
+Ref: quest_assignments.questId > quests.id
+Ref: quest_assignments.volunteerId > volunteer_profiles.id
+Ref: volunteer_evidence.assignmentId > quest_assignments.id
+Ref: volunteer_evidence.volunteerId > volunteer_profiles.id
+Ref: volunteer_evidence.questId > quests.id
+Ref: volunteer_evidence.reviewerId > users.id
+
+// Points and rewards
+Ref: volunteer_points.volunteerId > volunteer_profiles.id
+Ref: volunteer_points.issuedById > users.id
+Ref: volunteer_redemptions.volunteerId > volunteer_profiles.id
+Ref: volunteer_redemptions.rewardId > volunteer_rewards.id
+Ref: volunteer_redemptions.fulfilledById > users.id
+
+// Mentorship
+Ref: mentor_relations.mentorId > volunteer_profiles.id
+Ref: mentor_relations.menteeId > volunteer_profiles.id
+
+// Matching and reviews
+Ref: volunteer_matches.volunteerId > volunteer_profiles.id
+Ref: volunteer_matches.questId > quests.id
+Ref: quest_reviews.questId > quests.id
+Ref: quest_reviews.reviewerId > users.id

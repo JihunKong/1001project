@@ -17,7 +17,7 @@ export async function GET(
     const bookId = id
     
     // Verify the book exists
-    const book = await prisma.story.findFirst({
+    const book = await prisma.book.findFirst({
       where: {
         id: bookId,
         isPublished: true
@@ -102,7 +102,7 @@ export async function POST(
     }
     
     // Verify the book exists
-    const book = await prisma.story.findFirst({
+    const book = await prisma.book.findFirst({
       where: {
         id: bookId,
         isPublished: true
@@ -163,7 +163,7 @@ export async function POST(
     
     const averageRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
     
-    await prisma.story.update({
+    await prisma.book.update({
       where: { id: bookId },
       data: { rating: averageRating }
     })

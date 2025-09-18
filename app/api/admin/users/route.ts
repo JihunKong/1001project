@@ -32,7 +32,9 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: any = {
+      deletedAt: null // Only show non-deleted users
+    };
     
     if (search) {
       whereClause.OR = [
@@ -56,16 +58,9 @@ export async function GET(request: NextRequest) {
               lastName: true
             }
           },
-          subscription: {
-            select: {
-              status: true,
-              plan: true
-            }
-          },
           _count: {
             select: {
-              stories: true,
-              orders: true
+              stories: true
             }
           }
         },
@@ -111,9 +106,12 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validatedData = createUserSchema.parse(body);
 
-    // Check if user with email already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: validatedData.email }
+    // Check if user with email already exists (excluding deleted users)
+    const existingUser = await prisma.user.findFirst({
+      where: { 
+        email: validatedData.email,
+        deletedAt: null
+      }
     });
 
     if (existingUser) {
@@ -140,8 +138,7 @@ export async function POST(request: NextRequest) {
         },
         _count: {
           select: {
-            stories: true,
-            orders: true
+            stories: true
           }
         }
       }

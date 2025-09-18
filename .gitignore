@@ -84,6 +84,7 @@ privkey.pem
 docker-compose.local.yml
 docker-compose.dev.yml
 docker-compose.test.yml
+docker-compose.test-edu.yml
 docker-compose.ssl.yml
 docker-compose.override.yml
 
@@ -94,6 +95,11 @@ test-*.sql
 *.log
 server.log
 test-email.js
+TEST_MODE_README.md
+lib/auth-test.ts
+prisma/seed-test-edu.ts
+components/TestLoginPanel.tsx
+app/test-login/
 
 # Backup files
 backups/

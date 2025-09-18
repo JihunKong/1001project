@@ -52,7 +52,7 @@ function validateCallbackUrl(url: string | null): string {
     // Allow only specific safe paths
     const allowedPaths = [
       '/dashboard', '/admin', '/login', '/signup', '/library', '/shop',
-      '/settings', '/volunteer', '/donate', '/onboarding'
+      '/settings', '/volunteer', '/donate'
     ];
     
     // Check if it's an allowed path or starts with an allowed path + /
@@ -165,70 +165,6 @@ function LoginContent() {
     }
   };
 
-  // Demo account sign in - instant access without email
-  const handleDemoSignIn = async (demoEmail: string) => {
-    setIsLoading(true);
-    try {
-      // First try to login via demo API endpoint
-      const loginResponse = await fetch('/api/auth/demo-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: demoEmail }),
-      });
-
-      const loginData = await loginResponse.json();
-
-      if (loginData.success) {
-        // Successfully logged in via demo API
-        toast.success('Demo account access granted! 🎉');
-        
-        // Determine dashboard path based on demo email
-        let dashboardPath = '/dashboard';
-        if (demoEmail.includes('teacher')) {
-          dashboardPath = '/dashboard/teacher';
-        } else if (demoEmail.includes('institution')) {
-          dashboardPath = '/dashboard/institution';
-        } else if (demoEmail.includes('volunteer')) {
-          dashboardPath = '/dashboard/volunteer';
-        } else {
-          dashboardPath = '/dashboard/learner';
-        }
-        
-        // Now sign in with NextAuth using the demo provider
-        const result = await signIn('demo', {
-          email: demoEmail,
-          redirect: false,
-          callbackUrl: dashboardPath,
-        });
-
-        if (result?.ok) {
-          router.push(dashboardPath);
-        } else {
-          // If NextAuth fails, still redirect as we have a valid session
-          router.push(loginData.redirectUrl || dashboardPath);
-        }
-      } else {
-        // Fallback to email provider if demo login fails
-        const result = await signIn('email', {
-          email: demoEmail,
-          redirect: false,
-          callbackUrl,
-        });
-
-        if (result?.error) {
-          toast.error('Demo login failed. Please try again.');
-        } else {
-          toast.success('Check your email for verification');
-          router.push('/verify-email');
-        }
-      }
-    } catch (error) {
-      console.error('Demo sign in error:', error);
-      toast.error('Failed to access demo account');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const socialLogins = [
     { name: 'Google', icon: Chrome, color: 'bg-red-500 hover:bg-red-600', provider: 'google' },
@@ -454,9 +390,9 @@ function LoginContent() {
               )}
             </button>
 
-            <div className="bg-amber-50 rounded-lg p-4">
-              <p className="text-sm text-amber-700">
-                <strong>For Admin & Volunteer accounts only.</strong> Regular users should use the Magic Link option above.
+            <div className="bg-blue-50 rounded-lg p-4">
+              <p className="text-sm text-blue-700">
+                <strong>Direct login with email and password.</strong> All user roles can use this login method.
               </p>
             </div>
           </form>
@@ -472,61 +408,6 @@ function LoginContent() {
           </p>
         </div>
 
-        {/* Demo Accounts */}
-        <div className="mt-8 p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-medium text-blue-900">Try Demo Accounts</h4>
-            {process.env.NEXT_PUBLIC_DEMO_MODE === 'true' && (
-              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                Instant Access
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-gray-600 mb-3">
-            Click any account below for instant demo access - no email required!
-          </p>
-          <div className="space-y-2">
-            <button
-              onClick={() => handleDemoSignIn('learner@demo.1001stories.org')}
-              disabled={isLoading}
-              className="w-full text-left p-2 rounded hover:bg-white/50 transition-colors disabled:opacity-50"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-xs text-blue-900">📚 Learner</span>
-                  <p className="text-xs text-gray-500">learner@demo.1001stories.org</p>
-                </div>
-                <ArrowRight className="w-3 h-3 text-blue-600" />
-              </div>
-            </button>
-            <button
-              onClick={() => handleDemoSignIn('teacher@demo.1001stories.org')}
-              disabled={isLoading}
-              className="w-full text-left p-2 rounded hover:bg-white/50 transition-colors disabled:opacity-50"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-xs text-blue-900">👩‍🏫 Teacher</span>
-                  <p className="text-xs text-gray-500">teacher@demo.1001stories.org</p>
-                </div>
-                <ArrowRight className="w-3 h-3 text-blue-600" />
-              </div>
-            </button>
-            <button
-              onClick={() => handleDemoSignIn('volunteer@demo.1001stories.org')}
-              disabled={isLoading}
-              className="w-full text-left p-2 rounded hover:bg-white/50 transition-colors disabled:opacity-50"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-xs text-blue-900">💝 Volunteer</span>
-                  <p className="text-xs text-gray-500">volunteer@demo.1001stories.org</p>
-                </div>
-                <ArrowRight className="w-3 h-3 text-blue-600" />
-              </div>
-            </button>
-          </div>
-        </div>
       </motion.div>
     </div>
   );

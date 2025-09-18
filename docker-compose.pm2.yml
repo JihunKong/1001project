@@ -1,0 +1,201 @@
+version: '3.9'
+
+services:
+  app:
+    image: 1001-stories:pm2
+    container_name: 1001-stories-app
+    restart: unless-stopped
+    expose:
+      - "3000"
+      - "9090" # Health monitor API
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+      - NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
+      - NEXTAUTH_SECRET=hTBi5+Y349RiOMKCBoWfNu57t8ZuEmyCreI3V2NpKhs=
+      - DATABASE_URL=postgresql://stories_user:DV0erv2Db3cJtsXZHKmUK7Twx@postgres:5432/stories_db
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - EMAIL_FROM=noreply@1001stories.org
+      - EMAIL_SERVICE_ENABLED=false
+      - PM2_INSTANCES=max
+    volumes:
+      - ./uploads:/app/uploads
+      - ./prisma:/app/prisma
+      - ./public/books:/app/public/books
+      - ./logs:/app/logs
+      - pm2_data:/app/.pm2
+      - letsencrypt:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pm2", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
+  nginx:
+    image: nginx:alpine
+    container_name: 1001-stories-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+      - letsencrypt:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+    depends_on:
+      - app
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: 1001-stories-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: stories_db
+      POSTGRES_USER: ${DB_USER:-stories_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-DV0erv2Db3cJtsXZHKmUK7Twx}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    expose:
+      - "5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-stories_user} -d stories_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Certbot for SSL certificate management
+  certbot:
+    image: certbot/certbot:latest
+    container_name: 1001-stories-certbot
+    volumes:
+      - letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    command: echo "Certbot container for SSL certificate management"
+    profiles:
+      - ssl  # Only start when explicitly requested
+
+  # Redis for session management and caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: 1001-stories-redis
+    restart: unless-stopped
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    profiles:
+      - cache  # Only start when explicitly requested
+
+  # PgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: 1001-stories-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@1001stories.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    expose:
+      - "80"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+    profiles:
+      - admin  # Only start when explicitly requested
+
+  # Prometheus for metrics collection (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: 1001-stories-prometheus
+    restart: unless-stopped
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - app-network
+    profiles:
+      - monitoring
+
+  # Grafana for metrics visualization (optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: 1001-stories-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - app-network
+    profiles:
+      - monitoring
+
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  pm2_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  letsencrypt:
+  certbot_www:

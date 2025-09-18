@@ -519,7 +519,7 @@ export default function StoryPage() {
                 <div className="mt-4 pt-4 border-t">
                   <div className="flex items-center justify-between text-sm mb-2">
                     <span className="text-gray-600">Reading Progress</span>
-                    <span className="font-medium">{Math.round(story.userProgress.progress)}%</span>
+                    <span className="font-medium text-gray-900">{Math.round(story.userProgress.progress)}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 

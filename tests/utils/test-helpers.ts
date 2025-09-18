@@ -173,7 +173,7 @@ export class AssertionHelper {
 export class DatabaseHelper {
   private dbUrl: string;
   
-  constructor(dbUrl = process.env.DATABASE_URL || 'postgresql://test_user:***REMOVED***_123@localhost:5433/stories_test_db') {
+  constructor(dbUrl = process.env.DATABASE_URL || 'postgresql://test_user:test_password_123@localhost:5433/stories_test_db') {
     this.dbUrl = dbUrl;
   }
   

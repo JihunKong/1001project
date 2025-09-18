@@ -1,10 +1,10 @@
 import { PrismaClient, ContentType } from '@prisma/client';
 import { booksData } from './books-data';
-import type { BookMetadata } from '../scripts/create-book-data';
 
 const prisma = new PrismaClient();
 
-// Type alias for backwards compatibility
+// Type definition for book data
+type BookMetadata = any;
 type BookData = BookMetadata;
 
 async function main() {
@@ -83,10 +83,10 @@ async function main() {
             coverImage: coverImageUrl,
             fullPdf: mainPdfUrl,
             samplePdf: samplePdfUrl,
-            pageCount: bookData.pageCount,
-            readingLevel: bookData.ageRange,
-            readingTime: Math.ceil(bookData.pageCount / 2), // Estimate 2 pages per minute
-            isPremium: bookData.isPremium,
+            pageCount: bookData.pageCount || 20,
+            readingLevel: bookData.ageRange || "Elementary",
+            readingTime: Math.ceil((bookData.pageCount || 20) / 2), // Estimate 2 pages per minute
+            isPremium: bookData.isPremium || false,
             price: bookData.isPremium ? 4.99 : 0.00,
             isPublished: true,
             publishedDate: new Date(),

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+// Note: Types are imported from react-pdf's bundled pdfjs-dist to avoid version conflicts
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -59,7 +59,7 @@ export default function EnhancedPDFViewer({
   canAccessFull = false
 }: PDFViewerProps) {
   const router = useRouter();
-  const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null);
+  const [pdf, setPdf] = useState<any | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [scale, setScale] = useState(1.0);
@@ -75,11 +75,10 @@ export default function EnhancedPDFViewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
+  const renderTaskRef = useRef<any>(null);
 
-  // Calculate effective max pages (authentication + demo limitations)
-  const effectiveMaxPages = isDemo 
-    ? Math.min(maxPages, totalPages) 
-    : (!isAuthenticated ? Math.min(10, totalPages) : totalPages);
+  // No page restrictions - show full PDF
+  const effectiveMaxPages = totalPages;
 
   // Component lifecycle and cleanup
   useEffect(() => {
@@ -90,6 +89,15 @@ export default function EnhancedPDFViewer({
       // Cancel any ongoing loading
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
+      }
+      // Cancel any ongoing render task
+      if (renderTaskRef.current) {
+        try {
+          renderTaskRef.current.cancel();
+        } catch (e) {
+          // Ignore cancellation errors
+        }
+        renderTaskRef.current = null;
       }
     };
   }, []);
@@ -116,12 +124,12 @@ export default function EnhancedPDFViewer({
         throw new Error('PDF viewer must be rendered on client side');
       }
 
-      // Simple PDF.js loading
-      const pdfLib = await import('pdfjs-dist');
+      // Import pdfjs-dist from react-pdf bundle
+      const pdfLib = await import('react-pdf/node_modules/pdfjs-dist');
       
       // Configure worker once
       if (!workerConfigured) {
-        pdfLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+        pdfLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
         workerConfigured = true;
         console.log('PDF.js worker configured');
       }
@@ -220,13 +228,23 @@ export default function EnhancedPDFViewer({
   }, [pdfUrl, loadPDF]);
 
   // Render single page
-  const renderSinglePage = async (pdfDoc: PDFDocumentProxy, pageNum: number) => {
-    if (!singleCanvasRef.current || pageRendering) return;
+  const renderSinglePage = async (pdfDoc: any, pageNum: number) => {
+    if (!singleCanvasRef.current) return;
+    
+    // Cancel any existing render task
+    if (renderTaskRef.current) {
+      try {
+        renderTaskRef.current.cancel();
+      } catch (e) {
+        // Ignore cancellation errors
+      }
+      renderTaskRef.current = null;
+    }
     
     setPageRendering(true);
     
     try {
-      const page: PDFPageProxy = await pdfDoc.getPage(pageNum);
+      const page: any = await pdfDoc.getPage(pageNum);
       const canvas = singleCanvasRef.current;
       const context = canvas.getContext('2d');
       
@@ -245,18 +263,23 @@ export default function EnhancedPDFViewer({
         viewport: viewport,
       };
 
-      await page.render(renderContext).promise;
+      // Store render task reference
+      renderTaskRef.current = page.render(renderContext);
+      await renderTaskRef.current.promise;
+      renderTaskRef.current = null;
       console.log('Single page rendered:', pageNum);
-    } catch (err) {
-      console.error('Error rendering single page:', err);
-      setError(`Page rendering failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } catch (err: any) {
+      if (err?.name !== 'RenderingCancelledException') {
+        console.error('Error rendering single page:', err);
+        setError(`Page rendering failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      }
     } finally {
       setPageRendering(false);
     }
   };
 
   // Render page spread (two pages side by side)
-  const renderSpread = async (pdfDoc: PDFDocumentProxy, startPage: number) => {
+  const renderSpread = async (pdfDoc: any, startPage: number) => {
     if ((!leftCanvasRef.current || !rightCanvasRef.current) || pageRendering) return;
     
     setPageRendering(true);
@@ -300,8 +323,8 @@ export default function EnhancedPDFViewer({
   };
 
   // Helper function to render a page on a specific canvas
-  const renderPageOnCanvas = async (pdfDoc: PDFDocumentProxy, pageNum: number, canvas: HTMLCanvasElement) => {
-    const page: PDFPageProxy = await pdfDoc.getPage(pageNum);
+  const renderPageOnCanvas = async (pdfDoc: any, pageNum: number, canvas: HTMLCanvasElement) => {
+    const page: any = await pdfDoc.getPage(pageNum);
     const context = canvas.getContext('2d');
     
     if (!context) {
@@ -319,7 +342,14 @@ export default function EnhancedPDFViewer({
       viewport: viewport,
     };
 
-    await page.render(renderContext).promise;
+    try {
+      const renderTask = page.render(renderContext);
+      await renderTask.promise;
+    } catch (err: any) {
+      if (err?.name !== 'RenderingCancelledException') {
+        throw err;
+      }
+    }
   };
 
   // Re-render when page, scale, rotation, or view mode changes
@@ -497,27 +527,6 @@ export default function EnhancedPDFViewer({
           <h2 className="font-semibold text-gray-900 truncate">{title}</h2>
           
           {/* Sample Mode Indicator */}
-          {isSample && isPremium && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium">
-              <Eye className="w-3 h-3" />
-              Sample Preview
-            </div>
-          )}
-          
-          {/* Premium Book Indicator */}
-          {isPremium && !isSample && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
-              <Crown className="w-3 h-3" />
-              Premium
-            </div>
-          )}
-          
-          {/* Legacy Demo/Preview indicators */}
-          {(isDemo || (!isAuthenticated && !isSample)) && (
-            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
-              {isDemo ? `Demo Mode (Max ${maxPages} pages)` : `Preview (Max 10 pages)`}
-            </span>
-          )}
         </div>
         
         <div className="flex items-center gap-2">
@@ -681,43 +690,7 @@ export default function EnhancedPDFViewer({
         )}
       </div>
 
-      {/* Warning Banner */}
-      {(isSample && isPremium) && (
-        <div className="bg-purple-500 text-white px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 text-sm font-medium">
-              <Lock className="w-4 h-4" />
-              <span>📖 Sample Preview: This is a preview of the book</span>
-              <span>|</span>
-              <span>Purchase the full book to read the complete content!</span>
-            </div>
-            {bookId && onPurchase && (
-              <button
-                onClick={() => onPurchase(bookId)}
-                className="bg-white text-purple-600 px-4 py-1 rounded-full text-sm font-medium hover:bg-gray-100 transition-colors"
-              >
-                Buy Now $${Number(price || 0).toFixed(2)}
-              </button>
-            )}
-          </div>
-        </div>
-      )}
       
-      {/* Legacy Warning Banner */}
-      {(isDemo || (!isAuthenticated && !isSample)) && (
-        <div className="bg-yellow-400 text-black px-4 py-3">
-          <div className="flex items-center justify-center gap-3 text-sm font-medium">
-            <span>
-              {isDemo 
-                ? `🎭 Demo Mode: Preview up to ${maxPages} pages only`
-                : '📖 Preview Mode: Only first 10 pages available'
-              }
-            </span>
-            <span>|</span>
-            <span>Sign up and purchase to read the full content!</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

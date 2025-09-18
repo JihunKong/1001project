@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { BookOpen, Crown, Lock, Star, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
-import EnhancedPDFThumbnailWrapper from '@/components/shop/EnhancedPDFThumbnailWrapper';
+import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
 import { resolveBookFiles } from '@/lib/book-files';
 
 interface Book {
@@ -75,10 +75,12 @@ export default function EnhancedBookCard({ book }: EnhancedBookCardProps) {
             {/* Cover Image */}
             <div className="relative ml-3 mr-2 mt-2 mb-8 h-[calc(100%-60px)] bg-white rounded-sm overflow-hidden shadow-md">
               {(book.pdfFrontCover || book.pdfKey || bookFiles.frontCover || bookFiles.main) ? (
-                <EnhancedPDFThumbnailWrapper
+                <SimplePDFThumbnail
                   bookId={book.id || book.bookId || ''}
                   title={book.title}
-                  className="w-full h-full"
+                  pdfUrl={book.pdfKey || bookFiles.main || undefined}
+                  existingImage={book.pdfFrontCover || book.coverImage}
+                  className="w-full h-full object-cover"
                   alt={book.title}
                 />
               ) : (

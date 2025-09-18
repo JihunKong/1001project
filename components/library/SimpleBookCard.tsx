@@ -14,30 +14,26 @@ const SimplePDFThumbnail = dynamic(() => import('./SimplePDFThumbnail'), {
     </div>
   )
 });
-import { resolveBookFiles } from '@/lib/book-files';
 
 interface Book {
   id: string;
   title: string;
   subtitle?: string;
-  author: {
-    name: string;
-    age?: number;
-    location?: string;
-  };
+  authorName: string;  // Changed from nested author object
+  authorAge?: number;
+  authorLocation?: string;
   language: string;
   category: string[];
   ageRange?: string;
   readingTime?: number;
   coverImage?: string;
-  isPremium: boolean;
-  isFeatured: boolean;
+  // isPremium: boolean; // Removed - all books are free now
+  isFeatured?: boolean;
+  featured?: boolean;  // API returns 'featured' not 'isFeatured'
   rating?: number;
-  accessLevel: 'preview' | 'full';
-  stats: {
-    readers: number;
-    bookmarks: number;
-  };
+  accessLevel?: 'preview' | 'full';
+  viewCount?: number;
+  downloadCount?: number;
   pdfKey?: string;
   pdfFrontCover?: string;
   pdfBackCover?: string;
@@ -52,21 +48,12 @@ interface SimpleBookCardProps {
 }
 
 export default function SimpleBookCard({ book }: SimpleBookCardProps) {
-  // Resolve book files
-  const bookFiles = resolveBookFiles(book.id || book.bookId || '');
+  // Only use PDF source if we have actual PDF data
+  const pdfSource = book.pdfFrontCover || book.pdfKey || book.fullPdf || book.samplePdf;
   
-  // Use the correct cover.pdf files first
-  const pdfSource = bookFiles.frontCover || book.pdfFrontCover || book.pdfKey || book.fullPdf || book.samplePdf || bookFiles.main;
-  
-  // Debug log to check which source is being used
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Book:', book.title, 'PDF Source:', pdfSource, {
-      pdfKey: book.pdfKey,
-      main: bookFiles.main,
-      pdfFrontCover: book.pdfFrontCover,
-      frontCover: bookFiles.frontCover
-    });
-  }
+  // Use cover image if available, otherwise check for PDF
+  const hasCoverImage = book.coverImage && !book.coverImage.endsWith('.pdf');
+  const shouldUsePDF = !hasCoverImage && pdfSource;
 
   return (
     <motion.div
@@ -80,7 +67,15 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
         <div className="relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl">
           {/* Cover Image Container with Fixed Aspect Ratio */}
           <div className="relative bg-white aspect-[3/4]">
-            {pdfSource ? (
+            {hasCoverImage ? (
+              <Image
+                src={book.coverImage!}
+                alt={book.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
+            ) : shouldUsePDF ? (
               <SimplePDFThumbnail
                 bookId={book.id || book.bookId || ''}
                 title={book.title}
@@ -100,18 +95,16 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/60 to-transparent"></div>
           </div>
 
-          {/* Premium Badge */}
-          {book.isPremium && (
-            <div className="absolute right-2 top-2 z-20">
-              <span className="inline-flex items-center gap-1 rounded-full bg-yellow-400/90 px-2.5 py-1 text-xs font-semibold text-black shadow-md">
-                <Crown className="h-3 w-3" />
-                Premium
-              </span>
-            </div>
-          )}
+          {/* Free Badge */}
+          <div className="absolute right-2 top-2 z-20">
+            <span className="inline-flex items-center gap-1 rounded-full bg-green-500/90 px-2.5 py-1 text-xs font-semibold text-white shadow-md">
+              <BookOpen className="h-3 w-3" />
+              Free
+            </span>
+          </div>
           
           {/* Featured Badge */}
-          {book.isFeatured && (
+          {(book.featured || book.isFeatured) && (
             <div className="absolute left-2 top-2 z-20">
               <span className="inline-flex items-center gap-1 rounded-full bg-red-500/90 px-2.5 py-1 text-xs font-semibold text-white shadow-md">
                 <Star className="h-3 w-3" />
@@ -126,7 +119,7 @@ export default function SimpleBookCard({ book }: SimpleBookCardProps) {
               {book.title}
             </div>
             <div className="line-clamp-1 text-xs text-white/90">
-              {book.author.name}
+              {book.authorName}
             </div>
           </div>
         </div>

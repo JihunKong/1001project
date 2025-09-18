@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { storyIds, publishAll = false } = body;
 
-    let whereClause: any = {
+    const whereClause: any = {
       isPublished: false,
       fullPdf: { not: null } // Only publish stories with PDF files
     };

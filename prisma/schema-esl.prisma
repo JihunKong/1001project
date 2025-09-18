@@ -1,0 +1,333 @@
+// ESL Learning Platform Schema Extension
+// Simplified and optimized for core learning features
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== CORE ESL LEARNING MODELS =====
+
+// Unified learning progress tracking
+model LearningProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  bookId    String
+  
+  // Progress metrics
+  pagesRead     Int      @default(0)
+  totalPages    Int      @default(0)
+  readingTime   Int      @default(0) // in seconds
+  lastPageRead  Int      @default(0)
+  
+  // Completion tracking
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+  isCompleted   Boolean  @default(false)
+  
+  // Learning metrics (stored as JSON for flexibility)
+  metrics       Json?    // { wordsLearned: 0, quizScore: 0, comprehension: 0 }
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book          Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, bookId])
+  @@index([userId])
+  @@index([bookId])
+}
+
+// Vocabulary learning and tracking
+model Vocabulary {
+  id            String   @id @default(cuid())
+  userId        String
+  word          String
+  
+  // Learning data
+  definition    String
+  translations  Json?    // { ko: "한국어", es: "español", etc. }
+  pronunciation String?
+  partOfSpeech  String?  // noun, verb, adjective, etc.
+  
+  // Context and examples
+  contexts      Json[]   @default([]) // Array of usage contexts from books
+  bookId        String?  // Source book where first encountered
+  
+  // Mastery tracking
+  masteryLevel  Int      @default(0) // 0-5 scale
+  timesSeen     Int      @default(1)
+  timesCorrect  Int      @default(0)
+  lastSeen      DateTime @default(now())
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book          Book?    @relation(fields: [bookId], references: [id], onDelete: SetNull)
+  
+  @@unique([userId, word])
+  @@index([userId])
+  @@index([word])
+}
+
+// Quiz and assessment system
+model Quiz {
+  id            String   @id @default(cuid())
+  bookId        String
+  
+  // Quiz metadata
+  title         String
+  description   String?
+  type          QuizType @default(COMPREHENSION)
+  difficulty    String?  // A1, A2, B1, B2, C1, C2
+  
+  // Questions stored as flexible JSON
+  questions     Json     // Array of question objects
+  passingScore  Int      @default(70)
+  timeLimit     Int?     // in minutes
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  book          Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  attempts      QuizAttempt[]
+  
+  @@index([bookId])
+}
+
+model QuizAttempt {
+  id            String   @id @default(cuid())
+  userId        String
+  quizId        String
+  
+  // Attempt data
+  score         Int
+  answers       Json     // User's answers
+  timeSpent     Int?     // in seconds
+  passed        Boolean
+  
+  // Feedback
+  feedback      Json?    // AI-generated feedback
+  
+  attemptNumber Int      @default(1)
+  completedAt   DateTime @default(now())
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([quizId])
+}
+
+// Book club and social learning
+model BookClub {
+  id            String   @id @default(cuid())
+  bookId        String
+  creatorId     String
+  
+  // Club information
+  name          String
+  description   String?
+  isActive      Boolean  @default(true)
+  isPublic      Boolean  @default(true)
+  
+  // Settings
+  maxMembers    Int?
+  language      String?
+  level         String?  // Target CEFR level
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  book          Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  creator       User     @relation("ClubCreator", fields: [creatorId], references: [id])
+  members       BookClubMember[]
+  posts         BookClubPost[]
+  
+  @@index([bookId])
+  @@index([creatorId])
+}
+
+model BookClubMember {
+  id            String   @id @default(cuid())
+  clubId        String
+  userId        String
+  
+  role          ClubRole @default(MEMBER)
+  joinedAt      DateTime @default(now())
+  
+  club          BookClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([clubId, userId])
+  @@index([userId])
+}
+
+model BookClubPost {
+  id            String   @id @default(cuid())
+  clubId        String
+  userId        String
+  
+  // Post content
+  content       String
+  parentId      String?  // For threaded discussions
+  
+  // Engagement
+  likes         Int      @default(0)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  club          BookClub @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent        BookClubPost? @relation("PostReplies", fields: [parentId], references: [id])
+  replies       BookClubPost[] @relation("PostReplies")
+  
+  @@index([clubId])
+  @@index([userId])
+}
+
+// Gamification system
+model Achievement {
+  id            String   @id @default(cuid())
+  
+  // Achievement details
+  name          String   @unique
+  description   String
+  icon          String?
+  
+  // Requirements
+  category      AchievementCategory
+  criteria      Json     // Flexible criteria definition
+  xpValue       Int      @default(0)
+  tier          AchievementTier @default(BRONZE)
+  
+  createdAt     DateTime @default(now())
+  
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  
+  // Progress tracking
+  progress      Int      @default(0) // For progressive achievements
+  earnedAt      DateTime @default(now())
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+model UserStats {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  
+  // Core stats
+  totalXP       Int      @default(0)
+  level         Int      @default(1)
+  streak        Int      @default(0)
+  lastActive    DateTime @default(now())
+  
+  // Learning stats
+  booksRead     Int      @default(0)
+  wordsLearned  Int      @default(0)
+  quizzesPassed Int      @default(0)
+  totalReadingTime Int   @default(0) // in minutes
+  
+  // Social stats
+  postsCreated  Int      @default(0)
+  likesReceived Int      @default(0)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Reading session tracking for analytics
+model ReadingSession {
+  id            String   @id @default(cuid())
+  userId        String
+  bookId        String
+  
+  // Session data
+  startTime     DateTime @default(now())
+  endTime       DateTime?
+  duration      Int?     // in seconds
+  pagesRead     Int      @default(0)
+  
+  // Interaction data
+  wordsClicked  Json[]   @default([]) // Words user clicked for definition
+  highlights    Json[]   @default([]) // Text highlights
+  notes         Json[]   @default([]) // User notes
+  
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book          Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([bookId])
+}
+
+// ===== ENUMS =====
+
+enum QuizType {
+  COMPREHENSION
+  VOCABULARY
+  GRAMMAR
+  MIXED
+}
+
+enum ClubRole {
+  MEMBER
+  MODERATOR
+  ADMIN
+}
+
+enum AchievementCategory {
+  READING
+  VOCABULARY
+  QUIZ
+  SOCIAL
+  STREAK
+}
+
+enum AchievementTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+// ===== RELATIONS TO EXISTING MODELS =====
+// These would be added to existing User and Book models:
+
+// model User {
+//   learningProgress    LearningProgress[]
+//   vocabulary          Vocabulary[]
+//   quizAttempts        QuizAttempt[]
+//   createdClubs        BookClub[] @relation("ClubCreator")
+//   clubMemberships     BookClubMember[]
+//   clubPosts           BookClubPost[]
+//   achievements        UserAchievement[]
+//   stats               UserStats?
+//   readingSessions     ReadingSession[]
+// }
+
+// model Book {
+//   learningProgress    LearningProgress[]
+//   vocabulary          Vocabulary[]
+//   quizzes             Quiz[]
+//   clubs               BookClub[]
+//   readingSessions     ReadingSession[]
+// }

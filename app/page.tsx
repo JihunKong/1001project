@@ -103,14 +103,21 @@ export default function Home() {
   ];
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-900/50 dark:to-gray-900">
-      {/* Hero Section with animated background */}
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white">
+      {/* Hero Section with hero image background */}
       <section className="relative overflow-hidden py-24 sm:py-32 lg:py-40">
-        {/* Animated gradient background - simplified */}
+        {/* Hero background image */}
         <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-indigo-950/20 dark:to-purple-950/20" />
-          <div className="blob blob-indigo w-96 h-96 top-0 left-0 animate-delay-100 opacity-30" />
-          <div className="blob blob-blue w-96 h-96 bottom-0 right-0 animate-delay-300 opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-yellow-50/30 to-white" />
+          <div 
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=1920&h=1080&fit=crop)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+          <div className="absolute inset-0 bg-white/90" />
         </div>
         
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
@@ -133,30 +140,26 @@ export default function Home() {
             </motion.div>
             
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8">
-              <span className="block text-gray-900 dark:text-white mb-2">
+              <span className="block text-gray-900 mb-2">
                 Empower Young Voices
               </span>
-              <span className="gradient-text text-6xl sm:text-7xl lg:text-8xl">
+              <span className="text-brand-primary text-6xl sm:text-7xl lg:text-8xl font-bold">
                 Inspire the World
               </span>
             </h1>
             
-            <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl sm:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
               {t('hero.subtitle')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="#roles" className="btn-primary group">
-                {t('hero.cta')}
+              <Link href="/signup" className="btn-brand-primary group">
+                Join Our Community
                 <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link href="/demo" className="btn-secondary text-gray-700 dark:text-gray-200">
-                <Play className="w-5 h-5 mr-2" />
-                Try Demo
-              </Link>
-              <Link href="/library" className="btn-secondary text-gray-700 dark:text-gray-200">
+              <Link href="/library" className="btn-brand-secondary">
                 <BookOpen className="w-5 h-5 mr-2" />
-                Explore Library
+                Explore Stories
               </Link>
             </div>
           </motion.div>
@@ -179,10 +182,10 @@ export default function Home() {
                 <div className={`inline-flex items-center justify-center w-20 h-20 mb-6 rounded-3xl bg-gradient-to-br ${feature.gradient} shadow-lg shadow-${feature.gradient.split('-')[1]}-500/25 group-hover:scale-110 transition-transform duration-300`}>
                   <feature.icon className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-lg">
+                <p className="text-gray-600 text-lg">
                   {feature.description}
                 </p>
               </motion.div>
@@ -206,10 +209,10 @@ export default function Home() {
                   className="text-center"
                 >
                   <stat.icon className="w-8 h-8 mx-auto mb-3 text-indigo-500" />
-                  <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+                  <div className="text-3xl sm:text-4xl font-bold text-brand-primary mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="text-sm text-gray-600">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -219,78 +222,42 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Role Selection Section */}
-      <section id="roles" className="py-24 relative">
+      {/* Get Started Section */}
+      <section id="get-started" className="py-24 relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/30 rounded-full">
-              <Target className="w-4 h-4" />
-              Choose Your Path
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-sm font-medium text-blue-700 bg-blue-50 rounded-full">
+              <Sparkles className="w-4 h-4" />
+              Join Our Community
             </div>
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-              {t('roles.title')}
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+              Start Your Journey Today
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              {t('roles.subtitle')}
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
+              Discover amazing stories from children around the world. Whether you're here to learn, teach, volunteer, or support our mission, your journey begins with a single step.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/signup" className="btn-brand-primary group text-lg px-8 py-4">
+                Start Your Journey
+                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link href="/library" className="btn-brand-secondary text-lg px-8 py-4">
+                <BookOpen className="w-5 h-5 mr-2" />
+                Explore Stories
+              </Link>
+            </div>
+            
+            <p className="text-sm text-gray-500 mt-6">
+              Free to join • No commitment • Access granted instantly
             </p>
           </motion.div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-            {roles.map((role, index) => (
-              <motion.div
-                key={role.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.15 }}
-                viewport={{ once: true }}
-                className="group relative"
-              >
-                <Link href={role.href}>
-                  <div className="glass-card glass-card-hover rounded-2xl p-6 sm:p-8 h-full relative overflow-hidden min-h-[280px] sm:min-h-[320px] touch-manipulation">
-                    {/* Gradient overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${role.gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`} />
-                    
-                    {/* Icon with role-specific color - Improved mobile touch target */}
-                    <div className="relative inline-flex items-center justify-center w-16 h-16 sm:w-16 sm:h-16 mb-4 sm:mb-6 rounded-2xl bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
-                      style={{ boxShadow: `0 10px 30px -10px ${role.shadowColor}` }}
-                    >
-                      <role.icon className={`w-8 h-8 sm:w-8 sm:h-8 ${role.iconColor}`} />
-                    </div>
-                    
-                    {/* Content - Responsive typography */}
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
-                      {role.title}
-                    </h3>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 leading-relaxed">
-                      {role.description}
-                    </p>
-                    
-                    {/* Features - Optimized for mobile */}
-                    <ul className="space-y-2 mb-4 sm:mb-6">
-                      {role.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                          <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 flex-shrink-0" />
-                          <span className="leading-tight">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    {/* CTA - Improved mobile touch target */}
-                    <div className={`flex items-center font-semibold bg-gradient-to-r ${role.gradient} bg-clip-text text-transparent group-hover:gap-3 transition-all duration-300 min-h-[44px] py-2`}>
-                      Get Started
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 text-gray-600 dark:text-gray-400 group-hover:translate-x-1 transition-transform flex-shrink-0" />
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
       
@@ -315,21 +282,21 @@ export default function Home() {
             </div>
             
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-              <span className="gradient-text">Plant Seeds of Hope</span>
+              <span className="text-brand-primary">Plant Seeds of Hope</span>
             </h2>
             
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
               Every contribution plants seeds of hope and opportunity for children worldwide.
               Join us in creating a world where every child&apos;s voice is heard.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/donate" className="btn-primary group">
+              <Link href="/donate" className="btn-brand-primary group">
                 <Heart className="w-5 h-5 mr-2" />
                 Support Our Mission
                 <Rocket className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
               </Link>
-              <Link href="/volunteer" className="btn-secondary text-gray-700 dark:text-gray-200">
+              <Link href="/volunteer" className="btn-brand-secondary">
                 <Users className="w-5 h-5 mr-2" />
                 Become a Volunteer
               </Link>

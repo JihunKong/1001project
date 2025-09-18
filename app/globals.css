@@ -8,22 +8,34 @@
     --background-start-rgb: 214, 219, 220;
     --background-end-rgb: 255, 255, 255;
     
-    /* 1001 Stories Brand Colors */
-    --brand-50: #f8b195;   /* warm peach */
-    --brand-100: #f67280;  /* coral pink */
-    --brand-200: #c06c84;  /* mauve */
-    --brand-300: #6c5b7b;  /* purple */
-    --brand-400: #355c7d;  /* deep blue */
+    /* Seeds of Empowerment Inspired Colors */
+    --primary-green: #6d9438;  /* Primary green */
+    --primary-green-light: #8fb458;
+    --primary-green-dark: #4d6928;
+    --button-yellow: #fec96b;  /* Golden yellow for buttons */
+    --button-yellow-hover: #ffd799;
+    --button-yellow-active: #f4b341;
+    
+    /* Neutral Colors */
+    --text-primary: #2d3436;   /* Dark gray for main text */
+    --text-secondary: #636e72;  /* Medium gray for secondary text */
+    --text-light: #95a5a6;     /* Light gray for hints */
+    --bg-white: #ffffff;
+    --bg-light: #fafafa;
+    --bg-gray: #f5f5f5;
     
     /* Semantic Colors */
-    --bg: #ffffff;
-    --fg: #1f2937;
-    --muted: #6b7280;
-    --accent: #f67280;
-    --link: #355c7d;
-    --success: #16a34a;
-    --warning: #f59e0b;
-    --danger: #dc2626;
+    --success: #27ae60;   /* Success green */
+    --warning: #f39c12;   /* Warning orange */
+    --danger: #e74c3c;    /* Error red */
+    --info: #3498db;      /* Info blue */
+    
+    /* Legacy mappings for compatibility */
+    --brand-50: var(--button-yellow);  
+    --brand-100: var(--primary-green);
+    --brand-200: var(--primary-green-light);
+    --brand-300: var(--primary-green-dark);
+    --brand-400: var(--text-primary);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -43,6 +55,12 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  font-family: var(--font-raleway), system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-montserrat), system-ui, -apple-system, sans-serif;
+  font-weight: 600;
 }
 
 /* Force text visibility for critical UI elements */
@@ -65,55 +83,42 @@ body {
 /* Brand gradient text animation */
 @layer utilities {
   .gradient-text {
-    background: linear-gradient(90deg, #3B82F6, #6366F1, #8B5CF6);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradient 3s ease infinite;
-    background-size: 200% 200%;
+    color: var(--primary-green);
+    font-weight: 600;
   }
   
-  /* 1001 Stories Brand Gradient Text */
+  /* Primary text styles */
   .brand-gradient-text {
-    background: linear-gradient(135deg, var(--brand-100), var(--brand-200), var(--brand-300));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: brand-gradient 4s ease infinite;
-    background-size: 300% 300%;
+    color: var(--primary-green);
+    font-weight: 600;
   }
   
-  @keyframes brand-gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
   
   /* Brand text colors */
-  .text-brand-primary { color: var(--brand-100); }
-  .text-brand-secondary { color: var(--brand-300); }
-  .text-brand-accent { color: var(--brand-50); }
-  .text-brand-text { color: var(--brand-400); }
+  .text-brand-primary { color: var(--primary-green); }
+  .text-brand-secondary { color: var(--primary-green-light); }
+  .text-brand-accent { color: var(--button-yellow); }
+  .text-brand-text { color: var(--text-primary); }
   
   /* Brand background colors */
-  .bg-brand-primary { background-color: var(--brand-100); }
-  .bg-brand-secondary { background-color: var(--brand-300); }
-  .bg-brand-accent { background-color: var(--brand-50); }
-  .bg-brand-light { background-color: var(--brand-50); }
+  .bg-brand-primary { background-color: var(--primary-green); }
+  .bg-brand-secondary { background-color: var(--primary-green-light); }
+  .bg-brand-accent { background-color: var(--button-yellow); }
+  .bg-brand-light { background-color: var(--bg-light); }
   
-  /* Brand gradients */
+  /* Brand solid backgrounds - no gradients */
   .bg-brand-gradient {
-    background: linear-gradient(135deg, var(--brand-100), var(--brand-200), var(--brand-300));
+    background: var(--primary-green);
   }
   
   .bg-brand-gradient-soft {
-    background: linear-gradient(135deg, var(--brand-50), var(--brand-100));
+    background: var(--primary-green-light);
   }
   
   /* Brand border colors */
-  .border-brand-primary { border-color: var(--brand-100); }
-  .border-brand-secondary { border-color: var(--brand-300); }
-  .border-brand-accent { border-color: var(--brand-50); }
+  .border-brand-primary { border-color: var(--primary-green); }
+  .border-brand-secondary { border-color: var(--primary-green-light); }
+  .border-brand-accent { border-color: var(--button-yellow); }
   
   @keyframes gradient {
     0% { background-position: 0% 50%; }
@@ -192,45 +197,48 @@ body {
     @apply hover:shadow-2xl transition-all duration-300;
   }
   
-  /* 1001 Stories Brand Button Styles */
+  /* Seeds of Empowerment Button Styles */
   .btn-brand-primary {
-    @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white;
-    @apply rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105;
-    @apply transition-all duration-200 ease-out font-heading;
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium;
+    @apply rounded-full shadow-lg hover:shadow-xl transform hover:scale-105;
+    @apply transition-all duration-200 ease-out;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
-    background: linear-gradient(135deg, var(--brand-100), var(--brand-200));
-    color: white;
+    background: var(--button-yellow);
+    color: var(--text-primary);
+    font-weight: 600;
   }
   
   .btn-brand-primary:hover {
-    background: linear-gradient(135deg, var(--brand-200), var(--brand-300));
+    background: var(--button-yellow-hover);
   }
   
   .btn-brand-secondary {
     @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium;
-    @apply rounded-xl border shadow-md hover:shadow-lg transform hover:scale-105;
-    @apply transition-all duration-200 ease-out font-heading;
+    @apply rounded-full border-2 shadow-md hover:shadow-lg transform hover:scale-105;
+    @apply transition-all duration-200 ease-out;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
     background: white;
-    border-color: var(--brand-200);
-    color: var(--brand-400);
+    border-color: var(--button-yellow);
+    color: var(--text-primary);
+    font-weight: 600;
   }
   
   .btn-brand-secondary:hover {
-    background: var(--brand-50);
-    border-color: var(--brand-300);
+    background: var(--button-yellow);
+    color: var(--text-primary);
   }
   
   .btn-brand-accent {
     @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium;
-    @apply rounded-lg shadow hover:shadow-md transform hover:scale-105;
-    @apply transition-all duration-200 ease-out font-heading;
-    background: var(--brand-50);
-    color: var(--brand-400);
+    @apply rounded-full shadow hover:shadow-md transform hover:scale-105;
+    @apply transition-all duration-200 ease-out;
+    background: var(--primary-green);
+    color: white;
+    font-weight: 600;
   }
   
   .btn-brand-accent:hover {
-    background: var(--brand-100);
+    background: var(--primary-green-dark);
     color: white;
   }
   
@@ -432,7 +440,8 @@ html {
 /* Focus styles */
 @layer base {
   *:focus-visible {
-    @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900;
+    --tw-ring-color: var(--button-yellow);
   }
 }
 

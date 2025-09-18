@@ -1,16 +1,16 @@
-# Stage 1: Dependencies
-FROM node:20-alpine AS deps
+# Stage 1: Dependencies  
+FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies with legacy peer deps to avoid conflicts
+RUN npm ci --legacy-peer-deps
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Copy dependencies from deps stage
@@ -19,17 +19,23 @@ COPY . .
 
 # Environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 # Don't set NODE_ENV=production during build to allow Tailwind to scan files properly
 
-# Generate Prisma Client
-RUN npx prisma generate
+# Generate Prisma Client (only the client, skip other generators)
+RUN npx prisma generate --generator client
+
+# Install sharp with optimized build for Alpine Linux
+RUN apk add --no-cache --virtual .build-deps python3 make g++ \
+    && npm install --platform=linux --arch=x64 --libc=musl sharp --legacy-peer-deps \
+    && apk del .build-deps
 
 # Build application
 RUN npm run build
 
 
 # Stage 3: Runner
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production

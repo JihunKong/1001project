@@ -1,0 +1,28 @@
+# Simple production Dockerfile that uses pre-built .next directory
+FROM node:22-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy everything (including pre-built .next directory)
+COPY --chown=nextjs:nodejs . .
+
+# Install production dependencies only
+RUN npm ci --production --legacy-peer-deps
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Start the application
+CMD ["npm", "run", "start"]

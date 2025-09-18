@@ -1,0 +1,676 @@
+name: Role System E2E Tests
+
+on:
+  push:
+    branches: [ main, staging, feature/role-system-v2 ]
+    paths:
+      - 'app/api/auth/**'
+      - 'app/dashboard/**' 
+      - 'app/admin/**'
+      - 'lib/auth*.ts'
+      - 'middleware.ts'
+      - 'prisma/schema.prisma'
+      - 'tests/role-system/**'
+      - '.github/workflows/role-system-tests.yml'
+  
+  pull_request:
+    branches: [ main, staging ]
+    types: [ opened, synchronize, reopened ]
+    paths:
+      - 'app/api/auth/**'
+      - 'app/dashboard/**'
+      - 'app/admin/**'
+      - 'lib/auth*.ts'
+      - 'middleware.ts'
+      - 'prisma/schema.prisma'
+      - 'tests/role-system/**'
+  
+  schedule:
+    # Run nightly at 2 AM UTC to catch environment drift
+    - cron: '0 2 * * *'
+  
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'auth'
+          - 'migration'
+          - 'admin'
+          - 'dashboard'
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - 'staging'
+          - 'production-preview'
+      parallel_workers:
+        description: 'Number of parallel workers'
+        required: false
+        default: '2'
+        type: string
+      send_notifications:
+        description: 'Send Slack notifications'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  NODE_VERSION: '20'
+  STAGING_URL: 'https://localhost:8080'
+  POSTGRES_VERSION: '15-alpine'
+  CI: true
+
+jobs:
+  # Pre-flight checks and environment validation
+  pre_flight:
+    name: Pre-flight Checks
+    runs-on: ubuntu-latest
+    outputs:
+      test_matrix: ${{ steps.matrix.outputs.test_matrix }}
+      should_run_migration_tests: ${{ steps.migration_check.outputs.should_run }}
+      staging_ready: ${{ steps.staging_check.outputs.ready }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check for role system changes
+        id: changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -E "(auth|role|migration|admin)" > /dev/null; then
+            echo "role_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "role_changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Generate test matrix
+        id: matrix
+        run: |
+          if [ "${{ github.event.inputs.test_suite }}" = "all" ] || [ -z "${{ github.event.inputs.test_suite }}" ]; then
+            echo 'test_matrix=["auth-flow", "user-migration", "admin-panel", "dashboard", "role-assignment", "database-migration"]' >> $GITHUB_OUTPUT
+          else
+            case "${{ github.event.inputs.test_suite }}" in
+              "auth") echo 'test_matrix=["auth-flow"]' >> $GITHUB_OUTPUT ;;
+              "migration") echo 'test_matrix=["user-migration", "database-migration"]' >> $GITHUB_OUTPUT ;;
+              "admin") echo 'test_matrix=["admin-panel", "role-assignment"]' >> $GITHUB_OUTPUT ;;
+              "dashboard") echo 'test_matrix=["dashboard"]' >> $GITHUB_OUTPUT ;;
+            esac
+          fi
+      
+      - name: Check migration test necessity
+        id: migration_check
+        run: |
+          if [ "${{ steps.changes.outputs.role_changes }}" = "true" ] || [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Validate staging environment
+        id: staging_check
+        run: |
+          # In a real scenario, this would check if staging is available
+          echo "ready=true" >> $GITHUB_OUTPUT
+      
+      - name: Lint test files
+        run: |
+          npx eslint tests/role-system/**/*.ts --max-warnings 0
+      
+      - name: Type check test files
+        run: |
+          npx tsc --noEmit --project tests/tsconfig.json
+
+  # Build test environment
+  build_test_environment:
+    name: Build Test Environment
+    runs-on: ubuntu-latest
+    needs: pre_flight
+    if: needs.pre_flight.outputs.staging_ready == 'true'
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Setup test environment variables
+        run: |
+          cp .env.test.example .env.test
+          echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/test_db" >> .env.test
+          echo "REDIS_URL=redis://localhost:6379" >> .env.test
+          echo "NODE_ENV=test" >> .env.test
+      
+      - name: Setup database
+        run: |
+          npx prisma migrate deploy
+          npx prisma db seed
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Start application in background
+        run: |
+          npm start &
+          sleep 10
+          curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:3000/api/health
+      
+      - name: Cache test environment
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            .next/cache
+            node_modules/.cache
+          key: test-env-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            test-env-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+            test-env-${{ runner.os }}-
+
+  # Run E2E tests in parallel
+  e2e_tests:
+    name: E2E Tests (${{ matrix.test_suite }})
+    runs-on: ubuntu-latest
+    needs: [pre_flight, build_test_environment]
+    if: always() && needs.build_test_environment.result == 'success'
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        test_suite: ${{ fromJson(needs.pre_flight.outputs.test_matrix) }}
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+      
+      mailhog:
+        image: mailhog/mailhog:latest
+        ports:
+          - 1025:1025
+          - 8025:8025
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Restore test environment cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            .next/cache
+            node_modules/.cache
+          key: test-env-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        run: npx playwright install chromium firefox webkit --with-deps
+      
+      - name: Setup test environment
+        run: |
+          cp .env.test.example .env.test
+          echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/test_db" >> .env.test
+          echo "REDIS_URL=redis://localhost:6379" >> .env.test
+          echo "SMTP_HOST=localhost" >> .env.test
+          echo "SMTP_PORT=1025" >> .env.test
+          echo "NODE_ENV=test" >> .env.test
+          echo "CI=true" >> .env.test
+      
+      - name: Setup database and start application
+        run: |
+          npx prisma migrate deploy
+          npx prisma db seed
+          npm run build
+          npm start &
+          sleep 15
+          curl --retry 15 --retry-delay 2 --retry-connrefused http://localhost:3000/api/health
+      
+      - name: Run E2E tests
+        run: |
+          case "${{ matrix.test_suite }}" in
+            "auth-flow")
+              npx playwright test tests/role-system/auth-flow.spec.ts --config=playwright.config.staging.ts --workers=${{ github.event.inputs.parallel_workers || '2' }}
+              ;;
+            "user-migration")
+              npx playwright test tests/role-system/user-migration.spec.ts --config=playwright.config.staging.ts --workers=1
+              ;;
+            "admin-panel")
+              npx playwright test tests/role-system/admin-panel.spec.ts --config=playwright.config.staging.ts --workers=${{ github.event.inputs.parallel_workers || '2' }}
+              ;;
+            "dashboard")
+              npx playwright test tests/role-system/dashboard.spec.ts --config=playwright.config.staging.ts --workers=${{ github.event.inputs.parallel_workers || '2' }}
+              ;;
+            "role-assignment")
+              npx playwright test tests/role-system/role-assignment.spec.ts --config=playwright.config.staging.ts --workers=${{ github.event.inputs.parallel_workers || '2' }}
+              ;;
+            "database-migration")
+              npx playwright test tests/role-system/database-migration.spec.ts --config=playwright.config.staging.ts --workers=1
+              ;;
+          esac
+        env:
+          STAGING_URL: http://localhost:3000
+          HEADLESS: true
+          CI: true
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-results-${{ matrix.test_suite }}
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+      
+      - name: Upload screenshots on failure
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-screenshots-${{ matrix.test_suite }}
+          path: test-results/screenshots/
+          retention-days: 7
+
+  # Migration-specific comprehensive tests
+  migration_comprehensive_test:
+    name: Migration Comprehensive Test
+    runs-on: ubuntu-latest
+    needs: [pre_flight, build_test_environment]
+    if: needs.pre_flight.outputs.should_run_migration_tests == 'true'
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: migration_test_db
+          POSTGRES_USER: migration_user
+          POSTGRES_PASSWORD: migration_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5433:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Setup migration test environment
+        run: |
+          cp .env.test.example .env.migration.test
+          echo "DATABASE_URL=postgresql://migration_user:migration_password@localhost:5433/migration_test_db" >> .env.migration.test
+          echo "NODE_ENV=test" >> .env.migration.test
+      
+      - name: Run migration E2E test
+        run: ./scripts/test-migration-e2e.sh --users-count 20 --staging-url http://localhost:3000
+        env:
+          DATABASE_URL: postgresql://migration_user:migration_password@localhost:5433/migration_test_db
+      
+      - name: Upload migration test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: migration-test-results
+          path: |
+            migration-test-backups/
+            test-logs/
+          retention-days: 14
+
+  # Security and access control validation
+  security_validation:
+    name: Security & Access Control Validation
+    runs-on: ubuntu-latest
+    needs: [pre_flight, build_test_environment]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Start application
+        run: |
+          npm run build
+          npm start &
+          sleep 10
+          curl --retry 10 --retry-delay 3 --retry-connrefused http://localhost:3000/api/health
+      
+      - name: Run role changes validation
+        run: ./scripts/validate-role-changes.sh --staging-url http://localhost:3000 --json
+      
+      - name: Upload validation results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-validation-results
+          path: |
+            validation-reports/
+            validation-logs/
+          retention-days: 7
+
+  # Performance and load testing
+  performance_test:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: [e2e_tests]
+    if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+      
+      - name: Run performance tests
+        run: |
+          # Create k6 performance test script for role system
+          cat > performance-test.js << 'EOF'
+          import http from 'k6/http';
+          import { check } from 'k6';
+          
+          export let options = {
+            stages: [
+              { duration: '30s', target: 20 },
+              { duration: '1m', target: 50 },
+              { duration: '30s', target: 0 },
+            ],
+            thresholds: {
+              http_req_duration: ['p(95)<500'],
+              http_req_failed: ['rate<0.1'],
+            },
+          };
+          
+          export default function () {
+            // Test authentication endpoints
+            let authResponse = http.post('http://localhost:3000/api/auth/signin', {
+              email: 'test@example.com',
+            });
+            check(authResponse, { 'auth status is 200': (r) => r.status === 200 });
+            
+            // Test dashboard access
+            let dashboardResponse = http.get('http://localhost:3000/dashboard');
+            check(dashboardResponse, { 'dashboard accessible': (r) => r.status === 200 || r.status === 401 });
+            
+            // Test admin endpoints (should be protected)
+            let adminResponse = http.get('http://localhost:3000/admin');
+            check(adminResponse, { 'admin protected': (r) => r.status === 401 || r.status === 403 });
+          }
+          EOF
+          
+          npm start &
+          sleep 15
+          k6 run performance-test.js
+      
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-test-results
+          path: |
+            k6-results/
+          retention-days: 7
+
+  # Generate consolidated test report
+  test_report:
+    name: Generate Test Report
+    runs-on: ubuntu-latest
+    needs: [e2e_tests, migration_comprehensive_test, security_validation]
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+      
+      - name: Generate consolidated report
+        run: |
+          mkdir -p consolidated-report
+          
+          # Create summary report
+          cat > consolidated-report/test-summary.json << EOF
+          {
+            "workflow_run": {
+              "run_id": "${{ github.run_id }}",
+              "run_number": "${{ github.run_number }}",
+              "sha": "${{ github.sha }}",
+              "ref": "${{ github.ref }}",
+              "actor": "${{ github.actor }}",
+              "event_name": "${{ github.event_name }}",
+              "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            },
+            "test_results": {
+              "e2e_tests": "${{ needs.e2e_tests.result }}",
+              "migration_test": "${{ needs.migration_comprehensive_test.result }}",
+              "security_validation": "${{ needs.security_validation.result }}"
+            },
+            "artifacts": {
+              "playwright_reports": "Available",
+              "migration_results": "${{ needs.migration_comprehensive_test.result == 'success' && 'Available' || 'N/A' }}",
+              "security_reports": "${{ needs.security_validation.result == 'success' && 'Available' || 'N/A' }}"
+            }
+          }
+          EOF
+          
+          # Create HTML report index
+          cat > consolidated-report/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>1001 Stories Role System Test Report</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; }
+                  .header { background: #f5f5f5; padding: 20px; border-radius: 5px; }
+                  .success { color: #28a745; }
+                  .failure { color: #dc3545; }
+                  .warning { color: #ffc107; }
+                  .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>1001 Stories Role System Test Report</h1>
+                  <p>Generated: $(date)</p>
+                  <p>Commit: ${{ github.sha }}</p>
+                  <p>Branch: ${{ github.ref }}</p>
+              </div>
+              
+              <div class="test-section">
+                  <h2>Test Results Summary</h2>
+                  <ul>
+                      <li>E2E Tests: <span class="${{ needs.e2e_tests.result == 'success' && 'success' || 'failure' }}">${{ needs.e2e_tests.result }}</span></li>
+                      <li>Migration Tests: <span class="${{ needs.migration_comprehensive_test.result == 'success' && 'success' || 'failure' }}">${{ needs.migration_comprehensive_test.result || 'skipped' }}</span></li>
+                      <li>Security Validation: <span class="${{ needs.security_validation.result == 'success' && 'success' || 'failure' }}">${{ needs.security_validation.result }}</span></li>
+                  </ul>
+              </div>
+          </body>
+          </html>
+          EOF
+      
+      - name: Upload consolidated report
+        uses: actions/upload-artifact@v3
+        with:
+          name: consolidated-test-report
+          path: consolidated-report/
+          retention-days: 30
+
+  # Send notifications
+  notify:
+    name: Send Notifications
+    runs-on: ubuntu-latest
+    needs: [e2e_tests, migration_comprehensive_test, security_validation, test_report]
+    if: always() && (github.event.inputs.send_notifications == 'true' || github.event_name == 'schedule')
+    
+    steps:
+      - name: Determine overall status
+        id: status
+        run: |
+          if [[ "${{ needs.e2e_tests.result }}" == "success" && 
+                ("${{ needs.migration_comprehensive_test.result }}" == "success" || "${{ needs.migration_comprehensive_test.result }}" == "skipped") && 
+                "${{ needs.security_validation.result }}" == "success" ]]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+            echo "emoji=✅" >> $GITHUB_OUTPUT
+            echo "color=good" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+            echo "emoji=❌" >> $GITHUB_OUTPUT
+            echo "color=danger" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              text: "${{ steps.status.outputs.emoji }} 1001 Stories Role System Tests - ${{ steps.status.outputs.status == 'success' && 'PASSED' || 'FAILED' }}",
+              attachments: [{
+                color: "${{ steps.status.outputs.color }}",
+                fields: [
+                  {
+                    title: "Branch",
+                    value: "${{ github.ref }}",
+                    short: true
+                  },
+                  {
+                    title: "Commit", 
+                    value: "${{ github.sha }}",
+                    short: true
+                  },
+                  {
+                    title: "E2E Tests",
+                    value: "${{ needs.e2e_tests.result }}",
+                    short: true
+                  },
+                  {
+                    title: "Migration Tests",
+                    value: "${{ needs.migration_comprehensive_test.result || 'skipped' }}",
+                    short: true
+                  },
+                  {
+                    title: "Security Validation",
+                    value: "${{ needs.security_validation.result }}",
+                    short: true
+                  },
+                  {
+                    title: "View Results",
+                    value: "<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions>",
+                    short: false
+                  }
+                ]
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

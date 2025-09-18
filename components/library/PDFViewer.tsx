@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
-import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
+import { pdfjs } from 'react-pdf';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -17,10 +16,7 @@ import {
 } from 'lucide-react';
 
 // Set up PDF.js worker
-if (typeof window !== 'undefined') {
-  // Use local worker file to avoid CORS issues
-  GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
-}
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 interface PDFViewerProps {
   pdfUrl: string;
@@ -37,7 +33,7 @@ export default function PDFViewer({
   isDemo = false,
   maxPages = 3 
 }: PDFViewerProps) {
-  const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null);
+  const [pdf, setPdf] = useState<any | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [scale, setScale] = useState(1.0);
@@ -57,7 +53,7 @@ export default function PDFViewer({
       
       try {
         console.log('Loading PDF from:', pdfUrl);
-        const loadingTask = getDocument(pdfUrl);
+        const loadingTask = pdfjs.getDocument(pdfUrl);
         const pdfDoc = await loadingTask.promise;
         
         setPdf(pdfDoc);
@@ -80,13 +76,13 @@ export default function PDFViewer({
   }, [pdfUrl]);
 
   // Render specific page
-  const renderPage = async (pdfDoc: PDFDocumentProxy, pageNum: number) => {
+  const renderPage = async (pdfDoc: any, pageNum: number) => {
     if (!canvasRef.current || pageRendering) return;
     
     setPageRendering(true);
     
     try {
-      const page: PDFPageProxy = await pdfDoc.getPage(pageNum);
+      const page: any = await pdfDoc.getPage(pageNum);
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
       
@@ -201,7 +197,7 @@ export default function PDFViewer({
               <ChevronLeft className="w-4 h-4" />
             </button>
             
-            <span className="font-medium">
+            <span className="font-medium text-gray-900">
               {currentPage} / {effectiveMaxPages}
             </span>
             

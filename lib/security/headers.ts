@@ -6,64 +6,31 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Content Security Policy directives
+// Simplified CSP directives for MVP development - security will be enhanced post-MVP
 const CSP_DIRECTIVES = {
-  'default-src': ["'self'"],
-  'script-src': [
-    "'self'",
-    "'unsafe-inline'", // Required for Next.js
-    "'unsafe-eval'", // Required for development
-    'https://cdn.jsdelivr.net',
-    'https://www.googletagmanager.com',
-    'https://www.google-analytics.com',
-    'https://js.stripe.com',
-    'https://www.paypal.com',
-  ],
-  'style-src': [
-    "'self'",
-    "'unsafe-inline'", // Required for Tailwind
-    'https://fonts.googleapis.com',
-  ],
-  'font-src': [
-    "'self'",
-    'https://fonts.gstatic.com',
-  ],
-  'img-src': [
-    "'self'",
-    'data:',
-    'blob:',
-    'https://*.googleusercontent.com',
-    'https://*.githubusercontent.com',
-    'https://res.cloudinary.com',
-  ],
-  'media-src': ["'self'"],
-  'connect-src': [
-    "'self'",
-    'https://api.stripe.com',
-    'https://api.paypal.com',
-    'https://www.google-analytics.com',
-    'https://vitals.vercel-insights.com',
-  ],
-  'frame-src': [
-    "'self'",
-    'https://js.stripe.com',
-    'https://www.paypal.com',
-  ],
-  'frame-ancestors': ["'none'"],
-  'base-uri': ["'self'"],
-  'form-action': ["'self'"],
+  'default-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", "data:", "blob:", "https:"],
+  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https:"],
+  'style-src': ["'self'", "'unsafe-inline'", "https:"],
+  'img-src': ["'self'", "data:", "blob:", "https:"],
+  'font-src': ["'self'", "data:", "https:"],
+  'connect-src': ["'self'", "https:", "http:", "ws:", "wss:"],
+  'frame-src': ["'self'", "https:"],
   'object-src': ["'none'"],
-  'worker-src': ["'self'", 'blob:'],
+  'worker-src': ["'self'", "blob:"],
   'manifest-src': ["'self'"],
-};
+} as const;
 
-// Generate CSP string
+// Generate CSP string - simplified for MVP
 function generateCSP(isDevelopment: boolean): string {
-  const directives = { ...CSP_DIRECTIVES };
+  const directives: Record<string, string[]> = {};
   
-  // Relax CSP for development
+  // Copy all directives as mutable arrays
+  Object.entries(CSP_DIRECTIVES).forEach(([key, values]) => {
+    directives[key] = [...values];
+  });
+  
+  // Additional development permissions
   if (isDevelopment) {
-    directives['script-src'].push("'unsafe-eval'");
     directives['connect-src'].push('ws://localhost:*', 'http://localhost:*');
   }
   
@@ -72,50 +39,21 @@ function generateCSP(isDevelopment: boolean): string {
     .join('; ');
 }
 
-// Security headers configuration
+// Simplified security headers for MVP development - CSP disabled entirely
 export function getSecurityHeaders(isDevelopment = false): Record<string, string> {
   const headers: Record<string, string> = {
-    // Content Security Policy
-    'Content-Security-Policy': generateCSP(isDevelopment),
+    // CSP completely disabled for MVP development
+    // See SECURITY_REQUIREMENTS.md for post-MVP implementation plan
     
-    // Prevent clickjacking
-    'X-Frame-Options': 'DENY',
-    
-    // Prevent MIME type sniffing
+    // Basic security headers - relaxed for MVP
+    'X-Frame-Options': 'SAMEORIGIN',
     'X-Content-Type-Options': 'nosniff',
-    
-    // Enable XSS protection
     'X-XSS-Protection': '1; mode=block',
-    
-    // Control referrer information
-    'Referrer-Policy': 'strict-origin-when-cross-origin',
-    
-    // Permissions Policy (formerly Feature Policy)
-    'Permissions-Policy': [
-      'camera=()',
-      'microphone=()',
-      'geolocation=()',
-      'payment=(self https://js.stripe.com https://www.paypal.com)',
-      'usb=()',
-      'magnetometer=()',
-      'gyroscope=()',
-      'accelerometer=()',
-    ].join(', '),
-    
-    // DNS Prefetch Control
-    'X-DNS-Prefetch-Control': 'on',
-    
-    // Download Options (IE specific)
-    'X-Download-Options': 'noopen',
-    
-    // Permitted Cross-Domain Policies
-    'X-Permitted-Cross-Domain-Policies': 'none',
+    'Referrer-Policy': 'no-referrer-when-downgrade',
   };
   
-  // Add HSTS for production
-  if (!isDevelopment) {
-    headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload';
-  }
+  // Skip HSTS and other strict headers for MVP development
+  // These will be added in the post-MVP security enhancement phase
   
   return headers;
 }
@@ -132,13 +70,12 @@ export function applySecurityHeaders(
     response.headers.set(key, value);
   });
   
-  // Add CORS headers if needed
+  // Simplified CORS for MVP development
   const origin = request.headers.get('origin');
-  if (origin && isAllowedOrigin(origin)) {
-    response.headers.set('Access-Control-Allow-Origin', origin);
-    response.headers.set('Access-Control-Allow-Credentials', 'true');
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (origin) {
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   }
   
   return response;

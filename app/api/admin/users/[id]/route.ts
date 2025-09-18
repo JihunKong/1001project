@@ -9,7 +9,7 @@ import { z } from 'zod';
 const updateUserSchema = z.object({
   email: z.string().email('Invalid email address').optional(),
   name: z.string().min(1, 'Name is required').max(100, 'Name too long').optional(),
-  role: z.enum(['LEARNER', 'VOLUNTEER', 'TEACHER', 'ADMIN', 'INSTITUTION']).optional(),
+  role: z.enum(['CUSTOMER', 'LEARNER', 'TEACHER', 'INSTITUTION', 'VOLUNTEER', 'ADMIN']).optional(),
 });
 
 // GET /api/admin/users/[id] - Get single user
@@ -36,16 +36,9 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
             lastName: true
           }
         },
-        subscription: {
-          select: {
-            status: true,
-            plan: true
-          }
-        },
         _count: {
           select: {
-            stories: true,
-            orders: true
+            stories: true
           }
         }
       }
@@ -105,7 +98,8 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
       const emailTaken = await prisma.user.findFirst({
         where: {
           email: validatedData.email,
-          id: { not: id }
+          id: { not: id },
+          deletedAt: null
         }
       });
 
@@ -131,10 +125,21 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
       }
     }
 
+    // Check if role is being changed to increment tokenVersion for security
+    const updateData: any = { ...validatedData };
+    let roleChanged = false;
+    
+    if (validatedData.role && validatedData.role !== existingUser.role) {
+      // Role is being changed - increment tokenVersion to invalidate existing JWT tokens
+      updateData.tokenVersion = { increment: 1 };
+      roleChanged = true;
+      console.log(`Admin ${session.user.email} changed role of ${existingUser.email} from ${existingUser.role} to ${validatedData.role}`);
+    }
+
     // Update user
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: validatedData,
+      data: updateData,
       include: {
         profile: {
           select: {
@@ -144,16 +149,35 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ id:
         },
         _count: {
           select: {
-            stories: true,
-            orders: true
+            stories: true
           }
         }
       }
     });
 
+    // Log role change in role_migrations table if role was changed
+    if (roleChanged && validatedData.role) {
+      await prisma.roleMigration.create({
+        data: {
+          userId: id,
+          fromRole: existingUser.role,
+          toRole: validatedData.role as any,
+          migrationType: 'ADMIN_ASSIGNED',
+          migrationReason: `Role change by admin ${session.user.email}`,
+          initiatedAt: new Date(),
+          completedAt: new Date(),
+          status: 'COMPLETED',
+          notificationSent: false
+        }
+      });
+    }
+
     return NextResponse.json({
-      message: 'User updated successfully',
-      user: updatedUser
+      message: roleChanged 
+        ? 'User updated successfully. User will be logged out due to role change.' 
+        : 'User updated successfully',
+      user: updatedUser,
+      sessionInvalidated: roleChanged
     });
 
   } catch (error) {

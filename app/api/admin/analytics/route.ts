@@ -66,15 +66,8 @@ export async function GET(request: NextRequest) {
         _count: { id: true }
       }),
       
-      // Revenue analytics
-      prisma.order.aggregate({
-        where: {
-          status: 'DELIVERED',
-          createdAt: { gte: startOfMonth }
-        },
-        _sum: { total: true },
-        _count: { id: true }
-      }),
+      // Revenue analytics - Orders disabled, using donations
+      Promise.resolve({ _sum: { total: 0 }, _count: { id: 0 } }),
       
       // Language distribution
       prisma.story.groupBy({

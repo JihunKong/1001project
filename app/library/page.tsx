@@ -11,48 +11,42 @@ import {
   Globe,
   Star,
   Play,
-  Lock,
-  Crown,
   ArrowRight,
   Users,
   Clock,
   Loader2,
-  Grid3X3,
-  Library as LibraryIcon,
-  Eye
+  Eye,
+  FileText,
+  FileImage
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useSubscription } from '@/lib/hooks/useContentAccess';
-import SimplePDFThumbnail from '@/components/library/SimplePDFThumbnail';
-import SimpleBookCard from '@/components/library/SimpleBookCard';
-import BookshelfView from '@/components/library/BookshelfView';
+import Featured3Section from '@/components/Featured3Section';
 
 interface Book {
   id: string
   title: string
   subtitle?: string
   summary?: string
-  author: {
-    name: string
-    age?: number
-    location?: string
-  }
+  authorName: string  // Changed from nested author object
+  authorAge?: number
+  authorLocation?: string
   language: string
   category: string[]
   tags: string[]
   ageRange?: string
   readingTime?: number
   coverImage?: string
-  isPremium: boolean
-  isFeatured: boolean
-  price?: number
+  // isPremium: boolean // Removed - all books are free now
+  isFeatured?: boolean
+  featured?: boolean  // API returns 'featured' not 'isFeatured'
+  // price?: number // Removed - all books are free now
   rating?: number
-  accessLevel: 'preview' | 'full'
-  stats: {
-    readers: number
-    bookmarks: number
-  }
+  accessLevel?: 'preview' | 'full'
+  viewCount?: number
+  downloadCount?: number
+  createdAt?: string
+  hasAccess?: boolean
   // PDF-specific fields
   bookId?: string
   pdfKey?: string
@@ -62,6 +56,7 @@ interface Book {
   previewPages?: number
   fullPdf?: string
   samplePdf?: string
+  content?: string // PDF path from content field
 }
 
 interface BooksResponse {
@@ -86,9 +81,9 @@ export default function Library() {
     return translations[key] || key;
   };
   const { data: session } = useSession();
-  const { subscription } = useSubscription();
   
   const [books, setBooks] = useState<Book[]>([]);
+  const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [pagination, setPagination] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -99,7 +94,7 @@ export default function Library() {
   const [selectedAge, setSelectedAge] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'cards' | 'bookshelf'>('cards');
+  const [contentType, setContentType] = useState<'text' | 'pdf'>('text'); // Default to text
   
   // Static filter options (could be fetched from API in the future)
   const filters = {
@@ -125,15 +120,35 @@ export default function Library() {
     ]
   };
 
+  // Fetch featured books first
+  const fetchFeaturedBooks = async () => {
+    try {
+      const response = await fetch('/api/library/featured');
+      if (response.ok) {
+        const data = await response.json();
+        const featured = data.featuredBooks || [];
+        setFeaturedBooks(featured);
+        return featured.map((book: Book) => book.id);
+      }
+    } catch (err) {
+      console.log('No featured books available');
+    }
+    return [];
+  };
+
   // Fetch books from API
   const fetchBooks = async () => {
     setLoading(true);
     setError(null);
     
     try {
+      // First, get the list of featured book IDs
+      const featuredBookIds = await fetchFeaturedBooks();
+      
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: '12'
+        limit: '12',
+        type: contentType // Pass content type to API
       });
       
       if (searchTerm) params.set('search', searchTerm);
@@ -141,9 +156,16 @@ export default function Library() {
       if (selectedLanguage !== 'all') params.set('language', selectedLanguage);
       if (selectedAge !== 'all') params.set('ageGroup', selectedAge);
       
-      const response = await fetch(`/api/library/books?${params}`);
+      const url = contentType === 'text' 
+        ? `/api/library/text-stories?${params}`
+        : `/api/library/books?${params}`;
+      console.log('📚 Fetching content from:', url);
+      
+      const response = await fetch(url);
+      console.log('📡 Response status:', response.status, response.statusText);
       
       if (!response.ok) {
+        console.error('❌ Response not OK:', response.status, response.statusText);
         // Handle different error cases
         if (response.status === 401) {
           throw new Error('AUTHENTICATION_REQUIRED');
@@ -155,124 +177,35 @@ export default function Library() {
       }
       
       const data: BooksResponse = await response.json();
-      setBooks(data.books || []);
+      console.log('📖 Received data:', data);
+      console.log('📚 Books array:', data.books);
+      console.log('📊 Pagination:', data.pagination);
+      
+      // Filter out featured books from the main list to avoid duplication
+      const nonFeaturedBooks = (data.books || []).filter(book => !featuredBookIds.includes(book.id));
+      console.log('🎯 Filtered out featured books. Remaining:', nonFeaturedBooks.length);
+      
+      setBooks(nonFeaturedBooks);
       setPagination(data.pagination);
+      console.log('✅ State updated - books count:', nonFeaturedBooks.length);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'FETCH_ERROR';
+      console.error('🚨 Error fetching books:', err);
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
   
-  // Fetch books when page or filters change
+  // Fetch books when page, filters, or content type changes
   useEffect(() => {
     fetchBooks();
-  }, [currentPage, searchTerm, selectedCategory, selectedLanguage, selectedAge]);
+  }, [currentPage, searchTerm, selectedCategory, selectedLanguage, selectedAge, contentType]);
   
-  // Reset to first page when filters change (not page)
+  // Reset to first page when filters or content type changes (not page)
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, selectedLanguage, selectedAge]);
-
-  const BookCard = ({ book }: { book: Book }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:-translate-y-2"
-    >
-      <div className="relative">
-        <div className="aspect-[2/3] bg-gradient-to-br from-blue-100 to-purple-100">
-          <SimplePDFThumbnail
-            bookId={book.id || book.bookId || ''}
-            title={book.title}
-            pdfUrl={book.pdfKey || book.fullPdf || book.samplePdf}
-            existingImage={book.coverImage}
-            className="w-full h-full"
-            alt={book.title}
-          />
-        </div>
-        {book.isPremium && (
-          <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-yellow-500 text-white text-xs font-medium rounded-full">
-            <Crown className="w-3 h-3" />
-            Premium
-          </div>
-        )}
-        {book.isFeatured && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
-            <Star className="w-3 h-3" />
-            Featured
-          </div>
-        )}
-        {book.rating && (
-          <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
-            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-            {Number(book.rating || 0).toFixed(1)}
-          </div>
-        )}
-      </div>
-      
-      <div className="p-6">
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-          <Globe className="w-4 h-4" />
-          {book.author.location || 'Unknown'}
-          <span>•</span>
-          <Clock className="w-4 h-4" />
-          {book.readingTime || 5} min
-        </div>
-        
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-          {book.title}
-        </h3>
-        
-        <div className="text-sm text-gray-600 mb-3">
-          By {book.author.name}{book.author.age ? `, age ${book.author.age}` : ''}
-        </div>
-        
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {book.summary || 'No description available'}
-        </p>
-        
-        <div className="flex flex-wrap gap-1 mb-4">
-          {book.tags.slice(0, 2).map(tag => (
-            <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
-              #{tag}
-            </span>
-          ))}
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <span className="inline-flex items-center px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-            {book.category[0] || 'Story'}
-          </span>
-          
-          {session ? (
-            <div className="flex gap-2">
-              <Link
-                href={`/library/books/${book.id}`}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-              >
-                <Eye className="w-4 h-4" />
-                View Details
-              </Link>
-            </div>
-          ) : (
-            <div className="text-center">
-              <p className="text-xs text-gray-600 mb-2">Sign up to read stories</p>
-              <Link
-                href="/signup"
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-              >
-                <Users className="w-4 h-4" />
-                Sign Up Free
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
+  }, [searchTerm, selectedCategory, selectedLanguage, selectedAge, contentType]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -295,16 +228,45 @@ export default function Library() {
         </div>
       </section>
 
+      {/* Featured-3 Section */}
+      <Featured3Section />
+
       {/* Search and Filter Bar */}
       <section className="sticky top-16 z-40 bg-white border-b shadow-sm">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* Content Type Tabs */}
+          <div className="flex items-center gap-2 mb-4">
+            <button
+              onClick={() => setContentType('text')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                contentType === 'text'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              Text Stories
+            </button>
+            <button
+              onClick={() => setContentType('pdf')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                contentType === 'pdf'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <FileImage className="w-4 h-4" />
+              PDF Books
+            </button>
+          </div>
+
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search Bar */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder={t('library.search')}
+                placeholder={contentType === 'text' ? 'Search text stories...' : 'Search PDF books...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -320,31 +282,6 @@ export default function Library() {
               Filters
             </button>
             
-            {/* View Mode Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('cards')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
-                  viewMode === 'cards'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-                Cards
-              </button>
-              <button
-                onClick={() => setViewMode('bookshelf')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
-                  viewMode === 'bookshelf'
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <LibraryIcon className="w-4 h-4" />
-                Bookshelf
-              </button>
-            </div>
           </div>
 
           {/* Filter Options */}
@@ -413,22 +350,20 @@ export default function Library() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">
-                Stories ({pagination?.totalCount || 0})
+                {contentType === 'text' ? 'Text Stories' : 'PDF Books'} ({pagination?.totalCount || 0})
               </h2>
               <p className="text-gray-600">
-                Discover amazing stories from young authors worldwide
+                {contentType === 'text' 
+                  ? 'Read and learn from community-written stories'
+                  : 'Browse our collection of illustrated PDF books'}
               </p>
             </div>
             
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <div className="flex items-center gap-1">
-                  <BookOpen className="w-4 h-4 text-green-600" />
+                  📚
                   Free
-                </div>
-                <div className="flex items-center gap-1">
-                  <Crown className="w-4 h-4 text-yellow-500" />
-                  Premium
                 </div>
               </div>
             </div>
@@ -450,25 +385,20 @@ export default function Library() {
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link 
-                      href="/shop"
+                      href="/library"
                       className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                      onClick={() => window.location.reload()}
                     >
-                      📚 Browse Books
-                    </Link>
-                    <Link 
-                      href="/demo/library"
-                      className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                    >
-                      🎭 Try Demo
+                      📚 Explore All Books
                     </Link>
                   </div>
                   <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
-                    <div className="flex items-center gap-2 text-yellow-800 mb-2">
-                      <Crown className="w-5 h-5" />
-                      <span className="font-medium">Free Preview Available!</span>
+                    <div className="flex items-center gap-2 text-green-800 mb-2">
+                      📚
+                      <span className="font-medium">Free Access Available!</span>
                     </div>
                     <p className="text-sm text-yellow-700">
-                      Try our demo account to preview sample books before purchasing.
+                      Create an account to access our full collection of stories.
                     </p>
                   </div>
                 </>
@@ -485,12 +415,6 @@ export default function Library() {
                       className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
                       🔐 Sign In
-                    </Link>
-                    <Link 
-                      href="/demo/library"
-                      className="px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                    >
-                      🎭 Try Demo
                     </Link>
                   </div>
                 </>
@@ -517,17 +441,82 @@ export default function Library() {
               <p className="text-gray-600">Try adjusting your search terms or filters.</p>
             </div>
           ) : (
-            <>
-              {viewMode === 'cards' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {books.map((book, index) => (
-                    <SimpleBookCard key={book.id} book={book} />
-                  ))}
+            <div className="space-y-4">
+              {books.map((book) => (
+                <div key={book.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors">
+                          {book.title}
+                        </h3>
+                        {book.featured && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                            <Star className="w-3 h-3" />
+                            Featured
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+                        <span className="flex items-center gap-1">
+                          <Users className="w-4 h-4" />
+                          {book.authorName}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Globe className="w-4 h-4" />
+                          {book.language || 'en'}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="w-4 h-4" />
+                          {book.category[0] || 'Story'}
+                        </span>
+                        {book.pageCount && (
+                          <span className="flex items-center gap-1">
+                            📄 {book.pageCount} pages
+                          </span>
+                        )}
+                      </div>
+                      
+                      {book.summary && (
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {book.summary}
+                        </p>
+                      )}
+                      
+                      <div className="flex flex-wrap gap-2">
+                        {book.tags?.slice(0, 3).map(tag => (
+                          <span key={tag} className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2 ml-4">
+                      <Link
+                        href={contentType === 'text' 
+                          ? `/library/text/${book.id}`
+                          : `/library/books/${book.id}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        {contentType === 'text' ? (
+                          <>
+                            <FileText className="w-4 h-4" />
+                            Read Story
+                          </>
+                        ) : (
+                          <>
+                            <BookOpen className="w-4 h-4" />
+                            {book.content ? 'Read PDF' : 'View Details'}
+                          </>
+                        )}
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <BookshelfView books={books} />
-              )}
-            </>
+              ))}
+            </div>
           )}
           
           {/* Pagination Controls */}
@@ -573,8 +562,8 @@ export default function Library() {
         </div>
       </section>
 
-      {/* Premium CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      {/* Free Library CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-green-600 to-blue-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -583,28 +572,27 @@ export default function Library() {
             viewport={{ once: true }}
             className="text-center max-w-3xl mx-auto"
           >
-            <Crown className="w-16 h-16 text-yellow-300 mx-auto mb-6" />
+            <BookOpen className="w-16 h-16 text-green-300 mx-auto mb-6" />
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-              Unlock Premium Stories
+              Free Stories For Everyone
             </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Get access to our complete library of stories while supporting scholarships 
-              and educational programs for young authors worldwide.
+            <p className="text-xl text-green-100 mb-8">
+              Our entire library is completely free! Enjoy unlimited access to inspiring stories from children around the world while supporting educational programs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/signup"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-blue-600 bg-white rounded-full hover:bg-gray-50 transition-all transform hover:scale-105"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-green-600 bg-white rounded-full hover:bg-gray-50 transition-all transform hover:scale-105"
               >
                 <Users className="w-5 h-5" />
-                Start Free Trial
+                Join Our Community
               </Link>
               <Link
                 href="/donate"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-white bg-transparent border-2 border-white rounded-full hover:bg-white hover:text-blue-600 transition-all transform hover:scale-105"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-white bg-transparent border-2 border-white rounded-full hover:bg-white hover:text-green-600 transition-all transform hover:scale-105"
               >
                 <Heart className="w-5 h-5" />
-                Learn About Seeds of Empowerment
+                Support Our Mission
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
