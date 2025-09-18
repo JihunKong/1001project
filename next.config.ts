@@ -13,8 +13,9 @@ if (typeof window === 'undefined') {
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'http://3.128.143.122' : undefined,
   images: {
-    domains: ['1001stories.seedsofempowerment.org', 'seedsofempowerment.org', 'localhost'],
+    domains: ['1001stories.seedsofempowerment.org', 'seedsofempowerment.org', 'localhost', '3.128.143.122'],
     unoptimized: true, // Disable image optimization to prevent errors with missing images
   },
   eslint: {
