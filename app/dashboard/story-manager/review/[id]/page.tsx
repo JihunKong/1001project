@@ -80,22 +80,22 @@ export default function StoryReviewPage() {
   }, [session, status]);
 
   // Fetch submission details
-  const fetchSubmission = async () => {
-    try {
-      const response = await fetch(`/api/text-submissions/${params.id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch submission');
-      }
-      const data = await response.json();
-      setSubmission(data.submission);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchSubmission = async () => {
+      try {
+        const response = await fetch(`/api/text-submissions/${params.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch submission');
+        }
+        const data = await response.json();
+        setSubmission(data.submission);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (session?.user?.role === 'STORY_MANAGER' && params.id) {
       fetchSubmission();
     }

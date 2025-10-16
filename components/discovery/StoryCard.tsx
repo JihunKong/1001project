@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
+import Image from 'next/image';
 import { StoryCardProps, EngagementMetrics, Story } from '../../types/discovery';
 
 const StoryCard: React.FC<StoryCardProps> = ({
@@ -104,11 +105,12 @@ const StoryCard: React.FC<StoryCardProps> = ({
     switch (primaryMedia.type) {
       case 'image':
         return (
-          <div className="story-card__media">
-            <img
+          <div className="story-card__media" style={{ position: 'relative', width: '100%', height: '200px' }}>
+            <Image
               src={primaryMedia.thumbnailUrl || primaryMedia.url}
               alt={primaryMedia.description || story.title}
-              loading="lazy"
+              fill
+              style={{ objectFit: 'cover' }}
               onLoad={() => trackEngagement('view', { mediaLoaded: true })}
             />
             {story.mediaAssets.length > 1 && (
@@ -263,11 +265,12 @@ const StoryCard: React.FC<StoryCardProps> = ({
       >
         <div className="story-card__compact-content">
           {story.mediaAssets[0] && (
-            <div className="story-card__compact-media">
-              <img
+            <div className="story-card__compact-media" style={{ position: 'relative', width: '80px', height: '80px' }}>
+              <Image
                 src={story.mediaAssets[0].thumbnailUrl || story.mediaAssets[0].url}
                 alt={story.title}
-                loading="lazy"
+                fill
+                style={{ objectFit: 'cover' }}
               />
             </div>
           )}
@@ -314,9 +317,11 @@ const StoryCard: React.FC<StoryCardProps> = ({
         <div className="story-card__author">
           <div className="story-card__author-info">
             {story.authorAvatar && (
-              <img
+              <Image
                 src={story.authorAvatar}
                 alt={story.authorName}
+                width={32}
+                height={32}
                 className="story-card__author-avatar"
               />
             )}

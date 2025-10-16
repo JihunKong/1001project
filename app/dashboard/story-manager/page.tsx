@@ -67,40 +67,40 @@ export default function StoryManagerDashboard() {
   }, [session, status]);
 
   // Fetch submissions and stats
-  const fetchData = async () => {
-    try {
-      const [submissionsRes, statsRes] = await Promise.all([
-        fetch('/api/text-submissions?status=' + selectedStatus),
-        fetch('/api/story-manager/stats')
-      ]);
-
-      // Better error messages to identify which API is failing
-      if (!submissionsRes.ok) {
-        const errorData = await submissionsRes.json().catch(() => ({}));
-        console.error('Submissions API error:', submissionsRes.status, errorData);
-        throw new Error(`Failed to fetch submissions (${submissionsRes.status}): ${errorData.error || 'Unknown error'}`);
-      }
-
-      if (!statsRes.ok) {
-        const errorData = await statsRes.json().catch(() => ({}));
-        console.error('Stats API error:', statsRes.status, errorData);
-        throw new Error(`Failed to fetch stats (${statsRes.status}): ${errorData.error || 'Unknown error'}`);
-      }
-
-      const submissionsData = await submissionsRes.json();
-      const statsData = await statsRes.json();
-
-      setSubmissions(submissionsData.submissions || []);
-      setStats(statsData);
-    } catch (err) {
-      console.error('Dashboard fetch error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [submissionsRes, statsRes] = await Promise.all([
+          fetch('/api/text-submissions?status=' + selectedStatus),
+          fetch('/api/story-manager/stats')
+        ]);
+
+        // Better error messages to identify which API is failing
+        if (!submissionsRes.ok) {
+          const errorData = await submissionsRes.json().catch(() => ({}));
+          console.error('Submissions API error:', submissionsRes.status, errorData);
+          throw new Error(`Failed to fetch submissions (${submissionsRes.status}): ${errorData.error || 'Unknown error'}`);
+        }
+
+        if (!statsRes.ok) {
+          const errorData = await statsRes.json().catch(() => ({}));
+          console.error('Stats API error:', statsRes.status, errorData);
+          throw new Error(`Failed to fetch stats (${statsRes.status}): ${errorData.error || 'Unknown error'}`);
+        }
+
+        const submissionsData = await submissionsRes.json();
+        const statsData = await statsRes.json();
+
+        setSubmissions(submissionsData.submissions || []);
+        setStats(statsData);
+      } catch (err) {
+        console.error('Dashboard fetch error:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (session?.user?.role === 'STORY_MANAGER') {
       fetchData();
     }

@@ -55,7 +55,7 @@ export default function NotificationDropdown() {
     const es = new EventSource('/api/notifications/sse');
 
     es.onopen = () => {
-      console.log('Connected to notification stream');
+      // Connection established
     };
 
     es.onmessage = (event) => {
@@ -64,7 +64,7 @@ export default function NotificationDropdown() {
 
         switch (data.type) {
           case 'connection':
-            console.log('Notification stream connected');
+            // Connection confirmed
             break;
 
           case 'notification':
@@ -84,7 +84,6 @@ export default function NotificationDropdown() {
 
           case 'status_change':
             // Handle real-time status changes
-            console.log('Status change received:', data.data);
             // Refresh notifications to get the latest
             fetchNotifications();
             break;
@@ -174,6 +173,7 @@ export default function NotificationDropdown() {
         eventSource.close();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user?.id]);
 
   // Handle click outside to close dropdown
@@ -295,7 +295,7 @@ export default function NotificationDropdown() {
                 <Bell className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                 <p className="text-gray-500 font-medium">No notifications yet</p>
                 <p className="text-sm text-gray-400 mt-1">
-                  You'll see updates about your stories here
+                  You&apos;ll see updates about your stories here
                 </p>
               </div>
             ) : (

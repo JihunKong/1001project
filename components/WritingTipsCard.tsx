@@ -30,7 +30,7 @@ export default function WritingTipsCard() {
             color: '#8E8E93'
           }}
         >
-          Get instant feedback on grammar, structure, and style to improve your story's quality.
+          Get instant feedback on grammar, structure, and style to improve your story&apos;s quality.
         </p>
 
         <button

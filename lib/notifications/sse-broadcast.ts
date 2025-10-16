@@ -10,7 +10,7 @@ export function broadcastNotification(userId: string, notification: any) {
     .filter(([connectionId]) => connectionId.startsWith(userId));
 
   if (userConnections.length === 0) {
-    console.log(`No active SSE connections found for user ${userId}`);
+    // No active connections to broadcast to
     return;
   }
 
@@ -35,7 +35,7 @@ export function broadcastStatusChange(userId: string, submissionId: string, oldS
     .filter(([connectionId]) => connectionId.startsWith(userId));
 
   if (userConnections.length === 0) {
-    console.log(`No active SSE connections found for user ${userId} to broadcast status change`);
+    // No active connections to broadcast to
     return;
   }
 

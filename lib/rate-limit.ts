@@ -361,7 +361,7 @@ export function buildSecureSearchQuery(searchTerm: string): any {
   };
 }
 
-export default {
+const rateLimitUtils = {
   checkRateLimit,
   withRateLimit,
   sanitizeSearchInput,
@@ -369,3 +369,5 @@ export default {
   buildSecureSearchQuery,
   RATE_LIMITS
 };
+
+export default rateLimitUtils;

@@ -30,6 +30,7 @@ export async function executeWithControlledAccess<T>(
 ): Promise<T> {
 
   // Log all RLS bypass attempts for security monitoring
+  // eslint-disable-next-line no-console
   console.log('[SECURITY] Controlled RLS Access:', {
     operation: context.operation,
     userRole: context.userRole,
@@ -92,6 +93,7 @@ export async function executeWithControlledAccess<T>(
 export async function executeWithRLSBypass<T>(operation: (client: any) => Promise<T>): Promise<T> {
   // Log usage of deprecated function for migration tracking
   console.warn('[SECURITY] DEPRECATED: executeWithRLSBypass used. Migrate to executeWithControlledAccess');
+  // eslint-disable-next-line no-console
   console.trace('Stack trace for deprecated function usage');
 
   // For now, maintain compatibility but add security logging
@@ -107,7 +109,7 @@ export async function executeWithRLSBypass<T>(operation: (client: any) => Promis
       // Still bypass for compatibility, but log it
       await tx.$executeRaw`SET LOCAL row_security = off`
     } catch (error: any) {
-      console.log('RLS bypass setup failed:', error.message)
+      console.error('RLS bypass setup failed:', error.message)
     }
 
     return operation(tx)

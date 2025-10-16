@@ -383,7 +383,7 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
-export default {
+const securityMiddleware = {
   SecuritySchemas,
   enhancedRateLimit,
   sanitizeSQLInput,
@@ -393,3 +393,5 @@ export default {
   validateCSRFToken,
   addSecurityHeaders,
 };
+
+export default securityMiddleware;

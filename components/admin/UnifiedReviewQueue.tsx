@@ -228,6 +228,7 @@ export default function UnifiedReviewQueue() {
     if (session?.user?.role === 'ADMIN') {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   // Filter and search submissions
@@ -360,7 +361,6 @@ export default function UnifiedReviewQueue() {
   };
 
   const handleBulkAction = async (action: 'approve' | 'reject' | 'assign') => {
-    console.log(`Bulk ${action} for submissions:`, selectedSubmissions);
     // Implement bulk action logic here
   };
 

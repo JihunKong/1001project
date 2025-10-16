@@ -212,6 +212,7 @@ export async function logTransaction(transaction: TransactionLog): Promise<void>
   const encryptedData = encryptPaymentToken(JSON.stringify(sensitiveData));
   
   // In production, store in database
+  // eslint-disable-next-line no-console
   console.log('[TRANSACTION]', {
     ...transaction,
     paymentIntentId: '[ENCRYPTED]',

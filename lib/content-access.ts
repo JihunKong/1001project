@@ -262,7 +262,7 @@ export async function trackPreviewUsage(
       })
     } else if (sessionId) {
       // Track for anonymous users (could use a separate analytics table)
-      console.log('Anonymous preview tracking:', { sessionId, ...baseData })
+      // For now, skip tracking for anonymous users
     }
   } catch (error) {
     console.error('Error tracking preview usage:', error)

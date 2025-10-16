@@ -59,6 +59,7 @@ export class PerformanceMonitor {
 
     // Log performance issues
     if (unit === 'ms' && value > 1000) {
+      // eslint-disable-next-line no-console
       console.warn(`Slow operation detected: ${name} took ${value}ms`, context);
     }
   }
@@ -334,14 +335,19 @@ export function enablePerformanceLogging(): void {
   setInterval(() => {
     const report = generatePerformanceReport();
     if (report.slowOperations.length > 0 || report.recommendations.length > 0) {
+      // eslint-disable-next-line no-console
       console.group('Performance Report');
+      // eslint-disable-next-line no-console
       console.table(report.summary);
       if (report.slowOperations.length > 0) {
+        // eslint-disable-next-line no-console
         console.warn('Slow operations:', report.slowOperations);
       }
       if (report.recommendations.length > 0) {
+        // eslint-disable-next-line no-console
         console.info('Recommendations:', report.recommendations);
       }
+      // eslint-disable-next-line no-console
       console.groupEnd();
     }
   }, 30000);

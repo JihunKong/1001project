@@ -82,30 +82,30 @@ export default function ContentAdminDashboard() {
   }, [session, status]);
 
   // Fetch submissions and stats
-  const fetchData = async () => {
-    try {
-      const [submissionsRes, statsRes] = await Promise.all([
-        fetch('/api/text-submissions?status=' + selectedStatus + '&role=content-admin'),
-        fetch('/api/content-admin/stats')
-      ]);
-
-      if (!submissionsRes.ok || !statsRes.ok) {
-        throw new Error('Failed to fetch data');
-      }
-
-      const submissionsData = await submissionsRes.json();
-      const statsData = await statsRes.json();
-
-      setSubmissions(submissionsData.submissions || []);
-      setStats(statsData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [submissionsRes, statsRes] = await Promise.all([
+          fetch('/api/text-submissions?status=' + selectedStatus + '&role=content-admin'),
+          fetch('/api/content-admin/stats')
+        ]);
+
+        if (!submissionsRes.ok || !statsRes.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        const submissionsData = await submissionsRes.json();
+        const statsData = await statsRes.json();
+
+        setSubmissions(submissionsData.submissions || []);
+        setStats(statsData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (session?.user?.role === 'CONTENT_ADMIN') {
       fetchData();
     }

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { HomePageProps, Story, CulturalCollection, CulturalEvent, EngagementMetrics, ABTestConfig, HomePageSection } from '../../types/discovery';
 import StoryCard from './StoryCard';
 import EnhancedHeroSection from '../ui/EnhancedHeroSection';
@@ -165,9 +166,11 @@ const HomePage: React.FC<HomePageProps> = ({
                 <h3 className="homepage__collection-title">{collection.name}</h3>
                 <div className="homepage__collection-curator">
                   {collection.curator.avatar && (
-                    <img
+                    <Image
                       src={collection.curator.avatar}
                       alt={collection.curator.name}
+                      width={40}
+                      height={40}
                       className="homepage__curator-avatar"
                     />
                   )}
@@ -365,9 +368,7 @@ function loadFallbackContent() {
 
 function trackEngagement(metrics: EngagementMetrics) {
   // Send to analytics service
-  console.log('Engagement tracked:', metrics);
-
-  // Example: send to analytics API
+  // TODO: Implement analytics tracking
   // fetch('/api/analytics/engagement', {
   //   method: 'POST',
   //   body: JSON.stringify(metrics)

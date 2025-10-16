@@ -190,6 +190,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
   // Initialize
   useEffect(() => {
     fetchNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user?.id]);
 
   // Get notification icon and color
@@ -399,7 +400,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
                         {notification.data?.feedback && (
                           <div className="mt-2 p-3 bg-blue-50 border-l-4 border-blue-200 rounded">
                             <p className="text-sm text-blue-700 italic">
-                              "{notification.data.feedback}"
+                              &ldquo;{notification.data.feedback}&rdquo;
                             </p>
                           </div>
                         )}

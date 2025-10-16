@@ -225,7 +225,7 @@ export default function FlowProgressIndicator({
       {compact && (
         <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-gray-900">Writer's Journey</h3>
+            <h3 className="text-sm font-semibold text-gray-900">Writer&apos;s Journey</h3>
             <span className="text-xs text-gray-500">
               {Math.round(getProgressPercentage())}% Complete
             </span>
@@ -270,7 +270,7 @@ export default function FlowProgressIndicator({
                 <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center mr-2">
                   <Library className="w-3 h-3 text-figma-black" />
                 </div>
-                Writer's Journey
+                Writer&apos;s Journey
               </h3>
               <div className="flex items-center text-sm text-gray-600">
                 <BarChart3 className="w-4 h-4 mr-1" />
@@ -351,7 +351,7 @@ export default function FlowProgressIndicator({
                 <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
                   <Library className="w-4 h-4 text-figma-black" />
                 </div>
-                Writer's Journey
+                Writer&apos;s Journey
               </h3>
               <div className="flex items-center space-x-4 text-sm text-gray-600">
                 <div className="flex items-center">

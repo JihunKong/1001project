@@ -92,7 +92,6 @@ export default function StoryStatusCardDemo() {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(`Continuing to write story ${id}`);
       // Navigate to editor...
     } catch (err) {
       setError('Failed to open story editor. Please try again.');
@@ -106,7 +105,6 @@ export default function StoryStatusCardDemo() {
     setError(null);
     try {
       await new Promise(resolve => setTimeout(resolve, 800));
-      console.log(`Viewing feedback for story ${id}`);
       // Open feedback modal...
     } catch (err) {
       setError('Failed to load feedback. Please try again.');
@@ -120,7 +118,6 @@ export default function StoryStatusCardDemo() {
     setError(null);
     try {
       await new Promise(resolve => setTimeout(resolve, 600));
-      console.log(`Sharing story ${id}`);
       // Open share dialog...
     } catch (err) {
       setError('Failed to share story. Please try again.');
@@ -134,7 +131,6 @@ export default function StoryStatusCardDemo() {
     setError(null);
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      console.log(`Viewing story ${id}`);
       // Navigate to story view...
     } catch (err) {
       setError('Failed to load story. Please try again.');
@@ -148,7 +144,6 @@ export default function StoryStatusCardDemo() {
     setError(null);
     try {
       await new Promise(resolve => setTimeout(resolve, 800));
-      console.log(`Editing story ${id}`);
       // Navigate to editor...
     } catch (err) {
       setError('Failed to open editor. Please try again.');
@@ -164,7 +159,6 @@ export default function StoryStatusCardDemo() {
     setError(null);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(`Deleting story ${id}`);
       // Delete story...
     } catch (err) {
       setError('Failed to delete story. Please try again.');
@@ -181,7 +175,7 @@ export default function StoryStatusCardDemo() {
             Enhanced StoryStatusCard Demo
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Showcasing the new Writer's Flow features with SOE brand colors, accessibility compliance,
+            Showcasing the new Writer&apos;s Flow features with SOE brand colors, accessibility compliance,
             and enhanced user experience for different story states.
           </p>
         </div>
@@ -256,7 +250,7 @@ export default function StoryStatusCardDemo() {
           <div className="mt-8 p-4 bg-gradient-to-r from-soe-purple-50 to-soe-green-50 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-2">SOE Brand Integration</h4>
             <p className="text-sm text-gray-700">
-              This component now uses the official SOE brand colors: Purple (#874FFF) for Writer's Flow elements
+              This component now uses the official SOE brand colors: Purple (#874FFF) for Writer&apos;s Flow elements
               and Green (#9fcc40) for success states and progress indicators, creating a cohesive brand experience.
             </p>
           </div>

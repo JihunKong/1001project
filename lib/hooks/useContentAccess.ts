@@ -229,6 +229,7 @@ export function useSubscription() {
   // Fetch subscription when session changes
   useEffect(() => {
     fetchSubscription()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
   return {
@@ -353,6 +354,7 @@ export function useCart() {
   // Fetch cart on mount and when session changes
   useEffect(() => {
     fetchCart()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
   return {

@@ -139,6 +139,7 @@ export function initializeAuditMonitoring(): void {
     alertRules.set(rule.id, rule)
   })
 
+  // eslint-disable-next-line no-console
   console.log('Audit monitoring initialized with', alertRules.size, 'alert rules')
 }
 
@@ -349,6 +350,7 @@ async function triggerAlert(rule: AlertRule, auditLog: any): Promise<void> {
   // Send notifications
   await sendAlertNotifications(alert, rule.notificationChannels)
 
+  // eslint-disable-next-line no-console
   console.log(`SECURITY_ALERT: ${rule.severity}`, {
     alertId,
     ruleName: rule.name,
@@ -422,6 +424,7 @@ async function sendAlertNotifications(alert: Alert, channels: string[]): Promise
  */
 async function sendEmailAlert(alert: Alert): Promise<void> {
   // Implementation would integrate with email service
+  // eslint-disable-next-line no-console
   console.log(`EMAIL_ALERT: ${alert.severity} - ${alert.title}`)
 }
 
@@ -430,6 +433,7 @@ async function sendEmailAlert(alert: Alert): Promise<void> {
  */
 async function sendSlackAlert(alert: Alert): Promise<void> {
   // Implementation would integrate with Slack API
+  // eslint-disable-next-line no-console
   console.log(`SLACK_ALERT: ${alert.severity} - ${alert.title}`)
 }
 
@@ -438,6 +442,7 @@ async function sendSlackAlert(alert: Alert): Promise<void> {
  */
 async function sendWebhookAlert(alert: Alert): Promise<void> {
   // Implementation would send HTTP POST to configured webhook
+  // eslint-disable-next-line no-console
   console.log(`WEBHOOK_ALERT: ${alert.severity} - ${alert.title}`)
 }
 
@@ -446,6 +451,7 @@ async function sendWebhookAlert(alert: Alert): Promise<void> {
  */
 async function sendSMSAlert(alert: Alert): Promise<void> {
   // Implementation would integrate with SMS service
+  // eslint-disable-next-line no-console
   console.log(`SMS_ALERT: ${alert.severity} - ${alert.title}`)
 }
 
@@ -478,6 +484,7 @@ export async function resolveAlert(alertId: string, resolvedBy: string, notes?: 
   alert.resolvedBy = resolvedBy
 
   // Log alert resolution
+  // eslint-disable-next-line no-console
   console.log(`ALERT_RESOLVED: ${alertId}`, {
     ruleName: alert.ruleName,
     resolvedBy,
