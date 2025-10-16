@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Loader2, Save, Send, Eye, X, Sparkles } from 'lucide-react';
+import SubmissionConfirmationModal from './SubmissionConfirmationModal';
 
 const RichTextEditor = dynamic(() => import('./ui/RichTextEditor'), {
   ssr: false,
@@ -55,6 +56,7 @@ export default function TextSubmissionForm({
   const [wordCount, setWordCount] = useState(0);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [isRequestingAIReview, setIsRequestingAIReview] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const detailsRef = useRef<HTMLDetailsElement>(null);
 
@@ -274,7 +276,21 @@ export default function TextSubmissionForm({
     console.log('Current form errors:', errors);
     handleSubmit(
       (data) => {
-        console.log('Submission validation passed, submitting:', data);
+        console.log('Submission validation passed, opening confirmation modal');
+        setShowConfirmModal(true);
+      },
+      (errors) => {
+        console.error('Submission validation failed:', errors);
+        toast.error('Please fill in all required fields before submitting');
+      }
+    )();
+  };
+
+  const handleConfirmSubmission = () => {
+    console.log('handleConfirmSubmission called');
+    handleSubmit(
+      (data) => {
+        console.log('Confirmed submission, submitting:', data);
         onSubmit(data, false);
       },
       (errors) => {
@@ -740,6 +756,16 @@ export default function TextSubmissionForm({
           </div>
         </div>
       </form>
+
+      {/* Submission Confirmation Modal */}
+      <SubmissionConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSubmission}
+        title={watchedTitle}
+        wordCount={wordCount}
+        isSubmitting={isSubmitting && !isDraft}
+      />
     </div>
   );
 }
