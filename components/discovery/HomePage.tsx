@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { HomePageProps, Story, CulturalCollection, CulturalEvent, EngagementMetrics, ABTestConfig, HomePageSection } from '../../types/discovery';
 import StoryCard from './StoryCard';
 import EnhancedHeroSection from '../ui/EnhancedHeroSection';
+import FeatureGrid from '../landing/FeatureGrid';
+import SocialProof from '../landing/SocialProof';
 
 const HomePage: React.FC<HomePageProps> = ({
   userId,
@@ -292,6 +294,10 @@ const HomePage: React.FC<HomePageProps> = ({
   return (
     <main className={`homepage homepage--${abTestVariant}`}>
       {renderHeroSection()}
+
+      {/* Feature Grid Section - NEW */}
+      <FeatureGrid />
+
       {loading && <div className="homepage__loading">Loading amazing stories...</div>}
       {renderCulturalEvents()}
       {renderPersonalizedRecommendations()}
@@ -300,6 +306,9 @@ const HomePage: React.FC<HomePageProps> = ({
       {sections
         .filter(section => section.type !== 'personalized')
         .map(renderSection)}
+
+      {/* Social Proof Section - NEW */}
+      <SocialProof />
 
       <section className="homepage__cta-section">
         <div className="homepage__cta-content">
