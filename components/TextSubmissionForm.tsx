@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
-import { Loader2, Save, Send, Eye, X } from 'lucide-react';
+import { Loader2, Save, Send, Eye, X, Sparkles } from 'lucide-react';
 
 const RichTextEditor = dynamic(() => import('./ui/RichTextEditor'), {
   ssr: false,
@@ -54,6 +54,7 @@ export default function TextSubmissionForm({
   const [charCount, setCharCount] = useState(0);
   const [wordCount, setWordCount] = useState(0);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [isRequestingAIReview, setIsRequestingAIReview] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const detailsRef = useRef<HTMLDetailsElement>(null);
 
@@ -286,6 +287,64 @@ export default function TextSubmissionForm({
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted via Enter key or submit event - prevented');
+  };
+
+  const handleRequestAIReview = async () => {
+    console.log('handleRequestAIReview called');
+
+    if (!watchedTitle || !watchedContent) {
+      toast.error('Please fill in title and content before requesting AI review');
+      return;
+    }
+
+    if (mode === 'edit' && submissionId) {
+      toast.success('Scroll down to see the AI Review section in the sidebar');
+      return;
+    }
+
+    setIsRequestingAIReview(true);
+
+    try {
+      const data = {
+        title: watchedTitle,
+        content: watchedContent,
+        summary: watchedSummary || 'Draft summary',
+        authorAlias: watch('authorAlias') || 'Anonymous',
+        language: watch('language'),
+        ageRange: watchedAgeRange,
+        category: watchedCategory,
+        tags: watchedTags,
+        readingLevel: watch('readingLevel'),
+        copyrightConfirmed: watch('copyrightConfirmed'),
+        originalWork: watch('originalWork'),
+        licenseType: watch('licenseType'),
+        termsAccepted: watch('termsAccepted'),
+      };
+
+      const response = await fetch('/api/text-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save draft');
+      }
+
+      const result = await response.json();
+
+      toast.success('Draft saved! Redirecting to AI review...');
+
+      setTimeout(() => {
+        router.push(`/dashboard/writer/submit-text?edit=${result.submission.id}`);
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error saving draft for AI review:', error);
+      toast.error('Failed to save draft. Please try again.');
+    } finally {
+      setIsRequestingAIReview(false);
+    }
   };
 
   return (
@@ -636,6 +695,27 @@ export default function TextSubmissionForm({
                 <Save className="h-4 w-4" stroke="#141414" aria-hidden="true" />
               )}
               Save as Draft
+            </button>
+
+            <button
+              type="button"
+              onClick={handleRequestAIReview}
+              disabled={isSubmitting || isRequestingAIReview || !watchedTitle || !watchedContent}
+              className="flex items-center gap-2 px-3 py-2.5 border-2 border-primary-600 rounded-lg shadow-sm font-medium text-primary-600 bg-white hover:bg-primary-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '16px',
+                fontWeight: 500,
+                lineHeight: '1.221'
+              }}
+              title={!watchedTitle || !watchedContent ? 'Fill in title and content to enable AI review' : 'Request AI review'}
+            >
+              {isRequestingAIReview ? (
+                <Loader2 className="h-4 w-4 animate-spin" stroke="currentColor" aria-hidden="true" />
+              ) : (
+                <Sparkles className="h-4 w-4" stroke="currentColor" aria-hidden="true" />
+              )}
+              AI 리뷰 요청
             </button>
 
             <button
