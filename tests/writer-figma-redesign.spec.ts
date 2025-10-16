@@ -248,7 +248,7 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
     // Check for Figma design system classes
-    const page_element = page.locator('[data-role="volunteer"]');
+    const page_element = page.locator('[data-role="writer"]');
     await expect(page_element).toBeVisible();
 
     // Check for main content area
