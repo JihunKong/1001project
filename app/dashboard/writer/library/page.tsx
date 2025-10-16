@@ -75,7 +75,7 @@ export default function MyLibraryPage() {
     } else if (status === 'authenticated') {
       fetchSubmissions();
     }
-  }, [status]);
+  }, [status, router]);
 
   const fetchSubmissions = async () => {
     try {

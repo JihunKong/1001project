@@ -61,6 +61,7 @@ export const useEnhancedAuth = () => {
       console.error('Failed to update cultural profile:', error);
       throw error;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.updateCulturalProfile]);
 
   // Update privacy settings with COPPA compliance check
@@ -81,6 +82,7 @@ export const useEnhancedAuth = () => {
       console.error('Failed to update privacy settings:', error);
       throw error;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.updatePrivacySettings, isMinor]);
 
   // Request educator verification with validation
@@ -97,6 +99,7 @@ export const useEnhancedAuth = () => {
       console.error('Failed to request educator verification:', error);
       throw error;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth.requestEducatorVerification, isEducator]);
 
   return {

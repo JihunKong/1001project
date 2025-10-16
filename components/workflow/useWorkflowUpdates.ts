@@ -37,7 +37,7 @@ export function useWorkflowUpdates({
         }
       }
     } catch (error) {
-      console.debug('Workflow update check failed:', error);
+      // Workflow update check failed
     } finally {
       setIsPolling(false);
     }

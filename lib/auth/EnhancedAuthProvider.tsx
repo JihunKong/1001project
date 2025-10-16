@@ -173,6 +173,7 @@ export const EnhancedAuthProvider: React.FC<AuthProviderProps> = ({ children }) 
   // Debug authentication state in development
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
       console.log('[Auth Debug]', {
         isAuthenticated: state.isAuthenticated,
         hasUser: !!state.user,
@@ -364,7 +365,7 @@ export const EnhancedAuthProvider: React.FC<AuthProviderProps> = ({ children }) 
   const confirmPasswordReset = useCallback(async (token: string, newPassword: string) => {
     try {
       // This would be handled by the custom password reset flow
-      console.log('Password reset confirmation not implemented yet');
+      // TODO: Implement password reset confirmation
     } catch (error) {
       const authError = error as EnhancedAuthError;
       dispatch({ type: 'AUTH_ERROR', payload: authError.message });

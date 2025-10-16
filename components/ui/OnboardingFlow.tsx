@@ -303,35 +303,35 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
   const currentStepData = steps[currentStep]
   const isLastStep = currentStep === steps.length - 1
 
-  const handleNext = () => {
+  const handleComplete = useCallback(() => {
+    setIsVisible(false)
+    setTimeout(() => {
+      onComplete()
+    }, 300)
+  }, [onComplete])
+
+  const handleNext = useCallback(() => {
     if (isLastStep) {
       handleComplete()
     } else {
       setCurrentStep(prev => prev + 1)
     }
-  }
+  }, [isLastStep, handleComplete])
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1)
     }
-  }
+  }, [currentStep])
 
-  const handleComplete = () => {
-    setIsVisible(false)
-    setTimeout(() => {
-      onComplete()
-    }, 300)
-  }
-
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     if (onSkip) {
       setIsVisible(false)
       setTimeout(() => {
         onSkip()
       }, 300)
     }
-  }
+  }, [onSkip])
 
   // Keyboard navigation
   useEffect(() => {
@@ -357,7 +357,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentStep, isLastStep, isVisible])
+  }, [currentStep, isLastStep, isVisible, handleNext, handlePrevious, handleSkip])
 
   if (!isVisible) return null
 

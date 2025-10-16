@@ -139,6 +139,7 @@ export async function generateAuditReport(
   }
 
   // Log report generation
+  // eslint-disable-next-line no-console
   console.log(`AUDIT_REPORT_GENERATED: ${reportType}`, {
     reportId,
     period: `${period.start.toISOString()} - ${period.end.toISOString()}`,

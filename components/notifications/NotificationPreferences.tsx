@@ -111,6 +111,7 @@ export default function NotificationPreferences() {
     if (session?.user?.id) {
       fetchPreferences();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.user?.id]);
 
   if (loading) {

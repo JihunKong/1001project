@@ -130,13 +130,6 @@ export default function TextSubmissionForm({
   // Auto-expand details section when there are validation errors in hidden fields
   useEffect(() => {
     if (errors.authorAlias || errors.summary || errors.termsAccepted || errors.copyrightConfirmed || errors.licenseType) {
-      console.log('Validation errors detected in hidden fields:', {
-        authorAlias: errors.authorAlias?.message,
-        summary: errors.summary?.message,
-        termsAccepted: errors.termsAccepted?.message,
-        copyrightConfirmed: errors.copyrightConfirmed?.message,
-        licenseType: errors.licenseType?.message
-      });
       setDetailsOpen(true);
       if (detailsRef.current) {
         detailsRef.current.open = true;
@@ -172,9 +165,6 @@ export default function TextSubmissionForm({
   };
 
   const onSubmit = async (data: TextSubmissionFormData, saveAsDraft = false) => {
-    console.log('onSubmit called with saveAsDraft:', saveAsDraft);
-    console.log('Form data:', data);
-
     setIsSubmitting(true);
     setIsDraft(saveAsDraft);
 
@@ -188,16 +178,12 @@ export default function TextSubmissionForm({
 
       const method = mode === 'edit' ? 'PUT' : 'POST';
 
-      console.log('Making API request:', { url, method, mode, submissionId });
-
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
         signal: abortControllerRef.current.signal,
       });
-
-      console.log('API response status:', response.status, response.statusText);
 
       if (!response.ok) {
         const error = await response.json();
@@ -206,17 +192,14 @@ export default function TextSubmissionForm({
       }
 
       const result = await response.json();
-      console.log('API success result:', result);
 
       // If not saving as draft, submit for review
       if (!saveAsDraft && mode === 'create') {
-        console.log('Submitting for review with ID:', result.submission.id);
         const submitResponse = await fetch(`/api/text-submissions/${result.submission.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'submit' }),
         });
-        console.log('Submit for review response:', submitResponse.status, submitResponse.statusText);
       }
 
       toast.success(
@@ -227,57 +210,41 @@ export default function TextSubmissionForm({
             : 'Submission created and sent for review!'
       );
 
-      console.log('Submission successful, redirecting...');
-
       // Only redirect if it's not a draft save
       if (!saveAsDraft) {
         onSuccess?.();
 
         if (!onSuccess) {
-          console.log('Redirecting to /dashboard/writer');
           router.push('/dashboard/writer');
         }
       }
 
     } catch (error) {
       console.error('Error saving submission:', error);
-      if (error instanceof Error) {
-        console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
-      }
       toast.error(error instanceof Error ? error.message : 'Failed to save submission');
     } finally {
-      console.log('onSubmit finally block - resetting states');
       setIsSubmitting(false);
       setIsDraft(false);
     }
   };
 
   const handleSaveDraft = () => {
-    console.log('handleSaveDraft called');
-    console.log('Current form errors:', errors);
     handleSubmit(
       (data) => {
-        console.log('Draft validation passed, submitting:', data);
         onSubmit(data, true);
       },
       (errors) => {
-        console.error('Draft validation failed:', errors);
         toast.error('Please fill in all required fields before saving');
       }
     )();
   };
 
   const handleSubmitForReview = () => {
-    console.log('handleSubmitForReview called');
-    console.log('Current form errors:', errors);
     handleSubmit(
       (data) => {
-        console.log('Submission validation passed, submitting:', data);
         onSubmit(data, false);
       },
       (errors) => {
-        console.error('Submission validation failed:', errors);
         toast.error('Please fill in all required fields before submitting');
       }
     )();
@@ -285,7 +252,6 @@ export default function TextSubmissionForm({
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted via Enter key or submit event - prevented');
   };
 
   return (

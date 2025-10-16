@@ -327,8 +327,10 @@ export async function logAuditEvent(event: AuditLog): Promise<void> {
   // In production, send to logging service
   if (process.env.NODE_ENV === 'production') {
     // Send to CloudWatch, DataDog, etc.
+    // eslint-disable-next-line no-console
     console.log('[AUDIT]', JSON.stringify(event));
   } else {
+    // eslint-disable-next-line no-console
     console.log('[AUDIT]', event);
   }
 }

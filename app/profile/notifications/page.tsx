@@ -84,7 +84,7 @@ export default function NotificationPreferencesPage() {
               <strong>Email notifications:</strong> Receive important updates via email. We recommend keeping this enabled for critical status changes.
             </p>
             <p>
-              <strong>Browser notifications:</strong> Get instant alerts while you're browsing. Your browser may ask for permission first.
+              <strong>Browser notifications:</strong> Get instant alerts while you&apos;re browsing. Your browser may ask for permission first.
             </p>
             <p>
               <strong>Email digest:</strong> Get a summary of your activity. Weekly digests help you stay informed without overwhelming your inbox.

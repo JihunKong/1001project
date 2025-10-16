@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface RTLContextType {
@@ -29,7 +29,7 @@ export function RTLProvider({ children, locale: propLocale }: RTLProviderProps) 
   const direction = currentLocale.startsWith('ar') || currentLocale.startsWith('he') ? 'rtl' : 'ltr';
   const isRTL = direction === 'rtl';
   const fontFamily = undefined;
-  const culturalColors = {};
+  const culturalColors = useMemo(() => ({}), []);
 
   // Apply RTL styles transformation
   const applyRTLStyles = (styles: Record<string, any>): Record<string, any> => {

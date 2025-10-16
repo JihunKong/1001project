@@ -66,17 +66,6 @@ export default function WriterSubmissionForm({ onSubmit, initialData }: WriterSu
   const [tagInput, setTagInput] = useState('');
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
 
-  // Debounced auto grammar check
-  useEffect(() => {
-    if (!formData.content || formData.content === '<p></p>') return;
-
-    const timeoutId = setTimeout(() => {
-      checkGrammar();
-    }, 3000);
-
-    return () => clearTimeout(timeoutId);
-  }, [formData.content]);
-
   const checkGrammar = useCallback(async () => {
     if (!formData.content || formData.content === '<p></p>') return;
 
@@ -98,6 +87,17 @@ export default function WriterSubmissionForm({ onSubmit, initialData }: WriterSu
       setIsCheckingGrammar(false);
     }
   }, [formData.content]);
+
+  // Debounced auto grammar check
+  useEffect(() => {
+    if (!formData.content || formData.content === '<p></p>') return;
+
+    const timeoutId = setTimeout(() => {
+      checkGrammar();
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.content, checkGrammar]);
 
   const analyzeStructure = useCallback(async () => {
     if (!formData.content || formData.content === '<p></p>') return;

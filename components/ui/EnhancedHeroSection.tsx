@@ -56,6 +56,7 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCTAClick = (ctaType: string) => {
@@ -282,7 +283,7 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
                 </div>
                 <span className="font-semibold text-sm">AI-Powered</span>
               </div>
-              <p className="text-xs text-gray-600">Intelligent learning assistance for every student's journey</p>
+              <p className="text-xs text-gray-600">Intelligent learning assistance for every student&apos;s journey</p>
             </motion.div>
           </motion.div>
         </div>

@@ -56,7 +56,7 @@ export default function TermsAndConditionsPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-4">3. Subscription Overview</h2>
               <p className="text-gray-700 leading-relaxed mb-4">A 1001 Stories subscription includes:</p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                <li>Access to a digital library of children's stories created through the program</li>
+                <li>Access to a digital library of children&apos;s stories created through the program</li>
                 <li>Participation in online or local storytelling workshops (when available)</li>
                 <li>Opportunities to submit stories for publishing consideration</li>
                 <li>Program updates and community impact reports</li>
@@ -186,7 +186,7 @@ export default function TermsAndConditionsPage() {
                 </Link>.
               </p>
               <p className="text-gray-700 leading-relaxed mt-4">
-                Children's data is collected and used only with verified parental consent and in compliance with
+                Children&apos;s data is collected and used only with verified parental consent and in compliance with
                 child privacy laws such as COPPA (U.S.) and equivalent regulations globally.
               </p>
             </section>

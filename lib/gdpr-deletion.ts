@@ -607,6 +607,7 @@ export async function createDeletionAuditLog(params: {
 
   // Log critical actions to system log for monitoring
   if (['HARD_DELETE_EXECUTED', 'DATA_ANONYMIZED', 'SYSTEM_ERROR'].includes(params.action)) {
+    // eslint-disable-next-line no-console
     console.log(`CRITICAL_AUDIT: ${params.action}`, {
       deletionRequestId: params.deletionRequestId,
       timestamp: timestamp.toISOString(),

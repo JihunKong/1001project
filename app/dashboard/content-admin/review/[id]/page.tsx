@@ -94,27 +94,27 @@ export default function ContentAdminReviewPage() {
   }, [session, status]);
 
   // Fetch submission details
-  const fetchSubmission = async () => {
-    try {
-      const response = await fetch(`/api/text-submissions/${params.id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch submission');
-      }
-      const data = await response.json();
-      setSubmission(data.submission);
-
-      // Set existing notes if any
-      if (data.submission.finalNotes) {
-        setNotes(data.submission.finalNotes);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchSubmission = async () => {
+      try {
+        const response = await fetch(`/api/text-submissions/${params.id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch submission');
+        }
+        const data = await response.json();
+        setSubmission(data.submission);
+
+        // Set existing notes if any
+        if (data.submission.finalNotes) {
+          setNotes(data.submission.finalNotes);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (session?.user?.role === 'CONTENT_ADMIN' && params.id) {
       fetchSubmission();
     }

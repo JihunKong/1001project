@@ -161,7 +161,6 @@ export default function ActionButtons({
             variant: 'secondary',
             action: () => {
               // TODO: Implement sharing functionality
-              console.log('Share functionality not yet implemented');
             }
           }
         ];

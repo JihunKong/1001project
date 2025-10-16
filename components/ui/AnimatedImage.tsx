@@ -1,9 +1,11 @@
 'use client';
 
 import { forwardRef, ImgHTMLAttributes, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useScrollAnimation } from '@/lib/hooks/useScrollAnimation';
 
-interface AnimatedImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'ref'> {
+interface AnimatedImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'ref' | 'src'> {
+  src?: string;
   animationType?: 'slideUp' | 'fadeIn' | 'scaleIn' | 'slideInLeft' | 'slideInRight';
   delay?: number;
   duration?: number;
@@ -70,13 +72,14 @@ const AnimatedImage = forwardRef<HTMLDivElement, AnimatedImageProps>(
       <div
         ref={forwardedRef || internalRef}
         className={`${getAnimationClasses()} ${className}`}
+        style={{ position: 'relative', width: '100%', height: '100%' }}
       >
         {src ? (
-          <img
+          <Image
             src={src}
             alt={alt}
-            {...imgProps}
-            className="w-full h-full object-cover"
+            fill
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           fallbackComponent
