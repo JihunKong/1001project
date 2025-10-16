@@ -16,9 +16,16 @@ interface Comment {
   startOffset: number;
   endOffset: number;
   authorId: string;
-  authorName?: string;
   status: 'OPEN' | 'RESOLVED' | 'ARCHIVED';
+  isResolved: boolean;
   createdAt: string;
+  author: {
+    id: string;
+    name: string | null;
+    email: string;
+    role: string;
+  };
+  replies?: Comment[];
 }
 
 interface CommentableTextEditorProps {
