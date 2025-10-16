@@ -11,6 +11,7 @@ import SubmissionTabs, { SubmissionStatus } from '@/components/SubmissionTabs';
 import SubmissionList from '@/components/SubmissionList';
 import DashboardLoadingState from '@/components/dashboard/DashboardLoadingState';
 import DashboardErrorState from '@/components/dashboard/DashboardErrorState';
+import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 interface TextSubmission {
   id: string;
@@ -169,46 +170,49 @@ export default function VolunteerDashboard() {
 
   return (
     <>
-      {notification && (
-        <div
-          role="alert"
-          aria-live="polite"
-          aria-atomic="true"
-          className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 fixed top-16 left-0 right-0 z-30 shadow-lg"
-        >
-          <div className="flex items-center justify-between px-6">
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 mr-2" />
-              <p className="font-medium">{notification}</p>
+      <WriterLNB />
+
+      <div className="min-h-screen lg:ml-60 pb-20 lg:pb-4">
+        {notification && (
+          <div
+            role="alert"
+            aria-live="polite"
+            aria-atomic="true"
+            className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 fixed top-16 left-0 right-0 z-30 shadow-lg"
+          >
+            <div className="flex items-center justify-between px-6">
+              <div className="flex items-center">
+                <CheckCircle className="h-5 w-5 mr-2" />
+                <p className="font-medium">{notification}</p>
+              </div>
+              <button
+                onClick={() => setNotification(null)}
+                className="text-green-700 hover:text-green-900 focus:outline-none"
+              >
+                ✕
+              </button>
             </div>
-            <button
-              onClick={() => setNotification(null)}
-              className="text-green-700 hover:text-green-900 focus:outline-none"
-            >
-              ✕
-            </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {sseError && (
-        <div
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 fixed top-16 left-0 right-0 z-30 shadow-lg"
-        >
-          <div className="flex items-center justify-between px-6">
-            <p className="text-sm">
-              Notification service disconnected. <button onClick={reconnect} className="underline">Reconnect</button>
-            </p>
-            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+        {sseError && (
+          <div
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+            className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 fixed top-16 left-0 right-0 z-30 shadow-lg"
+          >
+            <div className="flex items-center justify-between px-6">
+              <p className="text-sm">
+                Notification service disconnected. <button onClick={reconnect} className="underline">Reconnect</button>
+              </p>
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="max-w-[1440px] mx-auto px-[100px] py-10">
-        <div className="max-w-[1240px] mx-auto">
+        <div className="max-w-[1440px] mx-auto px-8 lg:px-[100px] py-10">
+          <div className="max-w-[1240px] mx-auto">
           <div className="flex items-center justify-between mb-12">
             <h1
               className="text-[#141414]"
@@ -299,6 +303,7 @@ export default function VolunteerDashboard() {
             />
           )}
           </div>
+        </div>
         </div>
       </div>
     </>

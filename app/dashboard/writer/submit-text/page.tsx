@@ -7,6 +7,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 function SubmitTextPage() {
   const searchParams = useSearchParams();
@@ -53,7 +54,11 @@ function SubmitTextPage() {
   const isEditing = Boolean(editId);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
+    <>
+      <WriterLNB />
+
+      <div className="min-h-screen lg:ml-60 pb-20 lg:pb-4">
+        <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-[#8E8E93]">
           <Link href="/dashboard" className="hover:text-[#141414] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soe-green-300">
@@ -108,7 +113,9 @@ function SubmitTextPage() {
           />
         </aside>
       </div>
-    </div>
+        </div>
+      </div>
+    </>
   );
 }
 
