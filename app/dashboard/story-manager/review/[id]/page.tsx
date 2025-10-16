@@ -22,6 +22,7 @@ import toast from 'react-hot-toast';
 import CommentableTextEditor from '@/components/story-publication/CommentableTextEditor';
 import CommentPopup from '@/components/story-publication/CommentPopup';
 import Popover from '@/components/ui/Popover';
+import RevisionRequestModal, { RevisionRequestData } from '@/components/story-publication/RevisionRequestModal';
 
 interface Comment {
   id: string;
@@ -281,6 +282,50 @@ export default function StoryReviewPage() {
     } catch (err) {
       console.error('Error deleting comment:', err);
       toast.error('Failed to delete comment');
+    }
+  };
+
+  const handleRevisionRequest = async (data: RevisionRequestData) => {
+    if (!submission) return;
+
+    setSubmitting(true);
+    try {
+      const response = await fetch(`/api/text-submissions/${submission.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'story_needs_revision',
+          feedback: data.notes,
+          comment: `Revision requested with ${data.priority} priority${data.dueDate ? `, due ${data.dueDate}` : ''}`,
+          metadata: {
+            priority: data.priority,
+            dueDate: data.dueDate,
+            revisionTypes: data.revisionTypes
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to request revision');
+      }
+
+      const result = await response.json();
+      setSubmission(result.submission);
+      setShowFeedbackForm(false);
+      setAction(null);
+
+      toast.success('Revision requested successfully!');
+
+      setTimeout(() => {
+        router.push('/dashboard/story-manager');
+      }, 2000);
+
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -662,13 +707,26 @@ export default function StoryReviewPage() {
         </div>
       </div>
 
-      {/* Feedback Modal */}
-      {showFeedbackForm && action && (
+      {/* Revision Request Modal */}
+      {action === 'revision' && (
+        <RevisionRequestModal
+          isOpen={showFeedbackForm}
+          onClose={() => {
+            setShowFeedbackForm(false);
+            setAction(null);
+          }}
+          onSubmit={handleRevisionRequest}
+          isSubmitting={submitting}
+          submissionTitle={submission.title}
+        />
+      )}
+
+      {/* Approve/Reject Feedback Modal */}
+      {action !== 'revision' && showFeedbackForm && action && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               {action === 'approve' && 'Approve Story'}
-              {action === 'revision' && 'Request Revision'}
               {action === 'reject' && 'Reject Story'}
             </h3>
 
@@ -678,8 +736,6 @@ export default function StoryReviewPage() {
               placeholder={
                 action === 'approve'
                   ? 'Optional: Add any final comments...'
-                  : action === 'revision'
-                  ? 'Explain what needs to be revised...'
                   : 'Explain why this story is being rejected...'
               }
               rows={4}
@@ -705,12 +761,10 @@ export default function StoryReviewPage() {
                 className={`px-4 py-2 text-white rounded-lg ${
                   action === 'approve'
                     ? 'bg-green-600 hover:bg-green-700'
-                    : action === 'revision'
-                    ? 'bg-orange-600 hover:bg-orange-700'
                     : 'bg-red-600 hover:bg-red-700'
                 } disabled:opacity-50`}
               >
-                {submitting ? 'Processing...' : `Confirm ${action === 'approve' ? 'Approval' : action === 'revision' ? 'Revision Request' : 'Rejection'}`}
+                {submitting ? 'Processing...' : `Confirm ${action === 'approve' ? 'Approval' : 'Rejection'}`}
               </button>
             </div>
           </div>
