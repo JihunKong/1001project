@@ -232,7 +232,7 @@ enum UserRole {
   LEARNER         -- 학습자 (학생)
   TEACHER         -- 교사
   INSTITUTION     -- 교육기관 대표
-  WRITER          -- 작가/자원봉사자 (formerly VOLUNTEER)
+  WRITER          -- 작가
   STORY_MANAGER   -- 스토리 관리자 (검토 및 승인)
   BOOK_MANAGER    -- 책 관리자 (출판 형식 결정)
   CONTENT_ADMIN   -- 콘텐츠 관리자 (최종 승인)

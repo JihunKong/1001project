@@ -1,4 +1,4 @@
-# Volunteer Dashboard Visual Testing Checklist
+# Writer Dashboard Visual Testing Checklist
 
 **Platform:** 1001 Stories - Global Education Platform for Children
 **Quality Standard:** Critical - Serving children worldwide
@@ -44,7 +44,7 @@
 
 ## Component Testing Checklists
 
-### 1. VolunteerLNB (Sidebar + Mobile Bottom Nav)
+### 1. WriterLNB (Sidebar + Mobile Bottom Nav)
 
 #### Desktop View (≥1024px)
 - [ ] **Structure**
@@ -57,7 +57,7 @@
   - [ ] 1001 Stories logo with gradient (soe-green-500 to soe-purple-500)
   - [ ] BookOpen icon (24x24px) centered in 40x40px circle
   - [ ] Title "1001 Stories" in 18px semibold
-  - [ ] Subtitle "Volunteer" in 12px figma-gray-inactive
+  - [ ] Subtitle "Writer" in 12px figma-gray-inactive
   - [ ] Proper spacing: p-6 with border-bottom
 
 - [ ] **Navigation Items**
@@ -656,7 +656,7 @@
 
 ---
 
-### 9. Redesigned Volunteer Dashboard Page
+### 9. Redesigned Writer Dashboard Page
 
 #### Layout Structure
 - [ ] **Base Layout:**
@@ -667,7 +667,7 @@
   - [ ] Mobile: Bottom nav + main content
 
 - [ ] **Sidebar/Nav Integration:**
-  - [ ] VolunteerLNB on left (desktop)
+  - [ ] WriterLNB on left (desktop)
   - [ ] GlobalNavigationBar at top (sticky)
   - [ ] Main content margin-left: 240px (lg:ml-lnb) on desktop
   - [ ] Bottom nav visible on mobile
@@ -910,7 +910,7 @@
 ### Required Screenshots
 
 #### Desktop (1920x1080)
-**Location:** `/docs/screenshots/volunteer-dashboard/desktop/`
+**Location:** `/docs/screenshots/writer-dashboard/desktop/`
 
 - [ ] `01-full-dashboard-view.png` - Complete page overview
 - [ ] `02-sidebar-navigation.png` - LNB with all states
@@ -928,7 +928,7 @@
 - [ ] `14-focus-states.png` - Keyboard focus indicators
 
 #### Tablet (768x1024)
-**Location:** `/docs/screenshots/volunteer-dashboard/tablet/`
+**Location:** `/docs/screenshots/writer-dashboard/tablet/`
 
 - [ ] `01-portrait-view.png` - Full page portrait
 - [ ] `02-landscape-view.png` - Full page landscape
@@ -939,7 +939,7 @@
 - [ ] `07-user-menu-tablet.png` - Dropdown on tablet
 
 #### Mobile (375x667)
-**Location:** `/docs/screenshots/volunteer-dashboard/mobile/`
+**Location:** `/docs/screenshots/writer-dashboard/mobile/`
 
 - [ ] `01-dashboard-scroll-top.png` - Above fold
 - [ ] `02-dashboard-scroll-mid.png` - Middle section
@@ -1002,7 +1002,7 @@
 
 #### Navigation Changes
 - [ ] `nav-sidebar-before.png` - Old sidebar design
-- [ ] `nav-sidebar-after.png` - New VolunteerLNB
+- [ ] `nav-sidebar-after.png` - New WriterLNB
 - [ ] `nav-mobile-before.png` - Old mobile nav
 - [ ] `nav-mobile-after.png` - New bottom nav
 - [ ] `nav-comparison.png` - Annotated differences
