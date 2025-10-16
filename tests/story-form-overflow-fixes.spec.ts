@@ -124,7 +124,7 @@ test.describe('Story Submission Form Overflow Fixes - Live Website', () => {
 
           // Look for volunteer role card
           const volunteerRole = page.locator('text=Volunteer').or(
-            page.locator('[data-role="volunteer"]')
+            page.locator('[data-role="writer"]')
           ).or(
             page.locator('.role-card').filter({ hasText: 'Volunteer' })
           );

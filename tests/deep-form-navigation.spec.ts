@@ -74,7 +74,7 @@ test.describe('Deep Form Navigation - Live Website', () => {
       // Look for volunteer role card or button
       const volunteerSelectors = [
         'text=Volunteer',
-        '[data-role="volunteer"]',
+        '[data-role="writer"]',
         '.role-card:has-text("Volunteer")',
         'button:has-text("Volunteer")',
         'a:has-text("Volunteer")'

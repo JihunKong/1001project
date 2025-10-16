@@ -14,7 +14,7 @@ services:
       - .env.docker
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://stories_user:${DB_PASSWORD:-jsIAqnRygzHf1+9m46zSob/lhg52huI6UNiy9rQzuFc=}@postgres:5432/stories_db
+      - DATABASE_URL=postgresql://stories_user:${DB_PASSWORD:-jsIAqnRygzHf1%2B9m46zSob%2Flhg52huI6UNiy9rQzuFc%3D}@postgres:5432/stories_db
     volumes:
       - ./uploads:/app/uploads
       - ./prisma:/app/prisma

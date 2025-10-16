@@ -34,7 +34,7 @@ export default function VolunteerNotificationsPage() {
   }
 
   return (
-    <div data-role="volunteer" className="min-h-screen bg-gray-50">
+    <div data-role="writer" className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

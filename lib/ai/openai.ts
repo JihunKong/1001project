@@ -25,7 +25,7 @@ export interface StructureAnalysisResult {
 export async function checkGrammar(content: string): Promise<GrammarCheckResult> {
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-5-mini',
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
@@ -59,7 +59,7 @@ export async function checkGrammar(content: string): Promise<GrammarCheckResult>
 export async function analyzeStructure(content: string): Promise<StructureAnalysisResult> {
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-5-mini',
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
@@ -97,7 +97,7 @@ export async function analyzeStructure(content: string): Promise<StructureAnalys
 export async function getWritingHelp(content: string, question: string): Promise<string> {
   try {
     const response = await openai.chat.completions.create({
-      model: 'gpt-5-mini',
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',

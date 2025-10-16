@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
           score: grammarResult.grammarScore,
           suggestions: grammarResult.suggestions,
           status: 'COMPLETED',
-          modelUsed: 'gpt-5-mini',
+          modelUsed: 'gpt-4o-mini',
           processingTime,
         },
       });

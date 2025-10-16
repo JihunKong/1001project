@@ -54,28 +54,54 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user is a volunteer
+    // Check if user is a writer
     if (session.user.role !== UserRole.WRITER) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const userId = session.user.id;
 
-    // Get volunteer submissions (safely handle missing tables)
-    const textSubmissions: any[] = [];
+    // Get text submissions (primary submission method)
+    let textSubmissions: any[] = [];
     let legacySubmissions: any[] = [];
 
-    // Note: textSubmission model not available in current schema
-    // Will be added in future publishing workflow update
+    try {
+      textSubmissions = await prisma.textSubmission.findMany({
+        where: {
+          authorId: userId,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          id: true,
+          title: true,
+          authorAlias: true,
+          status: true,
+          language: true,
+          ageRange: true,
+          category: true,
+          tags: true,
+          summary: true,
+          wordCount: true,
+          createdAt: true,
+          updatedAt: true,
+          publishedAt: true,
+          storyFeedback: true,
+          readingLevel: true,
+        },
+      });
+    } catch (error) {
+      logger.warn('TextSubmission query failed, checking legacy submissions only', {
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
+    }
 
     try {
       // Try to get legacy volunteer submissions
       legacySubmissions = await prisma.volunteerSubmission.findMany({
         where: {
           volunteerId: userId,
-          volunteer: {
-            id: userId
-          }
         },
         orderBy: {
           createdAt: 'desc',
@@ -117,8 +143,11 @@ export async function GET() {
         tags: submission.tags || [],
         summary: submission.summary,
         wordCount: submission.wordCount,
+        readingLevel: submission.readingLevel,
         createdAt: submission.createdAt,
         updatedAt: submission.updatedAt,
+        publishedAt: submission.publishedAt,
+        storyFeedback: submission.storyFeedback,
         submissionType: 'text' as const,
       })),
       ...legacySubmissions.map(submission => ({
@@ -140,9 +169,16 @@ export async function GET() {
       })),
     ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+    logger.info('Writer submissions retrieved', {
+      userId,
+      textSubmissions: textSubmissions.length,
+      legacySubmissions: legacySubmissions.length,
+      total: submissions.length,
+    });
+
     return NextResponse.json({ submissions });
   } catch (error) {
-    logger.error('Error fetching volunteer submissions', error);
+    logger.error('Error fetching writer submissions', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

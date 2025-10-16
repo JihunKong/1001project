@@ -55,7 +55,7 @@ interface Stats {
   }>;
 }
 
-export default function VolunteerDashboard() {
+export default function WriterDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [submissions, setSubmissions] = useState<TextSubmission[]>([]);
@@ -160,11 +160,11 @@ export default function VolunteerDashboard() {
   };
 
   if (status === 'loading' || loading) {
-    return <DashboardLoadingState message="Loading your dashboard..." role="volunteer" />;
+    return <DashboardLoadingState message="Loading your dashboard..." role="writer" />;
   }
 
   if (error) {
-    return <DashboardErrorState error={error} role="volunteer" />;
+    return <DashboardErrorState error={error} role="writer" />;
   }
 
   return (

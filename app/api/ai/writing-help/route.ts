@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
           feedback: { question, answer: helpResponse } as any,
           suggestions: [helpResponse],
           status: 'COMPLETED',
-          modelUsed: 'gpt-5-mini',
+          modelUsed: 'gpt-4o-mini',
           processingTime,
         },
       });
