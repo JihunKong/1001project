@@ -186,8 +186,11 @@ components/
 const roleRoutes = {
   LEARNER: ['/dashboard/learner', '/library', '/book/*'],
   TEACHER: ['/dashboard/teacher', '/classes/*', '/students/*'],
-  VOLUNTEER: ['/dashboard/volunteer', '/submissions/*'],
+  WRITER: ['/dashboard/writer', '/submissions/*'],
   INSTITUTION: ['/dashboard/institution', '/organization/*'],
+  STORY_MANAGER: ['/dashboard/story-manager', '/reviews/*'],
+  BOOK_MANAGER: ['/dashboard/book-manager', '/publications/*'],
+  CONTENT_ADMIN: ['/dashboard/content-admin', '/final-reviews/*'],
   ADMIN: ['/*'] // Full access
 }
 ```

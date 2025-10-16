@@ -19,7 +19,7 @@ The 1001 Stories Publishing & Library System is a comprehensive content manageme
 
 ### Key Features
 
-- **Multi-Role Workflow**: LEARNER, TEACHER, VOLUNTEER, STORY_MANAGER, BOOK_MANAGER, CONTENT_ADMIN, ADMIN
+- **Multi-Role Workflow**: LEARNER, TEACHER, INSTITUTION, WRITER, STORY_MANAGER, BOOK_MANAGER, CONTENT_ADMIN, ADMIN
 - **Text Submission Pipeline**: Rich text editor → Story Review → Format Review → Final Approval → Publication
 - **PDF Management**: Secure upload, storage, and access control
 - **AI Integration**: Automated image generation and TTS for text-only stories
@@ -61,7 +61,7 @@ enum UserRole {
   LEARNER
   TEACHER
   INSTITUTION
-  VOLUNTEER
+  WRITER
   STORY_MANAGER    // Reviews submitted stories, provides feedback
   BOOK_MANAGER     // Decides publication format (book vs text)
   CONTENT_ADMIN    // Final approval for publishing
@@ -541,7 +541,7 @@ Get text-based book content with parsing support.
 Create volunteer submission (PDF upload supported).
 
 **Authentication**: Required
-**Authorization**: VOLUNTEER role or higher
+**Authorization**: WRITER role or higher
 
 **Request**: Multipart form data
 - `file`: PDF file (optional)
@@ -1722,22 +1722,22 @@ The system uses NextAuth.js with email magic links for authentication:
 
 ### Authorization Matrix
 
-| Feature | LEARNER | TEACHER | VOLUNTEER | STORY_MANAGER | BOOK_MANAGER | CONTENT_ADMIN | ADMIN |
-|---------|---------|---------|-----------|---------------|--------------|---------------|-------|
+| Feature | LEARNER | TEACHER | INSTITUTION | WRITER | STORY_MANAGER | BOOK_MANAGER | CONTENT_ADMIN | ADMIN |
+|---------|---------|---------|-------------|--------|---------------|--------------|---------------|-------|
 | **Text Submissions** |
-| Create submission | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Edit own draft | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Submit for review | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| View own submissions | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Assign story manager | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ |
-| Review stories | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ | ✓ |
-| Make format decisions | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ |
-| Final approval | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Create submission | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Edit own draft | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Submit for review | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| View own submissions | ✓ | ✓ | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Assign story manager | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ |
+| Review stories | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✗ | ✓ |
+| Make format decisions | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ |
+| Final approval | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✓ |
 | **Library Access** |
-| View assigned books | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
-| View all published | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Assign books to students | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ |
-| Download PDFs | * | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| View assigned books | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| View all published | ✗ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Assign books to students | ✗ | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ |
+| Download PDFs | * | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 \* Learners can download only assigned books if teacher allows
 

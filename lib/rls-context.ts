@@ -96,10 +96,10 @@ export function isAdmin(role: string): boolean {
   return role === 'ADMIN'
 }
 
-export function isVolunteer(role: string): boolean {
-  return role === 'VOLUNTEER'
+export function isWriter(role: string): boolean {
+  return role === 'WRITER'
 }
 
-export function canAccessVolunteerData(userRole: string, targetUserId: string, currentUserId: string): boolean {
-  return isAdmin(userRole) || (isVolunteer(userRole) && targetUserId === currentUserId)
+export function canAccessWriterData(userRole: string, targetUserId: string, currentUserId: string): boolean {
+  return isAdmin(userRole) || (isWriter(userRole) && targetUserId === currentUserId)
 }

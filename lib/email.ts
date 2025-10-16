@@ -107,7 +107,7 @@ const getWelcomeEmailHtml = (name: string, role: string) => {
     LEARNER: "Ready to explore amazing stories from around the world? Your learning journey starts now!",
     TEACHER: "Welcome to our educator community! You can now create classrooms and manage student progress.",
     INSTITUTION: "Thank you for partnering with us! Let's make education accessible together.",
-    VOLUNTEER: "Welcome to our volunteer family! Your contributions will help children worldwide.",
+    WRITER: "Welcome to our writer family! Your contributions will help children worldwide.",
     ADMIN: "Welcome aboard! You have full access to manage the platform."
   }
 

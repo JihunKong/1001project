@@ -6,7 +6,7 @@ import { Bell, X, Check, Clock, AlertCircle, Award, FileText } from 'lucide-reac
 
 interface Notification {
   id: string;
-  type: 'SYSTEM' | 'VOLUNTEER' | 'ASSIGNMENT' | 'ACHIEVEMENT';
+  type: 'SYSTEM' | 'WRITER' | 'ASSIGNMENT' | 'ACHIEVEMENT';
   title: string;
   message: string;
   read: boolean;

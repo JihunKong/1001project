@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Core Features in Production
 1. **User Authentication** - Email-based magic link authentication
-2. **Multi-Role System** - 7 distinct roles with specific permissions
+2. **Multi-Role System** - 8 distinct roles with specific permissions
 3. **Progressive Library Access** - Teacher-controlled book assignments
 4. **Publishing Workflow** - Multi-stage content approval pipeline
 5. **AI-Enhanced Learning** - Content parsing, word explanations, Q&A
@@ -281,30 +281,39 @@ docker-compose logs app  # View logs
    - Provide learning encouragement and support
    - Submit publishing requests
 
-3. **WRITER** - `/dashboard/writer`
-   - Submit stories for publishing
-   - Track contribution impact
+3. **INSTITUTION** - `/dashboard/institution`
+   - Manage multiple teachers within the institution
+   - View institution-wide analytics and reports
+   - Assign books at institution level to all classes
+   - Monitor aggregate student performance across institution
+   - Create and manage institution-level curricula
+   - Oversee teacher activities and class management
+
+4. **WRITER** - `/dashboard/writer`
+   - Submit stories for publishing via rich text editor
+   - Track contribution impact and published stories
    - Collaborate on content creation
+   - No PDF upload requirement (AI generates images for text-only stories)
 
 ### Content Management Roles
-4. **STORY_MANAGER** - `/dashboard/story-manager`
+5. **STORY_MANAGER** - `/dashboard/story-manager`
    - Review submitted stories in queue
    - Provide feedback to authors
    - Request revisions or edit directly
    - Approve stories for next stage
 
-5. **BOOK_MANAGER** - `/dashboard/book-manager`
+6. **BOOK_MANAGER** - `/dashboard/book-manager`
    - Decide publication format (book vs text)
    - Manage publication pipeline
    - Coordinate with Story Managers
 
-6. **CONTENT_ADMIN** - `/dashboard/content-admin`
+7. **CONTENT_ADMIN** - `/dashboard/content-admin`
    - Final approval for publishing
    - Set content policies
    - Manage published library
 
 ### System Role
-7. **ADMIN** - `/admin`
+8. **ADMIN** - `/admin`
    - Full system administration
    - User management
    - System configuration

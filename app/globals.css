@@ -2321,7 +2321,7 @@ input[type="radio"]:focus-visible {
   }
 }
 
-/* ===== VOLUNTEER PAGE STYLES - Force black text on light background ===== */
+/* ===== WRITER PAGE STYLES - Force black text on light background ===== */
 /* Override dark mode for writer pages which have light/purple backgrounds */
 [data-role="writer"],
 body:has([data-role="writer"]) {
