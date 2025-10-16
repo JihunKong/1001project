@@ -1,9 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback } from 'react';
-import TextSubmissionForm from '@/components/TextSubmissionForm';
-import StoryDetailsPanel from '@/components/StoryDetailsPanel';
-import AIReviewCard from '@/components/AIReviewCard';
+import { TextSubmissionForm, StoryDetailsPanel, AIReviewCard } from '@/components/story-publication/writer';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import StoryMetadataCard from '@/components/StoryMetadataCard';
 import WritingTipsCard from '@/components/WritingTipsCard';
-import AIReviewCard from '@/components/AIReviewCard';
+import { AIReviewCard } from '@/components/story-publication/writer';
 import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 interface TextSubmission {

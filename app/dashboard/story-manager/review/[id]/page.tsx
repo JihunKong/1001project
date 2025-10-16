@@ -19,10 +19,13 @@ import {
   Filter
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import CommentableTextEditor from '@/components/story-publication/CommentableTextEditor';
-import CommentPopup from '@/components/story-publication/CommentPopup';
+import {
+  CommentableTextEditor,
+  CommentPopup,
+  RevisionRequestModal,
+  type RevisionRequestData
+} from '@/components/story-publication/admin';
 import Popover from '@/components/ui/Popover';
-import RevisionRequestModal, { RevisionRequestData } from '@/components/story-publication/RevisionRequestModal';
 
 interface Comment {
   id: string;

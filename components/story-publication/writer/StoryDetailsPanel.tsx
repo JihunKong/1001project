@@ -1,6 +1,6 @@
 'use client';
 
-import StatusBadge from './StatusBadge';
+import { StatusBadge } from '../shared';
 import { Lightbulb, Sparkles } from 'lucide-react';
 
 interface StoryDetailsPanelProps {

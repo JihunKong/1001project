@@ -9,7 +9,7 @@ import { toast } from 'react-hot-toast';
 import { Loader2, Save, Send, Eye, X, Sparkles } from 'lucide-react';
 import SubmissionConfirmationModal from './SubmissionConfirmationModal';
 
-const RichTextEditor = dynamic(() => import('./ui/RichTextEditor'), {
+const RichTextEditor = dynamic(() => import('@/components/ui/RichTextEditor'), {
   ssr: false,
   loading: () => (
     <div className="border border-[#E5E5EA] rounded-lg overflow-hidden bg-white min-h-[400px] flex items-center justify-center">
