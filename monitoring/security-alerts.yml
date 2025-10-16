@@ -1,0 +1,128 @@
+# Security Alert Rules for 1001 Stories
+# Prometheus alerting rules for security monitoring
+
+groups:
+  - name: security_alerts
+    rules:
+      # High rate of 429 responses indicates potential DDoS or brute force
+      - alert: HighRateLimitViolations
+        expr: rate(nginx_http_requests_total{status="429"}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          security: true
+        annotations:
+          summary: "High rate of 429 responses detected"
+          description: "Rate limit violations are occurring at {{ $value }} requests per second"
+
+      # Suspicious authentication patterns
+      - alert: RepeatedAuthenticationFailures
+        expr: rate(nginx_http_requests_total{uri=~"/api/auth/.*", status=~"4[0-9]{2}"}[5m]) > 5
+        for: 3m
+        labels:
+          severity: critical
+          security: true
+        annotations:
+          summary: "Repeated authentication failures detected"
+          description: "High rate of authentication failures: {{ $value }} per second"
+
+      # Unusual database connection patterns
+      - alert: HighDatabaseConnections
+        expr: postgresql_connections > 80
+        for: 5m
+        labels:
+          severity: warning
+          security: true
+        annotations:
+          summary: "High number of database connections"
+          description: "Database connections: {{ $value }}"
+
+      # Memory exhaustion (potential DoS)
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
+        for: 5m
+        labels:
+          severity: critical
+          security: true
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      # Redis security issues
+      - alert: RedisCommandRejections
+        expr: rate(redis_rejected_connections_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          security: true
+        annotations:
+          summary: "Redis connection rejections detected"
+          description: "Redis is rejecting connections at rate: {{ $value }}"
+
+      # SSL certificate expiration
+      - alert: SSLCertificateExpiringSoon
+        expr: (nginx_ssl_certificate_expiry_seconds - time()) < 7 * 24 * 60 * 60
+        for: 1h
+        labels:
+          severity: warning
+          security: true
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate expires in {{ $value | humanizeDuration }}"
+
+      # Container security violations
+      - alert: ContainerPrivilegeEscalation
+        expr: increase(container_security_violations_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          security: true
+        annotations:
+          summary: "Container security violation detected"
+          description: "Security violation in container {{ $labels.name }}"
+
+      # File system tampering detection
+      - alert: UnexpectedFileSystemChanges
+        expr: rate(node_filesystem_files_total[5m]) > 100
+        for: 10m
+        labels:
+          severity: warning
+          security: true
+        annotations:
+          summary: "Rapid file system changes detected"
+          description: "File system changes at rate: {{ $value }} files per second"
+
+  - name: application_security
+    rules:
+      # Application-specific security alerts
+      - alert: UnauthorizedAPIAccess
+        expr: rate(nginx_http_requests_total{uri=~"/api/.*", status="403"}[5m]) > 1
+        for: 2m
+        labels:
+          severity: warning
+          security: true
+        annotations:
+          summary: "Unauthorized API access attempts"
+          description: "API 403 errors at rate: {{ $value }} per second"
+
+      # Large request bodies (potential payload attacks)
+      - alert: LargeRequestBodies
+        expr: nginx_http_request_size_bytes{quantile="0.95"} > 10000000
+        for: 5m
+        labels:
+          severity: warning
+          security: true
+        annotations:
+          summary: "Large request bodies detected"
+          description: "95th percentile request size: {{ $value | humanizeBytes }}"
+
+      # Unusual response times (potential performance attacks)
+      - alert: SlowResponseTimes
+        expr: nginx_http_request_duration_seconds{quantile="0.95"} > 5
+        for: 10m
+        labels:
+          severity: warning
+          security: true
+        annotations:
+          summary: "Slow response times detected"
+          description: "95th percentile response time: {{ $value }}s"

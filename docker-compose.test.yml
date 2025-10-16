@@ -1,0 +1,141 @@
+# Docker Compose configuration for isolated testing environment
+# Includes Playwright test runner container
+services:
+  app-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder  # Use builder stage for testing with dev dependencies
+    container_name: 1001-stories-app-test
+    restart: unless-stopped
+    ports:
+      - "8002:3000"  # Different port to avoid conflicts
+    env_file:
+      - .env.test
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=postgresql://test_user:testpass123@postgres-test:5432/test_db
+      - NEXTAUTH_URL=http://localhost:8002
+      - NEXTAUTH_SECRET=test-secret-key-for-testing-only
+      - REDIS_URL=redis://:testredispass@redis-test:6379
+    volumes:
+      - ./uploads:/app/uploads
+      - ./prisma:/app/prisma
+      - ./public/books:/app/public/books
+      - ./tests:/app/tests
+      - test-results:/app/test-results
+      - playwright-report:/app/playwright-report
+    networks:
+      - test-network
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  postgres-test:
+    image: postgres:15-alpine
+    container_name: 1001-stories-postgres-test
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=test_user
+      - POSTGRES_PASSWORD=testpass123
+      - POSTGRES_DB=test_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d test_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: 1001-stories-redis-test
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass testredispass
+    volumes:
+      - redis_test_data:/data
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.48.0-focal
+    container_name: 1001-stories-playwright
+    working_dir: /app
+    environment:
+      - BASE_URL=http://app-test:3000
+      - HEADLESS=true
+      - CI=true
+    volumes:
+      - ./tests:/app/tests
+      - ./playwright.config.ts:/app/playwright.config.ts
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+      - test-results:/app/test-results
+      - playwright-report:/app/playwright-report
+      - /tmp/.X11-unix:/tmp/.X11-unix  # For headed mode if needed
+    networks:
+      - test-network
+    depends_on:
+      app-test:
+        condition: service_healthy
+    command: >
+      sh -c "
+        npm ci &&
+        npx playwright install &&
+        npx playwright test --config=playwright.config.ts
+      "
+
+  test-runner:
+    image: node:20-alpine
+    container_name: 1001-stories-test-runner
+    working_dir: /app
+    environment:
+      - DATABASE_URL=postgresql://test_user:testpass123@postgres-test:5432/test_db
+      - REDIS_URL=redis://:testredispass@redis-test:6379
+    volumes:
+      - ./:/app
+      - test-results:/app/test-results
+    networks:
+      - test-network
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    command: >
+      sh -c "
+        npm ci &&
+        npx prisma migrate reset --force --skip-seed &&
+        npx prisma db push &&
+        npx tsx prisma/seed-test-data.ts &&
+        echo 'Test environment ready!'
+      "
+
+networks:
+  test-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16
+
+volumes:
+  postgres_test_data:
+  redis_test_data:
+  test-results:
+  playwright-report:

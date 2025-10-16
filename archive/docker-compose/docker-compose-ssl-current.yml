@@ -1,0 +1,116 @@
+services:
+  # SSL setup nginx for Let's Encrypt verification
+  nginx-ssl-setup:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - /home/ubuntu/1001project/nginx/ssl-setup.conf:/etc/nginx/nginx.conf:ro
+      - /home/ubuntu/1001project/nginx/www:/var/www/html:rw
+    profiles:
+      - ssl-setup
+
+  # Certbot for SSL certificate generation
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - /home/ubuntu/1001project/nginx/ssl:/etc/letsencrypt:rw
+      - /home/ubuntu/1001project/nginx/www:/var/www/html:rw
+    command: >
+      certonly --webroot
+      --webroot-path=/var/www/html
+      --email=noreply@1001stories.org
+      --agree-tos
+      --no-eff-email
+      -d 1001stories.seedsofempowerment.org
+    profiles:
+      - ssl-setup
+
+  # Production nginx with SSL
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /home/ubuntu/1001project/nginx/nginx-ssl.conf:/etc/nginx/nginx.conf:ro
+      - /home/ubuntu/1001project/nginx/ssl:/etc/letsencrypt:ro
+      - /home/ubuntu/1001project/nginx/logs:/var/log/nginx:rw
+    depends_on:
+      - app
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  app:
+    build: .
+    env_file:
+      - ../.env.production
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - EMAIL_SERVER_HOST=${EMAIL_SERVER_HOST}
+      - EMAIL_SERVER_PORT=${EMAIL_SERVER_PORT}
+      - EMAIL_SERVER_USER=${EMAIL_SERVER_USER}
+      - EMAIL_SERVER_PASSWORD=${EMAIL_SERVER_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - UPSTAGE_API_KEY=${UPSTAGE_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres:
+    image: postgres:15-alpine
+    env_file:
+      - ../.env.production
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    env_file:
+      - ../.env.production
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge

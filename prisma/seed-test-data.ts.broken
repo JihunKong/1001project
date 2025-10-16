@@ -1,0 +1,476 @@
+import { PrismaClient } from '@prisma/client';
+import { hash } from 'bcryptjs';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log('🌱 Starting test data seeding...');
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      console.log('Clearing existing test data...');
+      await tx.submission.deleteMany();
+      await tx.assignment.deleteMany();
+      await tx.classEnrollment.deleteMany();
+      await tx.class.deleteMany();
+      await tx.review.deleteMany();
+      await tx.order.deleteMany();
+      await tx.donation.deleteMany();
+      await tx.book.deleteMany();
+      await tx.session.deleteMany();
+      await tx.account.deleteMany();
+      await tx.user.deleteMany();
+
+      console.log('Creating test users...');
+
+      const hashedPassword = await hash('TestPassword123!', 12);
+
+      const adminUser = await tx.user.create({
+        data: {
+          email: 'admin@test.com',
+          name: 'Admin User',
+          role: 'ADMIN',
+          emailVerified: new Date(),
+          password: hashedPassword,
+          image: '/avatars/admin.png'
+        }
+      });
+
+      const volunteerUsers = await Promise.all([
+        tx.user.create({
+          data: {
+            email: 'volunteer1@test.com',
+            name: 'John Volunteer',
+            role: 'VOLUNTEER',
+            emailVerified: new Date(),
+            password: hashedPassword,
+            image: '/avatars/volunteer1.png'
+          }
+        }),
+        tx.user.create({
+          data: {
+            email: 'volunteer2@test.com',
+            name: 'Jane Volunteer',
+            role: 'VOLUNTEER',
+            emailVerified: new Date(),
+            password: hashedPassword,
+            image: '/avatars/volunteer2.png'
+          }
+        }),
+        tx.user.create({
+          data: {
+            email: 'volunteer3@test.com',
+            name: 'Mike Volunteer',
+            role: 'VOLUNTEER',
+            emailVerified: new Date(),
+            password: hashedPassword,
+            image: '/avatars/volunteer3.png'
+          }
+        })
+      ]);
+
+      const teacherUser = await tx.user.create({
+        data: {
+          email: 'teacher@test.com',
+          name: 'Sarah Teacher',
+          role: 'TEACHER',
+          emailVerified: new Date(),
+          password: hashedPassword,
+          image: '/avatars/teacher.png'
+        }
+      });
+
+      const learnerUsers = await Promise.all([
+        tx.user.create({
+          data: {
+            email: 'learner1@test.com',
+            name: 'Student One',
+            role: 'LEARNER',
+            emailVerified: new Date(),
+            password: hashedPassword
+          }
+        }),
+        tx.user.create({
+          data: {
+            email: 'learner2@test.com',
+            name: 'Student Two',
+            role: 'LEARNER',
+            emailVerified: new Date(),
+            password: hashedPassword
+          }
+        })
+      ]);
+
+      const storyManagerUser = await tx.user.create({
+        data: {
+          email: 'storymanager@test.com',
+          name: 'Story Manager',
+          role: 'STORY_MANAGER',
+          emailVerified: new Date(),
+          password: hashedPassword
+        }
+      });
+
+      const bookManagerUser = await tx.user.create({
+        data: {
+          email: 'bookmanager@test.com',
+          name: 'Book Manager',
+          role: 'BOOK_MANAGER',
+          emailVerified: new Date(),
+          password: hashedPassword
+        }
+      });
+
+      const contentAdminUser = await tx.user.create({
+        data: {
+          email: 'contentadmin@test.com',
+          name: 'Content Admin',
+          role: 'CONTENT_ADMIN',
+          emailVerified: new Date(),
+          password: hashedPassword
+        }
+      });
+
+      console.log('Creating test books...');
+
+      const books = await Promise.all([
+        tx.book.create({
+          data: {
+            title: 'The Rainbow Fish',
+            authorName: 'Marcus Pfister',
+            summary: 'A beautiful fish learns about sharing and friendship.',
+            coverImage: '/books/rainbow-fish.jpg',
+            pdfStorageKey: '/books/sample.pdf',
+            price: 9.99,
+            category: ['FICTION'],
+            ageRange: '5-8',
+            language: 'en',
+            featured: true,
+            isPublished: true,
+            authorId: adminUser.id
+          }
+        }),
+        tx.book.create({
+          data: {
+            title: 'African Folk Tales',
+            authorName: 'Various Authors',
+            summary: 'A collection of traditional stories from across Africa.',
+            coverImage: '/books/african-tales.jpg',
+            pdfStorageKey: '/books/sample.pdf',
+            price: 12.99,
+            category: ['FICTION'],
+            ageRange: '8-12',
+            language: 'en',
+            featured: true,
+            isPublished: true,
+            authorId: adminUser.id
+          }
+        }),
+        tx.book.create({
+          data: {
+            title: 'Math Adventures',
+            authorName: 'Learning Team',
+            summary: 'Fun mathematical concepts through stories.',
+            coverImage: '/books/math-adventures.jpg',
+            pdfStorageKey: '/books/sample.pdf',
+            price: 8.99,
+            category: ['EDUCATIONAL'],
+            ageRange: '9-12',
+            language: 'en',
+            isPublished: true,
+            authorId: adminUser.id
+          }
+        }),
+        tx.book.create({
+          data: {
+            title: 'Science Explorers',
+            authorName: 'Discovery Writers',
+            summary: 'Exploring the wonders of science.',
+            coverImage: '/books/science-explorers.jpg',
+            pdfStorageKey: '/books/sample.pdf',
+            price: 10.99,
+            category: ['EDUCATIONAL'],
+            ageRange: '10-14',
+            language: 'en',
+            isPublished: true,
+            authorId: adminUser.id
+          }
+        }),
+        tx.book.create({
+          data: {
+            title: 'Poetry for Young Minds',
+            authorName: 'Creative Collective',
+            summary: 'A collection of poems for children.',
+            coverImage: '/books/poetry.jpg',
+            pdfStorageKey: '/books/sample.pdf',
+            price: 7.99,
+            category: ['POETRY'],
+            ageRange: '7-11',
+            language: 'en',
+            isPublished: true,
+            authorId: adminUser.id
+          }
+        })
+      ]);
+
+      console.log('Creating volunteer submissions...');
+
+      const submissions = await Promise.all([
+        tx.submission.create({
+          data: {
+            title: 'The Little Seed',
+            content: 'Once upon a time, there was a little seed that dreamed of becoming a mighty tree...',
+            authorId: volunteerUsers[0].id,
+            status: 'PUBLISHED',
+            authorAge: 10,
+            country: 'Kenya',
+            language: 'English',
+            category: 'FICTION',
+            reviewerId: storyManagerUser.id,
+            reviewerNotes: 'Excellent story with great moral lessons.',
+            publishedAt: new Date('2024-01-15')
+          }
+        }),
+        tx.submission.create({
+          data: {
+            title: 'My Village Festival',
+            content: 'Every year, our village celebrates the harvest festival with colors and joy...',
+            authorId: volunteerUsers[1].id,
+            status: 'IN_REVIEW',
+            authorAge: 12,
+            country: 'India',
+            language: 'English',
+            category: 'CULTURAL',
+            reviewerId: storyManagerUser.id
+          }
+        }),
+        tx.submission.create({
+          data: {
+            title: 'The Brave Little Ant',
+            content: 'In a small anthill, lived an ant who was different from others...',
+            authorId: volunteerUsers[0].id,
+            status: 'DRAFT',
+            authorAge: 9,
+            country: 'Brazil',
+            language: 'English',
+            category: 'FICTION'
+          }
+        }),
+        tx.submission.create({
+          data: {
+            title: 'Learning to Fly',
+            content: 'A young eagle learns important life lessons about perseverance...',
+            authorId: volunteerUsers[2].id,
+            status: 'APPROVED',
+            authorAge: 11,
+            country: 'South Africa',
+            language: 'English',
+            category: 'FICTION',
+            reviewerId: storyManagerUser.id,
+            reviewerNotes: 'Ready for publication.',
+            approvedById: bookManagerUser.id
+          }
+        }),
+        tx.submission.create({
+          data: {
+            title: 'The Magic Garden',
+            content: 'Behind our school, there was a secret garden that only children could see...',
+            authorId: volunteerUsers[1].id,
+            status: 'REJECTED',
+            authorAge: 8,
+            country: 'Philippines',
+            language: 'English',
+            category: 'FICTION',
+            reviewerId: storyManagerUser.id,
+            reviewerNotes: 'Needs more development in the plot.',
+            rejectionReason: 'Story needs more detail and character development.'
+          }
+        }),
+        tx.submission.create({
+          data: {
+            title: 'Grandma\'s Stories',
+            content: 'My grandmother tells the most amazing stories from her childhood...',
+            authorId: volunteerUsers[2].id,
+            status: 'REVISION_REQUESTED',
+            authorAge: 13,
+            country: 'Mexico',
+            language: 'English',
+            category: 'CULTURAL',
+            reviewerId: storyManagerUser.id,
+            reviewerNotes: 'Great start, but needs some corrections.',
+            revisionNotes: 'Please add more details about the specific stories.'
+          }
+        })
+      ]);
+
+      console.log('Creating teacher class...');
+
+      const teacherClass = await tx.class.create({
+        data: {
+          name: 'Grade 5 Reading Club',
+          code: 'READ5A',
+          teacherId: teacherUser.id,
+          description: 'A reading club for 5th grade students',
+          gradeLevel: '5'
+        }
+      });
+
+      console.log('Enrolling students in class...');
+
+      await Promise.all(
+        learnerUsers.map(learner =>
+          tx.classEnrollment.create({
+            data: {
+              classId: teacherClass.id,
+              studentId: learner.id,
+              enrolledAt: new Date()
+            }
+          })
+        )
+      );
+
+      console.log('Creating book assignments...');
+
+      await Promise.all([
+        tx.assignment.create({
+          data: {
+            bookId: books[0].id,
+            classId: teacherClass.id,
+            assignedById: teacherUser.id,
+            dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
+            instructions: 'Read chapters 1-3 and answer the questions.'
+          }
+        }),
+        tx.assignment.create({
+          data: {
+            bookId: books[1].id,
+            classId: teacherClass.id,
+            assignedById: teacherUser.id,
+            dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
+            instructions: 'Choose your favorite story and write a summary.'
+          }
+        })
+      ]);
+
+      console.log('Creating sample reviews...');
+
+      await Promise.all([
+        tx.review.create({
+          data: {
+            bookId: books[0].id,
+            userId: learnerUsers[0].id,
+            rating: 5,
+            comment: 'I loved this book! The rainbow fish is so pretty.',
+            verified: true
+          }
+        }),
+        tx.review.create({
+          data: {
+            bookId: books[1].id,
+            userId: learnerUsers[1].id,
+            rating: 4,
+            comment: 'Great stories! I learned a lot about African culture.',
+            verified: true
+          }
+        }),
+        tx.review.create({
+          data: {
+            bookId: books[0].id,
+            userId: teacherUser.id,
+            rating: 5,
+            comment: 'Perfect for teaching about sharing and friendship.',
+            verified: true
+          }
+        })
+      ]);
+
+      console.log('Creating sample donations...');
+
+      await Promise.all([
+        tx.donation.create({
+          data: {
+            amount: 25.00,
+            donorName: 'Test Donor 1',
+            donorEmail: 'donor1@test.com',
+            message: 'Keep up the great work!',
+            isAnonymous: false
+          }
+        }),
+        tx.donation.create({
+          data: {
+            amount: 50.00,
+            donorName: 'Anonymous',
+            donorEmail: 'donor2@test.com',
+            message: 'For the children',
+            isAnonymous: true
+          }
+        })
+      ]);
+
+      console.log('Creating volunteer statistics...');
+
+      const now = new Date();
+      const statsData = [];
+
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+
+        statsData.push({
+          volunteerId: volunteerUsers[0].id,
+          date: date,
+          storiesSubmitted: Math.floor(Math.random() * 3),
+          storiesPublished: Math.floor(Math.random() * 2),
+          totalViews: Math.floor(Math.random() * 100),
+          totalLikes: Math.floor(Math.random() * 50)
+        });
+      }
+
+      console.log('Creating notifications...');
+
+      await Promise.all([
+        tx.notification.create({
+          data: {
+            userId: volunteerUsers[0].id,
+            title: 'Story Published!',
+            message: 'Your story "The Little Seed" has been published.',
+            type: 'SUCCESS',
+            read: false
+          }
+        }),
+        tx.notification.create({
+          data: {
+            userId: volunteerUsers[1].id,
+            title: 'Review Feedback',
+            message: 'You have feedback on "My Village Festival".',
+            type: 'INFO',
+            read: false
+          }
+        }),
+        tx.notification.create({
+          data: {
+            userId: volunteerUsers[2].id,
+            title: 'Revision Requested',
+            message: 'Please revise "Grandma\'s Stories" based on feedback.',
+            type: 'WARNING',
+            read: true
+          }
+        })
+      ]);
+
+      console.log('✅ Test data seeding completed successfully!');
+    });
+
+  } catch (error) {
+    console.error('❌ Error during seeding:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+main()
+  .catch((e) => {
+    console.error('Fatal error during seeding:', e);
+    process.exit(1);
+  });

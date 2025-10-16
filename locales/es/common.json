@@ -1,0 +1,194 @@
+{
+  "hero": {
+    "title": "Empoderar Voces Jóvenes, Inspirar al Mundo",
+    "subtitle": "Descubra, publique y comparta historias de niños en comunidades desfavorecidas",
+    "cta": "Comenzar"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "library": "Biblioteca",
+    "shop": "Tienda",
+    "volunteer": "Voluntario",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "dashboard": "Panel",
+    "logout": "Cerrar Sesión",
+    "cart": "Carrito"
+  },
+  "roles": {
+    "title": "Elige tu Papel",
+    "subtitle": "Selecciona cómo te gustaría participar en nuestra plataforma",
+    "learner": {
+      "title": "Estudiante",
+      "description": "Accede a historias, mejora tu español e inglés, y participa en actividades comunitarias"
+    },
+    "teacher": {
+      "title": "Maestro/a",
+      "description": "Gestiona aulas, asigna contenido y da seguimiento al progreso de los estudiantes"
+    },
+    "institution": {
+      "title": "Escuela/Institución",
+      "description": "Asóciate con nosotros para programas, conecta con voluntarios y accede a recursos"
+    },
+    "volunteer": {
+      "title": "Voluntario/a",
+      "description": "Comparte tus talentos en traducción, ilustración o enseñanza"
+    }
+  },
+  "dashboard": {
+    "learner": {
+      "title": "Mi Jornada de Aprendizaje",
+      "progress": "Progreso de Aprendizaje",
+      "dailyGoals": "Metas de Hoy",
+      "courses": "Mis Cursos",
+      "achievements": "Logros",
+      "storiesRead": "Historias Leídas",
+      "wordsLearned": "Palabras Aprendidas",
+      "timeSpent": "Tiempo Dedicado"
+    },
+    "admin": {
+      "title": "Panel de Administración",
+      "workflow": "Flujo de Publicación de Historias",
+      "submitted": "Enviadas",
+      "reviewing": "En Revisión",
+      "translating": "Traduciendo",
+      "illustrating": "Ilustrando",
+      "editing": "Editando",
+      "published": "Publicadas"
+    }
+  },
+  "library": {
+    "title": "Biblioteca Digital",
+    "subtitle": "Explora historias de niños de todo el mundo",
+    "search": "Buscar historias...",
+    "filter": "Filtrar por",
+    "category": "Categoría",
+    "language": "Idioma",
+    "ageGroup": "Grupo de Edad",
+    "readNow": "Leer Ahora",
+    "preview": "Vista Previa"
+  },
+  "volunteer": {
+    "title": "Centro de Voluntarios",
+    "subtitle": "Únete a nuestra red global de agentes de cambio",
+    "projects": "Proyectos Disponibles",
+    "myActivity": "Mi Actividad",
+    "hours": "Horas de Voluntariado",
+    "impact": "Tu Impacto",
+    "skills": "Habilidades",
+    "apply": "Aplicar al Proyecto"
+  },
+  "seeds": {
+    "title": "Cómo tu Apoyo Cambia el Mundo",
+    "subtitle": "Cada contribución planta semillas de empoderamiento",
+    "reinvest": {
+      "title": "Reinversión en Proyectos",
+      "description": "Descubrir y publicar más historias de niños"
+    },
+    "scholarship": {
+      "title": "Becas Estudiantiles",
+      "description": "Proporcionar oportunidades educativas para jóvenes autores"
+    },
+    "operations": {
+      "title": "Operaciones de la Plataforma",
+      "description": "Mantener nuestra misión sostenible y en crecimiento"
+    },
+    "subscribe": "Suscripción Premium",
+    "donate": "Hacer una Donación"
+  },
+  "footer": {
+    "about": "Acerca de Nosotros",
+    "mission": "Nuestra Misión",
+    "team": "Nuestro Equipo",
+    "partners": "Socios",
+    "contact": "Contacto",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio",
+    "copyright": "© 2024 1001 Historias. Todos los derechos reservados."
+  },
+  "shop": {
+    "title": "Compra con Propósito",
+    "subtitle": "Cada compra apoya la educación infantil y el desarrollo comunitario",
+    "categories": {
+      "all": "Todos los Productos",
+      "books": "Libros",
+      "goods": "Artesanías"
+    },
+    "filters": {
+      "category": "Categoría",
+      "price": "Rango de Precio",
+      "sort": "Ordenar Por",
+      "sortOptions": {
+        "newest": "Más Nuevo",
+        "priceLow": "Precio: Menor a Mayor",
+        "priceHigh": "Precio: Mayor a Menor",
+        "popular": "Más Popular"
+      }
+    },
+    "product": {
+      "addToCart": "Agregar al Carrito",
+      "outOfStock": "Agotado",
+      "by": "Por",
+      "from": "De",
+      "age": "Edad",
+      "impact": "Tu Impacto",
+      "story": "La Historia Detrás",
+      "details": "Detalles del Producto",
+      "shipping": "Información de Envío",
+      "relatedProducts": "También te Puede Gustar"
+    },
+    "cart": {
+      "title": "Carrito de Compras",
+      "empty": "Tu carrito está vacío",
+      "continueShopping": "Continuar Comprando",
+      "quantity": "Cantidad",
+      "remove": "Eliminar",
+      "subtotal": "Subtotal",
+      "shipping": "Envío",
+      "total": "Total",
+      "checkout": "Proceder al Pago",
+      "impact": "Tu compra financiará"
+    },
+    "impact": {
+      "education": "días de educación",
+      "meals": "comidas nutritivas",
+      "supplies": "útiles escolares",
+      "stories": "nuevas historias publicadas"
+    }
+  },
+  "educational": {
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    },
+    "feedback": {
+      "excellent": "¡Excelente trabajo!",
+      "good": "¡Buen trabajo!",
+      "keepTrying": "¡Sigue intentando!",
+      "askTeacher": "Pregunta a tu maestro/a si necesitas ayuda"
+    },
+    "progress": {
+      "completed": "Completado",
+      "inProgress": "En Progreso",
+      "notStarted": "No Iniciado"
+    }
+  },
+  "cultural": {
+    "greetings": {
+      "formal": "Buenos días",
+      "informal": "Hola",
+      "teacher": "Buenos días, maestro/a",
+      "respectful": "Con respeto"
+    },
+    "timeFormat": "dd/MM/yyyy",
+    "currency": "$",
+    "holidays": {
+      "dayOfDead": "Día de los Muertos",
+      "christmas": "Navidad",
+      "holyWeek": "Semana Santa"
+    }
+  }
+}

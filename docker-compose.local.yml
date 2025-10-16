@@ -1,0 +1,99 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - OPENAI_API_KEY=sk-dummy-key-for-docker-build-only
+        - UPSTAGE_API_KEY=dummy-key-for-docker-build-only
+    container_name: 1001-stories-app-local
+    restart: unless-stopped
+    ports:
+      - "8001:3000"
+    env_file:
+      - .env.docker
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://stories_user:${DB_PASSWORD:-jsIAqnRygzHf1+9m46zSob/lhg52huI6UNiy9rQzuFc=}@postgres:5432/stories_db
+    volumes:
+      - ./uploads:/app/uploads
+      - ./prisma:/app/prisma
+      - ./public/books:/app/public/books
+    networks:
+      - local-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: 1001-stories-postgres-local
+    restart: unless-stopped
+    # ports:
+      # - "5434:5432"  # SECURITY: Database port removed - use container networking
+    environment:
+      - POSTGRES_USER=stories_user
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-jsIAqnRygzHf1+9m46zSob/lhg52huI6UNiy9rQzuFc=}
+      - POSTGRES_DB=stories_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data_local:/var/lib/postgresql/data
+    networks:
+      - local-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stories_user -d stories_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: 1001-stories-redis-local
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-5DlvWlSxaxHNQbrHawza9EnhCDYMIfvIc55kkGpb1SM=}
+    volumes:
+      - redis_data_local:/data
+    # ports:
+      # - "6381:6379"  # SECURITY: Redis port removed - use container networking
+    networks:
+      - local-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: 1001-stories-pgadmin-local
+    restart: unless-stopped
+    # ports:
+      # - "5050:80"  # SECURITY: pgAdmin port removed for production security
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-7kQ2mN8pX4vZ9wA6sE5tY1rL3nM2kP8xC4vB9zA7sE5tY2q=}
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    volumes:
+      - pgadmin_data_local:/var/lib/pgadmin
+    networks:
+      - local-network
+    depends_on:
+      - postgres
+
+networks:
+  local-network:
+    driver: bridge
+
+volumes:
+  postgres_data_local:
+  pgadmin_data_local:
+  redis_data_local:

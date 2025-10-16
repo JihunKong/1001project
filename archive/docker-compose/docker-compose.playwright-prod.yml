@@ -1,0 +1,24 @@
+services:
+  playwright-prod-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - ./tests/screenshots:/app/tests/screenshots
+    environment:
+      - HEADLESS=true  # Must be true for Docker container
+      - BASE_URL=https://1001stories.seedsofempowerment.org
+      - CI=false
+      - PWDEBUG=0
+    network_mode: "host"
+    command: >
+      sh -c "
+        echo '=== Starting Production Volunteer Login Test ===' &&
+        echo 'Target: https://1001stories.seedsofempowerment.org' &&
+        echo 'Test file: volunteer-login-prod.spec.ts' &&
+        echo '' &&
+        npx playwright test tests/volunteer-login-prod.spec.ts --project=chromium --reporter=list --trace=on
+      "

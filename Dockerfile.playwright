@@ -1,0 +1,46 @@
+# Use official Playwright Docker image with all browsers pre-installed
+FROM mcr.microsoft.com/playwright:v1.49.1-noble
+
+# Set working directory
+WORKDIR /app
+
+# Install additional utilities for debugging
+RUN apt-get update && apt-get install -y \
+    curl \
+    netcat-openbsd \
+    postgresql-client \
+    net-tools \
+    dnsutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install dependencies
+RUN npm ci --include=dev
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy the rest of the application
+COPY . .
+
+# Create directories for test artifacts
+RUN mkdir -p /app/test-results \
+    /app/playwright-report \
+    /app/test-artifacts \
+    /app/screenshots \
+    /app/videos
+
+# Set environment variables
+ENV CI=false
+ENV HEADLESS=true
+ENV NODE_ENV=test
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3000/api/health || exit 1
+
+# Default command - run all tests
+CMD ["npx", "playwright", "test"]

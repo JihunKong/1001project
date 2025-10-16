@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "UserRole" RENAME VALUE 'VOLUNTEER' TO 'WRITER';

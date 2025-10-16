@@ -1,0 +1,146 @@
+{
+  "materials": [
+    {
+      "id": "5",
+      "title": "The Ant and the Grasshopper",
+      "author": "Aesop",
+      "level": "Beginner",
+      "category": "Fable",
+      "topics": [
+        "seasons",
+        "work",
+        "planning",
+        "responsibility"
+      ],
+      "content": "In a field one summer's day, a grasshopper was hopping about, chirping and singing to its heart's content. An ant passed by, bearing along with great toil an ear of corn he was taking to the nest. 'Why not come and chat with me,' said the grasshopper, 'instead of toiling and moiling in that way?' 'I am helping to lay up food for the winter,' said the ant, 'and recommend you to do the same.' 'Why bother about winter?' said the grasshopper. 'We have got plenty of food at present.' But the ant went on its way and continued its toil. When the winter came, the grasshopper had no food and found itself dying of hunger, while it saw the ants distributing every day corn and grain from the stores they had collected in the summer. Then the grasshopper knew: It is best to prepare for days of need.",
+      "vocabulary": [
+        "grasshopper",
+        "chirping",
+        "toil",
+        "nest",
+        "moiling",
+        "stores",
+        "distributing",
+        "prepare"
+      ],
+      "questions": [
+        "What was the grasshopper doing in summer?",
+        "What was the ant doing in summer?",
+        "What happened to the grasshopper in winter?"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "The Boy Who Cried Wolf",
+      "author": "Aesop",
+      "level": "Intermediate",
+      "category": "Fable",
+      "topics": [
+        "honesty",
+        "trust",
+        "consequences"
+      ],
+      "content": "There was once a young shepherd boy who tended his sheep at the foot of a mountain near a dark forest. It was lonely for him watching the sheep all day. No one was near, except for three farmers he could sometimes see working in the fields in the valley below. One day the boy thought of a plan that would help him get a little company and have some fun. He ran down toward the valley crying, 'Wolf! Wolf!' The men ran to meet him, and after they found out there was no wolf after all, one man remained to talk with the boy awhile. The boy enjoyed the company so much that a few days later he tried the same prank again, and again the men ran to help him. A few days later, a real wolf came from the forest and began to steal the sheep. The startled boy ran toward the valley, and more loudly than ever he cried, 'Wolf! Wolf!' But the men, who had been fooled twice before, thought that the boy was tricking them again. So no one came to help the boy save his sheep. The wolf ate many sheep that day. When the boy returned home that night, his family was disappointed that he had lost so many sheep. The boy learned that if you always tell lies, people will not believe you even when you are telling the truth.",
+      "vocabulary": [
+        "shepherd",
+        "tended",
+        "valley",
+        "prank",
+        "startled",
+        "tricking",
+        "disappointed",
+        "consequences"
+      ],
+      "questions": [
+        "Why did the boy cry 'Wolf!' when there was no wolf?",
+        "What happened when a real wolf appeared?",
+        "What lesson did the boy learn?"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "The Giving Tree",
+      "author": "Shel Silverstein (Excerpt)",
+      "level": "Intermediate",
+      "category": "Modern Story",
+      "topics": [
+        "friendship",
+        "giving",
+        "growing up",
+        "nature"
+      ],
+      "content": "Once there was a tree, and she loved a little boy. Every day the boy would come, and he would gather her leaves and make them into crowns and play king of the forest. He would climb up her trunk and swing from her branches and eat apples. And they would play hide-and-go-seek. And when he was tired, he would sleep in her shade. And the boy loved the tree very much. And the tree was happy. But time went by, and the boy grew older. And the tree was often alone. Then one day the boy came to the tree and the tree said, 'Come, Boy, come and climb up my trunk and swing from my branches and eat apples and play in my shade and be happy.' 'I am too big to climb and play,' said the boy. 'I want to buy things and have fun. I want some money. Can you give me some money?' 'I'm sorry,' said the tree, 'but I have no money. I have only leaves and apples. Take my apples, Boy, and sell them in the city. Then you will have money and you will be happy.' And so the boy climbed up the tree and gathered her apples and carried them away. And the tree was happy.",
+      "vocabulary": [
+        "gather",
+        "crowns",
+        "trunk",
+        "branches",
+        "shade",
+        "alone",
+        "climb",
+        "carried"
+      ],
+      "questions": [
+        "What did the boy do with the tree when he was young?",
+        "How did the boy change as he grew older?",
+        "How did the tree help the boy?"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "The Little Red Hen",
+      "author": "Folk Tale",
+      "level": "Beginner",
+      "category": "Folk Tale",
+      "topics": [
+        "farm",
+        "work",
+        "cooperation",
+        "responsibility"
+      ],
+      "content": "Once upon a time, a little red hen lived on a farm. One day, the little red hen found some grains of wheat. 'Who will help me plant these grains of wheat?' asked the little red hen. 'Not I,' said the duck. 'Not I,' said the cat. 'Not I,' said the dog. 'Then I will plant them myself,' said the little red hen. And she did. When the wheat grew tall and golden, the little red hen asked, 'Who will help me harvest the wheat?' 'Not I,' said the duck. 'Not I,' said the cat. 'Not I,' said the dog. 'Then I will harvest it myself,' said the little red hen. And she did. When it was time to take the wheat to the mill to be ground into flour, the little red hen asked, 'Who will help me take the wheat to the mill?' But the duck, the cat, and the dog all said, 'Not I.' So the little red hen took the wheat to the mill herself. When the flour was ready, the little red hen asked, 'Who will help me bake the bread?' But again, all the animals said, 'Not I.' So the little red hen baked the bread herself. When the bread was done, it smelled delicious. The little red hen asked, 'Who will help me eat this bread?' 'I will!' said the duck. 'I will!' said the cat. 'I will!' said the dog. 'No,' said the little red hen. 'I planted the wheat, I harvested it, I took it to the mill, and I baked the bread. I will eat it myself.' And she did.",
+      "vocabulary": [
+        "grains",
+        "wheat",
+        "harvest",
+        "mill",
+        "flour",
+        "bake",
+        "delicious"
+      ],
+      "questions": [
+        "What did the little red hen find?",
+        "Who helped the little red hen with her work?",
+        "Why didn't the little red hen share her bread?"
+      ]
+    },
+    {
+      "id": "1",
+      "title": "The Tortoise and the Hare",
+      "author": "Aesop",
+      "level": "Beginner",
+      "category": "Fable",
+      "topics": [
+        "animals",
+        "competition",
+        "perseverance"
+      ],
+      "content": "Once upon a time, there was a speedy hare who bragged about how fast he could run. Tired of hearing him boast, the tortoise challenged him to a race. All the animals in the forest gathered to watch. The hare ran down the road for a while and then paused to rest. He looked back at the slow-moving tortoise and cried out, 'How do you expect to win this race when you are walking along at your slow, slow pace?' The hare stretched himself out alongside the road and fell asleep, thinking, 'There is plenty of time to relax.' The tortoise walked and walked, never stopping until he came to the finish line. The animals who were watching cheered so loudly for the tortoise that they woke up the hare. The hare stretched, yawned and began to run again, but it was too late. The tortoise had already crossed the finish line. After that, the hare always reminded himself, 'Don't brag about your lightning pace, for slow and steady wins the race!'",
+      "vocabulary": [
+        "hare",
+        "tortoise",
+        "bragged",
+        "challenged",
+        "gathered",
+        "stretched",
+        "alongside",
+        "steady"
+      ],
+      "questions": [
+        "Why did the tortoise challenge the hare to a race?",
+        "What did the hare do during the race?",
+        "What is the moral of the story?"
+      ]
+    }
+  ]
+}

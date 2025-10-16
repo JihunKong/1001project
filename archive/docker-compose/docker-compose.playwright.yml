@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  playwright-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - HEADLESS=true
+      - BASE_URL=http://host.docker.internal:8001
+      - CI=false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - app
+    networks:
+      - 1001-stories-local_default
+    command: >
+      sh -c "
+        echo 'Waiting for app to be ready...' &&
+        sleep 10 &&
+        curl -f http://host.docker.internal:8001/api/health || echo 'Health check failed, continuing...' &&
+        npx playwright test tests/volunteer-magic-link-test.spec.ts --project=chromium --reporter=list
+      "
+
+networks:
+  1001-stories-local_default:
+    external: true

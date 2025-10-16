@@ -1,0 +1,254 @@
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  console.log('🌱 Starting test data seeding...');
+
+  // Clean existing test data
+  await prisma.user.deleteMany({
+    where: {
+      email: {
+        contains: '@test.1001stories.org'
+      }
+    }
+  });
+
+  console.log('✅ Cleaned existing test data');
+
+  // Create test users with passwords
+  const password = await bcrypt.hash('test123', 10);
+
+  // Create volunteer user
+  const volunteer = await prisma.user.create({
+    data: {
+      email: 'volunteer@test.1001stories.org',
+      name: 'Test Volunteer',
+      role: 'VOLUNTEER',
+      password: password,
+      emailVerified: new Date(),
+      profile: {
+        create: {
+          bio: 'Test volunteer account for E2E testing',
+          location: 'Test City',
+        }
+      }
+    }
+  });
+
+  console.log('✅ Created volunteer test user');
+
+  // Create teacher user
+  const teacher = await prisma.user.create({
+    data: {
+      email: 'teacher@test.1001stories.org',
+      name: 'Test Teacher',
+      role: 'TEACHER',
+      password: password,
+      emailVerified: new Date(),
+      profile: {
+        create: {
+          bio: 'Test teacher account for E2E testing',
+          location: 'Test School',
+        }
+      }
+    }
+  });
+
+  console.log('✅ Created teacher test user');
+
+  // Create learner user
+  const learner = await prisma.user.create({
+    data: {
+      email: 'learner@test.1001stories.org',
+      name: 'Test Learner',
+      role: 'LEARNER',
+      password: password,
+      emailVerified: new Date(),
+      profile: {
+        create: {
+          bio: 'Test learner account for E2E testing',
+          location: 'Test School',
+        }
+      }
+    }
+  });
+
+  console.log('✅ Created learner test user');
+
+  // Create admin user
+  const admin = await prisma.user.create({
+    data: {
+      email: 'admin@test.1001stories.org',
+      name: 'Test Admin',
+      role: 'ADMIN',
+      password: password,
+      emailVerified: new Date(),
+      profile: {
+        create: {
+          bio: 'Test admin account for E2E testing',
+          location: 'Test HQ',
+        }
+      }
+    }
+  });
+
+  console.log('✅ Created admin test user');
+
+  // Create story manager user
+  const storyManager = await prisma.user.create({
+    data: {
+      email: 'storymanager@test.1001stories.org',
+      name: 'Test Story Manager',
+      role: 'STORY_MANAGER',
+      password: password,
+      emailVerified: new Date(),
+      profile: {
+        create: {
+          bio: 'Test story manager account for E2E testing',
+          location: 'Test Office',
+        }
+      }
+    }
+  });
+
+  console.log('✅ Created story manager test user');
+
+  // Create book manager user
+  const bookManager = await prisma.user.create({
+    data: {
+      email: 'bookmanager@test.1001stories.org',
+      name: 'Test Book Manager',
+      role: 'BOOK_MANAGER',
+      password: password,
+      emailVerified: new Date(),
+      profile: {
+        create: {
+          bio: 'Test book manager account for E2E testing',
+          location: 'Test Office',
+        }
+      }
+    }
+  });
+
+  console.log('✅ Created book manager test user');
+
+  // Create content admin user
+  const contentAdmin = await prisma.user.create({
+    data: {
+      email: 'contentadmin@test.1001stories.org',
+      name: 'Test Content Admin',
+      role: 'CONTENT_ADMIN',
+      password: password,
+      emailVerified: new Date(),
+      profile: {
+        create: {
+          bio: 'Test content admin account for E2E testing',
+          location: 'Test Office',
+        }
+      }
+    }
+  });
+
+  console.log('✅ Created content admin test user');
+
+  // Create a test class for teacher-student relationship
+  const testClass = await prisma.class.create({
+    data: {
+      code: 'TEST01',
+      name: 'Test Class E2E',
+      description: 'Test class for E2E testing',
+      teacherId: teacher.id,
+      subject: 'General',
+      gradeLevel: '5th Grade',
+      schedule: {},
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      settings: {},
+      enrollments: {
+        create: {
+          studentId: learner.id,
+          enrolledAt: new Date()
+        }
+      }
+    }
+  });
+
+  console.log('✅ Created test class with enrollment');
+
+  // Create sample books for testing
+  const sampleBook1 = await prisma.book.create({
+    data: {
+      title: 'Test Book 1',
+      description: 'A sample book for E2E testing',
+      author: 'Test Author',
+      price: 0,
+      difficulty: 'BEGINNER',
+      category: 'Education',
+      pdfUrl: '/books/sample.pdf',
+      published: true,
+    }
+  });
+
+  const sampleBook2 = await prisma.book.create({
+    data: {
+      title: 'Test Book 2',
+      description: 'Another sample book for E2E testing',
+      author: 'Test Author 2',
+      price: 0,
+      difficulty: 'INTERMEDIATE',
+      category: 'Fiction',
+      pdfUrl: '/books/sample2.pdf',
+      published: true,
+    }
+  });
+
+  console.log('✅ Created sample books');
+
+  // Create book assignment for learner
+  await prisma.bookAssignment.create({
+    data: {
+      bookId: sampleBook1.id,
+      classId: testClass.id,
+      assignedBy: teacher.id,
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+    }
+  });
+
+  console.log('✅ Created book assignment');
+
+  // Create a test submission
+  await prisma.submission.create({
+    data: {
+      title: 'Test Story Submission',
+      content: 'This is a test story submission for E2E testing.',
+      status: 'PENDING',
+      authorId: volunteer.id,
+    }
+  });
+
+  console.log('✅ Created test submission');
+
+  console.log('🎉 Test data seeding completed successfully!');
+  console.log('\n📝 Test Accounts Created:');
+  console.log('  Email: volunteer@test.1001stories.org | Password: test123 | Role: VOLUNTEER');
+  console.log('  Email: teacher@test.1001stories.org | Password: test123 | Role: TEACHER');
+  console.log('  Email: learner@test.1001stories.org | Password: test123 | Role: LEARNER');
+  console.log('  Email: admin@test.1001stories.org | Password: test123 | Role: ADMIN');
+  console.log('  Email: storymanager@test.1001stories.org | Password: test123 | Role: STORY_MANAGER');
+  console.log('  Email: bookmanager@test.1001stories.org | Password: test123 | Role: BOOK_MANAGER');
+  console.log('  Email: contentadmin@test.1001stories.org | Password: test123 | Role: CONTENT_ADMIN');
+  console.log('\n🎓 Test Class: TEST01 (Teacher + Learner enrolled)');
+  console.log('📚 Sample Books: 2 books created with assignments');
+  console.log('📝 Sample Submission: 1 pending submission from volunteer');
+}
+
+main()
+  .catch((e) => {
+    console.error('❌ Error seeding test data:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

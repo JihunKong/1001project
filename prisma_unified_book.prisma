@@ -1,0 +1,118 @@
+// UNIFIED BOOK MODEL - Consolidates Story + Book models
+// This replaces both the Story model (lines 554-622) and Book model (lines 2473-2541)
+
+model Book {
+  id              String           @id @default(cuid())
+  isbn            String?          @unique
+  title           String
+  subtitle        String?
+  summary         String?          @db.Text
+
+  // Content - supports both text and file-based content
+  content         String?          @db.Text // Rich text content (from Story)
+  contentType     BookContentType  @default(TEXT)
+
+  // Author information - flexible to support both registered users and external authors
+  authorId        String?          // Optional User relation (from Story)
+  authorName      String
+  authorAlias     String?          // For privacy/anonymity (from Book)
+  coAuthors       String[]
+  authorAge       Int?
+  authorLocation  String?
+  illustratorId   String?
+
+  // Publication details
+  publishedDate   DateTime?
+  publishedAt     DateTime?        // Duplicate - will clean up
+  publisher       String?
+  language        String           @default("en")
+  ageRange        String?          // "5-8", "9-12", etc. (from Book)
+  readingLevel    String?
+  readingTime     Int?             // Estimated minutes (from Story)
+
+  // Categorization
+  category        String[]
+  genres          String[]
+  subjects        String[]
+  tags            String[]
+
+  // Media files - comprehensive support
+  coverImage      String?
+  illustrations   String[]         // Multiple illustrations (from Story)
+
+  // PDF content (from Book model)
+  pdfKey          String?          // Storage key for main PDF file
+  pdfStorageKey   String?          // Alternative naming (will consolidate)
+  pdfFrontCover   String?          // Storage key for front cover PDF
+  pdfBackCover    String?          // Storage key for back cover PDF
+  pageLayout      String           @default("single")  // "single" or "double" for spread view
+  pageCount       Int?
+  previewPages    Int              @default(10)  // Number of pages available for preview
+
+  // Legacy media files (from Story - to be migrated to new structure)
+  samplePdf       String?
+  fullPdf         String?
+  epubFile        String?
+  audioFile       String?
+
+  // DRM and access control (enhanced from Book)
+  drm             Json?            // {"watermark":true,"downloadAllowed":false,"printAllowed":false}
+  downloadAllowed Boolean          @default(false)
+  printAllowed    Boolean          @default(false)
+
+  // Access control and visibility
+  isPremium       Boolean          @default(false)
+  isPublished     Boolean          @default(false)
+  featured        Boolean          @default(false)
+  visibility      BookVisibility   @default(PUBLIC)
+
+  // Pricing
+  price           Decimal?         @db.Decimal(10, 2)
+  currency        String           @default("USD")
+
+  // Metrics - combined from both models
+  viewCount       Int              @default(0)
+  downloadCount   Int              @default(0)  // from Book
+  likeCount       Int              @default(0)  // from Story
+  rating          Float?
+
+  // Relations - comprehensive from Story model
+  author          User?            @relation(fields: [authorId], references: [id])
+  chapters        Chapter[]
+  readingProgress ReadingProgress[]
+  bookmarks       Bookmark[]
+  reviews         Review[]         @relation("BookReviews")
+  translations    Translation[]
+  sampleAccesses  SampleContentAccess[]
+  entitlements    Entitlement[]
+  publications    Publication[]
+  shopProducts    ShopProduct[]
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([isPublished])
+  @@index([isPremium])
+  @@index([language])
+  @@index([visibility])
+  @@index([contentType])
+  @@index([authorId])
+  @@map("books")
+}
+
+// New enum to support different content types
+enum BookContentType {
+  TEXT        // Rich text content (like original Story)
+  PDF         // PDF-based content (like original Book)
+  EPUB        // E-book format
+  AUDIO       // Audio book
+  MULTIMEDIA  // Mixed content with text, images, audio
+  INTERACTIVE // Interactive content with exercises
+}
+
+// Updated BookVisibility enum (if not already exists)
+enum BookVisibility {
+  PUBLIC
+  RESTRICTED
+  PRIVATE
+}
