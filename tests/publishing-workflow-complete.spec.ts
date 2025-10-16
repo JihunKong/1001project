@@ -5,7 +5,7 @@ const BASE_URL = process.env.BASE_URL || 'https://1001stories.seedsofempowerment
 
 // Test accounts
 const accounts = {
-  volunteer: 'volunteer@test.1001stories.org',
+  writer: 'writer@test.1001stories.org',
   storyManager: 'story-manager@test.1001stories.org',
   bookManager: 'book-manager@test.1001stories.org',
   contentAdmin: 'content-admin@test.1001stories.org',
@@ -49,15 +49,15 @@ test.describe('Complete Publishing Workflow', () => {
     console.log('Screenshots will be saved to:', screenshotDir);
   });
 
-  test('Step 1: VOLUNTEER - Submit text story', async ({ page }) => {
-    console.log('\n=== STEP 1: VOLUNTEER SUBMISSION ===');
+  test('Step 1: WRITER - Submit text story', async ({ page }) => {
+    console.log('\n=== STEP 1: WRITER SUBMISSION ===');
 
     // Navigate to submit page
     await page.goto(`${BASE_URL}/dashboard/writer/submit-text`);
 
     // Check if redirected to login
     if (page.url().includes('/login')) {
-      await loginWithPassword(page, accounts.volunteer);
+      await loginWithPassword(page, accounts.writer);
 
       // After login, navigate again
       await page.goto(`${BASE_URL}/dashboard/writer/submit-text`);
@@ -68,7 +68,7 @@ test.describe('Complete Publishing Workflow', () => {
 
     // Take screenshot of empty form
     await page.screenshot({
-      path: path.join(screenshotDir, '01-volunteer-empty-form.png'),
+      path: path.join(screenshotDir, '01-writer-empty-form.png'),
       fullPage: true
     });
 
@@ -116,7 +116,7 @@ One day, she found a mysterious golden seed that would change her life forever..
 
     // Take screenshot of filled form
     await page.screenshot({
-      path: path.join(screenshotDir, '02-volunteer-filled-form.png'),
+      path: path.join(screenshotDir, '02-writer-filled-form.png'),
       fullPage: true
     });
 
@@ -129,7 +129,7 @@ One day, she found a mysterious golden seed that would change her life forever..
 
     // Take screenshot of draft created
     await page.screenshot({
-      path: path.join(screenshotDir, '03-volunteer-draft-created.png'),
+      path: path.join(screenshotDir, '03-writer-draft-created.png'),
       fullPage: true
     });
 
@@ -141,12 +141,12 @@ One day, she found a mysterious golden seed that would change her life forever..
 
       // Take screenshot after submission
       await page.screenshot({
-        path: path.join(screenshotDir, '04-volunteer-submitted-for-review.png'),
+        path: path.join(screenshotDir, '04-writer-submitted-for-review.png'),
         fullPage: true
       });
     }
 
-    console.log('✅ VOLUNTEER submission completed');
+    console.log('✅ WRITER submission completed');
   });
 
   test('Step 2: STORY_MANAGER - Review and approve story', async ({ page }) => {

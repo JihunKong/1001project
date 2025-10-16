@@ -1,19 +1,19 @@
 import { test, expect } from '@playwright/test';
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8001';
-const VOLUNTEER_EMAIL = 'volunteer@test.1001stories.org';
-const VOLUNTEER_PASSWORD = 'test123';
+const WRITER_EMAIL = 'writer@test.1001stories.org';
+const WRITER_PASSWORD = 'test123';
 
-test.describe('Volunteer Dashboard - Alignment Verification', () => {
+test.describe('Writer Dashboard - Alignment Verification', () => {
 
   test('LNB logo section and GNB should have exact same height', async ({ page }) => {
     // Login
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
-    await page.waitForURL(`${BASE_URL}/dashboard/volunteer`);
+    await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
     // Set desktop viewport
     await page.setViewportSize({ width: 1920, height: 1080 });
@@ -59,10 +59,10 @@ test.describe('Volunteer Dashboard - Alignment Verification', () => {
     // Login
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
-    await page.waitForURL(`${BASE_URL}/dashboard/volunteer`);
+    await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
     // Set desktop viewport
     await page.setViewportSize({ width: 1920, height: 1080 });

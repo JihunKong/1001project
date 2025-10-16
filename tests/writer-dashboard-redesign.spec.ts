@@ -1,9 +1,9 @@
 import { test, expect, Page } from '@playwright/test';
 
-const VOLUNTEER_EMAIL = 'volunteer@test.com';
+const WRITER_EMAIL = 'writer@test.com';
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8001';
 
-test.describe('Volunteer Dashboard Redesign Tests', () => {
+test.describe('Writer Dashboard Redesign Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto(`${BASE_URL}/dashboard/writer`);
@@ -14,7 +14,7 @@ test.describe('Volunteer Dashboard Redesign Tests', () => {
     test.use({ viewport: { width: 1920, height: 1080 } });
 
     test('LNB sidebar navigation components render correctly', async ({ page }) => {
-      const lnb = page.locator('[data-testid="volunteer-lnb"]');
+      const lnb = page.locator('[data-testid="writer-lnb"]');
       await expect(lnb).toBeVisible();
 
       const menuItems = [
@@ -54,18 +54,18 @@ test.describe('Volunteer Dashboard Redesign Tests', () => {
     });
 
     test('LNB navigation updates active state correctly', async ({ page }) => {
-      const lnb = page.locator('[data-testid="volunteer-lnb"]');
+      const lnb = page.locator('[data-testid="writer-lnb"]');
 
       const libraryLink = lnb.locator('a:has-text("Library")');
       await libraryLink.click();
-      await page.waitForURL('**/volunteer/library');
+      await page.waitForURL('**/writer/library');
 
       const activeItem = lnb.locator('[data-active="true"]');
       await expect(activeItem).toHaveText('Library');
 
       const submitLink = lnb.locator('a:has-text("Submit Story")');
       await submitLink.click();
-      await page.waitForURL('**/volunteer/submit-text');
+      await page.waitForURL('**/writer/submit-text');
 
       const newActiveItem = lnb.locator('[data-active="true"]');
       await expect(newActiveItem).toHaveText('Submit Story');
@@ -129,7 +129,7 @@ test.describe('Volunteer Dashboard Redesign Tests', () => {
     });
 
     test('Hover states work correctly on interactive elements', async ({ page }) => {
-      const lnb = page.locator('[data-testid="volunteer-lnb"]');
+      const lnb = page.locator('[data-testid="writer-lnb"]');
       const menuItems = lnb.locator('a');
       const firstItem = menuItems.first();
 
@@ -155,7 +155,7 @@ test.describe('Volunteer Dashboard Redesign Tests', () => {
       const hamburgerMenu = page.locator('[data-testid="hamburger-menu"]');
       await expect(hamburgerMenu).toBeVisible();
 
-      const lnb = page.locator('[data-testid="volunteer-lnb"]');
+      const lnb = page.locator('[data-testid="writer-lnb"]');
       const isHidden = await lnb.evaluate(el => {
         const style = window.getComputedStyle(el);
         return style.display === 'none' || style.transform.includes('translateX(-100%)');
@@ -191,7 +191,7 @@ test.describe('Volunteer Dashboard Redesign Tests', () => {
       const bottomNav = page.locator('[data-testid="mobile-bottom-nav"]');
       await expect(bottomNav).toBeVisible();
 
-      const lnb = page.locator('[data-testid="volunteer-lnb"]');
+      const lnb = page.locator('[data-testid="writer-lnb"]');
       await expect(lnb).not.toBeVisible();
 
       const navItems = bottomNav.locator('[data-testid="nav-item"]');
@@ -209,8 +209,8 @@ test.describe('Volunteer Dashboard Redesign Tests', () => {
 
       const libraryButton = bottomNav.locator('[data-testid="nav-item-library"]');
       await libraryButton.click();
-      await page.waitForURL('**/volunteer/library');
-      expect(page.url()).toContain('/volunteer/library');
+      await page.waitForURL('**/writer/library');
+      expect(page.url()).toContain('/writer/library');
 
       const activeIndicator = bottomNav.locator('[data-active="true"]');
       await expect(activeIndicator).toHaveAttribute('data-testid', 'nav-item-library');
@@ -446,7 +446,7 @@ test.describe('Volunteer Dashboard Redesign Tests', () => {
 });
 
 test.describe('API Endpoint Tests', () => {
-  test('Volunteer API endpoints respond correctly', async ({ request }) => {
+  test('Writer API endpoints respond correctly', async ({ request }) => {
     const endpoints = [
       { path: '/api/health', expectedStatus: 200 },
       { path: '/api/writer/stats', expectedStatus: 200 },
@@ -489,7 +489,7 @@ test.describe('Data Integrity Tests', () => {
   test('User session persists across navigation', async ({ page, context }) => {
     await context.addCookies([{
       name: 'test-session',
-      value: 'volunteer-session-token',
+      value: 'writer-session-token',
       domain: 'localhost',
       path: '/'
     }]);

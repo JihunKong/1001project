@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { execSync } from 'child_process';
 
-test.describe('Volunteer Authentication Tests', () => {
-  const VOLUNTEER_EMAIL = 'volunteer@test.1001stories.org';
-  const VOLUNTEER_PASSWORD = 'test123';
+test.describe('Writer Authentication Tests', () => {
+  const WRITER_EMAIL = 'writer@test.1001stories.org';
+  const WRITER_PASSWORD = 'test123';
   const DOCKER_BASE_URL = 'http://localhost:8001';
   const PROD_BASE_URL = 'https://1001stories.seedsofempowerment.org';
 
@@ -25,10 +25,10 @@ test.describe('Volunteer Authentication Tests', () => {
         await page.waitForLoadState('domcontentloaded');
       }
 
-      await page.locator('input[type="email"]').fill(VOLUNTEER_EMAIL);
-      await page.locator('input[type="password"]').fill(VOLUNTEER_PASSWORD);
+      await page.locator('input[type="email"]').fill(WRITER_EMAIL);
+      await page.locator('input[type="password"]').fill(WRITER_PASSWORD);
 
-      await page.screenshot({ path: 'test-results/volunteer-password-filled.png' });
+      await page.screenshot({ path: 'test-results/writer-password-filled.png' });
 
       await page.locator('button[type="submit"]').click();
 
@@ -74,11 +74,11 @@ test.describe('Volunteer Authentication Tests', () => {
       await page.locator('button:has-text("Password")').click();
       await page.waitForLoadState('domcontentloaded');
 
-      await page.locator('input[name="email"]').fill(VOLUNTEER_EMAIL);
-      await page.locator('input[name="password"]').fill(VOLUNTEER_PASSWORD);
+      await page.locator('input[name="email"]').fill(WRITER_EMAIL);
+      await page.locator('input[name="password"]').fill(WRITER_PASSWORD);
 
       await page.screenshot({
-        path: 'test-results/prod-volunteer-credentials.png',
+        path: 'test-results/prod-writer-credentials.png',
         fullPage: true
       });
 
@@ -91,7 +91,7 @@ test.describe('Volunteer Authentication Tests', () => {
       expect(currentUrl).toContain('/dashboard');
 
       await page.screenshot({
-        path: 'test-results/prod-volunteer-dashboard.png',
+        path: 'test-results/prod-writer-dashboard.png',
         fullPage: true
       });
     });
@@ -107,7 +107,7 @@ test.describe('Volunteer Authentication Tests', () => {
           cwd: '/Users/jihunkong/1001project/1001-stories'
         });
 
-        const magicLinkRegex = /Magic link for volunteer@test\.1001stories\.org: (http[^\s]+)/;
+        const magicLinkRegex = /Magic link for writer@test\.1001stories\.org: (http[^\s]+)/;
         const match = logs.match(magicLinkRegex);
 
         return match && match[1] ? match[1] : null;
@@ -123,7 +123,7 @@ test.describe('Volunteer Authentication Tests', () => {
       const emailInput = page.locator('input[type="email"]').first();
       const sendButton = page.locator('button:has-text("Send Magic Link"), button[type="submit"]').first();
 
-      await emailInput.fill(VOLUNTEER_EMAIL);
+      await emailInput.fill(WRITER_EMAIL);
       await sendButton.click();
 
       await page.waitForLoadState('networkidle');
@@ -136,7 +136,7 @@ test.describe('Volunteer Authentication Tests', () => {
         await expect(page).toHaveURL(/.*dashboard.*/, { timeout: 10000 });
 
         await page.screenshot({
-          path: 'test-results/volunteer-magic-link-dashboard.png',
+          path: 'test-results/writer-magic-link-dashboard.png',
           fullPage: true
         });
       } else {
@@ -145,7 +145,7 @@ test.describe('Volunteer Authentication Tests', () => {
     });
 
     test('should handle invalid magic link token', async ({ page }) => {
-      const invalidLink = `${DOCKER_BASE_URL}/api/auth/callback/email?token=invalid&email=${encodeURIComponent(VOLUNTEER_EMAIL)}`;
+      const invalidLink = `${DOCKER_BASE_URL}/api/auth/callback/email?token=invalid&email=${encodeURIComponent(WRITER_EMAIL)}`;
 
       await page.goto(invalidLink);
       await page.waitForLoadState('networkidle');
@@ -169,8 +169,8 @@ test.describe('Volunteer Authentication Tests', () => {
     test('should authenticate via NextAuth credentials API', async ({ page }) => {
       const response = await page.request.post('/api/auth/signin/credentials', {
         form: {
-          email: VOLUNTEER_EMAIL,
-          password: VOLUNTEER_PASSWORD,
+          email: WRITER_EMAIL,
+          password: WRITER_PASSWORD,
           redirect: 'false',
           json: 'true'
         }
@@ -188,8 +188,8 @@ test.describe('Volunteer Authentication Tests', () => {
         await passwordTab.click();
       }
 
-      await page.locator('input[type="email"]').fill(VOLUNTEER_EMAIL);
-      await page.locator('input[type="password"]').fill(VOLUNTEER_PASSWORD);
+      await page.locator('input[type="email"]').fill(WRITER_EMAIL);
+      await page.locator('input[type="password"]').fill(WRITER_PASSWORD);
       await page.locator('button[type="submit"]').click();
 
       await page.waitForLoadState('networkidle');
@@ -198,7 +198,7 @@ test.describe('Volunteer Authentication Tests', () => {
       expect(sessionResponse.ok()).toBeTruthy();
 
       const sessionData = await sessionResponse.json();
-      expect(sessionData.user?.email).toBe(VOLUNTEER_EMAIL);
+      expect(sessionData.user?.email).toBe(WRITER_EMAIL);
     });
   });
 
@@ -237,10 +237,10 @@ test.describe('Volunteer Authentication Tests', () => {
       }
 
       await emailInput.tap();
-      await emailInput.fill(VOLUNTEER_EMAIL);
+      await emailInput.fill(WRITER_EMAIL);
 
       await page.screenshot({
-        path: 'test-results/volunteer-mobile-login.png',
+        path: 'test-results/writer-mobile-login.png',
         fullPage: true
       });
     });

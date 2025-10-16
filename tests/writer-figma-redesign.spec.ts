@@ -1,20 +1,20 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Phase 1 Volunteer Dashboard Figma Redesign Tests
+ * Phase 1 Writer Dashboard Figma Redesign Tests
  *
  * Tests the new Figma design system components:
- * - VolunteerLNB (Left Navigation Bar)
+ * - WriterLNB (Left Navigation Bar)
  * - GlobalNavigationBar (Top Navigation)
  * - Accessibility features (WCAG 2.1 AA)
  * - No infinite redirect loops
  */
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8001';
-const VOLUNTEER_EMAIL = 'volunteer@test.1001stories.org';
-const VOLUNTEER_PASSWORD = 'test123';
+const WRITER_EMAIL = 'writer@test.1001stories.org';
+const WRITER_PASSWORD = 'test123';
 
-test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
+test.describe('Writer Dashboard - Phase 1 Figma Redesign', () => {
 
   test('should login successfully without infinite redirects', async ({ page }) => {
     // Navigate to login page
@@ -24,8 +24,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     await page.click('button:has-text("Password")');
 
     // Fill in credentials
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
 
     // Click login button
     await page.click('button[type="submit"]');
@@ -38,12 +38,12 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     expect(page.url()).toBe(`${BASE_URL}/dashboard/writer`);
   });
 
-  test('should display VolunteerLNB (Left Navigation Bar) on desktop', async ({ page }) => {
+  test('should display WriterLNB (Left Navigation Bar) on desktop', async ({ page }) => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
@@ -67,8 +67,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
@@ -88,8 +88,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
@@ -117,8 +117,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
@@ -141,8 +141,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
@@ -176,8 +176,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
@@ -200,8 +200,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
@@ -217,8 +217,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
@@ -238,17 +238,17 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     await page.waitForURL(`${BASE_URL}/login`, { timeout: 10000 });
   });
 
-  test('should display volunteer dashboard with Figma design system', async ({ page }) => {
+  test('should display writer dashboard with Figma design system', async ({ page }) => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
     // Check for Figma design system classes
-    const page_element = page.locator('[data-role="volunteer"]');
+    const page_element = page.locator('[data-role="writer"]');
     await expect(page_element).toBeVisible();
 
     // Check for main content area
@@ -263,8 +263,8 @@ test.describe('Volunteer Dashboard - Phase 1 Figma Redesign', () => {
     // Login first
     await page.goto(`${BASE_URL}/login`);
     await page.click('button:has-text("Password")');
-    await page.fill('input[name="email"]', VOLUNTEER_EMAIL);
-    await page.fill('input[name="password"]', VOLUNTEER_PASSWORD);
+    await page.fill('input[name="email"]', WRITER_EMAIL);
+    await page.fill('input[name="password"]', WRITER_PASSWORD);
     await page.click('button[type="submit"]');
     await page.waitForURL(`${BASE_URL}/dashboard/writer`);
 
