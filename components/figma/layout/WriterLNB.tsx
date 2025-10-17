@@ -58,14 +58,14 @@ export default function WriterLNB() {
           Skip to main content
         </a>
 
-        <div className="flex items-center gap-2 px-6 border-b border-figma-gray-border h-[60px]">
+        <div className="flex items-center gap-2 px-4 border-b border-figma-gray-border h-[60px]">
           <div className="w-10 h-10 bg-figma-black rounded-xl flex items-center justify-center">
             <span className="text-white text-sm font-semibold">1001</span>
           </div>
           <span className="text-lg font-semibold text-figma-black">Stories</span>
         </div>
 
-        <div className="flex flex-col gap-4 p-6">
+        <div className="flex flex-col gap-4 px-4 py-6">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item);
