@@ -149,7 +149,7 @@ export function useOptimizedVolunteerDashboard(
       // Fetch fresh data if cache miss or disabled
       const [submissionsResult, statsResult] = await Promise.all([
         apiCall<{ submissions: TextSubmission[] }>('/api/text-submissions'),
-        apiCall<VolunteerStats>('/api/volunteer/stats'),
+        apiCall<VolunteerStats>('/api/writer/stats'),
       ]);
 
       if (submissionsResult.error || statsResult.error) {

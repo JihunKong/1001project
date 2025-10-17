@@ -79,11 +79,11 @@ test.describe('Story Submission Form Overflow Fixes - Live Website', () => {
       // Try direct navigation to common form paths
       if (!foundFormAccess) {
         const commonPaths = [
-          '/demo/volunteer',
+          '/demo/writer',
           '/demo/submit',
-          '/volunteer',
+          '/writer',
           '/submit',
-          '/dashboard/volunteer',
+          '/dashboard/writer',
           '/story/submit'
         ];
 

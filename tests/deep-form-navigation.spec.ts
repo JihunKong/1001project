@@ -125,13 +125,13 @@ test.describe('Deep Form Navigation - Live Website', () => {
 
     // Step 4: Try direct navigation to common form paths
     const formPaths = [
-      '/demo/volunteer/submit',
+      '/demo/writer/submit',
       '/demo/submit',
-      '/dashboard/volunteer',
-      '/volunteer/submit',
+      '/dashboard/writer',
+      '/writer/submit',
       '/submit-story',
       '/story/submit',
-      '/volunteer/dashboard',
+      '/writer/dashboard',
       '/demo/story/submit'
     ];
 
