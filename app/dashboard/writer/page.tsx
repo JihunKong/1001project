@@ -207,7 +207,7 @@ export default function VolunteerDashboard() {
         </div>
       )}
 
-      <div id="main-content" className="max-w-[1440px] mx-auto px-[100px] py-10">
+      <div id="main-content" className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-[100px] py-10 pb-20 lg:pb-10">
         <div className="max-w-[1240px] mx-auto">
           <div className="flex items-center justify-between mb-12">
             <h1
