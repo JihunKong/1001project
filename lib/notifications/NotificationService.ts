@@ -157,7 +157,7 @@ export class NotificationService {
 
     await this.createNotification(
       submission.authorId,
-      NotificationType.VOLUNTEER,
+      NotificationType.WRITER,
       statusMessages.title,
       statusMessages.message,
       notificationData
@@ -379,7 +379,7 @@ export class NotificationService {
   // Check if email should be sent for this notification type
   private shouldSendEmailForType(type: NotificationType, preferences: NotificationPreferences): boolean {
     switch (type) {
-      case NotificationType.VOLUNTEER:
+      case NotificationType.WRITER:
         return preferences.statusChanges;
       case NotificationType.ASSIGNMENT:
         return preferences.statusChanges;

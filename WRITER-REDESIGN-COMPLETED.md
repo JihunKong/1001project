@@ -1,4 +1,4 @@
-# Volunteer Dashboard Redesign - Phase 1 Complete ✅
+# Writer Dashboard Redesign - Phase 1 Complete ✅
 
 **Date**: 2025-10-11
 **Type**: Agile Implementation - Feature Development
@@ -8,7 +8,7 @@
 
 ## 🎯 Executive Summary
 
-Successfully implemented Phase 1 of the volunteer dashboard redesign using Figma design system. All components created, critical issues fixed, and lint passing. Ready for local testing and deployment.
+Successfully implemented Phase 1 of the writer dashboard redesign using Figma design system. All components created, critical issues fixed, and lint passing. Ready for local testing and deployment.
 
 ### Agile Approach
 - **Multi-agent parallel execution** for faster development
@@ -23,7 +23,7 @@ Successfully implemented Phase 1 of the volunteer dashboard redesign using Figma
 ### 1. Foundation Components (Phase 1)
 
 #### Layout Components
-- ✅ **VolunteerLNB.tsx** (`components/figma/layout/`)
+- ✅ **WriterLNB.tsx** (`components/figma/layout/`)
   - Left sidebar navigation (240px wide)
   - Mobile bottom navigation (responsive)
   - Active state highlighting with accessibility labels
@@ -113,9 +113,9 @@ figma: {
   - Prevents Tailwind class conflicts
   - Performance optimization
 
-### 4. Volunteer Dashboard Redesign
+### 4. Writer Dashboard Redesign
 
-- ✅ **page.tsx** (`app/dashboard/volunteer/`)
+- ✅ **page.tsx** (`app/dashboard/writer/`)
   - New layout with LNB + GNB
   - Figma color tokens applied throughout
   - All existing features preserved
@@ -140,7 +140,7 @@ Based on code review feedback:
 ```
 components/figma/
 ├── layout/
-│   ├── VolunteerLNB.tsx
+│   ├── WriterLNB.tsx
 │   └── GlobalNavigationBar.tsx
 └── ui/
     ├── Button.tsx
@@ -160,8 +160,8 @@ lib/utils/
 
 ### Documentation (3 files)
 ```
-VOLUNTEER-PAGE-REDESIGN-PLAN.md (comprehensive plan)
-VOLUNTEER-REDESIGN-COMPLETED.md (this file)
+WRITER-PAGE-REDESIGN-PLAN.md (comprehensive plan)
+WRITER-REDESIGN-COMPLETED.md (this file)
 ```
 
 ---
@@ -201,7 +201,7 @@ VOLUNTEER-REDESIGN-COMPLETED.md (this file)
 ### Agents Deployed (3)
 1. **code-reviewer** - Analyzed all new components, provided critical feedback
 2. **general-purpose (UI)** - Created StatusBadge, Select, ProgressBar components
-3. **general-purpose (redesign)** - Redesigned main volunteer dashboard page
+3. **general-purpose (redesign)** - Redesigned main writer dashboard page
 
 ### Results
 - All agents completed successfully
@@ -240,7 +240,7 @@ curl http://localhost:8001/api/health
 
 # 3. Git commit
 git add .
-git commit -m "feat(volunteer): Implement Phase 1 Figma redesign with LNB/GNB layout"
+git commit -m "feat(writer): Implement Phase 1 Figma redesign with LNB/GNB layout"
 git push
 
 # 4. Server deployment (after disk cleanup)
@@ -251,7 +251,7 @@ git push
 ```bash
 # 1. Commit changes
 git add .
-git commit -m "feat(volunteer): Implement Phase 1 Figma redesign"
+git commit -m "feat(writer): Implement Phase 1 Figma redesign"
 git push
 
 # 2. Build locally and push to Docker Hub
@@ -345,7 +345,7 @@ ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker pull jihunkong/
 
 ## 🔗 Related Documents
 
-- **Planning**: `VOLUNTEER-PAGE-REDESIGN-PLAN.md` (comprehensive 500+ line plan)
+- **Planning**: `WRITER-PAGE-REDESIGN-PLAN.md` (comprehensive 500+ line plan)
 - **Design**: Figma at `https://www.figma.com/design/AlPzpkP4Ylua6OmtfdfDe7/1001-stories_publishing`
 - **Architecture**: `CLAUDE.md` (project overview and guidelines)
 - **Deployment**: `DISK-OPTIMIZATION-GUIDE.md` (server optimization strategies)
@@ -354,7 +354,7 @@ ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker pull jihunkong/
 
 ## ✨ Summary
 
-**Phase 1 volunteer dashboard redesign COMPLETE** with:
+**Phase 1 writer dashboard redesign COMPLETE** with:
 - 9 new Figma-aligned components
 - Redesigned main dashboard page
 - All critical issues fixed

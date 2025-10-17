@@ -20,7 +20,7 @@ import {
 
 interface Notification {
   id: string;
-  type: 'SYSTEM' | 'VOLUNTEER' | 'ASSIGNMENT' | 'ACHIEVEMENT';
+  type: 'SYSTEM' | 'WRITER' | 'ASSIGNMENT' | 'ACHIEVEMENT';
   title: string;
   message: string;
   read: boolean;
@@ -284,7 +284,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
               className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               <option value="all">All types</option>
-              <option value="VOLUNTEER">Story updates</option>
+              <option value="WRITER">Story updates</option>
               <option value="ASSIGNMENT">Assignments</option>
               <option value="ACHIEVEMENT">Achievements</option>
               <option value="SYSTEM">System</option>

@@ -1,8 +1,8 @@
-# Volunteer Page Redesign Plan
+# Writer Page Redesign Plan
 
 ## Executive Summary
 
-This document outlines a comprehensive redesign plan for the volunteer dashboard pages based on the Figma design system at `https://www.figma.com/design/AlPzpkP4Ylua6OmtfdfDe7/1001-stories_publishing?node-id=0-1`.
+This document outlines a comprehensive redesign plan for the writer dashboard pages based on the Figma design system at `https://www.figma.com/design/AlPzpkP4Ylua6OmtfdfDe7/1001-stories_publishing?node-id=0-1`.
 
 The redesign aligns with the "01. Writer's flow" → "Publishing (Student)" design while maintaining all existing functionality and improving user experience through consistent design patterns.
 
@@ -11,10 +11,10 @@ The redesign aligns with the "01. Writer's flow" → "Publishing (Student)" desi
 ## Current State Analysis
 
 ### Existing Pages
-1. **Main Dashboard** (`/dashboard/volunteer/page.tsx` - 459 lines)
-2. **Submit Text** (`/dashboard/volunteer/submit-text/page.tsx` - 101 lines)
-3. **Library** (`/dashboard/volunteer/library/page.tsx` - 499 lines)
-4. **Notifications** (`/dashboard/volunteer/notifications/page.tsx` - 61 lines)
+1. **Main Dashboard** (`/dashboard/writer/page.tsx` - 459 lines)
+2. **Submit Text** (`/dashboard/writer/submit-text/page.tsx` - 101 lines)
+3. **Library** (`/dashboard/writer/library/page.tsx` - 499 lines)
+4. **Notifications** (`/dashboard/writer/notifications/page.tsx` - 61 lines)
 
 ### Key Components
 - `FlowProgressIndicator` (484 lines) - Writer's journey visualization
@@ -125,7 +125,7 @@ Body/Body04:
 
 ### 1. Main Dashboard Redesign
 
-**File**: `app/dashboard/volunteer/page.tsx`
+**File**: `app/dashboard/writer/page.tsx`
 
 **Current Structure**:
 ```tsx
@@ -143,7 +143,7 @@ Body/Body04:
 ```tsx
 <div className="flex min-h-screen bg-gray-50">
   {/* LNB - Left Navigation */}
-  <VolunteerLNB activeItem="home" />
+  <WriterLNB activeItem="home" />
 
   {/* Main Content */}
   <div className="flex-1">
@@ -170,7 +170,7 @@ Body/Body04:
 
 #### B. New Components to Create
 
-**`VolunteerLNB.tsx`** (NEW)
+**`WriterLNB.tsx`** (NEW)
 ```tsx
 - Fixed left sidebar (240px wide)
 - Navigation items: Home, Library, Profile, Stories
@@ -258,7 +258,7 @@ Card design:
 
 ### 2. Submit Text Page Redesign
 
-**File**: `app/dashboard/volunteer/submit-text/page.tsx`
+**File**: `app/dashboard/writer/submit-text/page.tsx`
 
 **Current Structure**:
 ```tsx
@@ -274,7 +274,7 @@ Card design:
 ```tsx
 <div className="flex min-h-screen bg-gray-50">
   {/* LNB */}
-  <VolunteerLNB activeItem="stories" />
+  <WriterLNB activeItem="stories" />
 
   <div className="flex-1">
     {/* GNB */}
@@ -414,7 +414,7 @@ Tags:
 
 ### 3. Library Page Redesign
 
-**File**: `app/dashboard/volunteer/library/page.tsx`
+**File**: `app/dashboard/writer/library/page.tsx`
 
 **Current Structure**:
 ```tsx
@@ -430,7 +430,7 @@ Tags:
 ```tsx
 <div className="flex min-h-screen bg-gray-50">
   {/* LNB */}
-  <VolunteerLNB activeItem="library" />
+  <WriterLNB activeItem="library" />
 
   <div className="flex-1">
     {/* GNB */}
@@ -617,14 +617,14 @@ const statusStyles = {
 
 ### 4. Notifications Page Redesign
 
-**File**: `app/dashboard/volunteer/notifications/page.tsx`
+**File**: `app/dashboard/writer/notifications/page.tsx`
 
 **Redesign Changes**:
 
 ```tsx
 <div className="flex min-h-screen bg-gray-50">
   {/* LNB */}
-  <VolunteerLNB activeItem="home" />
+  <WriterLNB activeItem="home" />
 
   <div className="flex-1">
     {/* GNB */}
@@ -699,7 +699,7 @@ const statusStyles = {
 ### Phase 1: Foundation Components (Week 1)
 
 1. **Create New Layout Components**
-   - [ ] `VolunteerLNB.tsx` - Left navigation bar
+   - [ ] `WriterLNB.tsx` - Left navigation bar
    - [ ] `GlobalNavigationBar.tsx` - Top navigation bar
    - [ ] Update `tailwind.config.ts` with Figma colors
 
@@ -797,7 +797,7 @@ Create `/components/figma/` directory for Figma-aligned components:
 components/
   figma/
     layout/
-      VolunteerLNB.tsx
+      WriterLNB.tsx
       GlobalNavigationBar.tsx
       MainLayout.tsx
     ui/
@@ -832,7 +832,7 @@ xl: 1280px  - Desktop
 // Desktop (lg+): Fixed 240px sidebar
 // Mobile (<lg): Collapsible overlay or bottom navigation
 
-<VolunteerLNB
+<WriterLNB
   mode="desktop"  // Fixed sidebar
   className="hidden lg:block"
 />
@@ -942,15 +942,15 @@ import Image from 'next/image';
 ### Visual Regression Testing
 ```bash
 # Use Playwright for screenshot comparison
-npx playwright test tests/volunteer-redesign/ --update-snapshots
+npx playwright test tests/writer-redesign/ --update-snapshots
 ```
 
 ### Component Testing
 ```tsx
-// Example: VolunteerLNB.test.tsx
-describe('VolunteerLNB', () => {
+// Example: WriterLNB.test.tsx
+describe('WriterLNB', () => {
   it('renders all navigation items', () => {
-    render(<VolunteerLNB activeItem="home" />);
+    render(<WriterLNB activeItem="home" />);
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Library')).toBeInTheDocument();
     expect(screen.getByText('Profile')).toBeInTheDocument();
@@ -958,7 +958,7 @@ describe('VolunteerLNB', () => {
   });
 
   it('highlights active item', () => {
-    render(<VolunteerLNB activeItem="library" />);
+    render(<WriterLNB activeItem="library" />);
     const libraryItem = screen.getByText('Library');
     expect(libraryItem).toHaveClass('font-medium', 'text-[#141414]');
   });
@@ -968,7 +968,7 @@ describe('VolunteerLNB', () => {
 ### E2E Testing
 ```bash
 # Test complete flows with redesigned pages
-npx playwright test tests/volunteer-workflow.spec.ts
+npx playwright test tests/writer-workflow.spec.ts
 ```
 
 ---
@@ -982,7 +982,7 @@ npx playwright test tests/volunteer-workflow.spec.ts
 - [ ] Set up feature flag for gradual rollout
 
 ### During Migration
-- [ ] Create feature branch: `feature/volunteer-redesign`
+- [ ] Create feature branch: `feature/writer-redesign`
 - [ ] Implement Phase 1 components
 - [ ] Implement Phase 2 components
 - [ ] Implement Phase 3 components
@@ -1074,12 +1074,12 @@ npx playwright test tests/volunteer-workflow.spec.ts
 #### Option B: Feature Flag Rollout (RECOMMENDED)
 ```tsx
 // Use feature flag for gradual rollout
-const { enabled: useRedesign } = useFeatureFlag('volunteer-redesign');
+const { enabled: useRedesign } = useFeatureFlag('writer-redesign');
 
 return useRedesign ? (
-  <RedesignedVolunteerDashboard />
+  <RedesignedWriterDashboard />
 ) : (
-  <VolunteerDashboard />
+  <WriterDashboard />
 );
 ```
 
@@ -1127,7 +1127,7 @@ This redesign plan provides a systematic approach to transforming the volunteer 
 
 | Current Component | Redesigned Component | Status |
 |------------------|---------------------|--------|
-| VolunteerDashboard | RedesignedVolunteerDashboard | To Create |
+| WriterDashboard | RedesignedWriterDashboard | To Create |
 | FlowProgressIndicator | EnhancedFlowProgress | To Update |
 | DashboardStatsCard | StatsGrid | To Redesign |
 | StoryStatusCard | RedesignedStoryCard | To Redesign |
@@ -1186,10 +1186,10 @@ This redesign plan provides a systematic approach to transforming the volunteer 
 ### D. Resources
 
 - **Figma Design**: https://www.figma.com/design/AlPzpkP4Ylua6OmtfdfDe7/1001-stories_publishing?node-id=0-1
-- **Current Implementation**: `/app/dashboard/volunteer/`
+- **Current Implementation**: `/app/dashboard/writer/`
 - **Component Library**: `/components/`
 - **Design System Docs**: (To be created)
-- **Playwright Tests**: `/tests/volunteer/`
+- **Playwright Tests**: `/tests/writer/`
 
 ---
 

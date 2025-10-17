@@ -43,7 +43,10 @@ interface SystemStats {
 interface UsersByRole {
   LEARNER: number;
   TEACHER: number;
-  VOLUNTEER: number;
+  WRITER: number;
+  STORY_MANAGER: number;
+  BOOK_MANAGER: number;
+  CONTENT_ADMIN: number;
   INSTITUTION: number;
   ADMIN: number;
 }
@@ -104,7 +107,10 @@ export default function AdminDashboard() {
       setUsersByRole({
         LEARNER: 12500,
         TEACHER: 2100,
-        VOLUNTEER: 650,
+        WRITER: 650,
+        STORY_MANAGER: 85,
+        BOOK_MANAGER: 42,
+        CONTENT_ADMIN: 28,
         INSTITUTION: 145,
         ADMIN: 25
       });

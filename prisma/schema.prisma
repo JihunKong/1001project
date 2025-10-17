@@ -1317,7 +1317,7 @@ enum NotificationType {
   ASSIGNMENT
   CLASS
   DONATION
-  VOLUNTEER
+  WRITER
   ACHIEVEMENT
 }
 

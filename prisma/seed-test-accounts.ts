@@ -70,19 +70,19 @@ async function main() {
       },
     }),
 
-    // 3. VOLUNTEER - Content Contributor
+    // 3. WRITER - Content Contributor
     prisma.user.create({
       data: {
-        email: 'volunteer@test.1001stories.org',
-        name: 'Volunteer Test User',
+        email: 'writer@test.1001stories.org',
+        name: 'Writer Test User',
         password: testPassword,
         role: UserRole.WRITER,
         emailVerified: new Date(),
         profile: {
           create: {
             firstName: 'Michael',
-            lastName: 'Volunteer',
-            bio: 'Passionate volunteer creating educational stories for global impact',
+            lastName: 'Writer',
+            bio: 'Passionate writer creating educational stories for global impact',
             location: 'San Francisco, USA',
             language: 'en',
             timezone: 'America/Los_Angeles',
@@ -148,7 +148,7 @@ async function main() {
   console.log('├─────────────────────────────────────────────────────────────┤');
   console.log('│ ADMIN            │ admin@test.1001stories.org        │ test123  │');
   console.log('│ TEACHER          │ teacher@test.1001stories.org      │ test123  │');
-  console.log('│ VOLUNTEER        │ volunteer@test.1001stories.org    │ test123  │');
+  console.log('│ WRITER           │ writer@test.1001stories.org       │ test123  │');
   console.log('│ INSTITUTION      │ institution@test.1001stories.org  │ test123  │');
   console.log('│ LEARNER          │ learner@test.1001stories.org      │ test123  │');
   console.log('└─────────────────────────────────────────────────────────────┘');

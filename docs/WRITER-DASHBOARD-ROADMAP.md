@@ -1,4 +1,4 @@
-# Volunteer Dashboard Development Roadmap
+# Writer Dashboard Development Roadmap
 
 **Last Updated:** 2025-10-16
 **Status:** Phase 1 Complete, Phase 2 In Progress
@@ -7,7 +7,7 @@
 
 ## Overview
 
-This roadmap tracks the development of the volunteer dashboard, aligning with the Figma design system at:
+This roadmap tracks the development of the writer dashboard, aligning with the Figma design system at:
 `https://www.figma.com/design/AlPzpkP4Ylua6OmtfdfDe7/1001-stories_publishing?node-id=0-1`
 
 ---
@@ -18,7 +18,7 @@ This roadmap tracks the development of the volunteer dashboard, aligning with th
 
 #### Infrastructure & Layout
 - [x] **Layout Components**
-  - `VolunteerLNB` - Left navigation sidebar (240px)
+  - `WriterLNB` - Left navigation sidebar (240px)
   - `GlobalNavigationBar` - Top navigation bar
   - Responsive layout structure with proper spacing
 
@@ -190,7 +190,7 @@ This roadmap tracks the development of the volunteer dashboard, aligning with th
 - **Day 4:** Performance optimization
 - **Day 5:** Documentation and deployment
 
-**Deliverable:** Production-ready volunteer dashboard
+**Deliverable:** Production-ready writer dashboard
 
 ---
 
@@ -245,7 +245,7 @@ This roadmap tracks the development of the volunteer dashboard, aligning with th
 
 | Component | Location | Status | Notes |
 |-----------|----------|--------|-------|
-| VolunteerLNB | `components/figma/layout/` | ✅ Complete | Working navigation |
+| WriterLNB | `components/figma/layout/` | ✅ Complete | Working navigation |
 | GlobalNavigationBar | `components/figma/layout/` | ✅ Complete | Working nav bar |
 | TextSubmissionForm | `components/` | ✅ Complete | Figma styling applied (2025-10-16) |
 | RichTextEditor | `components/ui/` | ✅ Complete | Dynamic import fixed |
@@ -257,8 +257,8 @@ This roadmap tracks the development of the volunteer dashboard, aligning with th
 
 | Component | Location | Progress | ETA |
 |-----------|----------|----------|-----|
-| Submit Text Page | `app/dashboard/volunteer/submit-text/` | ✅ 100% Complete | Done (2025-10-16) |
-| Main Dashboard | `app/dashboard/volunteer/` | 0% | 1 week |
+| Submit Text Page | `app/dashboard/writer/submit-text/` | ✅ 100% Complete | Done (2025-10-16) |
+| Main Dashboard | `app/dashboard/writer/` | 0% | 1 week |
 
 ### 📋 To Create
 
@@ -366,15 +366,15 @@ This roadmap tracks the development of the volunteer dashboard, aligning with th
 
 ### Documentation
 - **Figma Design:** https://www.figma.com/design/AlPzpkP4Ylua6OmtfdfDe7/1001-stories_publishing?node-id=0-1
-- **Redesign Plan:** `/VOLUNTEER-PAGE-REDESIGN-PLAN.md`
+- **Redesign Plan:** `/WRITER-PAGE-REDESIGN-PLAN.md`
 - **Troubleshooting:** `/docs/TROUBLESHOOTING.md`
 - **Diagnostic Script:** `/scripts/diagnose-react-issues.sh`
 
 ### Code Locations
-- **Pages:** `/app/dashboard/volunteer/`
+- **Pages:** `/app/dashboard/writer/`
 - **Components:** `/components/`
 - **Figma Components:** `/components/figma/`
-- **Tests:** `/tests/volunteer-figma-redesign.spec.ts`
+- **Tests:** `/tests/writer-figma-redesign.spec.ts`
 
 ### Related Documents
 - `FIGMA-IMPLEMENTATION-GAP-ANALYSIS.md`
@@ -398,7 +398,7 @@ This roadmap tracks the development of the volunteer dashboard, aligning with th
 
 ## Conclusion
 
-The volunteer dashboard development is progressing well with Phase 1 complete and Phase 2 underway. Critical infrastructure and functionality issues have been resolved, providing a solid foundation for the remaining UI/UX refinement work.
+The writer dashboard development is progressing well with Phase 1 complete and Phase 2 underway. Critical infrastructure and functionality issues have been resolved, providing a solid foundation for the remaining UI/UX refinement work.
 
 **Key Focus Areas:**
 1. **This Week:** Complete Submit Text styling + Start Main Dashboard

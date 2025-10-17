@@ -197,6 +197,6 @@ export function useOnboarding() {
     resetOnboarding,
     triggerOnboarding,
     isNewUser: !onboardingState.hasCompletedOnboarding,
-    userRole: session?.user?.role as 'LEARNER' | 'TEACHER' | 'VOLUNTEER' | 'STORY_MANAGER' | 'BOOK_MANAGER' | 'CONTENT_ADMIN' | 'ADMIN'
+    userRole: session?.user?.role as 'LEARNER' | 'TEACHER' | 'INSTITUTION' | 'WRITER' | 'STORY_MANAGER' | 'BOOK_MANAGER' | 'CONTENT_ADMIN' | 'ADMIN'
   }
 }

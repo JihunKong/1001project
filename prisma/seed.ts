@@ -77,11 +77,11 @@ async function main() {
     },
   });
 
-  // Create volunteer user
-  const volunteer = await prisma.user.create({
+  // Create writer user
+  const writer = await prisma.user.create({
     data: {
-      email: 'volunteer@1001stories.org',
-      name: 'Volunteer User',
+      email: 'writer@1001stories.org',
+      name: 'Writer User',
       role: UserRole.WRITER,
       emailVerified: new Date(),
     },
@@ -89,18 +89,18 @@ async function main() {
 
   await prisma.profile.create({
     data: {
-      userId: volunteer.id,
-      firstName: 'Volunteer',
+      userId: writer.id,
+      firstName: 'Writer',
       lastName: 'User',
       language: 'en',
       timezone: 'UTC',
     },
   });
 
-  // Create volunteer profile
+  // Create writer profile
   await prisma.volunteerProfile.create({
     data: {
-      userId: volunteer.id,
+      userId: writer.id,
       verificationStatus: 'VERIFIED',
       languageLevels: {},
       availableSlots: {},
@@ -113,8 +113,8 @@ async function main() {
   const book1 = await prisma.book.create({
     data: {
       title: 'The Magic Garden',
-      authorName: 'Volunteer Writer',
-      authorId: volunteer.id,
+      authorName: 'Writer Author',
+      authorId: writer.id,
       content: 'Once upon a time, in a magical garden far away, there lived a little girl named Lucy who discovered that flowers could talk...',
       summary: 'A beautiful story about a magical garden where flowers come to life.',
       language: 'en',
@@ -194,7 +194,7 @@ async function main() {
 
   await prisma.subscription.create({
     data: {
-      userId: volunteer.id,
+      userId: writer.id,
       plan: 'FREE',
       status: 'ACTIVE',
       canAccessPremium: false,
@@ -314,7 +314,7 @@ async function main() {
   console.log(`📧 Admin: admin@1001stories.org`);
   console.log(`📧 Teacher: teacher@1001stories.org`);
   console.log(`📧 Learner: learner@1001stories.org`);
-  console.log(`📧 Volunteer: volunteer@1001stories.org`);
+  console.log(`📧 Writer: writer@1001stories.org`);
   console.log(`📧 Story Manager: story-manager@1001stories.org`);
   console.log(`📧 Book Manager: book-manager@1001stories.org`);
   console.log(`📧 Content Admin: content-admin@1001stories.org`);
