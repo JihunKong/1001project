@@ -95,7 +95,10 @@ model User {
   storyManagerReviews     TextSubmission[] @relation("StoryManagerReviews")
   bookManagerReviews      TextSubmission[] @relation("BookManagerReviews")
   contentAdminReviews     TextSubmission[] @relation("ContentAdminReviews")
-  
+
+  // Comment system relations
+  authoredComments        Comment[]        @relation("AuthoredComments")
+
   @@index([email])
   @@index([role])
   @@map("users")
@@ -1933,6 +1936,7 @@ model TextSubmission {
   contentAdmin    User?            @relation("ContentAdminReviews", fields: [contentAdminId], references: [id])
   workflowHistory WorkflowHistory[]
   aiReviews       AIReview[]       @relation("AIReviews")
+  comments        Comment[]        @relation("SubmissionComments")
 
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -2265,4 +2269,52 @@ model AIReview {
   @@index([reviewType])
   @@index([status])
   @@map("ai_reviews")
+}
+
+// ==================================================================
+// Admin Inline Comment System
+// ==================================================================
+
+// Comment status enumeration
+enum CommentStatus {
+  OPEN
+  RESOLVED
+  ARCHIVED
+}
+
+// Comments on text submissions for inline annotations
+model Comment {
+  id              String         @id @default(cuid())
+  textSubmissionId String
+  authorId        String
+
+  // Comment content
+  content         String         @db.Text
+  highlightedText String?        // Text that was highlighted/selected
+  startOffset     Int?           // Character position where highlight starts
+  endOffset       Int?           // Character position where highlight ends
+
+  // Threading support
+  parentId        String?        // For reply threading
+
+  // Status and resolution
+  status          CommentStatus  @default(OPEN)
+  isResolved      Boolean        @default(false)
+  resolvedAt      DateTime?
+  resolvedBy      String?        // User ID who resolved
+
+  // Relations
+  textSubmission  TextSubmission @relation("SubmissionComments", fields: [textSubmissionId], references: [id], onDelete: Cascade)
+  author          User           @relation("AuthoredComments", fields: [authorId], references: [id])
+  parent          Comment?       @relation("CommentReplies", fields: [parentId], references: [id])
+  replies         Comment[]      @relation("CommentReplies")
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([textSubmissionId])
+  @@index([authorId])
+  @@index([parentId])
+  @@index([status])
+  @@map("comments")
 }

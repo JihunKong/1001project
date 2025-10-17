@@ -6,9 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
-import { Loader2, Save, Send, Eye, X } from 'lucide-react';
+import { Loader2, Save, Send, Eye, X, Sparkles } from 'lucide-react';
+import SubmissionConfirmationModal from './SubmissionConfirmationModal';
 
-const RichTextEditor = dynamic(() => import('./ui/RichTextEditor'), {
+const RichTextEditor = dynamic(() => import('@/components/ui/RichTextEditor'), {
   ssr: false,
   loading: () => (
     <div className="border border-[#E5E5EA] rounded-lg overflow-hidden bg-white min-h-[400px] flex items-center justify-center">
@@ -54,6 +55,8 @@ export default function TextSubmissionForm({
   const [charCount, setCharCount] = useState(0);
   const [wordCount, setWordCount] = useState(0);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [isRequestingAIReview, setIsRequestingAIReview] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const detailsRef = useRef<HTMLDetailsElement>(null);
 
@@ -242,6 +245,21 @@ export default function TextSubmissionForm({
   const handleSubmitForReview = () => {
     handleSubmit(
       (data) => {
+        console.log('Submission validation passed, opening confirmation modal');
+        setShowConfirmModal(true);
+      },
+      (errors) => {
+        console.error('Submission validation failed:', errors);
+        toast.error('Please fill in all required fields before submitting');
+      }
+    )();
+  };
+
+  const handleConfirmSubmission = () => {
+    console.log('handleConfirmSubmission called');
+    handleSubmit(
+      (data) => {
+        console.log('Confirmed submission, submitting:', data);
         onSubmit(data, false);
       },
       (errors) => {
@@ -252,6 +270,64 @@ export default function TextSubmissionForm({
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+  };
+
+  const handleRequestAIReview = async () => {
+    console.log('handleRequestAIReview called');
+
+    if (!watchedTitle || !watchedContent) {
+      toast.error('Please fill in title and content before requesting AI review');
+      return;
+    }
+
+    if (mode === 'edit' && submissionId) {
+      toast.success('Scroll down to see the AI Review section in the sidebar');
+      return;
+    }
+
+    setIsRequestingAIReview(true);
+
+    try {
+      const data = {
+        title: watchedTitle,
+        content: watchedContent,
+        summary: watchedSummary || 'Draft summary',
+        authorAlias: watch('authorAlias') || 'Anonymous',
+        language: watch('language'),
+        ageRange: watchedAgeRange,
+        category: watchedCategory,
+        tags: watchedTags,
+        readingLevel: watch('readingLevel'),
+        copyrightConfirmed: watch('copyrightConfirmed'),
+        originalWork: watch('originalWork'),
+        licenseType: watch('licenseType'),
+        termsAccepted: watch('termsAccepted'),
+      };
+
+      const response = await fetch('/api/text-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save draft');
+      }
+
+      const result = await response.json();
+
+      toast.success('Draft saved! Redirecting to AI review...');
+
+      setTimeout(() => {
+        router.push(`/dashboard/writer/submit-text?edit=${result.submission.id}`);
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error saving draft for AI review:', error);
+      toast.error('Failed to save draft. Please try again.');
+    } finally {
+      setIsRequestingAIReview(false);
+    }
   };
 
   return (
@@ -606,6 +682,27 @@ export default function TextSubmissionForm({
 
             <button
               type="button"
+              onClick={handleRequestAIReview}
+              disabled={isSubmitting || isRequestingAIReview || !watchedTitle || !watchedContent}
+              className="flex items-center gap-2 px-3 py-2.5 border-2 border-primary-600 rounded-lg shadow-sm font-medium text-primary-600 bg-white hover:bg-primary-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '16px',
+                fontWeight: 500,
+                lineHeight: '1.221'
+              }}
+              title={!watchedTitle || !watchedContent ? 'Fill in title and content to enable AI review' : 'Request AI review'}
+            >
+              {isRequestingAIReview ? (
+                <Loader2 className="h-4 w-4 animate-spin" stroke="currentColor" aria-hidden="true" />
+              ) : (
+                <Sparkles className="h-4 w-4" stroke="currentColor" aria-hidden="true" />
+              )}
+              AI 리뷰 요청
+            </button>
+
+            <button
+              type="button"
               onClick={handleSubmitForReview}
               disabled={isSubmitting}
               className="flex items-center gap-2 px-6 py-2.5 border border-transparent rounded-lg shadow-sm font-medium text-white bg-[#141414] hover:bg-[#1f1f1f] disabled:opacity-50 transition-colors"
@@ -626,6 +723,16 @@ export default function TextSubmissionForm({
           </div>
         </div>
       </form>
+
+      {/* Submission Confirmation Modal */}
+      <SubmissionConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSubmission}
+        title={watchedTitle}
+        wordCount={wordCount}
+        isSubmitting={isSubmitting && !isDraft}
+      />
     </div>
   );
 }

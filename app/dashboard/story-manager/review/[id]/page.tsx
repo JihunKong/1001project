@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { useParams, useRouter } from 'next/navigation';
@@ -15,9 +15,36 @@ import {
   FileText,
   MessageSquare,
   BookOpen,
-  Tag
+  Tag,
+  Filter
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import {
+  CommentableTextEditor,
+  CommentPopup,
+  RevisionRequestModal,
+  type RevisionRequestData
+} from '@/components/story-publication/admin';
+import Popover from '@/components/ui/Popover';
+
+interface Comment {
+  id: string;
+  content: string;
+  highlightedText: string;
+  startOffset: number;
+  endOffset: number;
+  authorId: string;
+  status: 'OPEN' | 'RESOLVED' | 'ARCHIVED';
+  isResolved: boolean;
+  createdAt: string;
+  author: {
+    id: string;
+    name: string | null;
+    email: string;
+    role: string;
+  };
+  replies?: Comment[];
+}
 
 interface TextSubmission {
   id: string;
@@ -68,7 +95,12 @@ export default function StoryReviewPage() {
   const [action, setAction] = useState<'approve' | 'revision' | 'reject' | null>(null);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
 
-  // Redirect if not authenticated or not a story manager
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
+  const [commentAnchor, setCommentAnchor] = useState<HTMLElement | null>(null);
+  const [commentFilter, setCommentFilter] = useState<'all' | 'open' | 'resolved'>('all');
+
   useEffect(() => {
     if (status === 'loading') return;
     if (!session) {
@@ -79,27 +111,226 @@ export default function StoryReviewPage() {
     }
   }, [session, status]);
 
-  // Fetch submission details
-  useEffect(() => {
-    const fetchSubmission = async () => {
-      try {
-        const response = await fetch(`/api/text-submissions/${params.id}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch submission');
-        }
-        const data = await response.json();
-        setSubmission(data.submission);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
+  const fetchSubmission = async () => {
+    try {
+      const response = await fetch(`/api/text-submissions/${params.id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch submission');
       }
-    };
+      const data = await response.json();
+      setSubmission(data.submission);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const fetchComments = useCallback(async () => {
+    if (!params.id) return;
+
+    setLoadingComments(true);
+    try {
+      const response = await fetch(`/api/text-submissions/${params.id}/comments`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments');
+      }
+      const data = await response.json();
+      setComments(data.comments || []);
+    } catch (err) {
+      console.error('Error fetching comments:', err);
+      toast.error('Failed to load comments');
+    } finally {
+      setLoadingComments(false);
+    }
+  }, [params.id]);
+
+  useEffect(() => {
     if (session?.user?.role === 'STORY_MANAGER' && params.id) {
       fetchSubmission();
+      fetchComments();
     }
-  }, [session, params.id]);
+  }, [session, params.id, fetchComments]);
+
+  const handleAddComment = async (highlightedText: string, startOffset: number, endOffset: number) => {
+    if (!submission || !session?.user?.id) return;
+
+    try {
+      const response = await fetch(`/api/text-submissions/${submission.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: 'New comment',
+          highlightedText,
+          startOffset,
+          endOffset
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create comment');
+      }
+
+      await fetchComments();
+      toast.success('Comment added successfully!');
+    } catch (err) {
+      console.error('Error creating comment:', err);
+      toast.error('Failed to add comment');
+    }
+  };
+
+  const handleCommentClick = (comment: Comment) => {
+    setSelectedComment(comment);
+
+    const virtualAnchor = document.createElement('div');
+    virtualAnchor.style.position = 'fixed';
+    virtualAnchor.style.top = '50%';
+    virtualAnchor.style.right = '400px';
+    virtualAnchor.style.width = '1px';
+    virtualAnchor.style.height = '1px';
+    document.body.appendChild(virtualAnchor);
+
+    setCommentAnchor(virtualAnchor);
+  };
+
+  const handleCloseCommentPopup = () => {
+    setSelectedComment(null);
+    if (commentAnchor && document.body.contains(commentAnchor)) {
+      document.body.removeChild(commentAnchor);
+    }
+    setCommentAnchor(null);
+  };
+
+  const handleReply = async (parentId: string, content: string) => {
+    try {
+      const response = await fetch(`/api/comments/${parentId}/replies`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add reply');
+      }
+
+      await fetchComments();
+      toast.success('Reply added successfully!');
+    } catch (err) {
+      console.error('Error adding reply:', err);
+      toast.error('Failed to add reply');
+    }
+  };
+
+  const handleResolve = async (commentId: string, isResolved: boolean) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}/resolve`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isResolved }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to resolve comment');
+      }
+
+      await fetchComments();
+      toast.success(isResolved ? 'Comment resolved!' : 'Comment reopened!');
+    } catch (err) {
+      console.error('Error resolving comment:', err);
+      toast.error('Failed to resolve comment');
+    }
+  };
+
+  const handleEditComment = async (commentId: string, content: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to edit comment');
+      }
+
+      await fetchComments();
+      toast.success('Comment updated!');
+    } catch (err) {
+      console.error('Error editing comment:', err);
+      toast.error('Failed to edit comment');
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete comment');
+      }
+
+      await fetchComments();
+      handleCloseCommentPopup();
+      toast.success('Comment deleted!');
+    } catch (err) {
+      console.error('Error deleting comment:', err);
+      toast.error('Failed to delete comment');
+    }
+  };
+
+  const handleRevisionRequest = async (data: RevisionRequestData) => {
+    if (!submission) return;
+
+    setSubmitting(true);
+    try {
+      const response = await fetch(`/api/text-submissions/${submission.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'story_needs_revision',
+          feedback: data.notes,
+          comment: `Revision requested with ${data.priority} priority${data.dueDate ? `, due ${data.dueDate}` : ''}`,
+          metadata: {
+            priority: data.priority,
+            dueDate: data.dueDate,
+            revisionTypes: data.revisionTypes
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to request revision');
+      }
+
+      const result = await response.json();
+      setSubmission(result.submission);
+      setShowFeedbackForm(false);
+      setAction(null);
+
+      toast.success('Revision requested successfully!');
+
+      setTimeout(() => {
+        router.push('/dashboard/story-manager');
+      }, 2000);
+
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleAction = async (actionType: 'approve' | 'revision' | 'reject') => {
     if (!submission) return;
@@ -142,7 +373,6 @@ export default function StoryReviewPage() {
           : 'Story rejected successfully!'
       );
 
-      // Redirect back to dashboard after a short delay
       setTimeout(() => {
         router.push('/dashboard/story-manager');
       }, 2000);
@@ -170,6 +400,13 @@ export default function StoryReviewPage() {
   const canTakeAction = (status: string) => {
     return ['PENDING', 'STORY_REVIEW', 'NEEDS_REVISION'].includes(status);
   };
+
+  const filteredComments = comments.filter(comment => {
+    if (commentFilter === 'all') return true;
+    if (commentFilter === 'open') return comment.status === 'OPEN';
+    if (commentFilter === 'resolved') return comment.status === 'RESOLVED';
+    return true;
+  });
 
   if (status === 'loading' || loading) {
     return (
@@ -213,7 +450,7 @@ export default function StoryReviewPage() {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Story Review</h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  Review and provide feedback on story submission
+                  Review and provide inline feedback on story submission
                 </p>
               </div>
             </div>
@@ -261,9 +498,9 @@ export default function StoryReviewPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6">
             {/* Story Details */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="border-b border-gray-200 pb-4 mb-6">
@@ -291,7 +528,6 @@ export default function StoryReviewPage() {
                   </div>
                 </div>
 
-                {/* Categories and Tags */}
                 {(submission.categories.length > 0 || submission.tags.length > 0) && (
                   <div className="mt-4 space-y-2">
                     {submission.categories.length > 0 && (
@@ -319,7 +555,6 @@ export default function StoryReviewPage() {
                 )}
               </div>
 
-              {/* Summary */}
               {submission.summary && (
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Summary</h3>
@@ -327,17 +562,18 @@ export default function StoryReviewPage() {
                 </div>
               )}
 
-              {/* Story Content */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Story Content</h3>
-                <div
-                  className="prose max-w-none text-gray-700 bg-gray-50 p-6 rounded-lg"
-                  dangerouslySetInnerHTML={{ __html: submission.content }}
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Story Content (Click text to add comments)</h3>
+                <CommentableTextEditor
+                  content={submission.content}
+                  comments={comments}
+                  onAddComment={handleAddComment}
+                  onCommentClick={handleCommentClick}
+                  readOnly={false}
                 />
               </div>
             </div>
 
-            {/* Previous Feedback */}
             {submission.storyFeedback && (
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -353,6 +589,62 @@ export default function StoryReviewPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Comments Sidebar */}
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Comments</h3>
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-500" />
+                  <select
+                    value={commentFilter}
+                    onChange={(e) => setCommentFilter(e.target.value as 'all' | 'open' | 'resolved')}
+                    className="text-sm border border-gray-300 rounded px-2 py-1"
+                  >
+                    <option value="all">All ({comments.length})</option>
+                    <option value="open">Open ({comments.filter(c => c.status === 'OPEN').length})</option>
+                    <option value="resolved">Resolved ({comments.filter(c => c.status === 'RESOLVED').length})</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {loadingComments ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                  </div>
+                ) : filteredComments.length > 0 ? (
+                  filteredComments.map((comment) => (
+                    <button
+                      key={comment.id}
+                      onClick={() => handleCommentClick(comment)}
+                      className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          {comment.author.name || comment.author.email}
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded ${
+                          comment.status === 'RESOLVED'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {comment.status}
+                        </span>
+                      </div>
+                      {comment.highlightedText && (
+                        <p className="text-xs text-gray-500 mb-1 truncate">
+                          &quot;{comment.highlightedText}&quot;
+                        </p>
+                      )}
+                      <p className="text-sm text-gray-700 line-clamp-2">{comment.content}</p>
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">No comments yet. Select text to add comments.</p>
+                )}
+              </div>
+            </div>
+
             {/* Author Information */}
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Author Information</h3>
@@ -418,13 +710,26 @@ export default function StoryReviewPage() {
         </div>
       </div>
 
-      {/* Feedback Modal */}
-      {showFeedbackForm && action && (
+      {/* Revision Request Modal */}
+      {action === 'revision' && (
+        <RevisionRequestModal
+          isOpen={showFeedbackForm}
+          onClose={() => {
+            setShowFeedbackForm(false);
+            setAction(null);
+          }}
+          onSubmit={handleRevisionRequest}
+          isSubmitting={submitting}
+          submissionTitle={submission.title}
+        />
+      )}
+
+      {/* Approve/Reject Feedback Modal */}
+      {action !== 'revision' && showFeedbackForm && action && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               {action === 'approve' && 'Approve Story'}
-              {action === 'revision' && 'Request Revision'}
               {action === 'reject' && 'Reject Story'}
             </h3>
 
@@ -434,8 +739,6 @@ export default function StoryReviewPage() {
               placeholder={
                 action === 'approve'
                   ? 'Optional: Add any final comments...'
-                  : action === 'revision'
-                  ? 'Explain what needs to be revised...'
                   : 'Explain why this story is being rejected...'
               }
               rows={4}
@@ -461,16 +764,37 @@ export default function StoryReviewPage() {
                 className={`px-4 py-2 text-white rounded-lg ${
                   action === 'approve'
                     ? 'bg-green-600 hover:bg-green-700'
-                    : action === 'revision'
-                    ? 'bg-orange-600 hover:bg-orange-700'
                     : 'bg-red-600 hover:bg-red-700'
                 } disabled:opacity-50`}
               >
-                {submitting ? 'Processing...' : `Confirm ${action === 'approve' ? 'Approval' : action === 'revision' ? 'Revision Request' : 'Rejection'}`}
+                {submitting ? 'Processing...' : `Confirm ${action === 'approve' ? 'Approval' : 'Rejection'}`}
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Comment Detail Popover */}
+      {selectedComment && session?.user && submission && (
+        <Popover
+          isOpen={true}
+          onClose={handleCloseCommentPopup}
+          anchorElement={commentAnchor}
+          placement="left"
+        >
+          <div className="p-4 max-w-md">
+            <CommentPopup
+              comment={selectedComment}
+              currentUserId={session.user.id}
+              currentUserRole={session.user.role}
+              submissionAuthorId={submission.author.id}
+              onReply={handleReply}
+              onResolve={handleResolve}
+              onEdit={handleEditComment}
+              onDelete={handleDeleteComment}
+            />
+          </div>
+        </Popover>
       )}
     </div>
   );

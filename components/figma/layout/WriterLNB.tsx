@@ -46,7 +46,7 @@ export default function WriterLNB() {
     <>
       {/* Desktop Sidebar Navigation */}
       <aside
-        className="w-60 bg-white border-r border-[#E5E5EA] fixed left-0 top-0 bottom-0 hidden lg:flex lg:flex-col overflow-y-auto z-10"
+        className="w-60 bg-white border-r border-figma-gray-border fixed left-0 top-0 bottom-0 hidden lg:flex lg:flex-col overflow-y-auto z-10"
         role="navigation"
         aria-label="Main navigation"
       >
@@ -58,11 +58,11 @@ export default function WriterLNB() {
           Skip to main content
         </a>
 
-        <div className="flex items-center gap-2 px-6 border-b border-[#E5E5EA] h-[60px]">
-          <div className="w-10 h-10 bg-[#141414] rounded-xl flex items-center justify-center">
+        <div className="flex items-center gap-2 px-6 border-b border-figma-gray-border h-[60px]">
+          <div className="w-10 h-10 bg-figma-black rounded-xl flex items-center justify-center">
             <span className="text-white text-sm font-semibold">1001</span>
           </div>
-          <span className="text-lg font-semibold text-[#141414]">Stories</span>
+          <span className="text-lg font-semibold text-figma-black">Stories</span>
         </div>
 
         <div className="flex flex-col gap-4 p-6">
@@ -75,14 +75,15 @@ export default function WriterLNB() {
                 key={item.id}
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex items-center gap-2 transition-colors ${
+                className={`flex items-center gap-2 py-2 transition-colors min-h-[44px] ${
                   active
-                    ? 'text-[#141414] font-medium text-lg'
-                    : 'text-[#6B7280] font-normal text-lg hover:text-[#141414]'
+                    ? 'text-figma-black font-medium text-lg'
+                    : 'text-figma-gray-inactive font-normal text-lg hover:text-figma-black'
                 }`}
               >
-                <Icon className="w-5 h-5 flex-shrink-0" />
+                <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 <span>{item.label}</span>
+                {active && <span className="sr-only">(current page)</span>}
               </Link>
             );
           })}
@@ -91,7 +92,7 @@ export default function WriterLNB() {
 
       {/* Mobile Bottom Navigation */}
       <nav
-        className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E5EA] lg:hidden z-40 safe-area-inset-bottom"
+        className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-figma-gray-border z-50 pb-safe"
         role="navigation"
         aria-label="Mobile navigation"
       >
@@ -105,17 +106,15 @@ export default function WriterLNB() {
                 key={item.id}
                 href={item.href}
                 aria-current={active ? 'page' : undefined}
-                aria-label={item.label}
-                className={`flex flex-col items-center justify-center gap-1 min-w-[64px] min-h-[56px] py-2 px-3 transition-all ${
+                className={`flex flex-col items-center justify-center gap-1 py-2 px-3 transition-colors min-h-[56px] min-w-[64px] ${
                   active
-                    ? 'text-[#141414] bg-[#F9FAFB]'
-                    : 'text-[#6B7280] hover:text-[#141414] hover:bg-[#F9FAFB]'
+                    ? 'text-figma-black'
+                    : 'text-figma-gray-inactive hover:text-figma-black'
                 }`}
               >
-                <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                <span className={`text-xs ${active ? 'font-medium' : 'font-normal'}`}>
-                  {item.label}
-                </span>
+                <Icon className="w-6 h-6" aria-hidden="true" />
+                <span className="text-xs font-medium">{item.label}</span>
+                {active && <span className="sr-only">(current page)</span>}
               </Link>
             );
           })}

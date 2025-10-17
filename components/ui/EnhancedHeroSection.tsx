@@ -121,11 +121,16 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
               {currentHero?.featured}
             </motion.div>
 
-            {/* Main Headline */}
+            {/* Main Headline - Figma Typography Specs */}
             <AnimatePresence mode="wait">
               <motion.h1
                 key={currentSlide}
-                className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight"
+                className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-900"
+                style={{
+                  fontSize: 'clamp(24px, 5vw, 48px)',
+                  fontWeight: 700,
+                  lineHeight: 1.2
+                }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
@@ -135,11 +140,16 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
               </motion.h1>
             </AnimatePresence>
 
-            {/* Subtitle */}
+            {/* Subtitle - Figma Typography Specs */}
             <AnimatePresence mode="wait">
               <motion.p
                 key={`subtitle-${currentSlide}`}
-                className="text-xl text-gray-600 leading-relaxed max-w-lg"
+                className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-lg"
+                style={{
+                  fontSize: 'clamp(16px, 3vw, 20px)',
+                  fontWeight: 400,
+                  lineHeight: 1.5
+                }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -167,32 +177,34 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
               <span className="text-sm text-gray-500">Trusted by educators worldwide</span>
             </motion.div>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons - Figma Specs */}
             <motion.div
               className="flex flex-col sm:flex-row gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
+              {/* Primary CTA */}
               <Link
                 href="/signup"
                 onClick={() => handleCTAClick('primary_cta')}
-                className="inline-flex items-center justify-center px-8 py-4 bg-soe-green-400 hover:bg-soe-green-500 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                className="inline-flex items-center justify-center px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                aria-label="Sign up to start your journey"
               >
                 Start Your Journey
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </Link>
 
-              <button
-                onClick={() => {
-                  setIsVideoPlaying(true);
-                  handleCTAClick('watch_demo');
-                }}
-                className="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-soe-green-400 text-soe-green-600 hover:bg-soe-green-50 font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 group"
+              {/* Secondary CTA */}
+              <Link
+                href="/library"
+                onClick={() => handleCTAClick('explore_library')}
+                className="inline-flex items-center justify-center px-8 py-3 border-2 border-primary-600 text-primary-600 hover:bg-primary-50 font-semibold rounded-lg transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                aria-label="Explore our library of stories"
               >
-                <Play className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
-                Watch Demo
-              </button>
+                Explore Library
+                <BookOpen className="ml-2 w-5 h-5 group-hover:scale-110 transition-transform" aria-hidden="true" />
+              </Link>
             </motion.div>
 
             {/* Achievement Stats */}

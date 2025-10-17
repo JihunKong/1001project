@@ -1,12 +1,12 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback } from 'react';
-import TextSubmissionForm from '@/components/TextSubmissionForm';
-import StoryDetailsPanel from '@/components/StoryDetailsPanel';
+import { TextSubmissionForm, StoryDetailsPanel, AIReviewCard } from '@/components/story-publication/writer';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 function SubmitTextPage() {
   const searchParams = useSearchParams();
@@ -53,7 +53,11 @@ function SubmitTextPage() {
   const isEditing = Boolean(editId);
 
   return (
-    <div id="main-content" className="mx-auto w-full max-w-5xl px-4 py-8 pb-20 lg:pb-8 sm:px-6 lg:px-10 lg:py-12">
+    <>
+      <WriterLNB />
+
+      <div className="min-h-screen lg:ml-60 pb-20 lg:pb-4">
+        <div id="main-content" className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-[#8E8E93]">
           <Link href="/dashboard" className="hover:text-[#141414] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soe-green-300">
@@ -97,18 +101,34 @@ function SubmitTextPage() {
           </ErrorBoundary>
         </section>
         <aside className="flex flex-col gap-6 lg:pl-4">
-          <StoryDetailsPanel
-            title={formData.title}
-            summary={formData.summary}
-            status={formData.status}
-            submittedAt={formData.submittedAt}
-            ageRange={formData.ageRange}
-            wordCount={formData.wordCount}
-            className="lg:sticky lg:top-24 lg:max-w-xs"
-          />
+          <div className="lg:sticky lg:top-24 space-y-6">
+            <StoryDetailsPanel
+              title={formData.title}
+              summary={formData.summary}
+              status={formData.status}
+              submittedAt={formData.submittedAt}
+              ageRange={formData.ageRange}
+              wordCount={formData.wordCount}
+              className="lg:max-w-xs"
+            />
+
+            {isEditing && editId && (
+              <AIReviewCard submissionId={editId} />
+            )}
+
+            {!isEditing && (
+              <div className="bg-[#EEF2FF] border border-[#E0E7FF] rounded-lg p-4">
+                <p className="text-sm text-[#5951E7] text-center">
+                  💡 Save as draft first to enable AI review
+                </p>
+              </div>
+            )}
+          </div>
         </aside>
       </div>
-    </div>
+        </div>
+      </div>
+    </>
   );
 }
 

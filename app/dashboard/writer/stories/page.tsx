@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Edit, MoreHorizontal } from 'lucide-react';
 import DashboardLoadingState from '@/components/dashboard/DashboardLoadingState';
 import DashboardErrorState from '@/components/dashboard/DashboardErrorState';
+import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 interface TextSubmission {
   id: string;
@@ -81,7 +82,11 @@ export default function StoriesPage() {
   }
 
   return (
-    <div className="max-w-[1240px] mx-auto px-8 pt-6 pb-4">
+    <>
+      <WriterLNB />
+
+      <div className="min-h-screen lg:ml-60 pb-20 lg:pb-4">
+        <div className="max-w-[1240px] mx-auto px-8 pt-6 pb-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-[#141414]">Stories</h1>
 
@@ -227,6 +232,8 @@ export default function StoriesPage() {
           </div>
         </div>
       </div>
-    </div>
+        </div>
+      </div>
+    </>
   );
 }
