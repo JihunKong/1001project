@@ -3,11 +3,12 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import CharacterCount from '@tiptap/extension-character-count';
+import Underline from '@tiptap/extension-underline';
 import DOMPurify from 'dompurify';
 import {
   Bold,
   Italic,
-  Underline,
+  Underline as UnderlineIcon,
   List,
   ListOrdered,
   Quote,
@@ -48,6 +49,7 @@ export default function RichTextEditor({
           keepAttributes: false,
         },
       }),
+      Underline,
       CharacterCount.configure({
         limit: null,
       }),
@@ -59,7 +61,7 @@ export default function RichTextEditor({
         const html = editor.getHTML();
         // Sanitize HTML to prevent XSS attacks
         const sanitizedHtml = DOMPurify.sanitize(html, {
-          ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'strong', 'em', 'ul', 'ol', 'li', 'blockquote', 'hr'],
+          ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'blockquote', 'hr'],
           ALLOWED_ATTR: [],
           KEEP_CONTENT: true
         });
@@ -101,7 +103,7 @@ export default function RichTextEditor({
   if (readOnly) {
     // Sanitize content for read-only display
     const sanitizedContent = DOMPurify.sanitize(content, {
-      ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'strong', 'em', 'ul', 'ol', 'li', 'blockquote', 'hr'],
+      ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'blockquote', 'hr'],
       ALLOWED_ATTR: [],
       KEEP_CONTENT: true
     });
@@ -140,13 +142,13 @@ export default function RichTextEditor({
             <Italic className="h-4 w-4" />
           </button>
           <button
-            onClick={() => editor.chain().focus().toggleStrike().run()}
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
             className={`p-2 rounded hover:bg-gray-200 ${
-              editor.isActive('strike') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
+              editor.isActive('underline') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
             }`}
-            title="Strikethrough"
+            title="Underline"
           >
-            <Underline className="h-4 w-4" />
+            <UnderlineIcon className="h-4 w-4" />
           </button>
         </div>
 
