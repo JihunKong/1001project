@@ -124,7 +124,7 @@ export default function RichTextEditor({
   return (
     <div className={`border border-[#E5E5EA] rounded-lg overflow-hidden bg-white ${className}`}>
       {/* Toolbar */}
-      <div className="bg-[#F9FAFB] border-b border-[#E5E5EA] p-2 flex flex-wrap items-center gap-1 overflow-x-auto">
+      <div className="bg-[#F9FAFB] border-b border-[#E5E5EA] p-3 flex flex-wrap items-center gap-2">
         {/* Text Formatting */}
         <div className="flex items-center border-r border-[#E5E5EA] pr-2 mr-2 flex-shrink-0">
           <button
