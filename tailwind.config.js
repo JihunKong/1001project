@@ -95,7 +95,7 @@ module.exports = {
         // Figma Design System Colors
         figma: {
           black: '#141414',
-          'gray-inactive': '#8E8E93', // Figma design (exact match)
+          'gray-inactive': '#6B7280', // Updated for WCAG AA compliance (4.5:1 contrast ratio)
           'gray-border': '#E5E5EA',
           'gray-border-alt': '#E4E4E4',
           'gray-bg': '#73757C',

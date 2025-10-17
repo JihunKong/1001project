@@ -48,6 +48,14 @@ export default function WriterLNB() {
       role="navigation"
       aria-label="Main navigation"
     >
+      {/* Skip Navigation Link for Screen Readers */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-figma-black focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none focus:ring-4 focus:ring-soe-green-400"
+      >
+        Skip to main content
+      </a>
+
       <div className="flex items-center gap-2 px-6 border-b border-[#E5E5EA] h-[60px]">
         <div className="w-10 h-10 bg-[#141414] rounded-xl flex items-center justify-center">
           <span className="text-white text-sm font-semibold">1001</span>

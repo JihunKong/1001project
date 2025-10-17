@@ -130,7 +130,7 @@ export default function MyLibraryPage() {
   }
 
   return (
-    <div data-role="volunteer" className="max-w-[1240px] mx-auto px-8 pt-6 pb-4">
+    <div id="main-content" data-role="volunteer" className="max-w-[1240px] mx-auto px-8 pt-6 pb-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-[#141414]">Library</h1>
       </div>
