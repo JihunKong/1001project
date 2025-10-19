@@ -157,7 +157,7 @@ export default function StoriesPage() {
       <WriterLNB />
 
       <div className="min-h-screen lg:ml-60 pb-20 lg:pb-4">
-        <div id="main-content" data-role="writer" className="max-w-[1240px] mx-auto px-4 sm:px-8 pt-6 pb-20 lg:pb-4">
+        <div id="main-content" data-role="writer" className="max-w-[1240px] px-4 sm:px-8 pt-6 pb-20 lg:pb-4">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold text-figma-black">Stories</h1>
           </div>
