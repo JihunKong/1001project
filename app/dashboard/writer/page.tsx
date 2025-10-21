@@ -170,9 +170,7 @@ export default function WriterDashboard() {
 
   return (
     <>
-      <WriterLNB />
-
-      <div className="min-h-screen lg:ml-60 pb-20 lg:pb-4">
+      <div className="pb-20 lg:pb-4">
         {notification && (
           <div
             role="alert"
@@ -211,8 +209,7 @@ export default function WriterDashboard() {
           </div>
         )}
 
-        <div id="main-content" className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-[100px] py-10 pb-20 lg:pb-10">
-          <div className="max-w-[1240px] mx-auto">
+        <div id="main-content" className="max-w-[1240px] px-4 sm:px-8 lg:px-12 py-10 pb-20 lg:pb-10">
           <div className="flex items-center justify-between mb-12">
             <h1
               className="text-[#141414]"
@@ -303,7 +300,6 @@ export default function WriterDashboard() {
             />
           )}
           </div>
-        </div>
         </div>
       </div>
     </>
