@@ -698,7 +698,7 @@ export default function TextSubmissionForm({
               ) : (
                 <Sparkles className="h-4 w-4" stroke="currentColor" aria-hidden="true" />
               )}
-              AI 리뷰 요청
+              Request AI Review
             </button>
 
             <button
