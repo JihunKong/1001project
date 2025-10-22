@@ -5,12 +5,10 @@ import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 import { UserRole } from '@prisma/client';
-import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 export default function WriterNotificationsPage() {
   const { data: session, status } = useSession();
 
-  // Redirect if not authenticated or not a writer
   useEffect(() => {
     if (status === 'loading') return;
     if (!session) {
@@ -33,28 +31,19 @@ export default function WriterNotificationsPage() {
   }
 
   return (
-    <>
-      <WriterLNB />
-
-      <div
-        data-role="writer"
-        className="min-h-screen lg:ml-60 pb-20 lg:pb-4"
-      >
-        {/* Header */}
-        <div className="bg-white border-b border-figma-gray-border sticky top-0 z-10">
-          <div className="max-w-[1240px] mx-auto px-8 py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-figma-black">Notifications</h1>
-              <p className="text-sm text-figma-gray-inactive mt-1">Stay updated on your story progress</p>
-            </div>
+    <div data-role="writer" className="min-h-screen pb-20 lg:pb-4">
+      <div className="bg-white border-b border-figma-gray-border sticky top-0 z-10">
+        <div className="max-w-[1240px] mx-auto px-8 py-6">
+          <div>
+            <h1 className="text-3xl font-bold text-figma-black">Notifications</h1>
+            <p className="text-sm text-figma-gray-inactive mt-1">Stay updated on your story progress</p>
           </div>
         </div>
-
-        {/* Content */}
-        <div className="max-w-[1240px] mx-auto px-8 py-6">
-          <NotificationCenter />
-        </div>
       </div>
-    </>
+
+      <div className="max-w-[1240px] mx-auto px-8 py-6">
+        <NotificationCenter />
+      </div>
+    </div>
   );
 }

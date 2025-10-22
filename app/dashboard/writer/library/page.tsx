@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { Card, StatusBadge, Button, Input, Select } from '@/components/figma/ui';
 import Modal from '@/components/figma/ui/Modal';
-import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 interface Submission {
   id: string;

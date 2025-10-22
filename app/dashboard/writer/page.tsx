@@ -11,7 +11,6 @@ import SubmissionTabs, { SubmissionStatus } from '@/components/SubmissionTabs';
 import SubmissionList from '@/components/SubmissionList';
 import DashboardLoadingState from '@/components/dashboard/DashboardLoadingState';
 import DashboardErrorState from '@/components/dashboard/DashboardErrorState';
-import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 interface TextSubmission {
   id: string;

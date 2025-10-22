@@ -6,7 +6,6 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import StoryMetadataCard from '@/components/StoryMetadataCard';
 import WritingTipsCard from '@/components/WritingTipsCard';
 import { AIReviewCard } from '@/components/story-publication/writer';
-import WriterLNB from '@/components/figma/layout/WriterLNB';
 
 interface TextSubmission {
   id: string;
@@ -87,11 +86,9 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
 
   if (error || !submission) {
     return (
-      <>
-        <WriterLNB />
-        <div className="min-h-screen lg:ml-60 pb-20 lg:pb-4">
-          <div className="max-w-[1440px] mx-auto px-8 lg:px-[100px] py-10">
-            <div className="max-w-[1240px] mx-auto">
+      <div className="min-h-screen pb-20 lg:pb-4">
+        <div className="max-w-[1440px] mx-auto px-8 lg:px-[100px] py-10">
+          <div className="max-w-[1240px] mx-auto">
           <button
             onClick={() => router.push('/dashboard/writer')}
             className="flex items-center gap-2 text-[#8E8E93] hover:text-[#141414] transition-colors mb-8"
@@ -146,7 +143,6 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
       </div>
-    </>
     );
   }
 
@@ -155,11 +151,9 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
     : null;
 
   return (
-    <>
-      <WriterLNB />
-      <div className="min-h-screen lg:ml-60 pb-20 lg:pb-4">
-        <div className="max-w-[1440px] mx-auto px-8 lg:px-[100px] py-10">
-          <div className="max-w-[1240px] mx-auto">
+    <div className="min-h-screen pb-20 lg:pb-4">
+      <div className="max-w-[1440px] mx-auto px-8 lg:px-[100px] py-10">
+        <div className="max-w-[1240px] mx-auto">
         <button
           onClick={() => router.push('/dashboard/writer')}
           className="flex items-center gap-2 text-[#8E8E93] hover:text-[#141414] transition-colors mb-8"
@@ -222,7 +216,6 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
         </div>
         </div>
       </div>
-      </div>
-    </>
+    </div>
   );
 }
