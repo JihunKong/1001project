@@ -175,7 +175,7 @@ export default function WriterDashboard() {
             role="alert"
             aria-live="polite"
             aria-atomic="true"
-            className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 fixed top-16 left-0 right-0 z-30 shadow-lg"
+            className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 fixed top-20 left-0 right-0 z-30 shadow-lg"
           >
             <div className="flex items-center justify-between px-6">
               <div className="flex items-center">
@@ -197,7 +197,7 @@ export default function WriterDashboard() {
             role="alert"
             aria-live="assertive"
             aria-atomic="true"
-            className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 fixed top-16 left-0 right-0 z-30 shadow-lg"
+            className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 fixed top-20 left-0 right-0 z-30 shadow-lg"
           >
             <div className="flex items-center justify-between px-6">
               <p className="text-sm">

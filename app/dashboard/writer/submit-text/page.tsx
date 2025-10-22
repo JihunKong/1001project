@@ -98,7 +98,7 @@ function SubmitTextPage() {
           </ErrorBoundary>
         </section>
         <aside className="flex flex-col gap-6 lg:pl-4">
-          <div className="lg:sticky lg:top-24 space-y-6">
+          <div className="lg:sticky lg:top-20 space-y-6">
             <StoryDetailsPanel
               title={formData.title}
               summary={formData.summary}

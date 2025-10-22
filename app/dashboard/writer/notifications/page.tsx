@@ -32,16 +32,12 @@ export default function WriterNotificationsPage() {
 
   return (
     <div data-role="writer" className="min-h-screen pb-20 lg:pb-4">
-      <div className="bg-white border-b border-figma-gray-border sticky top-0 z-10">
-        <div className="max-w-[1240px] mx-auto px-8 py-6">
-          <div>
-            <h1 className="text-3xl font-bold text-figma-black">Notifications</h1>
-            <p className="text-sm text-figma-gray-inactive mt-1">Stay updated on your story progress</p>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-[1240px] mx-auto px-8 py-6">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-figma-black">Notifications</h1>
+          <p className="text-sm text-figma-gray-inactive mt-1">Stay updated on your story progress</p>
+        </div>
+
         <NotificationCenter />
       </div>
     </div>

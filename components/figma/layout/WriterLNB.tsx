@@ -58,7 +58,7 @@ export default function WriterLNB() {
           Skip to main content
         </a>
 
-        <div className="flex items-center gap-2 px-4 border-b border-figma-gray-border h-[60px]">
+        <div className="flex items-center gap-2 px-4 border-b border-figma-gray-border h-[80px]">
           <div className="w-10 h-10 bg-figma-black rounded-xl flex items-center justify-center">
             <span className="text-white text-sm font-semibold">1001</span>
           </div>

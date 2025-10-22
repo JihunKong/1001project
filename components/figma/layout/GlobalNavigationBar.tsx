@@ -66,7 +66,7 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
         ${className}
       `}
     >
-      <div className="flex items-center justify-between px-8 h-[60px]">
+      <div className="flex items-center justify-between px-8 h-[80px]">
         <div className="lg:hidden">
           <Link href="/dashboard/writer" className="flex items-center gap-2">
             <div className="w-10 h-10 bg-[#141414] rounded-xl flex items-center justify-center">
