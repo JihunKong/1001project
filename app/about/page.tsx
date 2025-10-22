@@ -1,229 +1,785 @@
-import { Metadata } from 'next';
-import { Heart, Globe, Users, BookOpen, Award } from 'lucide-react';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: '1001 Stories - About Us',
-  description: 'Learn about 1001 Stories, our mission to empower education through global storytelling, and the Seeds of Empowerment initiative.',
-};
+import Image from 'next/image';
+import { BookOpen } from 'lucide-react';
+import HomePageNavigation from '@/components/ui/HomePageNavigation';
+import FooterCTA from '@/components/landing/FooterCTA';
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <HomePageNavigation />
+
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-soe-green-50 to-soe-green-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6">
-              About <span className="text-soe-green-600">1001 Stories</span>
+      <section className="relative h-[752px] overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/about/hero-background-13dbdc.png"
+            alt="About 1001 Stories"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black" />
+        </div>
+
+        <div className="relative max-w-[1240px] mx-auto px-8 h-full flex items-end pb-32">
+          <div className="max-w-[873px] space-y-6">
+            <h1
+              className="text-[#FAFAFA] font-bold"
+              style={{
+                fontFamily: 'Poppins',
+                fontSize: '80px',
+                lineHeight: '1em'
+              }}
+            >
+              1001 Stories,
             </h1>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-              We are a global non-profit education platform dedicated to discovering, publishing,
-              and sharing stories from children in underserved communities worldwide.
+            <h2
+              className="text-[#FAFAFA] font-semibold"
+              style={{
+                fontFamily: 'Poppins',
+                fontSize: '24px',
+                lineHeight: '1.5em'
+              }}
+            >
+              Empowering Communities through Storytelling
+            </h2>
+            <p
+              className="text-[#FAFAFA]"
+              style={{
+                fontFamily: 'Inter',
+                fontSize: '16px',
+                fontWeight: 500,
+                lineHeight: '19px'
+              }}
+            >
+              A global citizenship platform for young learners, brining stories from under-resourced communities to the world
             </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Mission Section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Through the power of storytelling, we connect cultures, inspire learning,
-            and empower communities to share their unique voices with the world.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center p-8 bg-gradient-to-br from-soe-green-50 to-soe-green-100 rounded-2xl">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-soe-green-400 rounded-full mb-6">
-              <Globe className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Global Connection</h3>
-            <p className="text-gray-600">
-              Bridging cultures and communities through authentic storytelling from around the world.
+      {/* Who We Are Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-[1240px] mx-auto px-8">
+          <div className="mb-12 space-y-2">
+            <h2
+              className="text-[#2B2B2B] font-semibold"
+              style={{
+                fontFamily: 'Poppins',
+                fontSize: '36px',
+                lineHeight: '1.5em'
+              }}
+            >
+              Who We Are
+            </h2>
+            <p
+              className="text-[#2B2B2B] font-bold"
+              style={{
+                fontFamily: 'Poppins',
+                fontSize: '16px',
+                lineHeight: '1.5em'
+              }}
+            >
+              Seeds of Empowerment and the 1001 Stories Project
             </p>
           </div>
 
-          <div className="text-center p-8 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-6">
-              <BookOpen className="h-8 w-8 text-white" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            {/* Left: Illustration */}
+            <div className="relative h-[532px]">
+              <Image
+                src="/about/who-we-are-illustration.svg"
+                alt="Who We Are"
+                fill
+                className="object-contain"
+              />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Educational Excellence</h3>
-            <p className="text-gray-600">
-              Enhancing literacy and learning through culturally rich, engaging content for all ages.
-            </p>
-          </div>
 
-          <div className="text-center p-8 bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-500 rounded-full mb-6">
-              <Heart className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Community Empowerment</h3>
-            <p className="text-gray-600">
-              Supporting underserved communities by amplifying their voices and celebrating their heritage.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Seeds of Empowerment Section */}
-      <div className="bg-gray-50 py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                Seeds of Empowerment Initiative
-              </h2>
-              <p className="text-lg text-gray-600 mb-6">
-                1001 Stories is a proud initiative of Seeds of Empowerment,
-                a non-profit organization dedicated to creating educational opportunities
-                and resources for communities worldwide.
-              </p>
-              <p className="text-gray-600 mb-8">
-                All revenue generated through our platform is reinvested directly into
-                educational programs, technology access, and community development projects
-                that make a lasting impact.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="https://seedsofempowerment.org"
-                  target="_blank"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors"
+            {/* Right: Two Cards */}
+            <div className="space-y-6">
+              {/* Seeds of Empowerment Card */}
+              <div className="bg-white rounded-xl p-6 border border-gray-100">
+                <h3
+                  className="text-[#04A59D] font-semibold mb-3"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '24px',
+                    lineHeight: '1.5em'
+                  }}
                 >
-                  Visit Seeds of Empowerment
-                </Link>
+                  Seeds of Empowerment
+                </h3>
+                <p
+                  className="text-[#4C4C4D]"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    lineHeight: '2em'
+                  }}
+                >
+                  SOE is a non-profit organization dedicated to empowering underserved communities through education, storytelling, and technology. By supporting grassroots projects round the world, they help amplify local voices and foster sustainable development.
+                </p>
+              </div>
+
+              {/* 1001 Stories Project Card */}
+              <div className="bg-white rounded-xl p-6 border border-gray-100">
+                <h3
+                  className="text-[#04A59D] font-semibold mb-3"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '24px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  1001 Stories Project
+                </h3>
+                <p
+                  className="text-[#4C4C4D]"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    lineHeight: '2em'
+                  }}
+                >
+                  Our mobile storytelling program, 1001 Stories, brings meaningful learning to some of the hardest to reach populations around the world. We aim to facilitate the creation, development, and gathering of 1001 empowering stories from every participating local community.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-[1240px] mx-auto px-8">
+          <div className="mb-12 space-y-2">
+            <h2
+              className="text-[#2B2B2B] font-semibold"
+              style={{
+                fontFamily: 'Poppins',
+                fontSize: '36px',
+                lineHeight: '1.5em'
+              }}
+            >
+              Benefits
+            </h2>
+            <p
+              className="text-[#2B2B2B] font-bold"
+              style={{
+                fontFamily: 'Inter',
+                fontSize: '16px',
+                lineHeight: '19px'
+              }}
+            >
+              Why Join 1001 Stories?
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Benefit 01 */}
+            <div className="bg-white rounded-lg p-10 flex flex-col items-end">
+              <span
+                className="text-[#04A59D] font-bold text-right w-full"
+                style={{
+                  fontFamily: 'Quicksand',
+                  fontSize: '64px',
+                  lineHeight: '1em'
+                }}
+              >
+                01
+              </span>
+              <div className="mt-10 space-y-3">
+                <h3
+                  className="text-[#2B2B2B] font-semibold"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '24px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  Promote Global Citizenship and Literacy
+                </h3>
+                <p
+                  className="text-[#6F6F6F]"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    lineHeight: '2em'
+                  }}
+                >
+                  Through storytelling and cultural exchange, 1001 Stories fosters global citizenship education, helping children around the world develop reading and writing skills. By publishing and sharing their stories on a global stage, we amplify young voices and inspire cross-cultural understanding.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit 02 */}
+            <div className="bg-white rounded-lg p-10 flex flex-col items-end">
+              <span
+                className="text-[#04A59D] font-bold text-right w-full"
+                style={{
+                  fontFamily: 'Quicksand',
+                  fontSize: '64px',
+                  lineHeight: '1em'
+                }}
+              >
+                02
+              </span>
+              <div className="mt-10 space-y-3">
+                <h3
+                  className="text-[#2B2B2B] font-semibold"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '24px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  Empower Young Learners Everywhere
+                </h3>
+                <p
+                  className="text-[#6F6F6F]"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    lineHeight: '2em'
+                  }}
+                >
+                  We raise awareness about diverse experiences and support children&apos;s dreams by offering scholarships and creating accessible educational opportunities. Our self-sustaining platform is designed to empower all young learners, regardless of their backgrounds, to thrive and grow.
+                </p>
+              </div>
+            </div>
+
+            {/* Benefit 03 */}
+            <div className="bg-white rounded-lg p-10 flex flex-col items-end">
+              <span
+                className="text-[#04A59D] font-bold text-right w-full"
+                style={{
+                  fontFamily: 'Quicksand',
+                  fontSize: '64px',
+                  lineHeight: '1em'
+                }}
+              >
+                03
+              </span>
+              <div className="mt-10 space-y-3">
+                <h3
+                  className="text-[#2B2B2B] font-semibold"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '24px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  Integrate AI and Personalized Learning
+                </h3>
+                <p
+                  className="text-[#6F6F6F]"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    lineHeight: '2em'
+                  }}
+                >
+                  By combining storybooks with AI-powered tools, 1001 Stories offers personalized learning experiences tailored to each student&apos;s journey. Our platform nurtures creativity, builds practical AI literacy skills, and prepares young minds for an increasingly connected and digital future.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Features Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-[1240px] mx-auto px-8">
+          <div className="mb-12 space-y-2">
+            <h2
+              className="text-[#2B2B2B] font-semibold"
+              style={{
+                fontFamily: 'Poppins',
+                fontSize: '36px',
+                lineHeight: '1.5em'
+              }}
+            >
+              Our Features
+            </h2>
+            <p
+              className="text-[#2B2B2B] font-bold"
+              style={{
+                fontFamily: 'Inter',
+                fontSize: '16px',
+                lineHeight: '13px'
+              }}
+            >
+              More exciting features are on the way. Stay tuned!
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Feature 1: Browse Library */}
+            <div className="bg-white rounded-lg border border-[#F1F1F3] p-5 flex flex-col gap-14">
+              <div className="space-y-6">
+                <div className="relative h-[266px] w-full rounded-lg overflow-hidden">
+                  <Image
+                    src="/about/feature-library.png"
+                    alt="Browse Library"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <h3
+                    className="text-[#2B2B2B] font-bold"
+                    style={{
+                      fontFamily: 'Poppins',
+                      fontSize: '20px',
+                      lineHeight: '1.5em'
+                    }}
+                  >
+                    📖 Browse the 1001 Stories Library
+                  </h3>
+                  <p
+                    className="text-[#6F6F6F]"
+                    style={{
+                      fontFamily: 'Poppins',
+                      fontSize: '16px',
+                      fontWeight: 400,
+                      lineHeight: '2em'
+                    }}
+                  >
+                    Discover stories written by young authors around the world. Explore different cultures, perspectives, and dreams through storytelling.
+                  </p>
+                </div>
+              </div>
+              <button
+                className="w-full py-3 px-6 bg-[#F7F7F8] border border-[#F1F1F3] rounded-md text-[#262626] font-bold text-center"
+                style={{
+                  fontFamily: 'Be Vietnam Pro',
+                  fontSize: '14px',
+                  lineHeight: '1.5em'
+                }}
+              >
+                Learn More
+              </button>
+            </div>
+
+            {/* Feature 2: Write Your Story */}
+            <div className="bg-white rounded-lg border border-[#F1F1F3] p-5 flex flex-col gap-14">
+              <div className="space-y-6">
+                <div className="relative h-[266px] w-full rounded-lg overflow-hidden">
+                  <Image
+                    src="/about/feature-write.png"
+                    alt="Write Your Story"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <h3
+                    className="text-[#2B2B2B] font-bold"
+                    style={{
+                      fontFamily: 'Poppins',
+                      fontSize: '20px',
+                      lineHeight: '1.5em'
+                    }}
+                  >
+                    📝 Write Your Story
+                  </h3>
+                  <p
+                    className="text-[#6F6F6F]"
+                    style={{
+                      fontFamily: 'Poppins',
+                      fontSize: '16px',
+                      fontWeight: 400,
+                      lineHeight: '2em'
+                    }}
+                  >
+                    Share your voice with the world! Write and submit your own story, inspire others, and become part of our global library.
+                  </p>
+                </div>
+              </div>
+              <button
+                className="w-full py-3 px-6 bg-[#F7F7F8] border border-[#F1F1F3] rounded-md text-[#262626] font-bold text-center"
+                style={{
+                  fontFamily: 'Be Vietnam Pro',
+                  fontSize: '14px',
+                  lineHeight: '1.5em'
+                }}
+              >
+                Learn More
+              </button>
+            </div>
+
+            {/* Feature 3: Join Book Club (Coming Soon) */}
+            <div className="bg-white rounded-lg border border-[#F1F1F3] p-5 flex flex-col gap-14">
+              <div className="space-y-6">
+                <div className="relative h-[266px] w-full rounded-lg overflow-hidden">
+                  <Image
+                    src="/about/feature-bookclub.png"
+                    alt="Join a Book Club"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <h3
+                    className="text-[#262626] font-semibold"
+                    style={{
+                      fontFamily: 'Be Vietnam Pro',
+                      fontSize: '20px',
+                      lineHeight: '1.5em'
+                    }}
+                  >
+                    📚 Join a Book Club (Coming Soon)
+                  </h3>
+                  <p
+                    className="text-[#4C4C4D]"
+                    style={{
+                      fontFamily: 'Poppins',
+                      fontSize: '16px',
+                      fontWeight: 400,
+                      lineHeight: '2em'
+                    }}
+                  >
+                    Find and join book clubs that match your interests. Read together, discuss ideas, and connect with young storytellers across the globe.
+                  </p>
+                </div>
+              </div>
+              <button
+                className="w-full py-3 px-6 bg-[#F7F7F8] border border-[#F1F1F3] rounded-md text-[#262626] font-bold text-center"
+                style={{
+                  fontFamily: 'Be Vietnam Pro',
+                  fontSize: '14px',
+                  lineHeight: '1.5em'
+                }}
+              >
+                Learn More
+              </button>
+            </div>
+
+            {/* Feature 4: Set Goals (Coming Soon) */}
+            <div className="bg-white rounded-lg border border-[#F1F1F3] p-5 flex flex-col gap-6">
+              <div className="space-y-6">
+                <div className="relative h-[266px] w-full rounded-lg overflow-hidden">
+                  <Image
+                    src="/about/feature-goals-26013c.png"
+                    alt="Set and Track Your Goals"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <h3
+                    className="text-[#262626] font-semibold"
+                    style={{
+                      fontFamily: 'Be Vietnam Pro',
+                      fontSize: '20px',
+                      lineHeight: '1.5em'
+                    }}
+                  >
+                    🎯 Set and Track Your Goals (Coming Soon)
+                  </h3>
+                  <p
+                    className="text-[#4C4C4D]"
+                    style={{
+                      fontFamily: 'Poppins',
+                      fontSize: '16px',
+                      fontWeight: 400,
+                      lineHeight: '2em'
+                    }}
+                  >
+                    Start with a quick assessment to personalize your journey. Set learning goals based on your interests and track your progress as you grow.
+                  </p>
+                </div>
+              </div>
+              <button
+                className="w-full py-3 px-6 bg-[#F7F7F8] border border-[#F1F1F3] rounded-md text-[#262626] font-bold text-center"
+                style={{
+                  fontFamily: 'Be Vietnam Pro',
+                  fontSize: '14px',
+                  lineHeight: '1.5em'
+                }}
+              >
+                Learn More
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Testimonials Section */}
+      <section className="py-24 bg-white">
+        <div className="max-w-[1240px] mx-auto px-8">
+          <h2
+            className="text-[#262626] font-semibold mb-12"
+            style={{
+              fontFamily: 'Be Vietnam Pro',
+              fontSize: '38px',
+              lineHeight: '1.5em'
+            }}
+          >
+            Our Testimonials
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Testimonial 1: Sofia */}
+            <div className="bg-white rounded-lg border border-[#F1F1F3] overflow-hidden">
+              <div className="p-10">
+                <p
+                  className="text-[#4C4C4D]"
+                  style={{
+                    fontFamily: 'Be Vietnam Pro',
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  Before 1001 Stories, I was too shy to share my writing. Now, my story is published for everyone to read! I feel like my voice matters, and I want to write even more
+                </p>
+              </div>
+              <div className="border-t border-[#F1F1F3]"></div>
+              <div className="p-6 bg-[#FCFCFD] flex items-center gap-3">
+                <div className="relative w-[50px] h-[50px] rounded-md overflow-hidden">
+                  <Image
+                    src="/about/testimonial-sofia.png"
+                    alt="Sofia"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <span
+                  className="text-[#333333] font-semibold"
+                  style={{
+                    fontFamily: 'Be Vietnam Pro',
+                    fontSize: '16px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  Sofia, Student (10)
+                </span>
+              </div>
+            </div>
+
+            {/* Testimonial 2: Ayaan */}
+            <div className="bg-white rounded-lg border border-[#F1F1F3] overflow-hidden">
+              <div className="p-10">
+                <p
+                  className="text-[#4C4C4D]"
+                  style={{
+                    fontFamily: 'Be Vietnam Pro',
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  I love reading stories from kids in other countries. It feels like I&apos;m making new friends from around the world. 1001 Stories makes learning so much fun!
+                </p>
+              </div>
+              <div className="border-t border-[#F1F1F3]"></div>
+              <div className="p-6 bg-[#FCFCFD] flex items-center gap-3">
+                <div className="relative w-[50px] h-[50px] rounded-md overflow-hidden">
+                  <Image
+                    src="/about/testimonial-ayaan.png"
+                    alt="Ayaan"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <span
+                  className="text-[#333333] font-semibold"
+                  style={{
+                    fontFamily: 'Be Vietnam Pro',
+                    fontSize: '16px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  Ayaan, Student (11)
+                </span>
+              </div>
+            </div>
+
+            {/* Testimonial 3: Emily's Mom */}
+            <div className="bg-white rounded-lg border border-[#F1F1F3] overflow-hidden">
+              <div className="p-10">
+                <p
+                  className="text-[#4C4C4D]"
+                  style={{
+                    fontFamily: 'Be Vietnam Pro',
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  1001 Stories gave my daughter the confidence to express herself creatively. Watching her set goals, complete her first story, and proudly share it was an unforgettable moment for our family
+                </p>
+              </div>
+              <div className="border-t border-[#F1F1F3]"></div>
+              <div className="p-6 bg-[#FCFCFD] flex items-center gap-3">
+                <div className="relative w-[50px] h-[50px] rounded-md overflow-hidden">
+                  <Image
+                    src="/about/testimonial-emily.png"
+                    alt="Emily's Mom"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <span
+                  className="text-[#333333] font-semibold"
+                  style={{
+                    fontFamily: 'Be Vietnam Pro',
+                    fontSize: '16px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  Emily&apos;s Mom
+                </span>
+              </div>
+            </div>
+
+            {/* Testimonial 4: David's Dad */}
+            <div className="bg-white rounded-lg border border-[#F1F1F3] overflow-hidden">
+              <div className="p-10">
+                <p
+                  className="text-[#4C4C4D]"
+                  style={{
+                    fontFamily: 'Be Vietnam Pro',
+                    fontSize: '16px',
+                    fontWeight: 700,
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  As a parent, I wanted something educational but also inspiring. 1001 Stories struck the perfect balance—helping my son develop literacy skills while encouraging him to think globally and dream big.
+                </p>
+              </div>
+              <div className="border-t border-[#F1F1F3]"></div>
+              <div className="p-6 bg-[#FCFCFD] flex items-center gap-3">
+                <div className="relative w-[50px] h-[50px] rounded-md overflow-hidden">
+                  <Image
+                    src="/about/testimonial-david.png"
+                    alt="David's Dad"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <span
+                  className="text-[#333333] font-semibold"
+                  style={{
+                    fontFamily: 'Be Vietnam Pro',
+                    fontSize: '16px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  David&apos;s Dad
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer CTA */}
+      <FooterCTA />
+
+      {/* Footer */}
+      <footer className="bg-[#8FD0AA] text-white py-12">
+        <div className="max-w-[1240px] mx-auto px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
+            {/* Logo and Tagline */}
+            <div className="space-y-6">
+              <div className="flex items-center">
+                <BookOpen className="h-7 w-7 text-[#608A3A]" />
+                <span
+                  className="ml-2 text-[#608A3A] font-semibold"
+                  style={{ fontFamily: 'Poppins', fontSize: '24px', lineHeight: '36px' }}
+                >
+                  1001 Stories
+                </span>
+              </div>
+
+              <p
+                className="text-[#FAFAFA]"
+                style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 500, lineHeight: '38px' }}
+              >
+                Empowering young voices and inspiring the world through stories.
+              </p>
+
+              {/* Social Icons */}
+              <div className="relative w-[136px] h-[32px]">
+                <Image
+                  src="/landing/social-icons.svg"
+                  alt="Social media icons"
+                  width={136}
+                  height={32}
+                  className="object-contain"
+                />
+              </div>
+            </div>
+
+            {/* Spacer */}
+            <div></div>
+
+            {/* Contact */}
+            <div className="space-y-4">
+              <h3
+                className="text-[#FAFAFA] font-semibold"
+                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+              >
+                Contact
+              </h3>
+              <div className="space-y-2">
+                <a
+                  href="mailto:info@1001stories.org"
+                  className="block text-[#FAFAFA] hover:underline"
+                  style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 500, lineHeight: '19px' }}
+                >
+                  info@1001stories.org
+                </a>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-emerald-600 text-emerald-600 font-medium rounded-lg hover:bg-emerald-50 transition-colors"
+                  className="block text-[#FAFAFA] hover:underline"
+                  style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 400, lineHeight: '24px' }}
                 >
-                  Learn More
+                  Contact Form
                 </Link>
               </div>
             </div>
-            <div className="bg-white rounded-2xl p-8 shadow-lg">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Our Impact</h3>
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-soe-green-100 rounded-lg">
-                    <Users className="h-5 w-5 text-soe-green-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">10,000+</div>
-                    <div className="text-sm text-gray-600">Students Served</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-emerald-100 rounded-lg">
-                    <BookOpen className="h-5 w-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">500+</div>
-                    <div className="text-sm text-gray-600">Stories Published</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Globe className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">25+</div>
-                    <div className="text-sm text-gray-600">Countries Represented</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <Award className="h-5 w-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">95%</div>
-                    <div className="text-sm text-gray-600">Satisfaction Rate</div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
-      </div>
 
-      {/* How It Works */}
-      <div className="py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">How It Works</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Our platform creates a seamless ecosystem for storytelling, learning, and cultural exchange.
+          {/* Divider */}
+          <div className="border-t border-[#FAFAFA] mb-6"></div>
+
+          {/* Bottom Bar */}
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <p
+              className="text-[#FAFAFA] font-semibold"
+              style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+            >
+              ©2024 1001 Stories. All rights reserved
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-soe-green-400 text-white rounded-full mb-4 text-xl font-bold">
-                1
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2">Story Collection</h3>
-              <p className="text-sm text-gray-600">
-                Children and writers submit authentic stories from their communities.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 text-white rounded-full mb-4 text-xl font-bold">
-                2
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2">Review & Enhancement</h3>
-              <p className="text-sm text-gray-600">
-                Our team reviews, edits, and enhances stories while preserving their authenticity.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-500 text-white rounded-full mb-4 text-xl font-bold">
-                3
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2">Digital Publishing</h3>
-              <p className="text-sm text-gray-600">
-                Stories are published with AI-generated visuals and educational resources.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 text-white rounded-full mb-4 text-xl font-bold">
-                4
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2">Global Access</h3>
-              <p className="text-sm text-gray-600">
-                Teachers and students worldwide access stories through our platform.
-              </p>
+            <div className="flex space-x-6">
+              <Link
+                href="/privacy"
+                className="text-[#FAFAFA] hover:underline font-semibold"
+                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                href="/terms"
+                className="text-[#FAFAFA] hover:underline font-semibold"
+                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+              >
+                Terms of Service
+              </Link>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Call to Action */}
-      <div className="bg-gradient-to-r from-soe-green-400 to-soe-green-500 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-6">
-            Join Our Global Community
-          </h2>
-          <p className="text-xl text-soe-green-100 mb-8">
-            Whether you&apos;re an educator, student, writer, or storyteller,
-            there&apos;s a place for you in the 1001 Stories community.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center px-8 py-3 bg-white text-soe-green-600 font-medium rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Get Started Today
-            </Link>
-            <Link
-              href="/library"
-              className="inline-flex items-center justify-center px-8 py-3 border border-white text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors"
-            >
-              Explore Stories
-            </Link>
-          </div>
-        </div>
-      </div>
+      </footer>
     </div>
   );
 }
