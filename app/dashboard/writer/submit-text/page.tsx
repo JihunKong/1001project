@@ -1,7 +1,8 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback } from 'react';
-import { TextSubmissionForm, StoryDetailsPanel, AIReviewCard } from '@/components/story-publication/writer';
+import { TextSubmissionForm, SubmissionDetailsCard, AIReviewCard } from '@/components/story-publication/writer';
+import WritingTipsCard from '@/components/WritingTipsCard';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -98,22 +99,18 @@ function SubmitTextPage() {
           </ErrorBoundary>
         </section>
         <aside className="flex flex-col gap-6 lg:pl-4">
-          <div className="lg:sticky lg:top-20 space-y-6">
-            <StoryDetailsPanel
-              title={formData.title}
-              summary={formData.summary}
+          <div className="lg:sticky lg:top-20 space-y-4">
+            <SubmissionDetailsCard
               status={formData.status}
               submittedAt={formData.submittedAt}
-              ageRange={formData.ageRange}
               wordCount={formData.wordCount}
-              className="lg:max-w-xs"
             />
 
-            {isEditing && editId && (
-              <AIReviewCard submissionId={editId} />
-            )}
+            <WritingTipsCard />
 
-            {!isEditing && (
+            {isEditing && editId ? (
+              <AIReviewCard submissionId={editId} />
+            ) : (
               <div className="bg-[#EEF2FF] border border-[#E0E7FF] rounded-lg p-4">
                 <p className="text-sm text-[#5951E7] text-center">
                   💡 Save as draft first to enable AI review

@@ -1,7 +1,11 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { BookOpen } from 'lucide-react';
 import HomePageNavigation from '@/components/ui/HomePageNavigation';
-import HomePage from '@/components/discovery/HomePage';
+import EnhancedHeroSection from '@/components/ui/EnhancedHeroSection';
+import FeatureGrid from '@/components/landing/FeatureGrid';
+import ProgramSections from '@/components/landing/ProgramSections';
+import FooterCTA from '@/components/landing/FooterCTA';
 
 export default function Home() {
   return (
@@ -9,65 +13,110 @@ export default function Home() {
       {/* Navigation */}
       <HomePageNavigation />
 
-      {/* Enhanced Homepage with Figma Design */}
-      <HomePage
-        personalizationEnabled={false}
-        abTestConfig={{
-          testName: 'homepage_v2',
-          variants: [
-            { name: 'default', weight: 0.5, config: {} },
-            { name: 'hero_minimal', weight: 0.25, config: {} },
-            { name: 'compact_grid', weight: 0.25, config: {} }
-          ],
-          targetMetric: 'signup_rate',
-          startDate: new Date(),
-          active: true
-        }}
-      />
+      {/* Hero Section */}
+      <EnhancedHeroSection />
+
+      {/* Feature Cards */}
+      <FeatureGrid />
+
+      {/* Program Sections */}
+      <ProgramSections />
+
+      {/* Footer CTA */}
+      <FooterCTA />
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-            <div className="sm:col-span-2 md:col-span-1">
-              <div className="flex items-center mb-4">
-                <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-primary-400" />
-                <span className="ml-2 text-lg sm:text-xl font-bold">1001 Stories</span>
+      <footer className="bg-[#8FD0AA] text-white py-12">
+        <div className="max-w-[1240px] mx-auto px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
+            {/* Logo and Tagline */}
+            <div className="space-y-6">
+              <div className="flex items-center">
+                <BookOpen className="h-7 w-7 text-[#608A3A]" />
+                <span
+                  className="ml-2 text-[#608A3A] font-semibold"
+                  style={{ fontFamily: 'Poppins', fontSize: '24px', lineHeight: '36px' }}
+                >
+                  1001 Stories
+                </span>
               </div>
-              <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
-                Empowering education through global storytelling and cultural exchange.
+
+              <p
+                className="text-[#FAFAFA]"
+                style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 500, lineHeight: '38px' }}
+              >
+                Empowering young voices and inspiring the world through stories.
               </p>
+
+              {/* Social Icons */}
+              <div className="relative w-[136px] h-[32px]">
+                <Image
+                  src="/landing/social-icons.svg"
+                  alt="Social media icons"
+                  width={136}
+                  height={32}
+                  className="object-contain"
+                />
+              </div>
             </div>
 
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Platform</h3>
-              <ul className="space-y-2 text-gray-400 text-sm sm:text-base">
-                <li><Link href="/about" className="hover:text-white focus:text-white focus:outline-none transition-colors duration-200">About</Link></li>
-                <li><Link href="/contact" className="hover:text-white focus:text-white focus:outline-none transition-colors duration-200">Contact</Link></li>
-              </ul>
-            </div>
+            {/* Spacer */}
+            <div></div>
 
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Community</h3>
-              <ul className="space-y-2 text-gray-400 text-sm sm:text-base">
-                <li><Link href="/signup?role=learner" className="hover:text-white focus:text-white focus:outline-none transition-colors duration-200">For Students</Link></li>
-                <li><Link href="/signup?role=teacher" className="hover:text-white focus:text-white focus:outline-none transition-colors duration-200">For Teachers</Link></li>
-                <li><Link href="/signup?role=writer" className="hover:text-white focus:text-white focus:outline-none transition-colors duration-200">For Writers</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-400 text-sm sm:text-base">
-                <li><Link href="/help" className="hover:text-white focus:text-white focus:outline-none transition-colors duration-200">Help Center</Link></li>
-                <li><Link href="/privacy" className="hover:text-white focus:text-white focus:outline-none transition-colors duration-200">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-white focus:text-white focus:outline-none transition-colors duration-200">Terms of Service</Link></li>
-              </ul>
+            {/* Contact */}
+            <div className="space-y-4">
+              <h3
+                className="text-[#FAFAFA] font-semibold"
+                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+              >
+                Contact
+              </h3>
+              <div className="space-y-2">
+                <a
+                  href="mailto:info@1001stories.org"
+                  className="block text-[#FAFAFA] hover:underline"
+                  style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 500, lineHeight: '19px' }}
+                >
+                  info@1001stories.org
+                </a>
+                <Link
+                  href="/contact"
+                  className="block text-[#FAFAFA] hover:underline"
+                  style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 400, lineHeight: '24px' }}
+                >
+                  Contact Form
+                </Link>
+              </div>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-6 sm:mt-8 pt-6 sm:pt-8 text-center text-gray-400 text-sm sm:text-base">
-            <p>&copy; 2024 1001 Stories. All rights reserved. A Seeds of Empowerment initiative.</p>
+          {/* Divider */}
+          <div className="border-t border-[#FAFAFA] mb-6"></div>
+
+          {/* Bottom Bar */}
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <p
+              className="text-[#FAFAFA] font-semibold"
+              style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+            >
+              ©2024 1001 Stories. All rights reserved
+            </p>
+            <div className="flex space-x-6">
+              <Link
+                href="/privacy"
+                className="text-[#FAFAFA] hover:underline font-semibold"
+                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                href="/terms"
+                className="text-[#FAFAFA] hover:underline font-semibold"
+                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+              >
+                Terms of Service
+              </Link>
+            </div>
           </div>
         </div>
       </footer>

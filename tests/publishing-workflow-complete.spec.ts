@@ -13,30 +13,66 @@ const accounts = {
 
 // Helper function to login via password
 async function loginWithPassword(page: any, email: string, password: string = 'test1234') {
-  await page.goto(`${BASE_URL}/login`);
-  await page.waitForLoadState('networkidle');
+  console.log(`🔐 Attempting login for ${email}`);
 
-  // Click on Password tab
-  const passwordTab = page.locator('button').filter({ hasText: 'Password' });
-  await passwordTab.click();
+  // Go directly to login page
+  await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded' });
+
+  // Wait a bit for any client-side routing to settle
   await page.waitForTimeout(1000);
 
-  // Fill email and password
-  await page.fill('#email', email);
-  await page.fill('#password', password);
+  // Find and click Password tab with retry logic
+  let passwordTabClicked = false;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const passwordTab = page.locator('button', { hasText: 'Password' }).first();
+      await passwordTab.waitFor({ state: 'visible', timeout: 5000 });
+      await passwordTab.click({ force: true });
+      passwordTabClicked = true;
+      console.log(`✓ Password tab clicked (attempt ${attempt + 1})`);
+      break;
+    } catch (e) {
+      console.log(`✗ Password tab click failed (attempt ${attempt + 1})`);
+      if (attempt < 2) {
+        await page.waitForTimeout(1000);
+      }
+    }
+  }
 
-  // Take screenshot before submit
-  await page.screenshot({
-    path: `screenshots/publishing-workflow/debug-${email.split('@')[0]}-before-submit.png`
-  });
+  if (!passwordTabClicked) {
+    throw new Error('Failed to click Password tab after 3 attempts');
+  }
 
-  // Click sign in
-  await page.click('button[type="submit"]');
+  await page.waitForTimeout(1000);
+
+  // Wait for and fill email field
+  const emailInput = page.locator('#email');
+  await emailInput.waitFor({ state: 'visible', timeout: 10000 });
+  await emailInput.fill(email);
+  console.log(`✓ Email filled: ${email}`);
+
+  // Wait for and fill password field
+  const passwordInput = page.locator('#password');
+  await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
+  await passwordInput.fill(password);
+  console.log(`✓ Password filled`);
+
+  await page.waitForTimeout(500);
+
+  // Click sign in button
+  const submitButton = page.locator('button[type="submit"]');
+  await submitButton.click();
+  console.log(`✓ Submit button clicked`);
 
   // Wait for redirect to dashboard
-  await page.waitForURL('**/dashboard/**', { timeout: 15000 });
+  try {
+    await page.waitForURL('**/dashboard/**', { timeout: 30000 });
+    console.log(`✅ Logged in successfully as ${email}`);
+  } catch (e) {
+    console.log(`✗ Dashboard redirect timeout. Current URL: ${page.url()}`);
+    throw e;
+  }
 
-  console.log(`✅ Logged in as ${email}`);
   await page.waitForTimeout(1000);
 }
 

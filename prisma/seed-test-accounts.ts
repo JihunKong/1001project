@@ -7,7 +7,7 @@ async function main() {
   console.log('🌱 Creating role-based test accounts...');
 
   // Hash password for all test accounts
-  const testPassword = await bcrypt.hash('test123', 12);
+  const testPassword = await bcrypt.hash('test1234', 12);
 
   // Delete existing test accounts if they exist
   console.log('🧹 Cleaning existing test accounts...');
@@ -139,21 +139,97 @@ async function main() {
         },
       },
     }),
+
+    // 6. STORY_MANAGER - Content Reviewer
+    prisma.user.create({
+      data: {
+        email: 'story-manager@test.1001stories.org',
+        name: 'Story Manager Test User',
+        password: testPassword,
+        role: UserRole.STORY_MANAGER,
+        emailVerified: new Date(),
+        profile: {
+          create: {
+            firstName: 'Alex',
+            lastName: 'Manager',
+            organization: '1001 Stories Editorial Team',
+            bio: 'Experienced story reviewer ensuring quality content for global readers',
+            location: 'London, UK',
+            language: 'en',
+            timezone: 'Europe/London',
+            skills: ['Content Review', 'Editorial Feedback', 'Quality Assurance'],
+            experience: '5 years in children\'s literature editing',
+          },
+        },
+      },
+    }),
+
+    // 7. BOOK_MANAGER - Publication Format Specialist
+    prisma.user.create({
+      data: {
+        email: 'book-manager@test.1001stories.org',
+        name: 'Book Manager Test User',
+        password: testPassword,
+        role: UserRole.BOOK_MANAGER,
+        emailVerified: new Date(),
+        profile: {
+          create: {
+            firstName: 'Jordan',
+            lastName: 'Publisher',
+            organization: '1001 Stories Publishing',
+            bio: 'Publication format strategist deciding optimal presentation for stories',
+            location: 'Toronto, Canada',
+            language: 'en',
+            timezone: 'America/Toronto',
+            skills: ['Publication Planning', 'Format Design', 'Content Strategy'],
+            experience: '7 years in educational publishing',
+          },
+        },
+      },
+    }),
+
+    // 8. CONTENT_ADMIN - Final Approval Authority
+    prisma.user.create({
+      data: {
+        email: 'content-admin@test.1001stories.org',
+        name: 'Content Admin Test User',
+        password: testPassword,
+        role: UserRole.CONTENT_ADMIN,
+        emailVerified: new Date(),
+        profile: {
+          create: {
+            firstName: 'Morgan',
+            lastName: 'Admin',
+            organization: '1001 Stories Leadership',
+            bio: 'Senior content administrator with final publication authority',
+            location: 'Singapore',
+            language: 'en',
+            timezone: 'Asia/Singapore',
+            skills: ['Content Governance', 'Publication Standards', 'Quality Control'],
+            experience: '10 years in educational content management',
+          },
+        },
+      },
+    }),
   ]);
 
   console.log(`✅ Created ${users.length} test accounts successfully!`);
   console.log('\n📋 Test Account Credentials:');
-  console.log('┌─────────────────────────────────────────────────────────────┐');
+  console.log('┌──────────────────────────────────────────────────────────────────┐');
   console.log('│ Role             │ Email                              │ Password │');
-  console.log('├─────────────────────────────────────────────────────────────┤');
-  console.log('│ ADMIN            │ admin@test.1001stories.org        │ test123  │');
-  console.log('│ TEACHER          │ teacher@test.1001stories.org      │ test123  │');
-  console.log('│ WRITER           │ writer@test.1001stories.org       │ test123  │');
-  console.log('│ INSTITUTION      │ institution@test.1001stories.org  │ test123  │');
-  console.log('│ LEARNER          │ learner@test.1001stories.org      │ test123  │');
-  console.log('└─────────────────────────────────────────────────────────────┘');
+  console.log('├──────────────────────────────────────────────────────────────────┤');
+  console.log('│ ADMIN            │ admin@test.1001stories.org         │ test1234 │');
+  console.log('│ TEACHER          │ teacher@test.1001stories.org       │ test1234 │');
+  console.log('│ WRITER           │ writer@test.1001stories.org        │ test1234 │');
+  console.log('│ INSTITUTION      │ institution@test.1001stories.org   │ test1234 │');
+  console.log('│ LEARNER          │ learner@test.1001stories.org       │ test1234 │');
+  console.log('│ STORY_MANAGER    │ story-manager@test.1001stories.org │ test1234 │');
+  console.log('│ BOOK_MANAGER     │ book-manager@test.1001stories.org  │ test1234 │');
+  console.log('│ CONTENT_ADMIN    │ content-admin@test.1001stories.org │ test1234 │');
+  console.log('└──────────────────────────────────────────────────────────────────┘');
   console.log('\n🌐 Test at: http://localhost:8001');
   console.log('🔗 Each role has specific dashboard access and permissions');
+  console.log('📝 Publishing Workflow: WRITER → STORY_MANAGER → BOOK_MANAGER → CONTENT_ADMIN → PUBLISHED');
 }
 
 main()
