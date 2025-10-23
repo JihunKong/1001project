@@ -206,6 +206,21 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               wordCount={submission.wordCount}
             />
 
+            {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') && (
+              <button
+                onClick={() => router.push(`/dashboard/writer/submit-text?edit=${submission.id}`)}
+                className="w-full bg-[#141414] hover:bg-[#1f1f1f] text-white rounded-lg py-3 transition-colors"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  lineHeight: '1.221'
+                }}
+              >
+                {submission.status === 'DRAFT' ? 'Continue Writing' : 'Revise Story'}
+              </button>
+            )}
+
             <WritingTipsCard />
 
             <AIReviewCard
