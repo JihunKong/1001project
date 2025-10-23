@@ -73,7 +73,10 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
 
     const processingTime = Date.now() - startTime;
 
-    const responseContent = response.choices[0].message.content || '{}';
+    let responseContent = response.choices[0].message.content || '{}';
+
+    responseContent = responseContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
     const feedback = JSON.parse(responseContent) as AIFeedback;
 
     const score = feedback.details?.score || null;
