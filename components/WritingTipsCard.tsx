@@ -36,7 +36,7 @@ export default function WritingTipsCard() {
         <button
           className="w-full bg-[#F2F2F7] hover:bg-[#E5E5EA] rounded-md py-3 transition-colors"
           onClick={() => {
-            window.open('/writing-guide', '_blank');
+            window.open('/help', '_blank');
           }}
         >
           <span

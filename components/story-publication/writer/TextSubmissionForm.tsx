@@ -147,8 +147,9 @@ export default function TextSubmissionForm({
       const result = await response.json();
 
       // If not saving as draft, submit for review
-      if (!saveAsDraft && mode === 'create') {
-        const submitResponse = await fetch(`/api/text-submissions/${result.submission.id}`, {
+      if (!saveAsDraft) {
+        const targetId = mode === 'edit' ? submissionId : result.submission.id;
+        const submitResponse = await fetch(`/api/text-submissions/${targetId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'submit' }),
