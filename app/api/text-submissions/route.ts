@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
         authorId: session.user.id,
         title: validatedData.title,
         content: sanitizedContent,
-        summary: validatedData.summary ?? null,
+        summary: validatedData.summary ?? '',
         language: validatedData.language,
         authorAlias: normalizedAuthorAlias,
         ageRange: validatedData.ageRange ?? null,
