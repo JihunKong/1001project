@@ -13,6 +13,7 @@ function SubmitTextPage() {
   const editId = searchParams.get('edit');
   const [loading, setLoading] = useState(!!editId);
   const [error, setError] = useState<string | null>(null);
+  const [withdrawing, setWithdrawing] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -67,7 +68,37 @@ function SubmitTextPage() {
     }));
   }, []);
 
+  const handleWithdraw = async () => {
+    if (!editId || !confirm('Are you sure you want to withdraw this submission? It will return to draft status.')) {
+      return;
+    }
+
+    setWithdrawing(true);
+    try {
+      const response = await fetch(`/api/text-submissions/${editId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'withdraw' }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to withdraw submission');
+      }
+
+      setFormData(prev => ({ ...prev, status: 'DRAFT' }));
+      alert('Submission withdrawn successfully. You can now edit and resubmit.');
+    } catch (err) {
+      console.error('Error withdrawing submission:', err);
+      alert(err instanceof Error ? err.message : 'Failed to withdraw submission');
+    } finally {
+      setWithdrawing(false);
+    }
+  };
+
   const isEditing = Boolean(editId);
+  const canRequestAIReview = formData.status === 'DRAFT' || formData.status === 'NEEDS_REVISION';
+  const canWithdraw = formData.status === 'PENDING' || formData.status === 'STORY_REVIEW';
 
   return (
     <>
@@ -163,15 +194,51 @@ function SubmitTextPage() {
 
             <WritingTipsCard />
 
-            {isEditing && editId ? (
+            {isEditing && editId && canRequestAIReview ? (
               <AIReviewCard submissionId={editId} />
-            ) : (
+            ) : isEditing && editId && canWithdraw ? (
+              <div className="bg-white border border-[#E5E5EA] rounded-lg p-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-[#141414] mb-2" style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '20px',
+                      fontWeight: 500,
+                      lineHeight: '1.221'
+                    }}>
+                      Submission Status
+                    </h3>
+                    <p className="text-[#8E8E93]" style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 400,
+                      lineHeight: '1.193'
+                    }}>
+                      Your story is currently under review. You can withdraw it to make changes.
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleWithdraw}
+                    disabled={withdrawing}
+                    className="w-full bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] text-[#141414] rounded-lg py-3 transition-colors disabled:opacity-50"
+                    style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                      lineHeight: '1.221'
+                    }}
+                  >
+                    {withdrawing ? 'Withdrawing...' : 'Withdraw Submission'}
+                  </button>
+                </div>
+              </div>
+            ) : !isEditing ? (
               <div className="bg-[#EEF2FF] border border-[#E0E7FF] rounded-lg p-4">
                 <p className="text-sm text-[#5951E7] text-center">
                   💡 Save as draft first to enable AI review
                 </p>
               </div>
-            )}
+            ) : null}
           </div>
         </aside>
       </div>

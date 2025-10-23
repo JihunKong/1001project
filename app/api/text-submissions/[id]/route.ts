@@ -192,6 +192,16 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
       newStatus = TextSubmissionStatus.PENDING;
       break;
 
+    case 'withdraw':
+      if (submission.authorId !== user.id) {
+        return NextResponse.json({ error: 'Only the author can withdraw this submission' }, { status: 403 });
+      }
+      if (submission.status !== TextSubmissionStatus.PENDING && submission.status !== TextSubmissionStatus.STORY_REVIEW) {
+        return NextResponse.json({ error: 'Cannot withdraw this submission at this stage' }, { status: 403 });
+      }
+      newStatus = TextSubmissionStatus.DRAFT;
+      break;
+
     case 'assign_story_manager':
       if (user.role !== UserRole.ADMIN && user.role !== UserRole.CONTENT_ADMIN) {
         return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
