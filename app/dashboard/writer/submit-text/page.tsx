@@ -11,6 +11,8 @@ import { useSearchParams } from 'next/navigation';
 function SubmitTextPage() {
   const searchParams = useSearchParams();
   const editId = searchParams.get('edit');
+  const [loading, setLoading] = useState(!!editId);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -24,8 +26,15 @@ function SubmitTextPage() {
 
   useEffect(() => {
     if (editId) {
+      setLoading(true);
+      setError(null);
       fetch(`/api/text-submissions/${editId}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Failed to load submission');
+          }
+          return res.json();
+        })
         .then(data => {
           if (data.submission) {
             setFormData({
@@ -37,9 +46,17 @@ function SubmitTextPage() {
               wordCount: data.submission.wordCount || 0,
               submittedAt: data.submission.submittedAt
             });
+          } else {
+            throw new Error('Submission not found');
           }
         })
-        .catch(err => console.error('Error loading submission:', err));
+        .catch(err => {
+          console.error('Error loading submission:', err);
+          setError(err instanceof Error ? err.message : 'Failed to load submission');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   }, [editId]);
 
@@ -90,13 +107,51 @@ function SubmitTextPage() {
 
       <div className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
         <section className="min-w-0">
-          <ErrorBoundary>
-            <TextSubmissionForm
-              mode={isEditing ? 'edit' : 'create'}
-              submissionId={editId || undefined}
-              onFormChange={handleFormChange}
-            />
-          </ErrorBoundary>
+          {loading ? (
+            <div className="bg-white border border-[#E5E5EA] rounded-lg p-10 flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-[#141414]" />
+                <p className="mt-4 text-[#8E8E93]" style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 400
+                }}>
+                  Loading your story...
+                </p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="bg-white border border-[#E5E5EA] rounded-lg p-10">
+              <div className="text-center space-y-4">
+                <p className="text-red-600" style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 400
+                }}>{error}</p>
+                <Link
+                  href="/dashboard/writer"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#141414] text-white rounded-lg hover:bg-[#1f1f1f] transition-colors"
+                  style={{
+                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                    fontSize: '16px',
+                    fontWeight: 500
+                  }}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Dashboard
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <ErrorBoundary>
+              <TextSubmissionForm
+                mode={isEditing ? 'edit' : 'create'}
+                submissionId={editId || undefined}
+                initialData={formData}
+                onFormChange={handleFormChange}
+              />
+            </ErrorBoundary>
+          )}
         </section>
         <aside className="flex flex-col gap-6 lg:pl-4">
           <div className="lg:sticky lg:top-20 space-y-4">
