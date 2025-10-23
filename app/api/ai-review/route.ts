@@ -56,7 +56,7 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
     const prompt = REVIEW_PROMPTS[reviewType];
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-5-mini',
       messages: [
         {
           role: 'system',
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
         score,
         suggestions,
         status: AIReviewStatus.COMPLETED,
-        modelUsed: 'gpt-4o-mini',
+        modelUsed: 'gpt-5-mini',
         tokensUsed: null,
         processingTime,
       }
