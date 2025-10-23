@@ -7,7 +7,8 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Loader2, Save, Send } from 'lucide-react';
-import SubmissionConfirmationModal from './SubmissionConfirmationModal';
+import TermsAndDisclosuresModal from './TermsAndDisclosuresModal';
+import StorySubmittedModal from './StorySubmittedModal';
 
 const RichTextEditor = dynamic(() => import('@/components/ui/RichTextEditor'), {
   ssr: false,
@@ -48,7 +49,8 @@ export default function TextSubmissionForm({
   const [isDraft, setIsDraft] = useState(false);
   const [charCount, setCharCount] = useState(0);
   const [wordCount, setWordCount] = useState(0);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Cleanup for proper resource management
@@ -193,8 +195,7 @@ export default function TextSubmissionForm({
   const handleSubmitForReview = () => {
     handleSubmit(
       (data) => {
-        console.log('Submission validation passed, opening confirmation modal');
-        setShowConfirmModal(true);
+        setShowTermsModal(true);
       },
       (errors) => {
         console.error('Submission validation failed:', errors);
@@ -203,17 +204,26 @@ export default function TextSubmissionForm({
     )();
   };
 
-  const handleConfirmSubmission = () => {
-    console.log('handleConfirmSubmission called');
-    handleSubmit(
-      (data) => {
-        console.log('Confirmed submission, submitting:', data);
-        onSubmit(data, false);
+  const handleAgreeToTerms = async () => {
+    await handleSubmit(
+      async (data) => {
+        await onSubmit(data, false);
+        setShowTermsModal(false);
+        setShowSuccessModal(true);
       },
       (errors) => {
         toast.error('Please fill in all required fields before submitting');
       }
     )();
+  };
+
+  const handleTrackStatus = () => {
+    setShowSuccessModal(false);
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      router.push('/dashboard/writer');
+    }
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -323,14 +333,20 @@ export default function TextSubmissionForm({
         </div>
       </form>
 
-      {/* Submission Confirmation Modal */}
-      <SubmissionConfirmationModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        onConfirm={handleConfirmSubmission}
-        title={watchedTitle}
-        wordCount={wordCount}
+      {/* Terms & Disclosures Modal */}
+      <TermsAndDisclosuresModal
+        isOpen={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+        onAgree={handleAgreeToTerms}
         isSubmitting={isSubmitting && !isDraft}
+      />
+
+      {/* Story Submitted Success Modal */}
+      <StorySubmittedModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        onTrackStatus={handleTrackStatus}
+        storyTitle={watchedTitle}
       />
     </div>
   );
