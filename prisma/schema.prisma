@@ -1896,7 +1896,7 @@ model TextSubmission {
   authorAlias     String?          // Author's chosen name/pseudonym
 
   // Content metadata
-  summary         String           @db.Text
+  summary         String?          @db.Text
   ageRange        String?          // Target age group
   category        String[]         // Content categories
   tags            String[]         // Tags for discovery

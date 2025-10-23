@@ -22,7 +22,7 @@ const SANITIZATION_CONFIG = {
 };
 
 // Helper function to normalize author alias with fallbacks
-const normalizeAuthorAlias = (alias: string | undefined, session: any): string => {
+const normalizeAuthorAlias = (alias: string | null | undefined, session: any): string => {
   // Remove HTML/scripts and trim using consistent sanitization
   const sanitized = purify.sanitize(alias?.trim() || '', { ALLOWED_TAGS: [] }).trim();
 
@@ -244,16 +244,17 @@ export async function POST(request: NextRequest) {
         authorId: session.user.id,
         title: validatedData.title,
         content: sanitizedContent,
-        summary: validatedData.summary,
+        summary: validatedData.summary ?? null,
         language: validatedData.language,
         authorAlias: normalizedAuthorAlias,
-        ageRange: validatedData.ageRange || null,
+        ageRange: validatedData.ageRange ?? null,
         category: validatedData.category,
         tags: validatedData.tags,
         wordCount: wordCount,
-        copyrightConfirmed: validatedData.copyrightConfirmed,
-        originalWork: validatedData.originalWork,
-        licenseType: validatedData.licenseType || null,
+        readingLevel: validatedData.readingLevel ?? null,
+        copyrightConfirmed: validatedData.copyrightConfirmed ?? false,
+        originalWork: validatedData.originalWork ?? true,
+        licenseType: validatedData.licenseType ?? null,
         status: TextSubmissionStatus.DRAFT
       },
       include: {

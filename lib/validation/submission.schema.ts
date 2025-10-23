@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Base validation schema for API use
 export const submissionSchema = z.object({
-  // Required fields with child-friendly error messages
+  // Required fields - only title and content
   title: z.string()
     .min(1, 'Please enter a title for your story')
     .max(200, 'Title must be less than 200 characters')
@@ -12,17 +12,19 @@ export const submissionSchema = z.object({
     .min(100, 'Your story needs at least 100 characters to help readers understand it')
     .max(50000, 'Your story is too long. Please keep it under 50,000 characters'),
 
+  // Optional metadata fields (can be added later by Story Managers)
   summary: z.string()
-    .min(20, 'Please write at least 20 characters to describe your story')
     .max(1000, 'Summary must be less than 1,000 characters')
-    .transform(s => s.trim()),
+    .transform(s => s.trim())
+    .optional()
+    .nullable(),
 
   authorAlias: z.string()
-    .min(1, 'Please tell us what name you\'d like readers to see')
     .max(100, 'Author name must be less than 100 characters')
-    .transform(s => s.trim()),
+    .transform(s => s.trim())
+    .optional()
+    .nullable(),
 
-  // Optional fields
   language: z.string().default('en'),
 
   ageRange: z.string().optional().nullable(),
@@ -33,8 +35,7 @@ export const submissionSchema = z.object({
 
   tags: z.array(z.string()).default([]),
 
-  // Copyright and licensing
-  copyrightConfirmed: z.boolean(),
+  copyrightConfirmed: z.boolean().optional().default(false),
 
   originalWork: z.boolean().default(true),
 
@@ -46,12 +47,12 @@ export const submissionSchema = z.object({
     'All Rights Reserved'
   ]).optional().nullable(),
 
-  termsAccepted: z.boolean()
-    .refine(val => val === true, 'You must accept the terms and disclosures to submit'),
+  termsAccepted: z.boolean().optional().default(false),
 });
 
 // Form-specific schema for client-side use (without transforms for better form compatibility)
 export const formSubmissionSchema = z.object({
+  // Required fields - only title and content
   title: z.string()
     .min(1, 'Please enter a title for your story')
     .max(200, 'Title must be less than 200 characters'),
@@ -60,27 +61,30 @@ export const formSubmissionSchema = z.object({
     .min(100, 'Your story needs at least 100 characters to help readers understand it')
     .max(50000, 'Your story is too long. Please keep it under 50,000 characters'),
 
+  // Optional metadata fields (can be added later by Story Managers)
   summary: z.string()
-    .min(20, 'Please write at least 20 characters to describe your story')
-    .max(1000, 'Summary must be less than 1,000 characters'),
+    .max(1000, 'Summary must be less than 1,000 characters')
+    .optional()
+    .nullable(),
 
   authorAlias: z.string()
-    .min(1, 'Please tell us what name you\'d like readers to see')
-    .max(100, 'Author name must be less than 100 characters'),
+    .max(100, 'Author name must be less than 100 characters')
+    .optional()
+    .nullable(),
 
-  language: z.string(),
+  language: z.string().default('en'),
 
   ageRange: z.string().nullable().optional(),
 
   readingLevel: z.enum(['Beginner', 'Elementary', 'Intermediate', 'Advanced']).nullable().optional(),
 
-  category: z.array(z.string()),
+  category: z.array(z.string()).default([]),
 
-  tags: z.array(z.string()),
+  tags: z.array(z.string()).default([]),
 
-  copyrightConfirmed: z.boolean(),
+  copyrightConfirmed: z.boolean().optional(),
 
-  originalWork: z.boolean(),
+  originalWork: z.boolean().optional(),
 
   licenseType: z.enum([
     'CC-BY',
@@ -90,8 +94,7 @@ export const formSubmissionSchema = z.object({
     'All Rights Reserved'
   ]).nullable().optional(),
 
-  termsAccepted: z.boolean()
-    .refine(val => val === true, 'You must accept the terms and disclosures to submit'),
+  termsAccepted: z.boolean().optional(),
 });
 
 // Type inference for TypeScript
