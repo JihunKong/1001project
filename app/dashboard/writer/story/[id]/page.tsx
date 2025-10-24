@@ -2,17 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2 } from 'lucide-react';
-import StoryMetadataCard from '@/components/StoryMetadataCard';
-import WritingTipsCard from '@/components/WritingTipsCard';
-import { AIReviewCard } from '@/components/story-publication/writer';
+import { ArrowLeft, Loader2, Edit } from 'lucide-react';
+import {
+  StoryTrackingCard,
+  PublishingStatusTimeline,
+  ReviewerFeedbackList,
+  StoryContentViewer
+} from '../../components';
 
 interface TextSubmission {
   id: string;
   title: string;
   content: string;
+  summary?: string;
+  thumbnailUrl?: string;
   status: string;
   wordCount?: number | null;
+  targetAudience?: string;
   updatedAt: string;
   createdAt: string;
   author: {
@@ -20,6 +26,18 @@ interface TextSubmission {
     name: string;
     email: string;
   };
+  workflowHistory?: Array<{
+    id: string;
+    fromStatus: string;
+    toStatus: string;
+    comment?: string;
+    createdAt: string;
+    performedBy: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  }>;
   aiReviews?: Array<{
     id: string;
     feedback: any;
@@ -146,126 +164,88 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
     );
   }
 
-  const latestAIReview = submission.aiReviews && submission.aiReviews.length > 0
-    ? submission.aiReviews[submission.aiReviews.length - 1]
-    : null;
+  const feedbacks = submission.workflowHistory
+    ?.filter(entry => entry.comment && entry.comment.trim() !== '')
+    .map(entry => ({
+      id: entry.id,
+      authorName: entry.performedBy.name,
+      authorEmail: entry.performedBy.email,
+      content: entry.comment || '',
+      createdAt: entry.createdAt
+    })) || [];
 
   return (
-    <div className="min-h-screen pb-20 lg:pb-4">
+    <div className="min-h-screen bg-[#F9FAFB] pb-20 lg:pb-4">
       <div className="max-w-[1440px] mx-auto px-8 lg:px-[100px] py-10">
         <div className="max-w-[1240px] mx-auto">
-        <button
-          onClick={() => router.push('/dashboard/writer')}
-          className="flex items-center gap-2 text-[#8E8E93] hover:text-[#141414] transition-colors mb-8"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          <span
-            style={{
-              fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-              fontSize: '16px',
-              fontWeight: 400
-            }}
+          <button
+            onClick={() => router.push('/dashboard/writer')}
+            className="flex items-center gap-2 text-[#8E8E93] hover:text-[#141414] transition-colors mb-8"
           >
-            Back to Stories
-          </span>
-        </button>
+            <ArrowLeft className="h-5 w-5" />
+            <span
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '16px',
+                fontWeight: 400
+              }}
+            >
+              Back to Stories
+            </span>
+          </button>
 
-        <div className="flex gap-5">
-          <div className="flex-1 bg-white border border-[#E5E5EA] rounded-lg p-10" style={{ width: '820px' }}>
-            <div className="space-y-4">
+          <div className="space-y-10">
+            <div className="flex justify-between items-center">
               <h1
+                className="text-[#141414]"
                 style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                  fontSize: '24px',
-                  fontWeight: 500,
-                  lineHeight: '1.221',
-                  color: '#141414'
-                }}
-              >
-                {submission.title || 'Untitled'}
-              </h1>
-
-              <div
-                className="prose prose-slate max-w-none"
-                style={{
-                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                  fontSize: '16px',
-                  fontWeight: 400,
-                  lineHeight: '1.193',
-                  color: '#141414'
-                }}
-                dangerouslySetInnerHTML={{ __html: submission.content }}
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4" style={{ width: '400px' }}>
-            <StoryMetadataCard
-              status={submission.status}
-              updatedAt={submission.updatedAt}
-              wordCount={submission.wordCount}
-            />
-
-            {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') && (
-              <button
-                onClick={() => router.push(`/dashboard/writer/submit-text?edit=${submission.id}`)}
-                className="w-full bg-[#141414] hover:bg-[#1f1f1f] text-white rounded-lg py-3 transition-colors"
-                style={{
-                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                  fontSize: '16px',
+                  fontSize: '40px',
                   fontWeight: 500,
                   lineHeight: '1.221'
                 }}
               >
-                {submission.status === 'DRAFT' ? 'Continue Writing' : 'Revise Story'}
+                Track Your Story
+              </h1>
+
+              <button
+                onClick={() => router.push(`/dashboard/writer/submit-text?edit=${submission.id}`)}
+                className="flex items-center gap-2 px-4 py-3 bg-white hover:bg-[#F9FAFB] border border-[#141414] text-[#141414] rounded-full transition-colors"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '20px',
+                  fontWeight: 500,
+                  lineHeight: '1.221'
+                }}
+              >
+                <Edit className="w-5 h-5" />
+                Edit a story
               </button>
-            )}
+            </div>
 
-            <WritingTipsCard />
+            <div className="flex gap-5">
+              <div className="flex flex-col gap-5">
+                <StoryTrackingCard
+                  title={submission.title || 'Untitled'}
+                  description={submission.summary || submission.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
+                  thumbnailUrl={submission.thumbnailUrl}
+                  status={submission.status}
+                  submissionDate={submission.createdAt}
+                  targetAudience={submission.targetAudience}
+                  wordCount={submission.wordCount || undefined}
+                />
 
-            {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') ? (
-              <AIReviewCard
-                submissionId={submission.id}
-                existingReview={latestAIReview}
-              />
-            ) : (submission.status === 'PENDING' || submission.status === 'STORY_REVIEW') ? (
-              <div className="bg-white border border-[#E5E5EA] rounded-lg p-6">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-[#141414] mb-2" style={{
-                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                      fontSize: '20px',
-                      fontWeight: 500,
-                      lineHeight: '1.221'
-                    }}>
-                      Under Review
-                    </h3>
-                    <p className="text-[#8E8E93]" style={{
-                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                      fontSize: '16px',
-                      fontWeight: 400,
-                      lineHeight: '1.193'
-                    }}>
-                      Your story is currently being reviewed. You can edit it from the submission page if needed.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => router.push(`/dashboard/writer/submit-text?edit=${submission.id}`)}
-                    className="w-full bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] text-[#141414] rounded-lg py-3 transition-colors"
-                    style={{
-                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                      fontSize: '16px',
-                      fontWeight: 500,
-                      lineHeight: '1.221'
-                    }}
-                  >
-                    Go to Submission Page
-                  </button>
-                </div>
+                <PublishingStatusTimeline currentStatus={submission.status} />
               </div>
-            ) : null}
+
+              <ReviewerFeedbackList feedbacks={feedbacks} />
+
+              <StoryContentViewer
+                title={submission.title || 'Untitled'}
+                content={submission.content}
+              />
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
