@@ -652,7 +652,7 @@ export default function StoryReviewPage() {
                           &quot;{comment.highlightedText}&quot;
                         </p>
                       )}
-                      <p className="text-sm text-gray-700 line-clamp-2">{comment.content}</p>
+                      <p className="text-sm text-gray-900 line-clamp-2 font-normal">{comment.content}</p>
                     </button>
                   ))
                 ) : (
@@ -758,8 +758,11 @@ export default function StoryReviewPage() {
                   : 'Explain why this story is being rejected...'
               }
               rows={4}
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm"
+              className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-900"
               required={action !== 'approve'}
+              autoComplete="off"
+              name="story-manager-feedback"
+              data-form-type="other"
             />
 
             <div className="flex justify-end space-x-3 mt-4">
