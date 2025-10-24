@@ -23,6 +23,7 @@ import {
   CommentableTextEditor,
   CommentPopup,
   RevisionRequestModal,
+  AIReviewSection,
   type RevisionRequestData
 } from '@/components/story-publication/admin';
 import Popover from '@/components/ui/Popover';
@@ -44,6 +45,14 @@ interface Comment {
     role: string;
   };
   replies?: Comment[];
+}
+
+interface AIReview {
+  id: string;
+  feedback: any;
+  suggestions: string[];
+  score: number | null;
+  createdAt: string;
 }
 
 interface TextSubmission {
@@ -69,6 +78,7 @@ interface TextSubmission {
     email: string;
   };
   storyFeedback?: string;
+  aiReviews?: AIReview[];
   workflowHistory: Array<{
     id: string;
     fromStatus: string;
@@ -589,6 +599,12 @@ export default function StoryReviewPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* AI Review Assistant */}
+            <AIReviewSection
+              submissionId={submission.id}
+              existingReview={submission.aiReviews && submission.aiReviews.length > 0 ? submission.aiReviews[0] : null}
+            />
+
             {/* Comments Sidebar */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-4">

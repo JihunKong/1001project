@@ -3,3 +3,4 @@ export { default as CommentPopup } from './CommentPopup';
 export { default as CommentThread } from './CommentThread';
 export { default as RevisionRequestModal } from './RevisionRequestModal';
 export type { RevisionRequestData } from './RevisionRequestModal';
+export { default as AIReviewSection } from './AIReviewSection';

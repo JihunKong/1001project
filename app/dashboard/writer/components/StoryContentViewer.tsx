@@ -7,8 +7,8 @@ interface StoryContentViewerProps {
 
 export default function StoryContentViewer({ title, content }: StoryContentViewerProps) {
   return (
-    <div className="bg-white border border-[#E5E5EA] rounded-lg p-10 flex-1 max-h-[656px] flex flex-col">
-      <div className="space-y-4 flex-1 overflow-y-auto">
+    <div className="bg-white border border-[#E5E5EA] rounded-lg p-10 flex-1 max-h-[656px] flex flex-col relative">
+      <div className="space-y-4 flex-1 overflow-y-auto pr-6 scrollbar-thin scrollbar-thumb-[#F2F2F7] scrollbar-track-transparent">
         <h2
           className="text-[#141414]"
           style={{
@@ -31,10 +31,6 @@ export default function StoryContentViewer({ title, content }: StoryContentViewe
           }}
           dangerouslySetInnerHTML={{ __html: content }}
         />
-      </div>
-
-      <div className="absolute right-0 top-24 bottom-24 w-3 flex items-center justify-center">
-        <div className="w-2 h-[229px] bg-[#F2F2F7] rounded-full" />
       </div>
     </div>
   );
