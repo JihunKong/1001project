@@ -31,7 +31,7 @@ interface Comment {
 interface CommentableTextEditorProps {
   content: string;
   comments: Comment[];
-  onAddComment?: (highlightedText: string, startOffset: number, endOffset: number) => void;
+  onAddComment?: (highlightedText: string, startOffset: number, endOffset: number, content: string) => void;
   onCommentClick?: (comment: Comment) => void;
   readOnly?: boolean;
   className?: string;
