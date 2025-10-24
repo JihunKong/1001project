@@ -93,17 +93,17 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
               <button
                 onClick={() => handleRequestReview('GRAMMAR')}
                 disabled={isRequesting}
-                className="w-full bg-[#EEF2FF] hover:bg-[#E0E7FF] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg py-3 px-4 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-white hover:bg-gray-50 border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg py-3 px-4 transition-colors flex items-center justify-center gap-2"
               >
                 {isRequesting && reviewType === 'GRAMMAR' ? (
                   <>
-                    <Loader2 className="h-5 w-5 text-[#5951E7] animate-spin" />
-                    <span className="text-sm font-medium text-[#5951E7]">Analyzing Grammar...</span>
+                    <Loader2 className="h-5 w-5 text-gray-900 animate-spin" />
+                    <span className="text-sm font-medium text-gray-900">Analyzing Grammar...</span>
                   </>
                 ) : (
                   <>
-                    <CheckCircle className="h-5 w-5 text-[#5951E7]" />
-                    <span className="text-sm font-medium text-[#5951E7]">Check Grammar & Spelling</span>
+                    <CheckCircle className="h-5 w-5 text-gray-900" />
+                    <span className="text-sm font-medium text-gray-900">Check Grammar & Spelling</span>
                   </>
                 )}
               </button>
@@ -111,17 +111,17 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
               <button
                 onClick={() => handleRequestReview('STRUCTURE')}
                 disabled={isRequesting}
-                className="w-full bg-[#EEF2FF] hover:bg-[#E0E7FF] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg py-3 px-4 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-white hover:bg-gray-50 border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg py-3 px-4 transition-colors flex items-center justify-center gap-2"
               >
                 {isRequesting && reviewType === 'STRUCTURE' ? (
                   <>
-                    <Loader2 className="h-5 w-5 text-[#5951E7] animate-spin" />
-                    <span className="text-sm font-medium text-[#5951E7]">Analyzing Structure...</span>
+                    <Loader2 className="h-5 w-5 text-gray-900 animate-spin" />
+                    <span className="text-sm font-medium text-gray-900">Analyzing Structure...</span>
                   </>
                 ) : (
                   <>
-                    <Info className="h-5 w-5 text-[#5951E7]" />
-                    <span className="text-sm font-medium text-[#5951E7]">Analyze Story Structure</span>
+                    <Info className="h-5 w-5 text-gray-900" />
+                    <span className="text-sm font-medium text-gray-900">Analyze Story Structure</span>
                   </>
                 )}
               </button>
@@ -129,17 +129,17 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
               <button
                 onClick={() => handleRequestReview('WRITING_HELP')}
                 disabled={isRequesting}
-                className="w-full bg-[#EEF2FF] hover:bg-[#E0E7FF] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg py-3 px-4 transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-white hover:bg-gray-50 border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg py-3 px-4 transition-colors flex items-center justify-center gap-2"
               >
                 {isRequesting && reviewType === 'WRITING_HELP' ? (
                   <>
-                    <Loader2 className="h-5 w-5 text-[#5951E7] animate-spin" />
-                    <span className="text-sm font-medium text-[#5951E7]">Analyzing Writing...</span>
+                    <Loader2 className="h-5 w-5 text-gray-900 animate-spin" />
+                    <span className="text-sm font-medium text-gray-900">Analyzing Writing...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="h-5 w-5 text-[#5951E7]" />
-                    <span className="text-sm font-medium text-[#5951E7]">Get Writing Suggestions</span>
+                    <Sparkles className="h-5 w-5 text-gray-900" />
+                    <span className="text-sm font-medium text-gray-900">Get Writing Suggestions</span>
                   </>
                 )}
               </button>
