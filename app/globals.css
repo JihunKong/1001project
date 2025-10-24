@@ -2525,3 +2525,48 @@ body:has([data-role="writer"]) {
   color: rgb(107, 114, 128) !important; /* gray-500 */
   opacity: 1 !important;
 }
+
+/* =================================== */
+/* CRITICAL: Global Select & Option Fix */
+/* =================================== */
+/* Ensures select dropdowns and their options always have visible text */
+/* This prevents white-on-white text issues across all roles and pages */
+
+/* Force all select elements to have dark text on white background */
+select,
+select option,
+[data-role] select,
+[data-role] select option {
+  color: rgb(17, 24, 39) !important; /* gray-900 - dark text */
+  background-color: rgb(255, 255, 255) !important; /* white background */
+}
+
+/* Dark mode support for select elements - override system dark mode */
+@media (prefers-color-scheme: dark) {
+  select,
+  select option,
+  [data-role] select,
+  [data-role] select option {
+    color: rgb(17, 24, 39) !important; /* Keep dark text */
+    background-color: rgb(255, 255, 255) !important; /* Keep white background */
+  }
+}
+
+/* Ensure option elements specifically have correct styling */
+option {
+  color: rgb(17, 24, 39) !important;
+  background-color: rgb(255, 255, 255) !important;
+  padding: 8px 12px;
+}
+
+/* Selected option should have clear contrast */
+option:checked {
+  background-color: rgb(219, 234, 254) !important; /* blue-100 */
+  color: rgb(17, 24, 39) !important;
+}
+
+/* Disabled options should be visually distinct */
+option:disabled {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+  background-color: rgb(249, 250, 251) !important; /* gray-50 */
+}

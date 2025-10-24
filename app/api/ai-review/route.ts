@@ -55,16 +55,20 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
   try {
     const prompt = REVIEW_PROMPTS[reviewType];
     const systemMessage = 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.';
-    const fullPrompt = `${systemMessage}\n\n${prompt}\n\nStory:\n${content}`;
 
-    const response = await openai.responses.create({
-      model: 'gpt-5-nano',
-      input: fullPrompt,
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemMessage },
+        { role: 'user', content: `${prompt}\n\nStory:\n${content}` }
+      ],
+      temperature: 0.7,
+      max_tokens: 1000,
     });
 
     const processingTime = Date.now() - startTime;
 
-    let responseContent = response.output_text || '{}';
+    let responseContent = response.choices[0]?.message?.content || '{}';
 
     responseContent = responseContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
@@ -124,9 +128,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (submission.authorId !== session.user.id && session.user.role !== 'ADMIN') {
+    const allowedRoles = ['ADMIN', 'STORY_MANAGER', 'BOOK_MANAGER', 'CONTENT_ADMIN'];
+    if (submission.authorId !== session.user.id && !allowedRoles.includes(session.user.role)) {
       return NextResponse.json(
-        { error: 'You can only request AI reviews for your own submissions' },
+        { error: 'You do not have permission to request AI reviews for this submission' },
         { status: 403 }
       );
     }
@@ -155,7 +160,7 @@ export async function POST(request: NextRequest) {
         score,
         suggestions,
         status: AIReviewStatus.COMPLETED,
-        modelUsed: 'gpt-5-nano',
+        modelUsed: 'gpt-4o-mini',
         tokensUsed: null,
         processingTime,
       }

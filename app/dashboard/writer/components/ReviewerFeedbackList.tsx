@@ -30,7 +30,7 @@ export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackList
               lineHeight: '1.221'
             }}
           >
-            Reviewer's Feedback
+            Reviewer&apos;s Feedback
           </h3>
         </div>
         <p
@@ -61,7 +61,7 @@ export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackList
             lineHeight: '1.221'
           }}
         >
-          Reviewer's Feedback
+          Reviewer&apos;s Feedback
         </h3>
       </div>
 

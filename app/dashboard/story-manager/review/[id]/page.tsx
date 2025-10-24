@@ -614,7 +614,7 @@ export default function StoryReviewPage() {
                   <select
                     value={commentFilter}
                     onChange={(e) => setCommentFilter(e.target.value as 'all' | 'open' | 'resolved')}
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
+                    className="text-sm border border-gray-300 rounded px-2 py-1 text-gray-900"
                   >
                     <option value="all">All ({comments.length})</option>
                     <option value="open">Open ({comments.filter(c => c.status === 'OPEN').length})</option>
