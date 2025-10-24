@@ -124,13 +124,22 @@ export default withAuth(
           pathname.startsWith('/about') ||
           pathname.startsWith('/library') ||
           pathname.startsWith('/legal') ||
+          pathname.startsWith('/contact') ||
+          pathname.startsWith('/help') ||
+          pathname.startsWith('/privacy') ||
+          pathname.startsWith('/terms') ||
+          pathname.startsWith('/demo') ||
           pathname.startsWith('/_next') ||
           pathname.startsWith('/favicon') ||
           pathname === '/manifest.json' ||
           pathname === '/site.webmanifest' ||
           pathname === '/build-info.json' ||
           pathname.startsWith('/android-chrome-') ||
-          pathname.startsWith('/apple-touch-icon')
+          pathname.startsWith('/apple-touch-icon') ||
+          pathname.startsWith('/landing/') ||
+          pathname.startsWith('/assets/') ||
+          pathname.startsWith('/images/') ||
+          pathname.startsWith('/figma-assets/')
         ) {
           return true;
         }
