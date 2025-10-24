@@ -196,7 +196,7 @@ export default function CommentPopup({
             </div>
           </div>
         ) : (
-          <p className="text-sm text-[#141414] whitespace-pre-wrap">{comment.content}</p>
+          <p className="text-sm text-gray-900 whitespace-pre-wrap" style={{ color: '#141414' }}>{comment.content}</p>
         )}
 
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#E5E5EA]">

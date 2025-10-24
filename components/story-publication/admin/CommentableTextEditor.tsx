@@ -185,7 +185,7 @@ export default function CommentableTextEditor({
       return;
     }
 
-    onAddComment(selectedText, selectionRange.from - 1, selectionRange.to - 1);
+    onAddComment(selectedText, selectionRange.from - 1, selectionRange.to - 1, commentContent);
 
     setShowAddComment(false);
     setCommentContent('');

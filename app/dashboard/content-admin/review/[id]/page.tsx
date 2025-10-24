@@ -251,7 +251,7 @@ export default function ContentAdminReviewPage() {
                       setAction('approve');
                       setShowActionForm(true);
                     }}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center"
+                    className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <Star className="h-4 w-4 mr-2" />
                     Publish
@@ -509,7 +509,7 @@ export default function ContentAdminReviewPage() {
                 disabled={submitting || (action === 'reject' && !notes.trim())}
                 className={`px-4 py-2 text-white rounded-lg ${
                   action === 'approve'
-                    ? 'bg-green-600 hover:bg-green-700'
+                    ? 'bg-gray-900 hover:bg-gray-800'
                     : 'bg-red-600 hover:bg-red-700'
                 } disabled:opacity-50`}
               >

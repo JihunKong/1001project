@@ -56,20 +56,25 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
     const prompt = REVIEW_PROMPTS[reviewType];
     const systemMessage = 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.';
 
-    const response = await openai.responses.create({
-      model: 'gpt-5',
-      input: `${systemMessage}\n\n${prompt}\n\nStory:\n${content}`
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [
+        { role: 'system', content: systemMessage },
+        { role: 'user', content: `${prompt}\n\nStory:\n${content}` }
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.7,
     });
 
     const processingTime = Date.now() - startTime;
 
-    let responseContent = response.output_text || '{}';
+    let responseContent = response.choices[0]?.message?.content || '{}';
 
     responseContent = responseContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
     const feedback = JSON.parse(responseContent) as AIFeedback;
 
-    const score = feedback.details?.score || null;
+    const score = (feedback as any).score || null;
     const suggestions = [
       ...(feedback.improvements || []),
     ].slice(0, 5);
@@ -155,7 +160,7 @@ export async function POST(request: NextRequest) {
         score,
         suggestions,
         status: AIReviewStatus.COMPLETED,
-        modelUsed: 'gpt-5',
+        modelUsed: 'gpt-4',
         tokensUsed: null,
         processingTime,
       }

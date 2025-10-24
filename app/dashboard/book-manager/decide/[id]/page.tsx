@@ -381,7 +381,7 @@ export default function FormatDecisionPage() {
                 <button
                   onClick={handleDecision}
                   disabled={!selectedFormat || submitting}
-                  className="px-6 py-2 bg-soe-green-400 text-white rounded-lg hover:bg-soe-green-500 disabled:opacity-50 flex items-center"
+                  className="px-6 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg disabled:opacity-50 flex items-center"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   {submitting ? 'Submitting...' : 'Submit Decision'}
