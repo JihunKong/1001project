@@ -27,7 +27,7 @@ interface TextSubmission {
   status: string;
   language: string;
   ageRange?: string;
-  categories: string[];
+  category: string[];
   tags: string[];
   summary?: string;
   content: string;
@@ -311,12 +311,12 @@ export default function ContentAdminReviewPage() {
                 </div>
 
                 {/* Categories and Tags */}
-                {(submission.categories.length > 0 || submission.tags.length > 0) && (
+                {((submission.category || []).length > 0 || submission.tags.length > 0) && (
                   <div className="mt-4 space-y-2">
-                    {submission.categories.length > 0 && (
+                    {(submission.category || []).length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         <span className="text-sm text-gray-500">Categories:</span>
-                        {submission.categories.map((category, index) => (
+                        {(submission.category || []).map((category, index) => (
                           <span key={index} className="inline-flex px-2 py-1 text-xs bg-soe-green-100 text-soe-green-800 rounded">
                             {category}
                           </span>

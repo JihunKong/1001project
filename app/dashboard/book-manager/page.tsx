@@ -24,7 +24,7 @@ interface TextSubmission {
   status: string;
   language: string;
   ageRange?: string;
-  categories: string[];
+  category: string[];
   tags: string[];
   summary?: string;
   wordCount?: number;
@@ -328,15 +328,15 @@ export default function BookManagerDashboard() {
                               {submission.wordCount} words • {submission.language}
                               {submission.ageRange && ` • Ages ${submission.ageRange}`}
                             </div>
-                            {submission.categories.length > 0 && (
+                            {(submission.category || []).length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {submission.categories.slice(0, 2).map((category, index) => (
+                                {(submission.category || []).slice(0, 2).map((category, index) => (
                                   <span key={index} className="inline-flex px-2 py-1 text-xs bg-soe-green-100 text-soe-green-800 rounded">
                                     {category}
                                   </span>
                                 ))}
-                                {submission.categories.length > 2 && (
-                                  <span className="text-xs text-gray-500">+{submission.categories.length - 2} more</span>
+                                {(submission.category || []).length > 2 && (
+                                  <span className="text-xs text-gray-500">+{(submission.category || []).length - 2} more</span>
                                 )}
                               </div>
                             )}
