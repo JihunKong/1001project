@@ -54,26 +54,17 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
 
   try {
     const prompt = REVIEW_PROMPTS[reviewType];
+    const systemMessage = 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.';
+    const fullPrompt = `${systemMessage}\n\n${prompt}\n\nStory:\n${content}`;
 
-    const response = await openai.chat.completions.create({
+    const response = await openai.responses.create({
       model: 'gpt-5-nano',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.'
-        },
-        {
-          role: 'user',
-          content: `${prompt}\n\nStory:\n${content}`
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 1000,
+      input: fullPrompt,
     });
 
     const processingTime = Date.now() - startTime;
 
-    let responseContent = response.choices[0].message.content || '{}';
+    let responseContent = response.output_text || '{}';
 
     responseContent = responseContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 

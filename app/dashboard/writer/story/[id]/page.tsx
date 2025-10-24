@@ -223,10 +223,47 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
 
             <WritingTipsCard />
 
-            <AIReviewCard
-              submissionId={submission.id}
-              existingReview={latestAIReview}
-            />
+            {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') ? (
+              <AIReviewCard
+                submissionId={submission.id}
+                existingReview={latestAIReview}
+              />
+            ) : (submission.status === 'PENDING' || submission.status === 'STORY_REVIEW') ? (
+              <div className="bg-white border border-[#E5E5EA] rounded-lg p-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-[#141414] mb-2" style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '20px',
+                      fontWeight: 500,
+                      lineHeight: '1.221'
+                    }}>
+                      Under Review
+                    </h3>
+                    <p className="text-[#8E8E93]" style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 400,
+                      lineHeight: '1.193'
+                    }}>
+                      Your story is currently being reviewed. You can edit it from the submission page if needed.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => router.push(`/dashboard/writer/submit-text?edit=${submission.id}`)}
+                    className="w-full bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] text-[#141414] rounded-lg py-3 transition-colors"
+                    style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 500,
+                      lineHeight: '1.221'
+                    }}
+                  >
+                    Go to Submission Page
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
         </div>
