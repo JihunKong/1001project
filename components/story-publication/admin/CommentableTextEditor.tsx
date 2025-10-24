@@ -311,9 +311,10 @@ export default function CommentableTextEditor({
             value={commentContent}
             onChange={(e) => setCommentContent(e.target.value)}
             placeholder="Write your comment..."
-            className="w-full px-3 py-2 border border-[#E5E5EA] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5951E7] text-sm"
+            className="w-full px-3 py-2 border border-[#E5E5EA] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5951E7] text-sm text-gray-900"
             rows={3}
             autoFocus
+            autoComplete="off"
           />
 
           <div className="flex gap-2">

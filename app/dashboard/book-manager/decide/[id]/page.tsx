@@ -411,20 +411,20 @@ export default function FormatDecisionPage() {
               <div className="space-y-3">
                 <div>
                   <span className="text-sm text-gray-500">Author Alias:</span>
-                  <p className="font-medium">{submission.authorAlias}</p>
+                  <p className="font-medium text-gray-900">{submission.authorAlias}</p>
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Real Name:</span>
-                  <p className="font-medium">{submission.author.name}</p>
+                  <p className="font-medium text-gray-900">{submission.author.name}</p>
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Email:</span>
-                  <p className="font-medium">{submission.author.email}</p>
+                  <p className="font-medium text-gray-900">{submission.author.email}</p>
                 </div>
                 {submission.targetAudience && (
                   <div>
                     <span className="text-sm text-gray-500">Target Audience:</span>
-                    <p className="font-medium">{submission.targetAudience}</p>
+                    <p className="font-medium text-gray-900">{submission.targetAudience}</p>
                   </div>
                 )}
               </div>
@@ -437,15 +437,15 @@ export default function FormatDecisionPage() {
                 <div className="space-y-3">
                   <div>
                     <span className="text-sm text-gray-500">Approved By:</span>
-                    <p className="font-medium">{submission.storyManager.name}</p>
+                    <p className="font-medium text-gray-900">{submission.storyManager.name}</p>
                   </div>
                   <div>
                     <span className="text-sm text-gray-500">Email:</span>
-                    <p className="font-medium">{submission.storyManager.email}</p>
+                    <p className="font-medium text-gray-900">{submission.storyManager.email}</p>
                   </div>
                   <div>
                     <span className="text-sm text-gray-500">Approved On:</span>
-                    <p className="font-medium">{new Date(submission.updatedAt).toLocaleDateString()}</p>
+                    <p className="font-medium text-gray-900">{new Date(submission.updatedAt).toLocaleDateString()}</p>
                   </div>
                 </div>
               </div>
@@ -459,7 +459,7 @@ export default function FormatDecisionPage() {
                   submission.workflowHistory.map((entry) => (
                     <div key={entry.id} className="border-l-2 border-gray-200 pl-4 pb-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
+                        <span className="text-sm font-medium text-gray-900">
                           {entry.fromStatus} → {entry.toStatus}
                         </span>
                         <span className="text-xs text-gray-500">

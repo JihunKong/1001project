@@ -391,30 +391,30 @@ export default function ContentAdminReviewPage() {
               <div className="space-y-3">
                 <div>
                   <span className="text-sm text-gray-500">Author Alias:</span>
-                  <p className="font-medium">{submission.authorAlias}</p>
+                  <p className="font-medium text-gray-900">{submission.authorAlias}</p>
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Real Name:</span>
-                  <p className="font-medium">{submission.author.name}</p>
+                  <p className="font-medium text-gray-900">{submission.author.name}</p>
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Email:</span>
-                  <p className="font-medium">{submission.author.email}</p>
+                  <p className="font-medium text-gray-900">{submission.author.email}</p>
                 </div>
                 <div>
                   <span className="text-sm text-gray-500">Visibility:</span>
-                  <p className="font-medium">{submission.visibility}</p>
+                  <p className="font-medium text-gray-900">{submission.visibility}</p>
                 </div>
                 {submission.targetAudience && (
                   <div>
                     <span className="text-sm text-gray-500">Target Audience:</span>
-                    <p className="font-medium">{submission.targetAudience}</p>
+                    <p className="font-medium text-gray-900">{submission.targetAudience}</p>
                   </div>
                 )}
                 {submission.licenseType && (
                   <div>
                     <span className="text-sm text-gray-500">License:</span>
-                    <p className="font-medium">{submission.licenseType}</p>
+                    <p className="font-medium text-gray-900">{submission.licenseType}</p>
                   </div>
                 )}
               </div>
@@ -427,14 +427,14 @@ export default function ContentAdminReviewPage() {
                 {submission.storyManager && (
                   <div>
                     <span className="text-sm text-gray-500">Story Manager:</span>
-                    <p className="font-medium">{submission.storyManager.name}</p>
+                    <p className="font-medium text-gray-900">{submission.storyManager.name}</p>
                     <p className="text-sm text-gray-500">{submission.storyManager.email}</p>
                   </div>
                 )}
                 {submission.bookManager && (
                   <div>
                     <span className="text-sm text-gray-500">Book Manager:</span>
-                    <p className="font-medium">{submission.bookManager.name}</p>
+                    <p className="font-medium text-gray-900">{submission.bookManager.name}</p>
                     <p className="text-sm text-gray-500">{submission.bookManager.email}</p>
                   </div>
                 )}
@@ -449,7 +449,7 @@ export default function ContentAdminReviewPage() {
                   submission.workflowHistory.map((entry) => (
                     <div key={entry.id} className="border-l-2 border-gray-200 pl-4 pb-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
+                        <span className="text-sm font-medium text-gray-900">
                           {entry.fromStatus} → {entry.toStatus}
                         </span>
                         <span className="text-xs text-gray-500">
