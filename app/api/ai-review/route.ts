@@ -75,9 +75,10 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
     const feedback = JSON.parse(responseContent) as AIFeedback;
 
     const score = (feedback as any).score || null;
-    const suggestions = [
-      ...(feedback.improvements || []),
-    ].slice(0, 5);
+    const suggestions = (feedback.improvements || [])
+      .map(item => typeof item === 'string' ? item : (item as any).suggestion || item)
+      .filter(Boolean)
+      .slice(0, 5);
 
     return {
       feedback,
