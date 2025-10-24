@@ -199,12 +199,6 @@ export default function BookManagerDashboard() {
                 <option value="FORMAT_REVIEW">In Format Review</option>
                 <option value="CONTENT_REVIEW">Sent to Content Admin</option>
               </select>
-              <Link
-                href="/dashboard"
-                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg"
-              >
-                Back to Dashboard
-              </Link>
             </div>
           </div>
         </div>

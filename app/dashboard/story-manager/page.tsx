@@ -199,12 +199,6 @@ export default function StoryManagerDashboard() {
                 <option value="PENDING">Pending Review</option>
                 <option value="STORY_REVIEW">In Review</option>
               </select>
-              <Link
-                href="/dashboard"
-                className="bg-soe-green-400 hover:bg-soe-green-500 text-white px-4 py-2 rounded-lg"
-              >
-                Back to Dashboard
-              </Link>
             </div>
           </div>
         </div>
