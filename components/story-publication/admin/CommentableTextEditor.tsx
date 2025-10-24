@@ -124,7 +124,14 @@ export default function CommentableTextEditor({
   });
 
   useEffect(() => {
-    if (!editor || !comments || comments.length === 0) return;
+    if (!editor) return;
+
+    editor.chain()
+      .setTextSelection({ from: 0, to: editor.state.doc.content.size })
+      .unsetMark('commentHighlight')
+      .run();
+
+    if (!comments || comments.length === 0) return;
 
     comments.forEach(comment => {
       if (comment.startOffset !== null && comment.endOffset !== null) {
