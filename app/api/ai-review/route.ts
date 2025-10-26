@@ -57,7 +57,7 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
     const systemMessage = 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.';
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemMessage },
         { role: 'user', content: `${prompt}\n\nStory:\n${content}` }
@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
         score,
         suggestions,
         status: AIReviewStatus.COMPLETED,
-        modelUsed: 'gpt-4',
+        modelUsed: 'gpt-4o-mini',
         tokensUsed: null,
         processingTime,
       }
