@@ -69,20 +69,7 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
           
-          // Only allow publishing workflow roles to use password login
-          const allowedRoles: UserRole[] = [
-            UserRole.ADMIN,
-            UserRole.WRITER,
-            UserRole.STORY_MANAGER,
-            UserRole.BOOK_MANAGER,
-            UserRole.CONTENT_ADMIN
-          ];
-
-          if (!allowedRoles.includes(user.role)) {
-            logger.security(`Unauthorized password login attempt`, { role: user.role, email: user.email });
-            return null;
-          }
-
+          // Allow all roles to use password login
           logger.auth(`Successful password login`, { role: user.role, email: user.email });
           
           return {

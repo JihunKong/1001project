@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { UserRole } from '@prisma/client';
+import { UserRole, AgeVerificationStatus, ParentalConsentStatus } from '@prisma/client';
 import { z } from 'zod';
+import bcrypt from 'bcryptjs';
 import {
   verifyAge,
   checkCOPPACompliance,
@@ -22,21 +23,27 @@ const SignupSchema = z.object({
     .min(1, 'Name is required')
     .max(100, 'Name must be less than 100 characters')
     .trim(),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(100, 'Password must be less than 100 characters')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
   role: z.enum(['LEARNER', 'TEACHER', 'WRITER', 'INSTITUTION'])
-    .refine(val => ['LEARNER', 'TEACHER', 'WRITER', 'INSTITUTION'].includes(val), {
-      message: 'Please select a valid role'
-    }),
-  // COPPA Compliance - Age verification required
+    .default('WRITER')
+    .optional(),
+  // COPPA Compliance - Age verification (now optional for simplified signup)
   dateOfBirth: z.string()
     .refine(val => {
+      if (!val) return true; // Allow empty
       try {
         const date = new Date(val);
         return isValidDateOfBirth(date);
       } catch {
         return false;
       }
-    }, 'Please provide a valid date of birth'),
-  // Parental information (required for minors under 13)
+    }, 'Please provide a valid date of birth')
+    .optional(),
+  // Parental information (optional - only if dateOfBirth provided and user is minor)
   parentEmail: z.string()
     .email('Please enter a valid parent email address')
     .optional(),
@@ -58,10 +65,8 @@ const SignupSchema = z.object({
     .trim()
     .optional(),
   // Terms acceptance
-  acceptedTerms: z.boolean()
+  termsAccepted: z.boolean()
     .refine(val => val === true, 'You must accept the terms and conditions'),
-  acceptedPrivacy: z.boolean()
-    .refine(val => val === true, 'You must accept the privacy policy'),
 });
 
 export async function POST(request: NextRequest) {
@@ -111,41 +116,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // COPPA Compliance - Age verification and minor handling
-    const dateOfBirth = new Date(validatedData.dateOfBirth);
-    const ageVerification = verifyAge(dateOfBirth);
-    const coppaCompliance = checkCOPPACompliance(dateOfBirth);
+    // Hash password before storing
+    const hashedPassword = await bcrypt.hash(validatedData.password, 12);
 
-    // For minors under 13, validate parental information is provided
-    if (ageVerification.requiresParentalConsent) {
-      if (!validatedData.parentEmail || !validatedData.parentName) {
-        return NextResponse.json(
-          {
-            error: 'Parental information required',
-            details: [{
-              field: 'parentEmail',
-              message: 'Parent email is required for users under 13'
-            }, {
-              field: 'parentName',
-              message: 'Parent name is required for users under 13'
-            }],
-            requiresParentalConsent: true,
-            age: ageVerification.age
-          },
-          { status: 400 }
-        );
-      }
+    // COPPA Compliance - Age verification (only if dateOfBirth provided)
+    let ageVerification = null;
+    let coppaCompliance = null;
+    let dateOfBirth = null;
 
-      // Check if parental consent is already denied or expired
-      if (!coppaCompliance.canCreateAccount) {
-        return NextResponse.json(
-          {
-            error: 'Cannot create account',
-            reason: coppaCompliance.reason,
-            requiresParentalConsent: true
-          },
-          { status: 403 }
-        );
+    if (validatedData.dateOfBirth) {
+      dateOfBirth = new Date(validatedData.dateOfBirth);
+      ageVerification = verifyAge(dateOfBirth);
+      coppaCompliance = checkCOPPACompliance(dateOfBirth);
+
+      // For minors under 13, validate parental information is provided
+      if (ageVerification.requiresParentalConsent) {
+        if (!validatedData.parentEmail || !validatedData.parentName) {
+          return NextResponse.json(
+            {
+              error: 'Parental information required',
+              details: [{
+                field: 'parentEmail',
+                message: 'Parent email is required for users under 13'
+              }, {
+                field: 'parentName',
+                message: 'Parent name is required for users under 13'
+              }],
+              requiresParentalConsent: true,
+              age: ageVerification.age
+            },
+            { status: 400 }
+          );
+        }
+
+        // Check if parental consent is already denied or expired
+        if (!coppaCompliance.canCreateAccount) {
+          return NextResponse.json(
+            {
+              error: 'Cannot create account',
+              reason: coppaCompliance.reason,
+              requiresParentalConsent: true
+            },
+            { status: 403 }
+          );
+        }
       }
     }
 
@@ -162,7 +176,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle minor registration with parental consent requirement
-    if (ageVerification.requiresParentalConsent) {
+    if (ageVerification && ageVerification.requiresParentalConsent) {
       // Generate parental consent token and data
       const consentToken = generateConsentToken();
       const consentData = generateParentalConsentData(
@@ -180,7 +194,8 @@ export async function POST(request: NextRequest) {
           data: {
             email: validatedData.email,
             name: validatedData.name,
-            role: validatedData.role as UserRole,
+            password: hashedPassword,
+            role: (validatedData.role || 'WRITER') as UserRole,
             emailVerified: null,
             // NOTE: User will be inactive until parental consent
           },
@@ -206,9 +221,9 @@ export async function POST(request: NextRequest) {
             timezone: 'UTC',
             // COPPA compliance fields
             dateOfBirth: dateOfBirth,
-            isMinor: ageVerification.isMinor,
-            ageVerificationStatus: ageVerification.ageVerificationStatus,
-            parentalConsentStatus: ageVerification.parentalConsentStatus,
+            isMinor: ageVerification ? ageVerification.isMinor : false,
+            ageVerificationStatus: ageVerification ? ageVerification.ageVerificationStatus : AgeVerificationStatus.PENDING,
+            parentalConsentStatus: ageVerification ? ageVerification.parentalConsentStatus : ParentalConsentStatus.NOT_REQUIRED,
             parentEmail: validatedData.parentEmail || null,
             parentName: validatedData.parentName || null,
           }
@@ -250,7 +265,8 @@ export async function POST(request: NextRequest) {
         data: {
           email: validatedData.email,
           name: validatedData.name,
-          role: validatedData.role as UserRole,
+          password: hashedPassword,
+          role: (validatedData.role || 'WRITER') as UserRole,
           emailVerified: null, // Will be verified via magic link
         },
         select: {
@@ -275,9 +291,9 @@ export async function POST(request: NextRequest) {
           timezone: 'UTC',
           // COPPA compliance fields
           dateOfBirth: dateOfBirth,
-          isMinor: ageVerification.isMinor,
-          ageVerificationStatus: ageVerification.ageVerificationStatus,
-          parentalConsentStatus: ageVerification.parentalConsentStatus,
+          isMinor: ageVerification ? ageVerification.isMinor : false,
+          ageVerificationStatus: ageVerification ? ageVerification.ageVerificationStatus : AgeVerificationStatus.PENDING,
+          parentalConsentStatus: ageVerification ? ageVerification.parentalConsentStatus : ParentalConsentStatus.NOT_REQUIRED,
         }
       });
 

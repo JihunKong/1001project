@@ -453,10 +453,10 @@ export default function StoryReviewPage() {
             <div className="flex items-center">
               <Link
                 href="/dashboard/story-manager"
-                className="mr-4 bg-soe-green-400 hover:bg-soe-green-500 text-white px-4 py-2 rounded-lg flex items-center"
+                className="mr-4 bg-soe-green-400 hover:bg-soe-green-500 text-white p-2 rounded-lg inline-flex items-center"
+                aria-label="Back to Dashboard"
               >
-                <ArrowLeft className="h-5 w-5 mr-2" />
-                Back to Dashboard
+                <ArrowLeft className="h-5 w-5" />
               </Link>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Story Review</h1>
