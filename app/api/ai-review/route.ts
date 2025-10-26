@@ -28,7 +28,13 @@ const REVIEW_PROMPTS = {
 3. List of improvements needed with examples
 4. A quality score from 0-100
 
-Respond in JSON format with keys: summary, strengths, improvements, score`,
+Respond in JSON format with this exact structure:
+{
+  "summary": "string",
+  "strengths": ["string", "string"],
+  "improvements": ["string describing issue and example", "string describing issue and example"],
+  "score": number (0-100)
+}`,
 
   STRUCTURE: `Analyze the following story's structure and organization. Evaluate:
 1. Story flow and pacing
@@ -37,7 +43,13 @@ Respond in JSON format with keys: summary, strengths, improvements, score`,
 4. Beginning, middle, and end effectiveness
 5. Overall structure quality score from 0-100
 
-Respond in JSON format with keys: summary, strengths, improvements, score`,
+Respond in JSON format with this exact structure:
+{
+  "summary": "string",
+  "strengths": ["string", "string"],
+  "improvements": ["string describing issue and suggestion", "string describing issue and suggestion"],
+  "score": number (0-100)
+}`,
 
   WRITING_HELP: `Provide constructive feedback on this story to help improve the writing. Focus on:
 1. Writing style and voice
@@ -46,7 +58,12 @@ Respond in JSON format with keys: summary, strengths, improvements, score`,
 4. Areas for development
 5. Specific actionable suggestions
 
-Respond in JSON format with keys: summary, strengths, improvements`
+Respond in JSON format with this exact structure:
+{
+  "summary": "string",
+  "strengths": ["string", "string"],
+  "improvements": ["string with specific actionable suggestion", "string with specific actionable suggestion"]
+}`
 };
 
 async function generateAIReview(content: string, reviewType: AIReviewType): Promise<{ feedback: AIFeedback; score: number | null; suggestions: string[] }> {
@@ -76,7 +93,21 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
 
     const score = (feedback as any).score || null;
     const suggestions = (feedback.improvements || [])
-      .map(item => typeof item === 'string' ? item : (item as any).suggestion || item)
+      .map((item: any) => {
+        if (typeof item === 'string') {
+          return item;
+        }
+        if (typeof item === 'object' && item !== null) {
+          if (item.issue && item.example) {
+            return `${item.issue}: ${item.example}`;
+          }
+          if (item.suggestion) {
+            return item.suggestion;
+          }
+          return JSON.stringify(item);
+        }
+        return String(item);
+      })
       .filter(Boolean)
       .slice(0, 5);
 
