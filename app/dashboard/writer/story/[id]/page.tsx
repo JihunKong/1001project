@@ -175,7 +175,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
     })) || [];
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] pb-20 lg:pb-4">
+    <div key={resolvedParams?.id || 'loading'} className="min-h-screen bg-[#F9FAFB] pb-20 lg:pb-4">
       <div className="max-w-[1440px] mx-auto px-8 lg:px-[100px] py-10">
         <div className="max-w-[1240px] mx-auto">
           <button
