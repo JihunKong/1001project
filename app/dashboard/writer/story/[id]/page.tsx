@@ -224,23 +224,19 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div className="space-y-5">
-              <div className="flex gap-5">
-                <div className="flex flex-col gap-5">
-                  <StoryTrackingCard
-                    title={submission.title || 'Untitled'}
-                    description={submission.summary || submission.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
-                    thumbnailUrl={submission.thumbnailUrl}
-                    status={submission.status}
-                    submissionDate={submission.createdAt}
-                    targetAudience={submission.targetAudience}
-                    wordCount={submission.wordCount || undefined}
-                  />
+              <StoryTrackingCard
+                title={submission.title || 'Untitled'}
+                description={submission.summary || submission.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
+                thumbnailUrl={submission.thumbnailUrl}
+                status={submission.status}
+                submissionDate={submission.createdAt}
+                targetAudience={submission.targetAudience}
+                wordCount={submission.wordCount || undefined}
+              />
 
-                  <PublishingStatusTimeline currentStatus={submission.status} />
-                </div>
+              <PublishingStatusTimeline currentStatus={submission.status} />
 
-                <ReviewerFeedbackList feedbacks={feedbacks} />
-              </div>
+              <ReviewerFeedbackList feedbacks={feedbacks} />
 
               <StoryContentViewer
                 title={submission.title || 'Untitled'}

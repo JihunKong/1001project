@@ -15,7 +15,9 @@ export default function StoryContentViewer({ title, content }: StoryContentViewe
             fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
             fontSize: '24px',
             fontWeight: 500,
-            lineHeight: '1.221'
+            lineHeight: '1.221',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word'
           }}
         >
           {title}
@@ -27,7 +29,9 @@ export default function StoryContentViewer({ title, content }: StoryContentViewe
             fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
             fontSize: '16px',
             fontWeight: 400,
-            lineHeight: '1.193'
+            lineHeight: '1.193',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word'
           }}
           dangerouslySetInnerHTML={{ __html: content }}
         />

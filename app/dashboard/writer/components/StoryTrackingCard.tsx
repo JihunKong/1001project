@@ -69,7 +69,7 @@ export default function StoryTrackingCard({
   const statusStyles = getStatusStyles(status);
 
   return (
-    <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-[610px]">
+    <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-full">
       <div className="space-y-10">
         <div className="flex justify-between items-start">
           <div className="flex gap-6">
@@ -118,7 +118,9 @@ export default function StoryTrackingCard({
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                   fontSize: '18px',
                   fontWeight: 400,
-                  lineHeight: '1.193'
+                  lineHeight: '1.193',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word'
                 }}
               >
                 {description}
