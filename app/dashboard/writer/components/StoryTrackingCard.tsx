@@ -113,7 +113,7 @@ export default function StoryTrackingCard({
                 {title}
               </h3>
               <p
-                className="text-[#141414] line-clamp-3"
+                className="text-[#141414] line-clamp-3 break-words"
                 style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                   fontSize: '18px',
