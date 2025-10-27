@@ -149,6 +149,27 @@ export default function WriterDashboard() {
     }
   };
 
+  const handleWithdrawStory = async (id: string) => {
+    try {
+      const response = await fetch(`/api/text-submissions/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'withdraw' })
+      });
+      if (!response.ok) throw new Error('Failed to withdraw story');
+      await fetchData();
+      setActiveTab('DRAFT');
+      setNotification('Story withdrawn successfully. You can now edit it.');
+      setTimeout(() => setNotification(null), 5000);
+    } catch (err) {
+      console.error('Error withdrawing story:', err);
+      setNotification('Failed to withdraw story. Please try again.');
+      setTimeout(() => setNotification(null), 5000);
+    }
+  };
+
   const filteredSubmissions = submissions.filter(s => s.status === activeTab);
 
   const statusCounts = {
@@ -296,6 +317,7 @@ export default function WriterDashboard() {
               onViewClick={handleViewStory}
               onEditClick={handleEditStory}
               onDeleteClick={handleDeleteStory}
+              onWithdrawClick={handleWithdrawStory}
             />
           )}
           </div>

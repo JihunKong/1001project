@@ -1918,6 +1918,7 @@ model TextSubmission {
   finalNotes      String?          @db.Text // CONTENT_ADMIN final notes
 
   // Publishing information
+  submittedAt     DateTime?        // When author submitted for review
   publishedAt     DateTime?
   estimatedImages Int?             // Number of AI-generated images needed
   generatedImages String[]         // URLs/keys for AI-generated images

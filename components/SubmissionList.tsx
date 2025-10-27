@@ -19,9 +19,10 @@ interface SubmissionListProps {
   onViewClick?: (id: string) => void;
   onEditClick: (id: string) => void;
   onDeleteClick?: (id: string) => void;
+  onWithdrawClick?: (id: string) => void;
 }
 
-export default function SubmissionList({ submissions, onViewClick, onEditClick, onDeleteClick }: SubmissionListProps) {
+export default function SubmissionList({ submissions, onViewClick, onEditClick, onDeleteClick, onWithdrawClick }: SubmissionListProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   if (!submissions || submissions.length === 0) {
@@ -141,7 +142,7 @@ export default function SubmissionList({ submissions, onViewClick, onEditClick, 
               </div>
             </div>
 
-            {/* More Actions - Only show for DRAFT status */}
+            {/* Actions based on status */}
             {submission.status === 'DRAFT' && (
               <div className="relative flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                 <button
@@ -185,6 +186,23 @@ export default function SubmissionList({ submissions, onViewClick, onEditClick, 
                     )}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Withdraw button for submitted stories */}
+            {(submission.status === 'PENDING' || submission.status === 'STORY_REVIEW') && onWithdrawClick && (
+              <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => onWithdrawClick(submission.id)}
+                  className="px-4 py-2 border border-[#E5E5EA] hover:bg-[#F9FAFB] rounded-lg transition-colors text-[#C2410C]"
+                  style={{
+                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                    fontSize: '14px',
+                    fontWeight: 500
+                  }}
+                >
+                  Withdraw
+                </button>
               </div>
             )}
           </div>

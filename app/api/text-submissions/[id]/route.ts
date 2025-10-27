@@ -190,6 +190,7 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
         return NextResponse.json({ error: 'Cannot submit this submission' }, { status: 403 });
       }
       newStatus = TextSubmissionStatus.PENDING;
+      updates.submittedAt = new Date();
       break;
 
     case 'withdraw':
@@ -200,6 +201,7 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
         return NextResponse.json({ error: 'Cannot withdraw this submission at this stage' }, { status: 403 });
       }
       newStatus = TextSubmissionStatus.DRAFT;
+      updates.submittedAt = null;
       break;
 
     case 'assign_story_manager':
