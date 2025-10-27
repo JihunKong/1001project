@@ -141,50 +141,52 @@ export default function SubmissionList({ submissions, onViewClick, onEditClick, 
               </div>
             </div>
 
-            {/* More Actions */}
-            <div className="relative flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={() => setOpenMenuId(openMenuId === submission.id ? null : submission.id)}
-                className="p-2 hover:bg-[#F9FAFB] rounded-lg transition-colors"
-              >
-                <MoreVertical className="h-5 w-5 text-[#8E8E93]" />
-              </button>
+            {/* More Actions - Only show for DRAFT status */}
+            {submission.status === 'DRAFT' && (
+              <div className="relative flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => setOpenMenuId(openMenuId === submission.id ? null : submission.id)}
+                  className="p-2 hover:bg-[#F9FAFB] rounded-lg transition-colors"
+                >
+                  <MoreVertical className="h-5 w-5 text-[#8E8E93]" />
+                </button>
 
-              {openMenuId === submission.id && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-[#E5E5EA] rounded-lg shadow-lg z-10">
-                  <button
-                    onClick={() => {
-                      onEditClick(submission.id);
-                      setOpenMenuId(null);
-                    }}
-                    className="w-full text-left px-4 py-3 hover:bg-[#F9FAFB] text-[#141414] first:rounded-t-lg transition-colors"
-                    style={{
-                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                      fontSize: '14px',
-                      fontWeight: 400
-                    }}
-                  >
-                    Edit
-                  </button>
-                  {onDeleteClick && (
+                {openMenuId === submission.id && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-[#E5E5EA] rounded-lg shadow-lg z-10">
                     <button
                       onClick={() => {
-                        onDeleteClick(submission.id);
+                        onEditClick(submission.id);
                         setOpenMenuId(null);
                       }}
-                      className="w-full text-left px-4 py-3 hover:bg-[#F9FAFB] text-red-600 last:rounded-b-lg transition-colors border-t border-[#E5E5EA]"
+                      className="w-full text-left px-4 py-3 hover:bg-[#F9FAFB] text-[#141414] first:rounded-t-lg transition-colors"
                       style={{
                         fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                         fontSize: '14px',
                         fontWeight: 400
                       }}
                     >
-                      Delete
+                      Edit
                     </button>
-                  )}
-                </div>
-              )}
-            </div>
+                    {onDeleteClick && (
+                      <button
+                        onClick={() => {
+                          onDeleteClick(submission.id);
+                          setOpenMenuId(null);
+                        }}
+                        className="w-full text-left px-4 py-3 hover:bg-[#F9FAFB] text-red-600 last:rounded-b-lg transition-colors border-t border-[#E5E5EA]"
+                        style={{
+                          fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                          fontSize: '14px',
+                          fontWeight: 400
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       ))}
