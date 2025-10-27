@@ -102,7 +102,7 @@ export default function StoryTrackingCard({
 
             <div className="flex-1 space-y-2">
               <h3
-                className="text-[#141414]"
+                className="text-[#141414] truncate"
                 style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                   fontSize: '24px',
@@ -120,7 +120,12 @@ export default function StoryTrackingCard({
                   fontWeight: 400,
                   lineHeight: '1.193',
                   wordBreak: 'break-word',
-                  overflowWrap: 'break-word'
+                  overflowWrap: 'break-word',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: '-webkit-box',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 3
                 }}
               >
                 {description}

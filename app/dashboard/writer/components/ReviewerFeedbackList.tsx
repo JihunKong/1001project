@@ -87,7 +87,7 @@ export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackList
 
               <div className="space-y-1">
                 <p
-                  className="text-[#141414]"
+                  className="text-[#141414] truncate"
                   style={{
                     fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                     fontSize: '18px',
