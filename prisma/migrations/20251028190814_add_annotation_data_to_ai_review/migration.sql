@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE "ai_reviews" ADD COLUMN "annotationData" JSONB;
+ALTER TABLE "ai_reviews" ADD COLUMN IF NOT EXISTS "annotationData" JSONB;
