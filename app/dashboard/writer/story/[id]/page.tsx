@@ -9,6 +9,7 @@ import {
   ReviewerFeedbackList,
   StoryContentViewer
 } from '../../components';
+import AIReviewCard from '@/components/story-publication/writer/AIReviewCard';
 
 interface TextSubmission {
   id: string;
@@ -237,6 +238,10 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               <PublishingStatusTimeline currentStatus={submission.status} />
 
               <ReviewerFeedbackList feedbacks={feedbacks} />
+
+              {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') && (
+                <AIReviewCard submissionId={submission.id} />
+              )}
 
               <StoryContentViewer
                 title={submission.title || 'Untitled'}

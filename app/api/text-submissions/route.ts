@@ -9,6 +9,7 @@ import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 import { notifyNewSubmission } from '@/lib/sse-notifications';
 import { logger } from '@/lib/logger';
+import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -270,6 +271,15 @@ export async function POST(request: NextRequest) {
     } catch (notificationError) {
       logger.error('Error sending new submission notification', notificationError, {
         submissionId: submission.id
+      });
+    }
+
+    // Trigger auto AI reviews for draft (non-blocking)
+    if (submission.status === TextSubmissionStatus.DRAFT) {
+      triggerAutoAIReviews(submission.id).catch((error) => {
+        logger.error('Error triggering auto AI reviews', error, {
+          submissionId: submission.id
+        });
       });
     }
 

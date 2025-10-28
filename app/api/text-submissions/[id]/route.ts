@@ -8,6 +8,7 @@ import { JSDOM } from 'jsdom';
 import { NotificationService } from '@/lib/notifications/NotificationService';
 import { notifySubmissionStatusChange, notifyFeedbackReceived } from '@/lib/sse-notifications';
 import { logger } from '@/lib/logger';
+import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -167,6 +168,15 @@ export async function PUT(
         }
       }
     });
+
+    // Trigger auto AI reviews for draft updates (non-blocking)
+    if (updatedSubmission.status === TextSubmissionStatus.DRAFT && updateData.content) {
+      triggerAutoAIReviews(updatedSubmission.id).catch((error) => {
+        logger.error('Error triggering auto AI reviews', error, {
+          submissionId: updatedSubmission.id
+        });
+      });
+    }
 
     return NextResponse.json({ submission: updatedSubmission });
 
