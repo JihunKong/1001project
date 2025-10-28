@@ -235,18 +235,25 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 wordCount={submission.wordCount || undefined}
               />
 
-              <PublishingStatusTimeline currentStatus={submission.status} />
+              <div className="grid grid-cols-1 lg:grid-cols-[610px_1fr] gap-5">
+                <PublishingStatusTimeline currentStatus={submission.status} />
+                <ReviewerFeedbackList feedbacks={feedbacks} />
+              </div>
 
-              <ReviewerFeedbackList feedbacks={feedbacks} />
-
-              {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') && (
-                <AIReviewCard submissionId={submission.id} />
+              {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') ? (
+                <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-5">
+                  <AIReviewCard submissionId={submission.id} />
+                  <StoryContentViewer
+                    title={submission.title || 'Untitled'}
+                    content={submission.content}
+                  />
+                </div>
+              ) : (
+                <StoryContentViewer
+                  title={submission.title || 'Untitled'}
+                  content={submission.content}
+                />
               )}
-
-              <StoryContentViewer
-                title={submission.title || 'Untitled'}
-                content={submission.content}
-              />
             </div>
           </div>
         </div>
