@@ -14,54 +14,86 @@ interface AIFeedback {
 }
 
 const REVIEW_PROMPTS = {
-  GRAMMAR: `Analyze the following story for grammar, spelling, and punctuation errors. Provide:
+  GRAMMAR: `Analyze the following story for grammar, spelling, and punctuation errors.
+
+IMPORTANT: You MUST respond with valid JSON only. Do not include any markdown formatting or code blocks.
+
+Provide:
 1. A brief summary of the overall grammar quality
 2. Specific strengths in the writing
-3. List of improvements - FOR EACH, include the EXACT text snippet (3-8 words) from the story
-4. A quality score from 0-100
+3. List of improvements - FOR EACH improvement, you MUST include:
+   - "text": The EXACT text snippet from the story (3-8 words, copied character-by-character)
+   - "suggestion": How to fix the issue
 
-Respond in JSON format with this exact structure:
+Example format:
 {
-  "summary": "string",
-  "strengths": ["string", "string"],
-  "improvements": [{"text": "exact text from story", "suggestion": "how to fix"}],
-  "score": number (0-100)
+  "summary": "The story has good grammar with a few minor errors.",
+  "strengths": ["Clear sentence structure", "Proper punctuation"],
+  "improvements": [
+    {"text": "The boy run", "suggestion": "Change 'run' to 'runs' for subject-verb agreement"},
+    {"text": "alot of fun", "suggestion": "Write as two words: 'a lot of fun'"}
+  ],
+  "score": 85
 }
 
-CRITICAL: "text" must be EXACT words from the story for highlighting.`,
+CRITICAL RULES:
+1. The "text" field MUST contain EXACT words from the story (copy-paste, no modifications)
+2. Each improvement MUST have both "text" and "suggestion" fields
+3. Choose text snippets that are 3-8 words long
+4. Include a score from 0-100`,
 
-  STRUCTURE: `Analyze the following story's structure and organization. Evaluate:
+  STRUCTURE: `Analyze the following story's structure and organization.
+
+IMPORTANT: You MUST respond with valid JSON only. Do not include any markdown formatting or code blocks.
+
+Evaluate:
 1. Story flow and pacing
 2. Character development (if applicable)
 3. Plot structure and coherence
 4. Beginning, middle, and end effectiveness
-5. Overall structure quality score from 0-100
 
-Respond in JSON format with this exact structure:
+Example format:
 {
-  "summary": "string",
-  "strengths": ["string", "string"],
-  "improvements": [{"text": "exact text from story (5-12 words)", "suggestion": "how to improve"}],
-  "score": number (0-100)
+  "summary": "The story has a clear structure with good pacing.",
+  "strengths": ["Strong opening", "Clear progression"],
+  "improvements": [
+    {"text": "Once upon a time there lived", "suggestion": "Consider a more engaging opening hook"},
+    {"text": "The end was very sudden", "suggestion": "Add more resolution and closure"}
+  ],
+  "score": 75
 }
 
-CRITICAL: "text" must be EXACT words from the story for highlighting.`,
+CRITICAL RULES:
+1. The "text" field MUST contain EXACT words from the story (5-12 words)
+2. Each improvement MUST have both "text" and "suggestion" fields
+3. Focus on structural issues (pacing, organization, flow)
+4. Include a score from 0-100`,
 
-  WRITING_HELP: `Provide constructive feedback on this story to help improve the writing. Focus on:
+  WRITING_HELP: `Provide constructive feedback on this story to help improve the writing.
+
+IMPORTANT: You MUST respond with valid JSON only. Do not include any markdown formatting or code blocks.
+
+Focus on:
 1. Writing style and voice
 2. Word choice and vocabulary
 3. Engagement and readability
-4. Areas for development
-5. Specific actionable suggestions
+4. Specific actionable suggestions
 
-Respond in JSON format with this exact structure:
+Example format:
 {
-  "summary": "string",
-  "strengths": ["string", "string"],
-  "improvements": [{"text": "exact text from story (3-10 words)", "suggestion": "specific improvement"}]
+  "summary": "The writing is clear but could be more engaging.",
+  "strengths": ["Simple language", "Easy to follow"],
+  "improvements": [
+    {"text": "He was happy", "suggestion": "Use more descriptive words: 'He beamed with joy'"},
+    {"text": "It was nice", "suggestion": "Replace vague words: 'It was delightful'"}
+  ]
 }
 
-CRITICAL: "text" must be EXACT words from the story for highlighting.`
+CRITICAL RULES:
+1. The "text" field MUST contain EXACT words from the story (3-10 words)
+2. Each improvement MUST have both "text" and "suggestion" fields
+3. Focus on style, word choice, and engagement
+4. No score needed for this review type`
 };
 
 interface AIAnnotation {
@@ -107,41 +139,58 @@ function convertHTMLToPlainText(html: string): { text: string; mapping: number[]
 }
 
 function findTextPosition(htmlContent: string, searchText: string): { start: number; end: number } | null {
-  const { text: plainText, mapping } = convertHTMLToPlainText(htmlContent);
+  try {
+    if (!htmlContent || !searchText) {
+      console.warn('[AI Review] Empty htmlContent or searchText');
+      return null;
+    }
 
-  const cleanSearch = searchText.trim().replace(/\s+/g, ' ');
-  const cleanPlain = plainText.replace(/\s+/g, ' ');
+    const { text: plainText, mapping } = convertHTMLToPlainText(htmlContent);
 
-  const index = cleanPlain.toLowerCase().indexOf(cleanSearch.toLowerCase());
+    if (!plainText || plainText.length === 0) {
+      console.error('[AI Review] Failed to extract plain text from HTML');
+      return null;
+    }
 
-  if (index === -1) {
-    console.log(`[AI Review] Text not found in content: "${searchText.substring(0, 50)}..."`);
-    return null;
-  }
+    const cleanSearch = searchText.trim().replace(/\s+/g, ' ');
+    const cleanPlain = plainText.replace(/\s+/g, ' ');
 
-  let charCount = 0;
-  let startPlainIndex = -1;
-  let endPlainIndex = -1;
+    const index = cleanPlain.toLowerCase().indexOf(cleanSearch.toLowerCase());
 
-  for (let i = 0; i < plainText.length; i++) {
-    if (plainText[i].match(/\S/)) {
-      if (charCount === index) startPlainIndex = i;
-      charCount++;
-      if (charCount === index + cleanSearch.length) {
-        endPlainIndex = i + 1;
-        break;
+    if (index === -1) {
+      console.log(`[AI Review] Text not found in content: "${searchText.substring(0, 50)}..."`);
+      return null;
+    }
+
+    const searchLength = cleanSearch.replace(/\s+/g, '').length;
+    let charCount = 0;
+    let startPlainIndex = -1;
+    let endPlainIndex = -1;
+
+    for (let i = 0; i < plainText.length; i++) {
+      if (plainText[i].match(/\S/)) {
+        if (charCount === index) startPlainIndex = i;
+        charCount++;
+        if (charCount === index + searchLength) {
+          endPlainIndex = i + 1;
+          break;
+        }
       }
     }
-  }
 
-  if (startPlainIndex === -1 || endPlainIndex === -1) {
+    if (startPlainIndex === -1 || endPlainIndex === -1) {
+      console.warn(`[AI Review] Failed to find position indices for: "${searchText.substring(0, 30)}..."`);
+      return null;
+    }
+
+    const start = mapping[startPlainIndex] || 0;
+    const end = mapping[endPlainIndex - 1] ? mapping[endPlainIndex - 1] + 1 : htmlContent.length;
+
+    return { start, end };
+  } catch (error) {
+    console.error('[AI Review] Error in findTextPosition:', error);
     return null;
   }
-
-  return {
-    start: mapping[startPlainIndex] || 0,
-    end: mapping[endPlainIndex - 1] ? mapping[endPlainIndex - 1] + 1 : htmlContent.length
-  };
 }
 
 function createAnnotations(
@@ -149,28 +198,37 @@ function createAnnotations(
   htmlContent: string,
   reviewType: AIReviewType
 ): AIAnnotation[] {
+  if (!htmlContent || htmlContent.trim().length === 0) {
+    console.warn('[AI Review] Empty HTML content, skipping annotations');
+    return [];
+  }
+
   const annotations: AIAnnotation[] = [];
   let successCount = 0;
   let failCount = 0;
+  let annotationIndex = 0;
 
-  improvements.forEach((improvement, index) => {
-    if (typeof improvement === 'object' && improvement.text) {
+  improvements.forEach((improvement, improvementIndex) => {
+    if (typeof improvement === 'object' && improvement !== null && improvement.text && improvement.suggestion) {
       const position = findTextPosition(htmlContent, improvement.text);
 
       if (position) {
         annotations.push({
-          suggestionIndex: index,
+          suggestionIndex: annotationIndex,
           highlightedText: improvement.text,
           startOffset: position.start,
           endOffset: position.end,
           suggestionType: reviewType,
           color: SUGGESTION_COLORS[reviewType] || '#fbbf24'
         });
+        annotationIndex++;
         successCount++;
       } else {
-        console.log(`[AI Review] Failed to locate text for annotation #${index}: "${improvement.text.substring(0, 30)}..."`);
+        console.log(`[AI Review] Failed to locate text for annotation #${improvementIndex}: "${improvement.text.substring(0, 30)}..."`);
         failCount++;
       }
+    } else {
+      console.warn(`[AI Review] Skipping invalid improvement #${improvementIndex}:`, typeof improvement === 'object' ? JSON.stringify(improvement) : improvement);
     }
   });
 
@@ -189,6 +247,8 @@ async function generateAIReview(
     const prompt = REVIEW_PROMPTS[reviewType];
     const systemMessage = 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.';
 
+    console.log(`[AI Review] Generating ${reviewType} review (${plainTextContent.length} chars)`);
+
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -196,30 +256,33 @@ async function generateAIReview(
         { role: 'user', content: `${prompt}\n\nStory:\n${plainTextContent}` }
       ],
       temperature: 0.7,
+      response_format: { type: "json_object" }
     });
 
     let responseContent = response.choices[0]?.message?.content || '{}';
     responseContent = responseContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
+    console.log(`[AI Review] OpenAI response received (${responseContent.length} chars)`);
+
     const feedback = JSON.parse(responseContent) as AIFeedback;
     const score = (feedback as any).score || null;
 
     const improvements = feedback.improvements || [];
-    const suggestions = improvements
-      .map((item: any) => {
-        if (typeof item === 'string') return item;
-        if (typeof item === 'object' && item !== null) {
-          if (item.text && item.suggestion) return item.suggestion;
-          if (item.issue && item.example) return `${item.issue}: ${item.example}`;
-          if (item.suggestion) return item.suggestion;
-          return JSON.stringify(item);
-        }
-        return String(item);
-      })
-      .filter(Boolean)
-      .slice(0, 5);
+    console.log(`[AI Review] Parsed ${improvements.length} improvements from OpenAI`);
 
     const annotations = createAnnotations(improvements, htmlContent, reviewType);
+
+    const suggestions = annotations.map((annotation) => {
+      const improvement = improvements.find((imp: any) =>
+        typeof imp === 'object' && imp !== null && imp.text === annotation.highlightedText
+      ) as any;
+      if (improvement && improvement.suggestion) {
+        return improvement.suggestion as string;
+      }
+      return 'No suggestion provided';
+    });
+
+    console.log(`[AI Review] Generated ${suggestions.length} suggestions matching ${annotations.length} annotations`);
 
     return {
       feedback,
@@ -229,8 +292,8 @@ async function generateAIReview(
       tokensUsed: response.usage?.total_tokens || 0
     };
   } catch (error) {
-    console.error('OpenAI API error:', error);
-    throw new Error('Failed to generate AI review');
+    console.error('[AI Review] OpenAI API error:', error);
+    throw new Error(`Failed to generate AI review: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

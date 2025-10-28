@@ -50,13 +50,33 @@ export default function AnnotatedStoryViewer({
     async function fetchAIReviews() {
       try {
         setIsLoading(true);
+        console.log(`[AnnotatedStoryViewer] Fetching AI reviews for submission ${submissionId}`);
+
         const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`);
-        if (response.ok) {
-          const data = await response.json();
-          setAiReviews(data.reviews || []);
+
+        if (!response.ok) {
+          console.error(`[AnnotatedStoryViewer] Failed to fetch AI reviews: ${response.status} ${response.statusText}`);
+          return;
         }
+
+        const data = await response.json();
+        const reviews = data.reviews || [];
+
+        console.log(`[AnnotatedStoryViewer] Fetched ${reviews.length} AI reviews`);
+
+        reviews.forEach((review: AIReview, index: number) => {
+          const annotationCount = review.annotationData?.length || 0;
+          const suggestionCount = review.suggestions?.length || 0;
+          console.log(`[AnnotatedStoryViewer] Review #${index} (${review.reviewType}): ${annotationCount} annotations, ${suggestionCount} suggestions`);
+
+          if (!review.annotationData || review.annotationData.length === 0) {
+            console.warn(`[AnnotatedStoryViewer] Review ${review.reviewType} has no annotationData!`);
+          }
+        });
+
+        setAiReviews(reviews);
       } catch (error) {
-        console.error('Failed to fetch AI reviews:', error);
+        console.error('[AnnotatedStoryViewer] Failed to fetch AI reviews:', error);
       } finally {
         setIsLoading(false);
       }
@@ -77,25 +97,43 @@ export default function AnnotatedStoryViewer({
   });
 
   useEffect(() => {
-    if (!editor || !aiReviews.length) return;
+    if (!editor) {
+      console.log('[AnnotatedStoryViewer] Editor not ready yet');
+      return;
+    }
+
+    if (!aiReviews.length) {
+      console.log('[AnnotatedStoryViewer] No AI reviews available yet');
+      return;
+    }
+
+    console.log(`[AnnotatedStoryViewer] Editor content size: ${editor.state.doc.content.size} chars`);
 
     const allAnnotations: Array<AIAnnotation & { reviewType: string; suggestion: string }> = [];
 
     aiReviews.forEach(review => {
-      if (review.annotationData) {
+      if (review.annotationData && review.annotationData.length > 0) {
         review.annotationData.forEach(annotation => {
+          const suggestion = review.suggestions[annotation.suggestionIndex] || 'No suggestion available';
           allAnnotations.push({
             ...annotation,
             reviewType: review.reviewType,
-            suggestion: review.suggestions[annotation.suggestionIndex] || ''
+            suggestion
           });
         });
+      } else {
+        console.warn(`[AnnotatedStoryViewer] Review ${review.reviewType} has no annotations to apply`);
       }
     });
 
+    if (allAnnotations.length === 0) {
+      console.warn('[AnnotatedStoryViewer] No annotations to apply from any review!');
+      return;
+    }
+
     allAnnotations.sort((a, b) => a.startOffset - b.startOffset);
 
-    console.log(`[AnnotatedStoryViewer] Applying ${allAnnotations.length} annotations`);
+    console.log(`[AnnotatedStoryViewer] Applying ${allAnnotations.length} annotations to editor`);
     let successCount = 0;
     let failCount = 0;
 
@@ -106,10 +144,13 @@ export default function AnnotatedStoryViewer({
         const to = Math.max(from, Math.min(annotation.endOffset, docSize));
 
         if (from >= to) {
-          console.warn(`[AnnotatedStoryViewer] Invalid range for annotation #${index}: from=${from}, to=${to}`);
+          console.warn(`[AnnotatedStoryViewer] Invalid range for annotation #${index} (${annotation.reviewType}): from=${from}, to=${to}, docSize=${docSize}`);
           failCount++;
           return;
         }
+
+        const selectedText = editor.state.doc.textBetween(from, to);
+        console.log(`[AnnotatedStoryViewer] Applying annotation #${index}: "${selectedText.substring(0, 30)}..." (${from}-${to})`);
 
         editor.chain()
           .setTextSelection({ from, to })
@@ -131,7 +172,11 @@ export default function AnnotatedStoryViewer({
       }
     });
 
-    console.log(`[AnnotatedStoryViewer] Applied ${successCount} annotations (${failCount} failed)`);
+    console.log(`[AnnotatedStoryViewer] ✅ Applied ${successCount} annotations, ❌ ${failCount} failed`);
+
+    if (successCount === 0 && allAnnotations.length > 0) {
+      console.error('[AnnotatedStoryViewer] ALL annotations failed to apply! Check position offsets.');
+    }
   }, [editor, aiReviews]);
 
   useEffect(() => {
@@ -178,31 +223,47 @@ export default function AnnotatedStoryViewer({
         .ai-suggestion {
           position: relative;
           cursor: pointer;
-          transition: opacity 0.2s;
+          transition: all 0.2s ease;
+          padding: 2px 4px;
+          border-radius: 3px;
         }
 
         .ai-suggestion:hover {
-          opacity: 0.8;
+          opacity: 0.85;
+          transform: translateY(-1px);
         }
 
         .ai-suggestion-grammar {
-          background-color: #fef3c7;
-          border-bottom: 2px solid #fbbf24;
+          background-color: rgba(254, 243, 199, 0.6);
+          border-bottom: 2px solid #FBBF24;
+        }
+
+        .ai-suggestion-grammar:hover {
+          background-color: rgba(254, 243, 199, 0.8);
         }
 
         .ai-suggestion-structure {
-          background-color: #dbeafe;
-          border-bottom: 2px solid #60a5fa;
+          background-color: rgba(219, 234, 254, 0.6);
+          border-bottom: 2px solid #60A5FA;
+        }
+
+        .ai-suggestion-structure:hover {
+          background-color: rgba(219, 234, 254, 0.8);
         }
 
         .ai-suggestion-writing_help {
-          background-color: #e9d5ff;
-          border-bottom: 2px solid #a78bfa;
+          background-color: rgba(233, 213, 255, 0.6);
+          border-bottom: 2px solid #A78BFA;
+        }
+
+        .ai-suggestion-writing_help:hover {
+          background-color: rgba(233, 213, 255, 0.8);
         }
 
         .ProseMirror {
           padding: 1rem;
           min-height: 400px;
+          line-height: 1.7;
         }
 
         .ProseMirror p {
@@ -215,6 +276,10 @@ export default function AnnotatedStoryViewer({
           margin-top: 1.5em;
           margin-bottom: 0.5em;
           font-weight: 600;
+        }
+
+        .ProseMirror:focus {
+          outline: none;
         }
       `}</style>
 
