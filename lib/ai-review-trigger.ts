@@ -79,32 +79,83 @@ const SUGGESTION_COLORS = {
   WRITING_HELP: '#a78bfa'
 };
 
-function findTextPosition(content: string, searchText: string): { start: number; end: number } | null {
-  const cleanContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-  const cleanSearch = searchText.trim();
+function convertHTMLToPlainText(html: string): { text: string; mapping: number[] } {
+  const mapping: number[] = [];
+  let plainText = '';
+  let insideTag = false;
 
-  const index = cleanContent.toLowerCase().indexOf(cleanSearch.toLowerCase());
+  for (let i = 0; i < html.length; i++) {
+    const char = html[i];
+
+    if (char === '<') {
+      insideTag = true;
+      continue;
+    }
+
+    if (char === '>') {
+      insideTag = false;
+      continue;
+    }
+
+    if (!insideTag) {
+      plainText += char;
+      mapping.push(i);
+    }
+  }
+
+  return { text: plainText, mapping };
+}
+
+function findTextPosition(htmlContent: string, searchText: string): { start: number; end: number } | null {
+  const { text: plainText, mapping } = convertHTMLToPlainText(htmlContent);
+
+  const cleanSearch = searchText.trim().replace(/\s+/g, ' ');
+  const cleanPlain = plainText.replace(/\s+/g, ' ');
+
+  const index = cleanPlain.toLowerCase().indexOf(cleanSearch.toLowerCase());
 
   if (index === -1) {
+    console.log(`[AI Review] Text not found in content: "${searchText.substring(0, 50)}..."`);
+    return null;
+  }
+
+  let charCount = 0;
+  let startPlainIndex = -1;
+  let endPlainIndex = -1;
+
+  for (let i = 0; i < plainText.length; i++) {
+    if (plainText[i].match(/\S/)) {
+      if (charCount === index) startPlainIndex = i;
+      charCount++;
+      if (charCount === index + cleanSearch.length) {
+        endPlainIndex = i + 1;
+        break;
+      }
+    }
+  }
+
+  if (startPlainIndex === -1 || endPlainIndex === -1) {
     return null;
   }
 
   return {
-    start: index,
-    end: index + cleanSearch.length
+    start: mapping[startPlainIndex] || 0,
+    end: mapping[endPlainIndex - 1] ? mapping[endPlainIndex - 1] + 1 : htmlContent.length
   };
 }
 
 function createAnnotations(
   improvements: any[],
-  content: string,
+  htmlContent: string,
   reviewType: AIReviewType
 ): AIAnnotation[] {
   const annotations: AIAnnotation[] = [];
+  let successCount = 0;
+  let failCount = 0;
 
   improvements.forEach((improvement, index) => {
     if (typeof improvement === 'object' && improvement.text) {
-      const position = findTextPosition(content, improvement.text);
+      const position = findTextPosition(htmlContent, improvement.text);
 
       if (position) {
         annotations.push({
@@ -115,15 +166,21 @@ function createAnnotations(
           suggestionType: reviewType,
           color: SUGGESTION_COLORS[reviewType] || '#fbbf24'
         });
+        successCount++;
+      } else {
+        console.log(`[AI Review] Failed to locate text for annotation #${index}: "${improvement.text.substring(0, 30)}..."`);
+        failCount++;
       }
     }
   });
 
+  console.log(`[AI Review] Created ${successCount} annotations (${failCount} failed) for ${reviewType}`);
   return annotations;
 }
 
 async function generateAIReview(
-  content: string,
+  plainTextContent: string,
+  htmlContent: string,
   reviewType: AIReviewType
 ): Promise<{ feedback: AIFeedback; score: number | null; suggestions: string[]; annotations: AIAnnotation[]; tokensUsed: number }> {
   const startTime = Date.now();
@@ -136,7 +193,7 @@ async function generateAIReview(
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemMessage },
-        { role: 'user', content: `${prompt}\n\nStory:\n${content}` }
+        { role: 'user', content: `${prompt}\n\nStory:\n${plainTextContent}` }
       ],
       temperature: 0.7,
     });
@@ -162,7 +219,7 @@ async function generateAIReview(
       .filter(Boolean)
       .slice(0, 5);
 
-    const annotations = createAnnotations(improvements, content, reviewType);
+    const annotations = createAnnotations(improvements, htmlContent, reviewType);
 
     return {
       feedback,
@@ -187,12 +244,15 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
     return;
   }
 
+  const htmlContent = submission.content;
   const plainTextContent = submission.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   if (plainTextContent.length < 50) {
     console.log(`Submission ${submissionId} too short for AI review (${plainTextContent.length} chars)`);
     return;
   }
+
+  console.log(`[AI Review] Starting auto reviews for submission ${submissionId} (${plainTextContent.length} chars)`);
 
   const reviewTypes: AIReviewType[] = ['GRAMMAR', 'STRUCTURE', 'WRITING_HELP'];
 
@@ -202,6 +262,7 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
 
       const { feedback, score, suggestions, annotations, tokensUsed } = await generateAIReview(
         plainTextContent,
+        htmlContent,
         reviewType
       );
 
@@ -224,9 +285,9 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
         }
       });
 
-      console.log(`Auto AI review (${reviewType}) created for submission ${submissionId} with ${annotations.length} annotations`);
+      console.log(`[AI Review] ${reviewType} completed: ${annotations.length} annotations, ${suggestions.length} suggestions`);
     } catch (error) {
-      console.error(`Failed to create auto AI review (${reviewType}) for submission ${submissionId}:`, error);
+      console.error(`[AI Review] Failed to create ${reviewType} review:`, error);
 
       await prisma.aIReview.create({
         data: {

@@ -95,23 +95,43 @@ export default function AnnotatedStoryViewer({
 
     allAnnotations.sort((a, b) => a.startOffset - b.startOffset);
 
-    allAnnotations.forEach(annotation => {
+    console.log(`[AnnotatedStoryViewer] Applying ${allAnnotations.length} annotations`);
+    let successCount = 0;
+    let failCount = 0;
+
+    allAnnotations.forEach((annotation, index) => {
       try {
+        const docSize = editor.state.doc.content.size;
+        const from = Math.max(0, Math.min(annotation.startOffset, docSize - 1));
+        const to = Math.max(from, Math.min(annotation.endOffset, docSize));
+
+        if (from >= to) {
+          console.warn(`[AnnotatedStoryViewer] Invalid range for annotation #${index}: from=${from}, to=${to}`);
+          failCount++;
+          return;
+        }
+
         editor.chain()
-          .setTextSelection({
-            from: annotation.startOffset + 1,
-            to: annotation.endOffset + 1
-          })
+          .setTextSelection({ from, to })
           .setAISuggestion({
             suggestionId: `${annotation.reviewType}-${annotation.suggestionIndex}`,
             suggestionType: annotation.suggestionType,
             suggestionIndex: annotation.suggestionIndex
           })
           .run();
+
+        successCount++;
       } catch (error) {
-        console.error('Failed to apply annotation:', error);
+        console.error(`[AnnotatedStoryViewer] Failed to apply annotation #${index}:`, {
+          error,
+          annotation,
+          docSize: editor.state.doc.content.size
+        });
+        failCount++;
       }
     });
+
+    console.log(`[AnnotatedStoryViewer] Applied ${successCount} annotations (${failCount} failed)`);
   }, [editor, aiReviews]);
 
   useEffect(() => {
