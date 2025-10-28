@@ -96,6 +96,73 @@ export default function AnnotatedStoryViewer({
     },
   });
 
+  function findTextInDocument(searchText: string): { from: number; to: number } | null {
+    if (!editor) return null;
+
+    const cleanSearch = searchText.trim().toLowerCase().replace(/\s+/g, ' ');
+    const doc = editor.state.doc;
+    const fullText = doc.textBetween(0, doc.content.size, ' ', ' ');
+    const cleanFull = fullText.toLowerCase().replace(/\s+/g, ' ');
+
+    const matchIndex = cleanFull.indexOf(cleanSearch);
+    if (matchIndex === -1) {
+      console.warn(`[findTextInDocument] Text not found: "${searchText.substring(0, 30)}..."`);
+      return null;
+    }
+
+    let charCount = 0;
+    let startPos: number | null = null;
+    let endPos: number | null = null;
+    const searchLength = cleanSearch.replace(/\s+/g, '').length;
+    let nonWhitespaceCount = 0;
+
+    doc.descendants((node, pos) => {
+      if (startPos !== null && endPos !== null) return false;
+
+      if (node.isText && node.text) {
+        const nodeText = node.text.toLowerCase().replace(/\s+/g, ' ');
+        const nodeStart = charCount;
+        const nodeEnd = charCount + nodeText.length;
+
+        if (startPos === null && matchIndex >= nodeStart && matchIndex < nodeEnd) {
+          const offsetInNode = matchIndex - nodeStart;
+          let textCharCount = 0;
+          for (let i = 0; i < node.text.length; i++) {
+            if (node.text[i].match(/\S/)) {
+              if (textCharCount === offsetInNode) {
+                startPos = pos + i;
+                break;
+              }
+              textCharCount++;
+            }
+          }
+        }
+
+        for (let i = 0; i < node.text.length; i++) {
+          if (node.text[i].match(/\S/)) {
+            if (startPos !== null && endPos === null) {
+              nonWhitespaceCount++;
+              if (nonWhitespaceCount === searchLength) {
+                endPos = pos + i + 1;
+                return false;
+              }
+            }
+          }
+        }
+
+        charCount += nodeText.length;
+      }
+      return true;
+    });
+
+    if (startPos === null || endPos === null) {
+      console.warn(`[findTextInDocument] Could not determine positions for: "${searchText.substring(0, 30)}..."`);
+      return null;
+    }
+
+    return { from: startPos, to: endPos };
+  }
+
   useEffect(() => {
     if (!editor) {
       console.log('[AnnotatedStoryViewer] Editor not ready yet');
@@ -139,18 +206,29 @@ export default function AnnotatedStoryViewer({
 
     allAnnotations.forEach((annotation, index) => {
       try {
-        const docSize = editor.state.doc.content.size;
-        const from = Math.max(0, Math.min(annotation.startOffset, docSize - 1));
-        const to = Math.max(from, Math.min(annotation.endOffset, docSize));
+        const position = findTextInDocument(annotation.highlightedText);
 
-        if (from >= to) {
-          console.warn(`[AnnotatedStoryViewer] Invalid range for annotation #${index} (${annotation.reviewType}): from=${from}, to=${to}, docSize=${docSize}`);
+        if (!position) {
+          console.warn(`[AnnotatedStoryViewer] Could not find text for annotation #${index} (${annotation.reviewType}): "${annotation.highlightedText.substring(0, 30)}..."`);
+          failCount++;
+          return;
+        }
+
+        const { from, to } = position;
+        const docSize = editor.state.doc.content.size;
+
+        if (from >= to || from < 0 || to > docSize) {
+          console.warn(`[AnnotatedStoryViewer] Invalid position range for annotation #${index} (${annotation.reviewType}): from=${from}, to=${to}, docSize=${docSize}`);
           failCount++;
           return;
         }
 
         const selectedText = editor.state.doc.textBetween(from, to);
-        console.log(`[AnnotatedStoryViewer] Applying annotation #${index}: "${selectedText.substring(0, 30)}..." (${from}-${to})`);
+
+        console.log(`[AnnotatedStoryViewer] Annotation #${index} (${annotation.reviewType}):`);
+        console.log(`  Backend offsets: ${annotation.startOffset}-${annotation.endOffset}`);
+        console.log(`  ProseMirror positions: ${from}-${to}`);
+        console.log(`  Text: "${selectedText.substring(0, 50)}${selectedText.length > 50 ? '...' : ''}"`);
 
         editor.chain()
           .setTextSelection({ from, to })
