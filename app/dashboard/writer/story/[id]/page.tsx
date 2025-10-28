@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Edit } from 'lucide-react';
 import {
   StoryTrackingCard,
-  PublishingStatusTimeline,
   ReviewerFeedbackList,
   StoryContentViewer
 } from '../../components';
 import AIReviewCard from '@/components/story-publication/writer/AIReviewCard';
+import AnnotatedStoryViewer from '@/components/story-publication/writer/AnnotatedStoryViewer';
 
 interface TextSubmission {
   id: string;
@@ -37,6 +37,7 @@ interface TextSubmission {
       id: string;
       name: string;
       email: string;
+      role: string;
     };
   }>;
   aiReviews?: Array<{
@@ -165,8 +166,14 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
     );
   }
 
+  const reviewerRoles = ['STORY_MANAGER', 'BOOK_MANAGER', 'CONTENT_ADMIN', 'ADMIN'];
   const feedbacks = submission.workflowHistory
-    ?.filter(entry => entry.comment && entry.comment.trim() !== '')
+    ?.filter(entry => {
+      const hasComment = entry.comment && entry.comment.trim() !== '';
+      const isNotAuthor = entry.performedBy.id !== submission.author.id;
+      const isReviewer = reviewerRoles.includes(entry.performedBy.role);
+      return hasComment && isNotAuthor && isReviewer;
+    })
     .map(entry => ({
       id: entry.id,
       authorName: entry.performedBy.name,
@@ -235,17 +242,15 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 wordCount={submission.wordCount || undefined}
               />
 
-              <div className="grid grid-cols-1 lg:grid-cols-[610px_1fr] gap-5">
-                <PublishingStatusTimeline currentStatus={submission.status} />
-                <ReviewerFeedbackList feedbacks={feedbacks} />
-              </div>
+              <ReviewerFeedbackList feedbacks={feedbacks} />
 
               {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') ? (
                 <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-5">
                   <AIReviewCard submissionId={submission.id} />
-                  <StoryContentViewer
+                  <AnnotatedStoryViewer
                     title={submission.title || 'Untitled'}
                     content={submission.content}
+                    submissionId={submission.id}
                   />
                 </div>
               ) : (

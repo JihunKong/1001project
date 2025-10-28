@@ -44,7 +44,7 @@ export async function GET(
         workflowHistory: {
           include: {
             performedBy: {
-              select: { id: true, name: true, email: true }
+              select: { id: true, name: true, email: true, role: true }
             }
           },
           orderBy: { createdAt: 'desc' }

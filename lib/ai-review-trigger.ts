@@ -17,16 +17,18 @@ const REVIEW_PROMPTS = {
   GRAMMAR: `Analyze the following story for grammar, spelling, and punctuation errors. Provide:
 1. A brief summary of the overall grammar quality
 2. Specific strengths in the writing
-3. List of improvements needed with examples
+3. List of improvements - FOR EACH, include the EXACT text snippet (3-8 words) from the story
 4. A quality score from 0-100
 
 Respond in JSON format with this exact structure:
 {
   "summary": "string",
   "strengths": ["string", "string"],
-  "improvements": ["string describing issue and example", "string describing issue and example"],
+  "improvements": [{"text": "exact text from story", "suggestion": "how to fix"}],
   "score": number (0-100)
-}`,
+}
+
+CRITICAL: "text" must be EXACT words from the story for highlighting.`,
 
   STRUCTURE: `Analyze the following story's structure and organization. Evaluate:
 1. Story flow and pacing
@@ -39,9 +41,11 @@ Respond in JSON format with this exact structure:
 {
   "summary": "string",
   "strengths": ["string", "string"],
-  "improvements": ["string describing issue and suggestion", "string describing issue and suggestion"],
+  "improvements": [{"text": "exact text from story (5-12 words)", "suggestion": "how to improve"}],
   "score": number (0-100)
-}`,
+}
+
+CRITICAL: "text" must be EXACT words from the story for highlighting.`,
 
   WRITING_HELP: `Provide constructive feedback on this story to help improve the writing. Focus on:
 1. Writing style and voice
@@ -54,14 +58,74 @@ Respond in JSON format with this exact structure:
 {
   "summary": "string",
   "strengths": ["string", "string"],
-  "improvements": ["string with specific actionable suggestion", "string with specific actionable suggestion"]
-}`
+  "improvements": [{"text": "exact text from story (3-10 words)", "suggestion": "specific improvement"}]
+}
+
+CRITICAL: "text" must be EXACT words from the story for highlighting.`
 };
+
+interface AIAnnotation {
+  suggestionIndex: number;
+  highlightedText: string;
+  startOffset: number;
+  endOffset: number;
+  suggestionType: string;
+  color: string;
+}
+
+const SUGGESTION_COLORS = {
+  GRAMMAR: '#fbbf24',
+  STRUCTURE: '#60a5fa',
+  WRITING_HELP: '#a78bfa'
+};
+
+function findTextPosition(content: string, searchText: string): { start: number; end: number } | null {
+  const cleanContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  const cleanSearch = searchText.trim();
+
+  const index = cleanContent.toLowerCase().indexOf(cleanSearch.toLowerCase());
+
+  if (index === -1) {
+    return null;
+  }
+
+  return {
+    start: index,
+    end: index + cleanSearch.length
+  };
+}
+
+function createAnnotations(
+  improvements: any[],
+  content: string,
+  reviewType: AIReviewType
+): AIAnnotation[] {
+  const annotations: AIAnnotation[] = [];
+
+  improvements.forEach((improvement, index) => {
+    if (typeof improvement === 'object' && improvement.text) {
+      const position = findTextPosition(content, improvement.text);
+
+      if (position) {
+        annotations.push({
+          suggestionIndex: index,
+          highlightedText: improvement.text,
+          startOffset: position.start,
+          endOffset: position.end,
+          suggestionType: reviewType,
+          color: SUGGESTION_COLORS[reviewType] || '#fbbf24'
+        });
+      }
+    }
+  });
+
+  return annotations;
+}
 
 async function generateAIReview(
   content: string,
   reviewType: AIReviewType
-): Promise<{ feedback: AIFeedback; score: number | null; suggestions: string[]; tokensUsed: number }> {
+): Promise<{ feedback: AIFeedback; score: number | null; suggestions: string[]; annotations: AIAnnotation[]; tokensUsed: number }> {
   const startTime = Date.now();
 
   try {
@@ -82,10 +146,13 @@ async function generateAIReview(
 
     const feedback = JSON.parse(responseContent) as AIFeedback;
     const score = (feedback as any).score || null;
-    const suggestions = (feedback.improvements || [])
+
+    const improvements = feedback.improvements || [];
+    const suggestions = improvements
       .map((item: any) => {
         if (typeof item === 'string') return item;
         if (typeof item === 'object' && item !== null) {
+          if (item.text && item.suggestion) return item.suggestion;
           if (item.issue && item.example) return `${item.issue}: ${item.example}`;
           if (item.suggestion) return item.suggestion;
           return JSON.stringify(item);
@@ -95,10 +162,13 @@ async function generateAIReview(
       .filter(Boolean)
       .slice(0, 5);
 
+    const annotations = createAnnotations(improvements, content, reviewType);
+
     return {
       feedback,
       score,
       suggestions,
+      annotations,
       tokensUsed: response.usage?.total_tokens || 0
     };
   } catch (error) {
@@ -130,7 +200,7 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
     try {
       const startTime = Date.now();
 
-      const { feedback, score, suggestions, tokensUsed } = await generateAIReview(
+      const { feedback, score, suggestions, annotations, tokensUsed } = await generateAIReview(
         plainTextContent,
         reviewType
       );
@@ -144,6 +214,7 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
           feedback: feedback as any,
           score,
           suggestions,
+          annotationData: annotations as any,
           status: AIReviewStatus.COMPLETED,
           modelUsed: 'gpt-4o-mini',
           tokensUsed,
@@ -153,7 +224,7 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
         }
       });
 
-      console.log(`Auto AI review (${reviewType}) created for submission ${submissionId}`);
+      console.log(`Auto AI review (${reviewType}) created for submission ${submissionId} with ${annotations.length} annotations`);
     } catch (error) {
       console.error(`Failed to create auto AI review (${reviewType}) for submission ${submissionId}:`, error);
 

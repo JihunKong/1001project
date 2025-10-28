@@ -2250,6 +2250,7 @@ model AIReview {
   feedback        Json           // AI-generated feedback (structured JSON)
   score           Int?           // Score 0-100 for grammar/structure
   suggestions     String[]       // List of improvement suggestions
+  annotationData  Json?          // Position mapping for text underlines: [{suggestionIndex, startOffset, endOffset, highlightedText, suggestionType, color}]
 
   // Status tracking
   status          AIReviewStatus @default(PENDING)
