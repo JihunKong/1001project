@@ -1,2 +1,2 @@
 -- AlterTable
-ALTER TABLE "text_submissions" ADD COLUMN "submitted_at" TIMESTAMP(3);
+ALTER TABLE "text_submissions" ADD COLUMN "submittedAt" TIMESTAMP(3);
