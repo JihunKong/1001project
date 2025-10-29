@@ -111,7 +111,7 @@ export default function AnnotatedStoryViewer({
       return null;
     }
 
-    const endIndex = startIndex + searchText.trim().length;
+    const endIndex = startIndex + normalizedSearch.length;
 
     let currentTextPos = 0;
     let startPos: number | null = null;
