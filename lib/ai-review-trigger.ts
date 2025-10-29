@@ -152,36 +152,51 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
       return null;
     }
 
-    const cleanSearch = searchText.trim().replace(/\s+/g, ' ');
-    const cleanPlain = plainText.replace(/\s+/g, ' ');
+    const searchTrimmed = searchText.trim();
 
-    const index = cleanPlain.toLowerCase().indexOf(cleanSearch.toLowerCase());
+    let indexInPlain = plainText.toLowerCase().indexOf(searchTrimmed.toLowerCase());
 
-    if (index === -1) {
-      console.log(`[AI Review] Text not found in content: "${searchText.substring(0, 50)}..."`);
-      return null;
-    }
+    if (indexInPlain === -1) {
+      const cleanSearch = searchText.trim().replace(/\s+/g, ' ');
+      const cleanPlain = plainText.replace(/\s+/g, ' ');
 
-    const searchLength = cleanSearch.replace(/\s+/g, '').length;
-    let charCount = 0;
-    let startPlainIndex = -1;
-    let endPlainIndex = -1;
+      const cleanIndex = cleanPlain.toLowerCase().indexOf(cleanSearch.toLowerCase());
 
-    for (let i = 0; i < plainText.length; i++) {
-      if (plainText[i].match(/\S/)) {
-        if (charCount === index) startPlainIndex = i;
-        charCount++;
-        if (charCount === index + searchLength) {
-          endPlainIndex = i + 1;
-          break;
+      if (cleanIndex === -1) {
+        console.log(`[AI Review] Text not found in content: "${searchText.substring(0, 50)}..."`);
+        return null;
+      }
+
+      const cleanToPlainMap: number[] = [];
+      let plainPos = 0;
+      let cleanPos = 0;
+
+      while (plainPos < plainText.length) {
+        cleanToPlainMap[cleanPos] = plainPos;
+
+        if (plainText[plainPos].match(/\s/)) {
+          while (plainPos < plainText.length && plainText[plainPos].match(/\s/)) {
+            plainPos++;
+          }
+          cleanPos++;
+        } else {
+          plainPos++;
+          cleanPos++;
         }
       }
+      cleanToPlainMap[cleanPos] = plainPos;
+
+      const startPlainIndex = cleanToPlainMap[cleanIndex] || 0;
+      const endPlainIndex = cleanToPlainMap[cleanIndex + cleanSearch.length] || plainText.length;
+
+      const start = mapping[startPlainIndex] || 0;
+      const end = mapping[endPlainIndex - 1] ? mapping[endPlainIndex - 1] + 1 : htmlContent.length;
+
+      return { start, end };
     }
 
-    if (startPlainIndex === -1 || endPlainIndex === -1) {
-      console.warn(`[AI Review] Failed to find position indices for: "${searchText.substring(0, 30)}..."`);
-      return null;
-    }
+    const startPlainIndex = indexInPlain;
+    const endPlainIndex = indexInPlain + searchTrimmed.length;
 
     const start = mapping[startPlainIndex] || 0;
     const end = mapping[endPlainIndex - 1] ? mapping[endPlainIndex - 1] + 1 : htmlContent.length;
