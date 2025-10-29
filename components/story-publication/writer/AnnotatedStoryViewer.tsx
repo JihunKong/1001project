@@ -99,58 +99,44 @@ export default function AnnotatedStoryViewer({
   function findTextInDocument(searchText: string): { from: number; to: number } | null {
     if (!editor) return null;
 
-    const cleanSearch = searchText.trim().toLowerCase().replace(/\s+/g, ' ');
     const doc = editor.state.doc;
-    const fullText = doc.textBetween(0, doc.content.size, ' ', ' ');
-    const cleanFull = fullText.toLowerCase().replace(/\s+/g, ' ');
+    const docText = doc.textBetween(0, doc.content.size, '\n', '\n');
 
-    const matchIndex = cleanFull.indexOf(cleanSearch);
-    if (matchIndex === -1) {
+    const normalizedDoc = docText.toLowerCase();
+    const normalizedSearch = searchText.toLowerCase().trim();
+
+    const startIndex = normalizedDoc.indexOf(normalizedSearch);
+    if (startIndex === -1) {
       console.warn(`[findTextInDocument] Text not found: "${searchText.substring(0, 30)}..."`);
       return null;
     }
 
-    let charCount = 0;
+    const endIndex = startIndex + searchText.trim().length;
+
+    let currentTextPos = 0;
     let startPos: number | null = null;
     let endPos: number | null = null;
-    const searchLength = cleanSearch.replace(/\s+/g, '').length;
-    let nonWhitespaceCount = 0;
 
     doc.descendants((node, pos) => {
-      if (startPos !== null && endPos !== null) return false;
-
       if (node.isText && node.text) {
-        const nodeText = node.text.toLowerCase().replace(/\s+/g, ' ');
-        const nodeStart = charCount;
-        const nodeEnd = charCount + nodeText.length;
+        const nodeStart = currentTextPos;
+        const nodeEnd = currentTextPos + node.text.length;
 
-        if (startPos === null && matchIndex >= nodeStart && matchIndex < nodeEnd) {
-          const offsetInNode = matchIndex - nodeStart;
-          let textCharCount = 0;
-          for (let i = 0; i < node.text.length; i++) {
-            if (node.text[i].match(/\S/)) {
-              if (textCharCount === offsetInNode) {
-                startPos = pos + i;
-                break;
-              }
-              textCharCount++;
-            }
-          }
+        if (startPos === null && startIndex >= nodeStart && startIndex < nodeEnd) {
+          startPos = pos + (startIndex - nodeStart);
         }
 
-        for (let i = 0; i < node.text.length; i++) {
-          if (node.text[i].match(/\S/)) {
-            if (startPos !== null && endPos === null) {
-              nonWhitespaceCount++;
-              if (nonWhitespaceCount === searchLength) {
-                endPos = pos + i + 1;
-                return false;
-              }
-            }
-          }
+        if (endPos === null && endIndex > nodeStart && endIndex <= nodeEnd) {
+          endPos = pos + (endIndex - nodeStart);
         }
 
-        charCount += nodeText.length;
+        currentTextPos = nodeEnd;
+
+        if (startPos !== null && endPos !== null) {
+          return false;
+        }
+      } else if (node.isBlock) {
+        currentTextPos += 1;
       }
       return true;
     });
