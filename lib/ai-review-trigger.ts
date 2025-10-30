@@ -152,13 +152,14 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
       return null;
     }
 
-    const searchTrimmed = searchText.trim();
+    const normalizedPlainText = plainText.normalize('NFC');
+    const normalizedSearchText = searchText.normalize('NFC');
 
-    let indexInPlain = plainText.toLowerCase().indexOf(searchTrimmed.toLowerCase());
+    const indexInPlain = normalizedPlainText.toLowerCase().indexOf(normalizedSearchText.toLowerCase());
 
     if (indexInPlain === -1) {
-      const cleanSearch = searchText.trim().replace(/\s+/g, ' ');
-      const cleanPlain = plainText.replace(/\s+/g, ' ');
+      const cleanSearch = normalizedSearchText.trim().replace(/\s+/g, ' ');
+      const cleanPlain = normalizedPlainText.replace(/\s+/g, ' ');
 
       const cleanIndex = cleanPlain.toLowerCase().indexOf(cleanSearch.toLowerCase());
 
@@ -190,16 +191,16 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
       const endPlainIndex = cleanToPlainMap[cleanIndex + cleanSearch.length] || plainText.length;
 
       const start = mapping[startPlainIndex] || 0;
-      const end = mapping[endPlainIndex - 1] ? mapping[endPlainIndex - 1] + 1 : htmlContent.length;
+      const end = mapping[endPlainIndex] || htmlContent.length;
 
       return { start, end };
     }
 
     const startPlainIndex = indexInPlain;
-    const endPlainIndex = indexInPlain + searchTrimmed.length;
+    const endPlainIndex = indexInPlain + searchText.length;
 
     const start = mapping[startPlainIndex] || 0;
-    const end = mapping[endPlainIndex - 1] ? mapping[endPlainIndex - 1] + 1 : htmlContent.length;
+    const end = mapping[endPlainIndex] || htmlContent.length;
 
     return { start, end };
   } catch (error) {

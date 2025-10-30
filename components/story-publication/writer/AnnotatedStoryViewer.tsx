@@ -96,14 +96,106 @@ export default function AnnotatedStoryViewer({
     },
   });
 
+  function convertHTMLToPlainText(html: string): { text: string; mapping: number[] } {
+    const mapping: number[] = [];
+    let plainText = '';
+    let insideTag = false;
+
+    for (let i = 0; i < html.length; i++) {
+      const char = html[i];
+
+      if (char === '<') {
+        insideTag = true;
+        continue;
+      }
+
+      if (char === '>') {
+        insideTag = false;
+        continue;
+      }
+
+      if (!insideTag) {
+        plainText += char;
+        mapping.push(i);
+      }
+    }
+
+    return { text: plainText, mapping };
+  }
+
+  function convertHTMLOffsetToProseMirror(
+    htmlContent: string,
+    htmlStart: number,
+    htmlEnd: number
+  ): { from: number; to: number } | null {
+    if (!editor) return null;
+
+    const { text: plainText, mapping } = convertHTMLToPlainText(htmlContent);
+
+    let plainStart = -1;
+    let plainEnd = -1;
+
+    for (let i = 0; i < mapping.length; i++) {
+      if (plainStart === -1 && mapping[i] === htmlStart) {
+        plainStart = i;
+      }
+      if (mapping[i] >= htmlEnd) {
+        plainEnd = i;
+        break;
+      }
+    }
+
+    if (plainStart === -1 || plainEnd === -1) {
+      console.warn(`[convertHTMLOffset] Could not map HTML offsets ${htmlStart}-${htmlEnd} to plain text`);
+      return null;
+    }
+
+    const doc = editor.state.doc;
+    let currentTextPos = 0;
+    let startPos: number | null = null;
+    let endPos: number | null = null;
+
+    doc.descendants((node, pos) => {
+      if (node.isText && node.text) {
+        const nodeStart = currentTextPos;
+        const nodeEnd = currentTextPos + node.text.length;
+
+        if (startPos === null && plainStart >= nodeStart && plainStart < nodeEnd) {
+          startPos = pos + (plainStart - nodeStart);
+        }
+
+        if (endPos === null && plainEnd > nodeStart && plainEnd <= nodeEnd) {
+          endPos = pos + (plainEnd - nodeStart);
+        }
+
+        currentTextPos = nodeEnd;
+
+        if (startPos !== null && endPos !== null) {
+          return false;
+        }
+      } else if (node.isBlock) {
+        currentTextPos += 1;
+      }
+      return true;
+    });
+
+    if (startPos === null || endPos === null) {
+      console.warn(`[convertHTMLOffset] Could not determine ProseMirror positions for plain text ${plainStart}-${plainEnd}`);
+      return null;
+    }
+
+    console.log(`[convertHTMLOffset] HTML ${htmlStart}-${htmlEnd} → Plain ${plainStart}-${plainEnd} → ProseMirror ${startPos}-${endPos}`);
+    return { from: startPos, to: endPos };
+  }
+
   function findTextInDocument(searchText: string): { from: number; to: number } | null {
     if (!editor) return null;
 
     const doc = editor.state.doc;
     const docText = doc.textBetween(0, doc.content.size, '\n', '\n');
 
-    const normalizedDoc = docText.toLowerCase();
-    const normalizedSearch = searchText.toLowerCase().trim();
+    const normalizedDoc = docText.normalize('NFC').toLowerCase();
+    const normalizedSearch = searchText.normalize('NFC').toLowerCase();
 
     const startIndex = normalizedDoc.indexOf(normalizedSearch);
     if (startIndex === -1) {
@@ -192,10 +284,31 @@ export default function AnnotatedStoryViewer({
 
     allAnnotations.forEach((annotation, index) => {
       try {
-        const position = findTextInDocument(annotation.highlightedText);
+        let position: { from: number; to: number } | null = null;
+        let method = 'unknown';
+
+        position = findTextInDocument(annotation.highlightedText);
+        method = 'text-search';
+
+        if (position) {
+          console.log(`[AnnotatedStoryViewer] ✅ Annotation #${index} (${annotation.reviewType}) positioned using text search`);
+        } else {
+          console.warn(`[AnnotatedStoryViewer] ⚠️  Annotation #${index} (${annotation.reviewType}) text search failed, trying offset-based positioning`);
+
+          if (annotation.startOffset !== undefined && annotation.endOffset !== undefined && content) {
+            position = convertHTMLOffsetToProseMirror(content, annotation.startOffset, annotation.endOffset);
+            method = 'offset-based-fallback';
+
+            if (position) {
+              console.log(`[AnnotatedStoryViewer] ✅ Annotation #${index} (${annotation.reviewType}) positioned using stored offsets (fallback)`);
+            }
+          }
+        }
 
         if (!position) {
-          console.warn(`[AnnotatedStoryViewer] Could not find text for annotation #${index} (${annotation.reviewType}): "${annotation.highlightedText.substring(0, 30)}..."`);
+          console.error(`[AnnotatedStoryViewer] ❌ Annotation #${index} (${annotation.reviewType}) FAILED - could not determine position`);
+          console.error(`  Highlighted text: "${annotation.highlightedText.substring(0, 50)}..."`);
+          console.error(`  Stored offsets: ${annotation.startOffset}-${annotation.endOffset}`);
           failCount++;
           return;
         }
@@ -204,17 +317,22 @@ export default function AnnotatedStoryViewer({
         const docSize = editor.state.doc.content.size;
 
         if (from >= to || from < 0 || to > docSize) {
-          console.warn(`[AnnotatedStoryViewer] Invalid position range for annotation #${index} (${annotation.reviewType}): from=${from}, to=${to}, docSize=${docSize}`);
+          console.error(`[AnnotatedStoryViewer] ❌ Annotation #${index} (${annotation.reviewType}) FAILED - invalid position range`);
+          console.error(`  from=${from}, to=${to}, docSize=${docSize}`);
+          console.error(`  Method used: ${method}`);
           failCount++;
           return;
         }
 
         const selectedText = editor.state.doc.textBetween(from, to);
 
-        console.log(`[AnnotatedStoryViewer] Annotation #${index} (${annotation.reviewType}):`);
+        console.log(`[AnnotatedStoryViewer] ✅ Annotation #${index} (${annotation.reviewType}) applied successfully:`);
+        console.log(`  Method: ${method}`);
         console.log(`  Backend offsets: ${annotation.startOffset}-${annotation.endOffset}`);
         console.log(`  ProseMirror positions: ${from}-${to}`);
-        console.log(`  Text: "${selectedText.substring(0, 50)}${selectedText.length > 50 ? '...' : ''}"`);
+        console.log(`  Expected text: "${annotation.highlightedText.substring(0, 30)}..."`);
+        console.log(`  Actual text: "${selectedText.substring(0, 30)}${selectedText.length > 30 ? '...' : ''}"`);
+        console.log(`  Match: ${annotation.highlightedText.trim().toLowerCase() === selectedText.trim().toLowerCase() ? '✅' : '❌'}`);
 
         editor.chain()
           .setTextSelection({ from, to })
@@ -227,7 +345,7 @@ export default function AnnotatedStoryViewer({
 
         successCount++;
       } catch (error) {
-        console.error(`[AnnotatedStoryViewer] Failed to apply annotation #${index}:`, {
+        console.error(`[AnnotatedStoryViewer] ❌ Annotation #${index} FAILED with exception:`, {
           error,
           annotation,
           docSize: editor.state.doc.content.size
