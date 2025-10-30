@@ -191,7 +191,9 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
       const endPlainIndex = cleanToPlainMap[cleanIndex + cleanSearch.length] || plainText.length;
 
       const start = mapping[startPlainIndex] || 0;
-      const end = mapping[endPlainIndex] || htmlContent.length;
+      const end = endPlainIndex < mapping.length
+        ? mapping[endPlainIndex]
+        : htmlContent.length;
 
       return { start, end };
     }
@@ -200,7 +202,9 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
     const endPlainIndex = indexInPlain + searchText.length;
 
     const start = mapping[startPlainIndex] || 0;
-    const end = mapping[endPlainIndex] || htmlContent.length;
+    const end = endPlainIndex < mapping.length
+      ? mapping[endPlainIndex]
+      : htmlContent.length;
 
     return { start, end };
   } catch (error) {

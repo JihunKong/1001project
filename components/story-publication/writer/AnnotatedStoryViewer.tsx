@@ -139,10 +139,14 @@ export default function AnnotatedStoryViewer({
       if (plainStart === -1 && mapping[i] === htmlStart) {
         plainStart = i;
       }
-      if (mapping[i] >= htmlEnd) {
+      if (plainStart !== -1 && mapping[i] > htmlEnd) {
         plainEnd = i;
         break;
       }
+    }
+
+    if (plainStart !== -1 && plainEnd === -1) {
+      plainEnd = mapping.length;
     }
 
     if (plainStart === -1 || plainEnd === -1) {
