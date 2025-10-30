@@ -177,7 +177,7 @@ export default function AnnotatedStoryViewer({
         if (startPos !== null && endPos !== null) {
           return false;
         }
-      } else if (node.isBlock) {
+      } else if (node.isBlock && currentTextPos > 0) {
         currentTextPos += 1;
       }
       return true;
@@ -231,7 +231,7 @@ export default function AnnotatedStoryViewer({
         if (startPos !== null && endPos !== null) {
           return false;
         }
-      } else if (node.isBlock) {
+      } else if (node.isBlock && currentTextPos > 0) {
         currentTextPos += 1;
       }
       return true;
