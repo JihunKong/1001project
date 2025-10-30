@@ -9,9 +9,6 @@ async function regenerateAIAnnotations() {
       where: {
         createdAt: {
           lt: new Date('2025-10-30T10:00:00Z')
-        },
-        annotationData: {
-          not: null
         }
       }
     });
