@@ -8,7 +8,7 @@ async function regenerateAIAnnotations() {
     const deleteResult = await prisma.aIReview.deleteMany({
       where: {
         createdAt: {
-          lt: new Date('2025-10-30T06:00:00Z')
+          lt: new Date('2025-10-30T10:00:00Z')
         },
         annotationData: {
           not: null
