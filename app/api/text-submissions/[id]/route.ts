@@ -169,13 +169,19 @@ export async function PUT(
       }
     });
 
-    // Trigger auto AI reviews for draft updates (non-blocking)
+    // Trigger auto AI reviews for draft updates (non-blocking) - only on first save
     if (updatedSubmission.status === TextSubmissionStatus.DRAFT && updateData.content) {
-      triggerAutoAIReviews(updatedSubmission.id).catch((error) => {
-        logger.error('Error triggering auto AI reviews', error, {
-          submissionId: updatedSubmission.id
-        });
+      const existingReviews = await prisma.aIReview.count({
+        where: { submissionId: updatedSubmission.id }
       });
+
+      if (existingReviews === 0) {
+        triggerAutoAIReviews(updatedSubmission.id).catch((error) => {
+          logger.error('Error triggering auto AI reviews', error, {
+            submissionId: updatedSubmission.id
+          });
+        });
+      }
     }
 
     return NextResponse.json({ submission: updatedSubmission });

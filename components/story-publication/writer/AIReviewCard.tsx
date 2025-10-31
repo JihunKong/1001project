@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Sparkles, Wand2, ChevronDown, ChevronUp, Loader2, Check } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Sparkles, Wand2, ChevronDown, ChevronUp, Loader2, Check, RefreshCw } from 'lucide-react';
 
 interface AIReview {
   id: string;
@@ -28,14 +28,96 @@ const REVIEW_TYPE_LABELS = {
 export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
   const [reviews, setReviews] = useState<AIReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedReview, setExpandedReview] = useState<string | null>(null);
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    fetchAutoReviews();
+  const startPolling = useCallback(() => {
+    setPollingInterval((prevInterval) => {
+      if (prevInterval) {
+        clearInterval(prevInterval);
+      }
+
+      setIsGenerating(true);
+      let attempts = 0;
+      const maxAttempts = 20;
+
+      const interval = setInterval(async () => {
+        attempts++;
+        try {
+          const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch AI reviews');
+          }
+
+          const data = await response.json();
+          const completedReviews = data.reviews?.filter((r: AIReview) => r.status === 'COMPLETED') || [];
+
+          setReviews(data.reviews || []);
+
+          if (completedReviews.length >= 3 || attempts >= maxAttempts) {
+            clearInterval(interval);
+            setPollingInterval(null);
+            setIsGenerating(false);
+
+            setExpandedReview((prevExpanded) => {
+              if (!prevExpanded && completedReviews.length > 0) {
+                return completedReviews[0].id;
+              }
+              return prevExpanded;
+            });
+          }
+        } catch (err) {
+          console.error('Polling error:', err);
+          if (attempts >= maxAttempts) {
+            clearInterval(interval);
+            setPollingInterval(null);
+            setIsGenerating(false);
+          }
+        }
+      }, 3000);
+
+      return interval;
+    });
   }, [submissionId]);
 
-  const fetchAutoReviews = async () => {
+  useEffect(() => {
+    const checkAndStartPolling = async () => {
+      try {
+        const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`);
+        if (response.ok) {
+          const data = await response.json();
+          setReviews(data.reviews || []);
+          setIsLoading(false);
+
+          if (data.reviews && data.reviews.length > 0) {
+            setExpandedReview(data.reviews[0].id);
+
+            const completedCount = data.reviews.filter((r: AIReview) => r.status === 'COMPLETED').length;
+            if (completedCount < 3 && completedCount >= 0) {
+              startPolling();
+            }
+          }
+        } else {
+          setIsLoading(false);
+        }
+      } catch (err) {
+        console.error('Error checking reviews:', err);
+        setIsLoading(false);
+      }
+    };
+
+    checkAndStartPolling();
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [submissionId, startPolling, pollingInterval]);
+
+  const fetchAutoReviews = async (shouldStartPolling = false) => {
     try {
       setIsLoading(true);
       const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`);
@@ -50,11 +132,42 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
       if (data.reviews && data.reviews.length > 0) {
         setExpandedReview(data.reviews[0].id);
       }
+
+      if (shouldStartPolling && data.reviews) {
+        const completedCount = data.reviews.filter((r: AIReview) => r.status === 'COMPLETED').length;
+        if (completedCount < 3) {
+          startPolling();
+        }
+      }
     } catch (err) {
       console.error('Error fetching AI reviews:', err);
       setError(err instanceof Error ? err.message : 'Failed to load AI reviews');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRegenerateReviews = async () => {
+    try {
+      setIsRegenerating(true);
+      setError(null);
+
+      const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'regenerate' })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to regenerate AI reviews');
+      }
+
+      setIsRegenerating(false);
+      await fetchAutoReviews(true);
+    } catch (err) {
+      console.error('Error regenerating AI reviews:', err);
+      setError(err instanceof Error ? err.message : 'Failed to regenerate AI reviews');
+      setIsRegenerating(false);
     }
   };
 
@@ -112,19 +225,36 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
               AI Feedback
             </h3>
           </div>
-          {hasAutoReviews && (
-            <div className="bg-[#EEF2FF] px-3 py-1 rounded-full flex items-center gap-1">
-              <Check className="h-4 w-4 text-[#5951E7]" />
-              <span style={{
-                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                fontSize: '12px',
-                fontWeight: 500,
-                color: '#5951E7'
-              }}>
-                Auto-generated
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {hasAutoReviews && (
+              <div className="bg-[#EEF2FF] px-3 py-1 rounded-full flex items-center gap-1">
+                <Check className="h-4 w-4 text-[#5951E7]" />
+                <span style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  color: '#5951E7'
+                }}>
+                  Auto-generated
+                </span>
+              </div>
+            )}
+            {uniqueReviews.length > 0 && (
+              <button
+                onClick={handleRegenerateReviews}
+                disabled={isRegenerating}
+                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#5951E7] text-[#5951E7] rounded-md hover:bg-[#EEF2FF] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 500
+                }}
+              >
+                <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
+                {isRegenerating ? 'Regenerating...' : 'Regenerate AI Review'}
+              </button>
+            )}
+          </div>
         </div>
 
         <p style={{
@@ -136,6 +266,28 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
         }}>
           Your draft has been automatically reviewed. Check the feedback below to improve your story.
         </p>
+
+        {isGenerating && (
+          <div className="bg-[#EEF2FF] border border-[#E0E7FF] rounded-lg p-4 mb-4">
+            <div className="flex items-center gap-3">
+              <Loader2 className="h-5 w-5 text-[#5951E7] animate-spin" />
+              <div>
+                <p className="font-medium text-[#5951E7]" style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '14px'
+                }}>
+                  AI가 스토리를 분석하고 있습니다...
+                </p>
+                <p className="text-sm text-[#8E8E93]" style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '12px'
+                }}>
+                  보통 15-30초 정도 소요됩니다
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {uniqueReviews.length === 0 ? (
           <div className="bg-[#F9FAFB] rounded-md p-6 text-center">

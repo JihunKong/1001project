@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
 
 export async function GET(
   request: NextRequest,
@@ -43,6 +44,57 @@ export async function GET(
     logger.error('Error fetching AI reviews', error);
     return NextResponse.json(
       { error: 'Failed to fetch AI reviews' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const body = await request.json();
+    const { action } = body;
+
+    if (action !== 'regenerate') {
+      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    }
+
+    const submission = await prisma.textSubmission.findUnique({
+      where: { id },
+      select: { authorId: true }
+    });
+
+    if (!submission) {
+      return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
+    }
+
+    if (submission.authorId !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    await prisma.aIReview.deleteMany({
+      where: { submissionId: id }
+    });
+
+    await triggerAutoAIReviews(id);
+
+    return NextResponse.json({
+      success: true,
+      message: 'AI reviews are being regenerated'
+    });
+
+  } catch (error) {
+    logger.error('Error regenerating AI reviews', error);
+    return NextResponse.json(
+      { error: 'Failed to regenerate AI reviews' },
       { status: 500 }
     );
   }
