@@ -216,19 +216,21 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 Track Your Story
               </h1>
 
-              <button
-                onClick={() => router.push(`/dashboard/writer/submit-text?edit=${submission.id}`)}
-                className="flex items-center gap-2 px-4 py-3 bg-white hover:bg-[#F9FAFB] border border-[#141414] text-[#141414] rounded-full transition-colors"
-                style={{
-                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                  fontSize: '20px',
-                  fontWeight: 500,
-                  lineHeight: '1.221'
-                }}
-              >
-                <Edit className="w-5 h-5" />
-                Edit a story
-              </button>
+              {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') && (
+                <button
+                  onClick={() => router.push(`/dashboard/writer/submit-text?edit=${submission.id}`)}
+                  className="flex items-center gap-2 px-4 py-3 bg-white hover:bg-[#F9FAFB] border border-[#141414] text-[#141414] rounded-full transition-colors"
+                  style={{
+                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                    fontSize: '20px',
+                    fontWeight: 500,
+                    lineHeight: '1.221'
+                  }}
+                >
+                  <Edit className="w-5 h-5" />
+                  Edit a story
+                </button>
+              )}
             </div>
 
             <div className="space-y-5">

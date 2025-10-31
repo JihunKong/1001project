@@ -169,7 +169,7 @@ export default function TextSubmissionForm({
         onSuccess?.();
 
         if (!onSuccess) {
-          router.push('/dashboard/writer');
+          router.push('/dashboard/writer/stories');
         }
       }
 
@@ -223,7 +223,7 @@ export default function TextSubmissionForm({
     if (onSuccess) {
       onSuccess();
     } else {
-      router.push('/dashboard/writer');
+      router.push('/dashboard/writer/stories');
     }
   };
 
