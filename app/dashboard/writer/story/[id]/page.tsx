@@ -245,13 +245,17 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               <ReviewerFeedbackList feedbacks={feedbacks} />
 
               {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') ? (
-                <div className="grid grid-cols-1 lg:grid-cols-[minmax(300px,400px)_1fr] gap-5 overflow-hidden">
-                  <AIReviewCard submissionId={submission.id} />
-                  <AnnotatedStoryViewer
-                    title={submission.title || 'Untitled'}
-                    content={submission.content}
-                    submissionId={submission.id}
-                  />
+                <div className="grid grid-cols-1 lg:grid-cols-[minmax(350px,450px)_1fr] gap-5">
+                  <div className="overflow-hidden">
+                    <AIReviewCard submissionId={submission.id} />
+                  </div>
+                  <div className="overflow-hidden">
+                    <AnnotatedStoryViewer
+                      title={submission.title || 'Untitled'}
+                      content={submission.content}
+                      submissionId={submission.id}
+                    />
+                  </div>
                 </div>
               ) : (
                 <StoryContentViewer

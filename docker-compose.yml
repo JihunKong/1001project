@@ -23,6 +23,7 @@ services:
       - ./uploads:/app/uploads:rw
       - ./prisma:/app/prisma:ro
       - ./public/books:/app/public/books:ro
+      - ./public/generated-images:/app/public/generated-images:rw
     networks:
       - app-network
     depends_on:
