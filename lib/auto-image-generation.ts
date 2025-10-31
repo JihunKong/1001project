@@ -127,7 +127,7 @@ export async function generateImagesForSubmission(
 }
 
 function generateImagePrompts(
-  submission: { title: string; summary?: string; content: string },
+  submission: { title: string; summary?: string | null; content: string },
   maxImages: number
 ): string[] {
   const basePrompt = `Children's story illustration for "${submission.title}"`;
