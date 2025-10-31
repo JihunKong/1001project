@@ -22,7 +22,9 @@ function SubmitTextPage() {
     status: 'DRAFT',
     ageRange: null as string | null,
     wordCount: 0,
-    submittedAt: null as Date | null
+    submittedAt: null as Date | null,
+    updatedAt: null as Date | string | null,
+    createdAt: null as Date | string | null
   });
 
   useEffect(() => {
@@ -45,7 +47,9 @@ function SubmitTextPage() {
               status: data.submission.status || 'DRAFT',
               ageRange: data.submission.ageRange,
               wordCount: data.submission.wordCount || 0,
-              submittedAt: data.submission.submittedAt
+              submittedAt: data.submission.submittedAt,
+              updatedAt: data.submission.updatedAt,
+              createdAt: data.submission.createdAt
             });
           } else {
             throw new Error('Submission not found');
@@ -189,6 +193,8 @@ function SubmitTextPage() {
             <SubmissionDetailsCard
               status={formData.status}
               submittedAt={formData.submittedAt}
+              updatedAt={formData.updatedAt}
+              createdAt={formData.createdAt}
               wordCount={formData.wordCount}
             />
 

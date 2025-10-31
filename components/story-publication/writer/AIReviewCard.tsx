@@ -251,7 +251,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
                 }}
               >
                 <RefreshCw className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
-                {isRegenerating ? 'Regenerating...' : 'Regenerate AI Review'}
+                {isRegenerating ? 'Regenerating...' : 'Regenerate'}
               </button>
             )}
           </div>

@@ -5,12 +5,16 @@ import { StatusBadge } from '../shared';
 interface SubmissionDetailsCardProps {
   status?: string;
   submittedAt?: Date | string | null;
+  updatedAt?: Date | string | null;
+  createdAt?: Date | string | null;
   wordCount?: number;
 }
 
 export default function SubmissionDetailsCard({
   status = 'DRAFT',
   submittedAt,
+  updatedAt,
+  createdAt,
   wordCount = 0,
 }: SubmissionDetailsCardProps) {
   const formatDate = (date?: Date | string | null) => {
@@ -78,7 +82,7 @@ export default function SubmissionDetailsCard({
                 lineHeight: '1.221'
               }}
             >
-              {formatDate(submittedAt)}
+              {formatDate(updatedAt || createdAt)}
             </span>
           </div>
 
