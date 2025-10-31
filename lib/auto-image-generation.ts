@@ -155,6 +155,8 @@ function extractTextFromHTML(html: string): string {
 }
 
 export async function triggerImageGeneration(submissionId: string): Promise<void> {
+  logger.info('triggerImageGeneration called', { submissionId });
+
   generateImagesForSubmission(submissionId, 3).catch((error) => {
     logger.error('Background image generation failed', error, {
       submissionId
