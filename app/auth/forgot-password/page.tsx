@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
               Forgot Password?
             </h2>
             <p className="text-center text-[#737373] text-sm mb-8">
-              No worries! We'll send you a magic link to sign in.
+              No worries! We&apos;ll send you a magic link to sign in.
             </p>
 
             {/* Success Message */}
@@ -164,10 +164,10 @@ export default function ForgotPasswordPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#91C549]/70 to-[#04A59D]/70 items-center justify-center p-12">
         <div className="text-center text-white">
           <h1 className="text-5xl font-semibold mb-6">
-            We've Got You Covered
+            We&apos;ve Got You Covered
           </h1>
           <p className="text-2xl font-semibold opacity-90">
-            Just enter your email and we'll send you a magic link
+            Just enter your email and we&apos;ll send you a magic link
           </p>
         </div>
       </div>
