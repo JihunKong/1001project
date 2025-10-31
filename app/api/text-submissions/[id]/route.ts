@@ -9,6 +9,7 @@ import { NotificationService } from '@/lib/notifications/NotificationService';
 import { notifySubmissionStatusChange, notifyFeedbackReceived } from '@/lib/sse-notifications';
 import { logger } from '@/lib/logger';
 import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
+import { triggerImageGeneration } from '@/lib/auto-image-generation';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -341,6 +342,10 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
         newStatus
       });
     }
+  }
+
+  if (newStatus === TextSubmissionStatus.PENDING) {
+    triggerImageGeneration(submission.id);
   }
 
   return NextResponse.json({ submission: updatedSubmission });
