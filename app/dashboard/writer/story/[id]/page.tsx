@@ -16,7 +16,7 @@ interface TextSubmission {
   title: string;
   content: string;
   summary?: string;
-  thumbnailUrl?: string;
+  generatedImages?: string[];
   status: string;
   wordCount?: number | null;
   targetAudience?: string;
@@ -235,7 +235,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               <StoryTrackingCard
                 title={submission.title || 'Untitled'}
                 description={submission.summary || submission.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
-                thumbnailUrl={submission.thumbnailUrl}
+                thumbnailUrl={submission.generatedImages?.[0]}
                 status={submission.status}
                 submissionDate={submission.createdAt}
                 targetAudience={submission.targetAudience}

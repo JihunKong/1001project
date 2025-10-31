@@ -212,7 +212,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
   return (
     <div className="bg-white border border-[#E5E5EA] rounded-lg p-6">
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-[#5951E7]" />
             <h3 style={{
@@ -225,9 +225,9 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
               AI Feedback
             </h3>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {hasAutoReviews && (
-              <div className="bg-[#EEF2FF] px-3 py-1 rounded-full flex items-center gap-1">
+              <div className="bg-[#EEF2FF] px-3 py-1 rounded-full flex items-center gap-1 whitespace-nowrap">
                 <Check className="h-4 w-4 text-[#5951E7]" />
                 <span style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
@@ -243,7 +243,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
               <button
                 onClick={handleRegenerateReviews}
                 disabled={isRegenerating}
-                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#5951E7] text-[#5951E7] rounded-md hover:bg-[#EEF2FF] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-[#5951E7] text-[#5951E7] rounded-md hover:bg-[#EEF2FF] transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                 style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                   fontSize: '14px',
