@@ -21,8 +21,15 @@ export async function generateImage(
 ): Promise<GenerateImageResult> {
   const apiKey = process.env.GOOGLE_GENAI_API_KEY;
 
+  logger.info('[IMAGE-GEN] Starting generateImage function', {
+    hasApiKey: !!apiKey,
+    apiKeyLength: apiKey?.length || 0,
+    style: options.style || 'cute-cartoon',
+    outputPath: options.outputPath
+  });
+
   if (!apiKey) {
-    logger.error('GOOGLE_GENAI_API_KEY not set in environment');
+    logger.error('[IMAGE-GEN] GOOGLE_GENAI_API_KEY not set in environment');
     return {
       success: false,
       error: 'GOOGLE_GENAI_API_KEY is not set in environment variables'
@@ -30,10 +37,7 @@ export async function generateImage(
   }
 
   try {
-    logger.info('Initializing Google GenAI for image generation', {
-      style: options.style || 'cute-cartoon',
-      outputPath: options.outputPath
-    });
+    logger.info('[IMAGE-GEN] Initializing Google GenAI client');
 
     const ai = new GoogleGenAI({ apiKey });
 
@@ -48,9 +52,10 @@ export async function generateImage(
     const styleModifier = stylePrompts[style];
     const enhancedPrompt = `${options.prompt}, ${styleModifier}`;
 
-    logger.info('Sending image generation request to Google GenAI', {
+    logger.info('[IMAGE-GEN] Sending request to Google GenAI', {
       prompt: enhancedPrompt.substring(0, 150),
-      model: 'gemini-2.0-flash-exp'
+      model: 'gemini-2.5-flash-image',
+      promptLength: enhancedPrompt.length
     });
 
     const response = await ai.models.generateContent({
@@ -58,23 +63,31 @@ export async function generateImage(
       contents: enhancedPrompt,
     });
 
-    logger.info('Received response from Google GenAI', {
+    logger.info('[IMAGE-GEN] Received response from Google GenAI', {
+      hasCandidates: !!response.candidates,
       candidatesCount: response.candidates?.length || 0
     });
 
     if (!response.candidates || response.candidates.length === 0) {
-      logger.error('No image candidates returned from Google GenAI');
+      logger.error('[IMAGE-GEN] No image candidates returned from Google GenAI', {
+        responseKeys: Object.keys(response || {}),
+        fullResponse: JSON.stringify(response).substring(0, 500)
+      });
       throw new Error("No image candidates returned from Google GenAI");
     }
 
     const candidate = response.candidates[0];
     if (!candidate.content || !candidate.content.parts) {
-      logger.error('No content parts in candidate');
+      logger.error('[IMAGE-GEN] No content parts in candidate', {
+        hasContent: !!candidate.content,
+        candidateKeys: Object.keys(candidate || {})
+      });
       throw new Error("No content parts in candidate");
     }
 
-    logger.info('Processing response parts', {
-      partsCount: candidate.content.parts.length
+    logger.info('[IMAGE-GEN] Processing response parts', {
+      partsCount: candidate.content.parts.length,
+      partTypes: candidate.content.parts.map(p => Object.keys(p))
     });
 
     for (const part of candidate.content.parts) {
@@ -82,22 +95,36 @@ export async function generateImage(
         const imageData = part.inlineData.data;
         const buffer = Buffer.from(imageData, "base64");
 
-        logger.info('Image data extracted from response', {
-          sizeBytes: buffer.length
+        logger.info('[IMAGE-GEN] Image data extracted', {
+          sizeBytes: buffer.length,
+          base64Length: imageData.length
         });
 
         if (options.outputPath) {
           const directory = path.dirname(options.outputPath);
+          logger.info('[IMAGE-GEN] Checking output directory', {
+            directory,
+            exists: fs.existsSync(directory)
+          });
+
           if (!fs.existsSync(directory)) {
-            logger.info('Creating output directory', { directory });
+            logger.info('[IMAGE-GEN] Creating output directory', { directory });
             fs.mkdirSync(directory, { recursive: true });
           }
 
-          fs.writeFileSync(options.outputPath, buffer);
-          logger.info('Image saved successfully', {
-            path: options.outputPath,
-            sizeBytes: buffer.length
-          });
+          try {
+            fs.writeFileSync(options.outputPath, buffer);
+            logger.info('[IMAGE-GEN] Image saved successfully', {
+              path: options.outputPath,
+              sizeBytes: buffer.length
+            });
+          } catch (writeError) {
+            logger.error('[IMAGE-GEN] Failed to write image file', writeError, {
+              path: options.outputPath,
+              directory
+            });
+            throw writeError;
+          }
 
           return {
             success: true,
@@ -113,16 +140,22 @@ export async function generateImage(
       }
     }
 
-    logger.error('No image data found in response parts');
+    logger.error('[IMAGE-GEN] No image data found in response parts', {
+      partsCount: candidate.content.parts.length,
+      partKeys: candidate.content.parts.map(p => Object.keys(p))
+    });
     return {
       success: false,
       error: 'No image data in response'
     };
 
   } catch (error) {
-    logger.error('Error generating image with Google GenAI', error, {
+    logger.error('[IMAGE-GEN] Error generating image with Google GenAI', error, {
       errorMessage: error instanceof Error ? error.message : 'Unknown error',
-      prompt: options.prompt.substring(0, 100)
+      errorStack: error instanceof Error ? error.stack : undefined,
+      errorName: error instanceof Error ? error.name : typeof error,
+      prompt: options.prompt.substring(0, 100),
+      outputPath: options.outputPath
     });
     return {
       success: false,
