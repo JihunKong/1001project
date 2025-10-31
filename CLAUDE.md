@@ -487,6 +487,62 @@ When working with books and PDFs:
 - **Use security-auditor for security reviews**
 - **Don't ignore available tools and agents**
 
+### 7. Docker Compose Partial Service Restart (CRITICAL - 2025-10-31)
+
+**⚠️ nginx 컨테이너 미실행 문제 - 반복적으로 발생**
+
+**문제**:
+- 배포 시 `docker compose up -d --force-recreate app` 사용
+- app 서비스만 재시작되어 nginx, certbot, prometheus, node-exporter가 시작되지 않음
+- HTTPS 접속 불가 (curl 응답: 000)
+- App 컨테이너는 정상이지만 외부 접속 차단됨
+
+**증상**:
+```bash
+# 컨테이너 확인 시 nginx가 없음
+docker ps
+# Only shows: app, postgres, redis
+# Missing: nginx, certbot, prometheus, node-exporter
+```
+
+**근본 원인**:
+특정 서비스만 지정하면 다른 서비스는 시작되지 않음
+
+**해결 방법**:
+```bash
+# ❌ 잘못된 방법
+docker compose up -d --force-recreate app
+
+# ✅ 올바른 방법 - 모든 서비스 시작
+docker compose up -d
+
+# 또는 특정 서비스만 재빌드하고 모든 서비스 시작
+docker compose build app
+docker compose up -d
+```
+
+**배포 체크리스트**:
+1. 배포 후 반드시 모든 컨테이너 확인
+2. nginx 컨테이너 실행 여부 확인
+3. HTTPS 접속 테스트 (200 응답 확인)
+4. 서비스 명시 시 주의 - 가급적 서비스명 생략
+
+**검증 명령어**:
+```bash
+# 1. 모든 컨테이너 상태 확인
+docker ps --format 'table {{.Names}}\t{{.Status}}'
+
+# 2. nginx 포함 여부 확인
+docker ps | grep nginx
+
+# 3. HTTPS 접속 테스트
+curl -s -o /dev/null -w "%{http_code}" https://1001stories.seedsofempowerment.org/api/health
+# 200 응답 확인
+
+# 4. 필요시 전체 서비스 재시작
+docker compose up -d
+```
+
 ### Accountability Warning
 - **Repeated mistakes are not accidents - they indicate systematic problems**
 - **Each mistake costs significant time and delays the project**
