@@ -3,7 +3,7 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { AISuggestionMark } from './extensions/AISuggestionMark';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import AISuggestionPopover from './AISuggestionPopover';
 
 interface AIAnnotation {
@@ -50,7 +50,6 @@ export default function AnnotatedStoryViewer({
     async function fetchAIReviews() {
       try {
         setIsLoading(true);
-        console.log(`[AnnotatedStoryViewer] Fetching AI reviews for submission ${submissionId}`);
 
         const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`);
 
@@ -62,13 +61,7 @@ export default function AnnotatedStoryViewer({
         const data = await response.json();
         const reviews = data.reviews || [];
 
-        console.log(`[AnnotatedStoryViewer] Fetched ${reviews.length} AI reviews`);
-
-        reviews.forEach((review: AIReview, index: number) => {
-          const annotationCount = review.annotationData?.length || 0;
-          const suggestionCount = review.suggestions?.length || 0;
-          console.log(`[AnnotatedStoryViewer] Review #${index} (${review.reviewType}): ${annotationCount} annotations, ${suggestionCount} suggestions`);
-
+        reviews.forEach((review: AIReview) => {
           if (!review.annotationData || review.annotationData.length === 0) {
             console.warn(`[AnnotatedStoryViewer] Review ${review.reviewType} has no annotationData!`);
           }
@@ -123,11 +116,11 @@ export default function AnnotatedStoryViewer({
     return { text: plainText, mapping };
   }
 
-  function convertHTMLOffsetToProseMirror(
+  const convertHTMLOffsetToProseMirror = useCallback((
     htmlContent: string,
     htmlStart: number,
     htmlEnd: number
-  ): { from: number; to: number } | null {
+  ): { from: number; to: number } | null => {
     if (!editor) return null;
 
     const { text: plainText, mapping } = convertHTMLToPlainText(htmlContent);
@@ -188,11 +181,10 @@ export default function AnnotatedStoryViewer({
       return null;
     }
 
-    console.log(`[convertHTMLOffset] HTML ${htmlStart}-${htmlEnd} → Plain ${plainStart}-${plainEnd} → ProseMirror ${startPos}-${endPos}`);
     return { from: startPos, to: endPos };
-  }
+  }, [editor]);
 
-  function findTextInDocument(searchText: string): { from: number; to: number } | null {
+  const findTextInDocument = useCallback((searchText: string): { from: number; to: number } | null => {
     if (!editor) return null;
 
     const doc = editor.state.doc;
@@ -243,20 +235,16 @@ export default function AnnotatedStoryViewer({
     }
 
     return { from: startPos, to: endPos };
-  }
+  }, [editor]);
 
   useEffect(() => {
     if (!editor) {
-      console.log('[AnnotatedStoryViewer] Editor not ready yet');
       return;
     }
 
     if (!aiReviews.length) {
-      console.log('[AnnotatedStoryViewer] No AI reviews available yet');
       return;
     }
-
-    console.log(`[AnnotatedStoryViewer] Editor content size: ${editor.state.doc.content.size} chars`);
 
     const allAnnotations: Array<AIAnnotation & { reviewType: string; suggestion: string }> = [];
 
@@ -282,37 +270,23 @@ export default function AnnotatedStoryViewer({
 
     allAnnotations.sort((a, b) => a.startOffset - b.startOffset);
 
-    console.log(`[AnnotatedStoryViewer] Applying ${allAnnotations.length} annotations to editor`);
     let successCount = 0;
     let failCount = 0;
 
     allAnnotations.forEach((annotation, index) => {
       try {
         let position: { from: number; to: number } | null = null;
-        let method = 'unknown';
 
         position = findTextInDocument(annotation.highlightedText);
-        method = 'text-search';
 
-        if (position) {
-          console.log(`[AnnotatedStoryViewer] ✅ Annotation #${index} (${annotation.reviewType}) positioned using text search`);
-        } else {
-          console.warn(`[AnnotatedStoryViewer] ⚠️  Annotation #${index} (${annotation.reviewType}) text search failed, trying offset-based positioning`);
-
+        if (!position) {
           if (annotation.startOffset !== undefined && annotation.endOffset !== undefined && content) {
             position = convertHTMLOffsetToProseMirror(content, annotation.startOffset, annotation.endOffset);
-            method = 'offset-based-fallback';
-
-            if (position) {
-              console.log(`[AnnotatedStoryViewer] ✅ Annotation #${index} (${annotation.reviewType}) positioned using stored offsets (fallback)`);
-            }
           }
         }
 
         if (!position) {
-          console.error(`[AnnotatedStoryViewer] ❌ Annotation #${index} (${annotation.reviewType}) FAILED - could not determine position`);
-          console.error(`  Highlighted text: "${annotation.highlightedText.substring(0, 50)}..."`);
-          console.error(`  Stored offsets: ${annotation.startOffset}-${annotation.endOffset}`);
+          console.error(`[AnnotatedStoryViewer] Annotation #${index} (${annotation.reviewType}) failed - could not determine position`);
           failCount++;
           return;
         }
@@ -321,22 +295,10 @@ export default function AnnotatedStoryViewer({
         const docSize = editor.state.doc.content.size;
 
         if (from >= to || from < 0 || to > docSize) {
-          console.error(`[AnnotatedStoryViewer] ❌ Annotation #${index} (${annotation.reviewType}) FAILED - invalid position range`);
-          console.error(`  from=${from}, to=${to}, docSize=${docSize}`);
-          console.error(`  Method used: ${method}`);
+          console.error(`[AnnotatedStoryViewer] Annotation #${index} (${annotation.reviewType}) failed - invalid position range`);
           failCount++;
           return;
         }
-
-        const selectedText = editor.state.doc.textBetween(from, to);
-
-        console.log(`[AnnotatedStoryViewer] ✅ Annotation #${index} (${annotation.reviewType}) applied successfully:`);
-        console.log(`  Method: ${method}`);
-        console.log(`  Backend offsets: ${annotation.startOffset}-${annotation.endOffset}`);
-        console.log(`  ProseMirror positions: ${from}-${to}`);
-        console.log(`  Expected text: "${annotation.highlightedText.substring(0, 30)}..."`);
-        console.log(`  Actual text: "${selectedText.substring(0, 30)}${selectedText.length > 30 ? '...' : ''}"`);
-        console.log(`  Match: ${annotation.highlightedText.trim().toLowerCase() === selectedText.trim().toLowerCase() ? '✅' : '❌'}`);
 
         editor.chain()
           .setTextSelection({ from, to })
@@ -349,21 +311,15 @@ export default function AnnotatedStoryViewer({
 
         successCount++;
       } catch (error) {
-        console.error(`[AnnotatedStoryViewer] ❌ Annotation #${index} FAILED with exception:`, {
-          error,
-          annotation,
-          docSize: editor.state.doc.content.size
-        });
+        console.error(`[AnnotatedStoryViewer] Annotation #${index} failed with exception:`, error);
         failCount++;
       }
     });
 
-    console.log(`[AnnotatedStoryViewer] ✅ Applied ${successCount} annotations, ❌ ${failCount} failed`);
-
     if (successCount === 0 && allAnnotations.length > 0) {
       console.error('[AnnotatedStoryViewer] ALL annotations failed to apply! Check position offsets.');
     }
-  }, [editor, aiReviews]);
+  }, [editor, aiReviews, content, convertHTMLOffsetToProseMirror, findTextInDocument]);
 
   useEffect(() => {
     if (!editor) return;

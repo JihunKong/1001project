@@ -164,7 +164,6 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
       const cleanIndex = cleanPlain.toLowerCase().indexOf(cleanSearch.toLowerCase());
 
       if (cleanIndex === -1) {
-        console.log(`[AI Review] Text not found in content: "${searchText.substring(0, 50)}..."`);
         return null;
       }
 
@@ -244,7 +243,6 @@ function createAnnotations(
         annotationIndex++;
         successCount++;
       } else {
-        console.log(`[AI Review] Failed to locate text for annotation #${improvementIndex}: "${improvement.text.substring(0, 30)}..."`);
         failCount++;
       }
     } else {
@@ -252,7 +250,6 @@ function createAnnotations(
     }
   });
 
-  console.log(`[AI Review] Created ${successCount} annotations (${failCount} failed) for ${reviewType}`);
   return annotations;
 }
 
@@ -267,8 +264,6 @@ async function generateAIReview(
     const prompt = REVIEW_PROMPTS[reviewType];
     const systemMessage = 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.';
 
-    console.log(`[AI Review] Generating ${reviewType} review (${plainTextContent.length} chars)`);
-
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -282,13 +277,10 @@ async function generateAIReview(
     let responseContent = response.choices[0]?.message?.content || '{}';
     responseContent = responseContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    console.log(`[AI Review] OpenAI response received (${responseContent.length} chars)`);
-
     const feedback = JSON.parse(responseContent) as AIFeedback;
     const score = (feedback as any).score || null;
 
     const improvements = feedback.improvements || [];
-    console.log(`[AI Review] Parsed ${improvements.length} improvements from OpenAI`);
 
     const annotations = createAnnotations(improvements, htmlContent, reviewType);
 
@@ -301,8 +293,6 @@ async function generateAIReview(
       }
       return 'No suggestion provided';
     });
-
-    console.log(`[AI Review] Generated ${suggestions.length} suggestions matching ${annotations.length} annotations`);
 
     return {
       feedback,
@@ -331,11 +321,8 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
   const plainTextContent = submission.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
   if (plainTextContent.length < 50) {
-    console.log(`Submission ${submissionId} too short for AI review (${plainTextContent.length} chars)`);
     return;
   }
-
-  console.log(`[AI Review] Starting auto reviews for submission ${submissionId} (${plainTextContent.length} chars)`);
 
   const reviewTypes: AIReviewType[] = ['GRAMMAR', 'STRUCTURE', 'WRITING_HELP'];
 
@@ -367,8 +354,6 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
           triggerEvent: 'AUTO_ON_SAVE'
         }
       });
-
-      console.log(`[AI Review] ${reviewType} completed: ${annotations.length} annotations, ${suggestions.length} suggestions`);
     } catch (error) {
       console.error(`[AI Review] Failed to create ${reviewType} review:`, error);
 

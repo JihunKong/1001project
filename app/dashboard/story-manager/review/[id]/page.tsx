@@ -121,7 +121,7 @@ export default function StoryReviewPage() {
     }
   }, [session, status]);
 
-  const fetchSubmission = async () => {
+  const fetchSubmission = useCallback(async () => {
     try {
       const response = await fetch(`/api/text-submissions/${params.id}`);
       if (!response.ok) {
@@ -134,7 +134,7 @@ export default function StoryReviewPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
 
   const fetchComments = useCallback(async () => {
     if (!params.id) return;
@@ -160,7 +160,7 @@ export default function StoryReviewPage() {
       fetchSubmission();
       fetchComments();
     }
-  }, [session, params.id, fetchComments]);
+  }, [session, params.id, fetchComments, fetchSubmission]);
 
   const handleAddComment = async (highlightedText: string, startOffset: number, endOffset: number, content: string) => {
     if (!submission || !session?.user?.id) return;
