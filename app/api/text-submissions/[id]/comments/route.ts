@@ -157,11 +157,11 @@ export async function POST(
         submission.authorId,
         NotificationType.WRITER,
         'New Feedback on Your Story',
-        `${session.user.name} left feedback on "${submission.title}"`,
+        `${session.user.name || 'Reviewer'} left feedback on "${submission.title}"`,
         {
           submissionId: submission.id,
           submissionTitle: submission.title,
-          reviewerName: session.user.name,
+          reviewerName: session.user.name || 'Unknown Reviewer',
           feedback: content.substring(0, 100),
           commentId: comment.id
         }
