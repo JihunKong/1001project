@@ -28,6 +28,7 @@ interface TextSubmission {
   title: string;
   summary: string;
   content?: string;
+  generatedImages?: string[];
   status: 'DRAFT' | 'PENDING' | 'STORY_REVIEW' | 'FORMAT_REVIEW' | 'CONTENT_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'NEEDS_REVISION' | 'REJECTED';
   createdAt: string;
   updatedAt: string;
@@ -276,25 +277,36 @@ export default function StoriesPage() {
                   padding="lg"
                   hoverable
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-figma-black mb-2">
-                        {submission.title}
-                      </h3>
-                      <div className="flex items-center gap-4 text-sm text-figma-gray-inactive">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {new Date(submission.updatedAt).toLocaleDateString()}
-                        </span>
-                        {submission.wordCount && (
-                          <span>{submission.wordCount} words</span>
-                        )}
+                  <div className="flex gap-4">
+                    {submission.generatedImages && submission.generatedImages.length > 0 && (
+                      <div className="flex-shrink-0 w-32 h-32 rounded-lg overflow-hidden bg-gray-100">
+                        <img
+                          src={submission.generatedImages[0]}
+                          alt={`Thumbnail for ${submission.title}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <StatusBadge status={submission.status} size="md" />
-                    </div>
-                  </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-figma-black mb-2">
+                            {submission.title}
+                          </h3>
+                          <div className="flex items-center gap-4 text-sm text-figma-gray-inactive">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {new Date(submission.updatedAt).toLocaleDateString()}
+                            </span>
+                            {submission.wordCount && (
+                              <span>{submission.wordCount} words</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <StatusBadge status={submission.status} size="md" />
+                        </div>
+                      </div>
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 mt-4 flex-wrap">
@@ -344,17 +356,19 @@ export default function StoriesPage() {
                     )}
                   </div>
 
-                  {/* Feedback Preview */}
-                  {submission.feedback && submission.feedback.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-figma-gray-border">
-                      <div className="text-sm text-figma-gray-inactive">
-                        <span className="font-medium text-figma-black">Latest Feedback:</span>
-                        <p className="mt-1 text-figma-black line-clamp-2">
-                          {submission.feedback[0].content}
-                        </p>
-                      </div>
+                      {/* Feedback Preview */}
+                      {submission.feedback && submission.feedback.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-figma-gray-border">
+                          <div className="text-sm text-figma-gray-inactive">
+                            <span className="font-medium text-figma-black">Latest Feedback:</span>
+                            <p className="mt-1 text-figma-black line-clamp-2">
+                              {submission.feedback[0].content}
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </Card>
               ))}
             </div>
