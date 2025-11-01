@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { NotificationService } from '@/lib/notifications/NotificationService';
+import { NotificationType } from '@prisma/client';
 
 export async function GET(
   request: NextRequest,
@@ -99,7 +101,12 @@ export async function POST(
     const { id: submissionId } = await params;
 
     const submission = await prisma.textSubmission.findUnique({
-      where: { id: submissionId }
+      where: { id: submissionId },
+      select: {
+        id: true,
+        title: true,
+        authorId: true
+      }
     });
 
     if (!submission) {
@@ -143,6 +150,25 @@ export async function POST(
         }
       }
     });
+
+    try {
+      const notificationService = new NotificationService();
+      await notificationService.createNotification(
+        submission.authorId,
+        NotificationType.WRITER,
+        'New Feedback on Your Story',
+        `${session.user.name} left feedback on "${submission.title}"`,
+        {
+          submissionId: submission.id,
+          submissionTitle: submission.title,
+          reviewerName: session.user.name,
+          feedback: content.substring(0, 100),
+          commentId: comment.id
+        }
+      );
+    } catch (notificationError) {
+      console.error('Failed to create notification for comment:', notificationError);
+    }
 
     return NextResponse.json({ comment }, { status: 201 });
 
