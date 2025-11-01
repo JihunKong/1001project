@@ -19,16 +19,16 @@ const navItems: NavItem[] = [
     icon: Home
   },
   {
+    id: 'stories',
+    label: 'My Stories',
+    href: '/dashboard/writer/stories',
+    icon: FileText
+  },
+  {
     id: 'library',
     label: 'Library',
     href: '/dashboard/writer/library',
     icon: Bookmark
-  },
-  {
-    id: 'stories',
-    label: 'Stories',
-    href: '/dashboard/writer/stories',
-    icon: FileText
   }
 ];
 

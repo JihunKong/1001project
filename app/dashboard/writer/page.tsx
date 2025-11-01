@@ -3,33 +3,28 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
-import { useSSENotifications } from '@/hooks/useSSENotifications';
-import { SSEEvent } from '@/types/api';
-import { PenTool, CheckCircle } from 'lucide-react';
-
-import SubmissionTabs, { SubmissionStatus } from '@/components/SubmissionTabs';
-import SubmissionList from '@/components/SubmissionList';
+import {
+  PenTool,
+  CheckCircle,
+  FileText,
+  BookOpen,
+  Users,
+  TrendingUp,
+  Award,
+  Globe,
+  Calendar,
+  Bookmark,
+  Bell
+} from 'lucide-react';
 import DashboardLoadingState from '@/components/dashboard/DashboardLoadingState';
 import DashboardErrorState from '@/components/dashboard/DashboardErrorState';
 
 interface TextSubmission {
   id: string;
   title: string;
-  authorAlias: string | null;
-  content: string;
   status: string;
-  wordCount?: number | null;
-  category: string[];
-  tags: string[];
-  summary: string;
-  language?: string;
-  ageRange?: string | null;
-  storyFeedback?: string | null;
-  bookDecision?: string | null;
-  finalNotes?: string | null;
-  publishedAt?: string | null;
-  createdAt: string;
   updatedAt: string;
+  createdAt: string;
 }
 
 interface Stats {
@@ -55,32 +50,22 @@ interface Stats {
   }>;
 }
 
-export default function WriterDashboard() {
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  PenTool,
+  BookOpen,
+  Award,
+  Globe,
+  FileText,
+  Calendar
+};
+
+export default function WriterHome() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [submissions, setSubmissions] = useState<TextSubmission[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [recentSubmissions, setRecentSubmissions] = useState<TextSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notification, setNotification] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<SubmissionStatus>('DRAFT');
-
-  const { isConnected, error: sseError, reconnect } = useSSENotifications({
-    onStatusUpdate: (event: SSEEvent) => {
-      setNotification(`Your story "${event.data.title}" status changed to ${event.data.status}`);
-      fetchData();
-      setTimeout(() => setNotification(null), 5000);
-    },
-    onFeedbackReceived: (event: SSEEvent) => {
-      setNotification(`New feedback received for "${event.data.title}"`);
-      fetchData();
-      setTimeout(() => setNotification(null), 5000);
-    },
-    onError: (error) => {
-      console.error('SSE error:', error);
-    },
-    enabled: session?.user?.role === 'WRITER'
-  });
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -94,21 +79,20 @@ export default function WriterDashboard() {
 
   const fetchData = async () => {
     try {
-      const [submissionsRes, statsRes] = await Promise.all([
-        fetch('/api/text-submissions?limit=20'),
-        fetch('/api/writer/text-stats')
+      const [statsRes, submissionsRes] = await Promise.all([
+        fetch('/api/writer/text-stats'),
+        fetch('/api/text-submissions?limit=5')
       ]);
 
-      if (!submissionsRes.ok || !statsRes.ok) {
+      if (!statsRes.ok || !submissionsRes.ok) {
         throw new Error('Failed to fetch data');
       }
 
-      const submissionsData = await submissionsRes.json();
       const statsData = await statsRes.json();
+      const submissionsData = await submissionsRes.json();
 
-      setSubmissions(submissionsData.submissions || []);
       setStats(statsData);
-
+      setRecentSubmissions(submissionsData.submissions || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -125,59 +109,61 @@ export default function WriterDashboard() {
     fetchData();
   }, [session, status]);
 
-  const handleViewStory = (id: string) => {
-    router.push(`/dashboard/writer/story/${id}`);
-  };
-
-  const handleEditStory = (id: string) => {
-    router.push(`/dashboard/writer/submit-text?edit=${id}`);
-  };
-
-  const handleDeleteStory = async (id: string) => {
-    try {
-      const response = await fetch(`/api/text-submissions/${id}`, {
-        method: 'DELETE'
-      });
-      if (!response.ok) throw new Error('Failed to delete story');
-      await fetchData();
-      setNotification('Story deleted successfully');
-      setTimeout(() => setNotification(null), 5000);
-    } catch (err) {
-      console.error('Error deleting story:', err);
-      setNotification('Failed to delete story. Please try again.');
-      setTimeout(() => setNotification(null), 5000);
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case 'DRAFT':
+        return 'bg-[#E5E5EA] text-[#8E8E93]';
+      case 'PENDING':
+      case 'SUBMITTED':
+        return 'bg-blue-100 text-blue-700';
+      case 'STORY_REVIEW':
+      case 'IN_REVIEW':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'PUBLISHED':
+        return 'bg-green-100 text-green-700';
+      case 'NEEDS_REVISION':
+        return 'bg-red-100 text-red-700';
+      default:
+        return 'bg-[#E5E5EA] text-[#8E8E93]';
     }
   };
 
-  const handleWithdrawStory = async (id: string) => {
-    try {
-      const response = await fetch(`/api/text-submissions/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ action: 'withdraw' })
-      });
-      if (!response.ok) throw new Error('Failed to withdraw story');
-      await fetchData();
-      setActiveTab('DRAFT');
-      setNotification('Story withdrawn successfully. You can now edit it.');
-      setTimeout(() => setNotification(null), 5000);
-    } catch (err) {
-      console.error('Error withdrawing story:', err);
-      setNotification('Failed to withdraw story. Please try again.');
-      setTimeout(() => setNotification(null), 5000);
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'DRAFT':
+        return 'Draft';
+      case 'PENDING':
+      case 'SUBMITTED':
+        return 'Pending';
+      case 'STORY_REVIEW':
+      case 'IN_REVIEW':
+        return 'In Review';
+      case 'PUBLISHED':
+        return 'Published';
+      case 'NEEDS_REVISION':
+        return 'Needs Revision';
+      default:
+        return status;
     }
   };
 
-  const filteredSubmissions = submissions.filter(s => s.status === activeTab);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
 
-  const statusCounts = {
-    DRAFT: submissions.filter(s => s.status === 'DRAFT').length,
-    PENDING: submissions.filter(s => s.status === 'PENDING' || s.status === 'SUBMITTED').length,
-    STORY_REVIEW: submissions.filter(s => s.status === 'STORY_REVIEW' || s.status === 'IN_REVIEW').length,
-    PUBLISHED: submissions.filter(s => s.status === 'PUBLISHED').length,
-    NEEDS_REVISION: submissions.filter(s => s.status === 'NEEDS_REVISION').length,
+    if (diffMins < 60) {
+      return `${diffMins}m ago`;
+    } else if (diffHours < 24) {
+      return `${diffHours}h ago`;
+    } else if (diffDays < 30) {
+      return `${diffDays}d ago`;
+    } else {
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
   };
 
   if (status === 'loading' || loading) {
@@ -188,141 +174,416 @@ export default function WriterDashboard() {
     return <DashboardErrorState error={error} role="writer" />;
   }
 
+  if (!stats) {
+    return <DashboardErrorState error="Failed to load statistics" role="writer" />;
+  }
+
   return (
-    <>
-      <div className="pb-20 lg:pb-4">
-        {notification && (
-          <div
-            role="alert"
-            aria-live="polite"
-            aria-atomic="true"
-            className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 fixed top-20 left-0 right-0 z-30 shadow-lg"
+    <div className="pb-20 lg:pb-4">
+      <div id="main-content" className="max-w-[1240px] px-4 sm:px-8 lg:px-12 py-10 pb-20 lg:pb-10">
+        {/* Welcome Header */}
+        <div className="mb-12">
+          <h1
+            className="text-[#141414] mb-2"
+            style={{
+              fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+              fontSize: '48px',
+              fontWeight: 500,
+              lineHeight: '1.221'
+            }}
           >
-            <div className="flex items-center justify-between px-6">
-              <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 mr-2" />
-                <p className="font-medium">{notification}</p>
+            Welcome back, {session?.user?.name?.split(' ')[0] || 'Writer'}
+          </h1>
+          <p
+            className="text-[#8E8E93]"
+            style={{
+              fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+              fontSize: '18px',
+              fontWeight: 400,
+              lineHeight: '1.5'
+            }}
+          >
+            Continue your writing journey and inspire young readers around the world
+          </p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {/* Total Stories */}
+          <div className="bg-white rounded-lg border border-[#E5E5EA] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-full bg-[#F9FAFB] flex items-center justify-center">
+                <FileText className="h-6 w-6 text-[#141414]" />
               </div>
-              <button
-                onClick={() => setNotification(null)}
-                className="text-green-700 hover:text-green-900 focus:outline-none"
-              >
-                ✕
-              </button>
             </div>
-          </div>
-        )}
-
-        {sseError && (
-          <div
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-            className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 fixed top-20 left-0 right-0 z-30 shadow-lg"
-          >
-            <div className="flex items-center justify-between px-6">
-              <p className="text-sm">
-                Notification service disconnected. <button onClick={reconnect} className="underline">Reconnect</button>
-              </p>
-              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-            </div>
-          </div>
-        )}
-
-        <div id="main-content" className="max-w-[1240px] px-4 sm:px-8 lg:px-12 py-10 pb-20 lg:pb-10">
-          <div className="flex items-center justify-between mb-12">
-            <h1
+            <p
+              className="text-[#8E8E93] mb-1"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: '1.5'
+              }}
+            >
+              Total Stories
+            </p>
+            <p
               className="text-[#141414]"
               style={{
                 fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                fontSize: '48px',
+                fontSize: '36px',
                 fontWeight: 500,
                 lineHeight: '1.221'
               }}
             >
-              Stories
-            </h1>
+              {stats.submissionsTotal}
+            </p>
+          </div>
+
+          {/* Published */}
+          <div className="bg-white rounded-lg border border-[#E5E5EA] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
+                <BookOpen className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+            <p
+              className="text-[#8E8E93] mb-1"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: '1.5'
+              }}
+            >
+              Published
+            </p>
+            <p
+              className="text-[#141414]"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '36px',
+                fontWeight: 500,
+                lineHeight: '1.221'
+              }}
+            >
+              {stats.submissionsPublished}
+            </p>
+          </div>
+
+          {/* In Review */}
+          <div className="bg-white rounded-lg border border-[#E5E5EA] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-full bg-yellow-50 flex items-center justify-center">
+                <TrendingUp className="h-6 w-6 text-yellow-600" />
+              </div>
+            </div>
+            <p
+              className="text-[#8E8E93] mb-1"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: '1.5'
+              }}
+            >
+              In Review
+            </p>
+            <p
+              className="text-[#141414]"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '36px',
+                fontWeight: 500,
+                lineHeight: '1.221'
+              }}
+            >
+              {stats.submissionsInReview}
+            </p>
+          </div>
+
+          {/* Readers Reached */}
+          <div className="bg-white rounded-lg border border-[#E5E5EA] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+                <Users className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+            <p
+              className="text-[#8E8E93] mb-1"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: '1.5'
+              }}
+            >
+              Readers Reached
+            </p>
+            <p
+              className="text-[#141414]"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '36px',
+                fontWeight: 500,
+                lineHeight: '1.221'
+              }}
+            >
+              {stats.readersReached.toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-12">
+          <h2
+            className="text-[#141414] mb-6"
+            style={{
+              fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+              fontSize: '24px',
+              fontWeight: 500,
+              lineHeight: '1.221'
+            }}
+          >
+            Quick Actions
+          </h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               onClick={() => router.push('/dashboard/writer/submit-text')}
-              className="bg-[#141414] hover:bg-[#1f1f1f] !text-white px-8 py-3.5 rounded-lg flex items-center gap-2.5 transition-all hover:shadow-md"
+              className="bg-[#141414] hover:bg-[#1f1f1f] text-white p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
+            >
+              <PenTool className="h-8 w-8" />
+              <span
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  lineHeight: '1.221'
+                }}
+              >
+                Write Story
+              </span>
+            </button>
+
+            <button
+              onClick={() => router.push('/dashboard/writer/library')}
+              className="bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
+            >
+              <Bookmark className="h-8 w-8 text-[#141414]" />
+              <span
+                className="text-[#141414]"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  lineHeight: '1.221'
+                }}
+              >
+                View Library
+              </span>
+            </button>
+
+            <button
+              onClick={() => router.push('/dashboard/writer/stories')}
+              className="bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
+            >
+              <FileText className="h-8 w-8 text-[#141414]" />
+              <span
+                className="text-[#141414]"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  lineHeight: '1.221'
+                }}
+              >
+                My Stories
+              </span>
+            </button>
+
+            <button
+              onClick={() => router.push('/dashboard/writer/notifications')}
+              className="bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
+            >
+              <Bell className="h-8 w-8 text-[#141414]" />
+              <span
+                className="text-[#141414]"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  lineHeight: '1.221'
+                }}
+              >
+                Notifications
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2
+              className="text-[#141414]"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '24px',
+                fontWeight: 500,
+                lineHeight: '1.221'
+              }}
+            >
+              Recent Activity
+            </h2>
+            <button
+              onClick={() => router.push('/dashboard/writer/stories')}
+              className="text-[#007AFF] hover:underline"
               style={{
                 fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                 fontSize: '16px',
-                fontWeight: 500,
-                lineHeight: '1.221',
-                color: '#ffffff'
+                fontWeight: 400,
+                lineHeight: '1.5'
               }}
             >
-              <PenTool className="h-5 w-5 !text-white" style={{ color: '#ffffff' }} />
-              Write Story
+              View all
             </button>
           </div>
-
-          <div className="mb-8">
-            <SubmissionTabs
-              statusCounts={statusCounts}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-          </div>
-
-          <div className="mt-8">
-          {filteredSubmissions.length === 0 ? (
-            <div className="bg-white rounded-lg border border-[#E5E5EA] py-16 px-12 text-center">
-              <div className="max-w-md mx-auto">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#F9FAFB] flex items-center justify-center">
-                  <PenTool className="h-8 w-8 text-[#AEAEB2]" />
-                </div>
-                <h3
-                  className="text-[#141414] mb-3"
-                  style={{
-                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                    fontSize: '24px',
-                    fontWeight: 500,
-                    lineHeight: '1.221'
-                  }}
-                >
-                  No stories yet
-                </h3>
-                <p
-                  className="text-[#8E8E93] mb-8"
-                  style={{
-                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                    fontSize: '16px',
-                    fontWeight: 400,
-                    lineHeight: '1.5'
-                  }}
-                >
-                  Start your writing journey by creating your first story. Share your creativity with children around the world.
-                </p>
-                <button
-                  onClick={() => router.push('/dashboard/writer/submit-text')}
-                  className="bg-[#141414] hover:bg-[#1f1f1f] !text-white px-8 py-3.5 rounded-lg inline-flex items-center gap-2 transition-all hover:shadow-md"
-                  style={{
-                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                    fontSize: '16px',
-                    fontWeight: 500,
-                    lineHeight: '1.221',
-                    color: '#ffffff'
-                  }}
-                >
-                  <PenTool className="h-5 w-5 !text-white" style={{ color: '#ffffff' }} />
-                  Write Your First Story
-                </button>
+          {recentSubmissions.length === 0 ? (
+            <div className="bg-white rounded-lg border border-[#E5E5EA] py-12 px-8 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#F9FAFB] flex items-center justify-center">
+                <FileText className="h-8 w-8 text-[#AEAEB2]" />
               </div>
+              <p
+                className="text-[#8E8E93] mb-6"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 400,
+                  lineHeight: '1.5'
+                }}
+              >
+                No stories yet. Start writing to see your activity here.
+              </p>
+              <button
+                onClick={() => router.push('/dashboard/writer/submit-text')}
+                className="bg-[#141414] hover:bg-[#1f1f1f] text-white px-6 py-3 rounded-lg inline-flex items-center gap-2"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  lineHeight: '1.221'
+                }}
+              >
+                <PenTool className="h-5 w-5" />
+                Write Your First Story
+              </button>
             </div>
           ) : (
-            <SubmissionList
-              submissions={filteredSubmissions}
-              onViewClick={handleViewStory}
-              onEditClick={handleEditStory}
-              onDeleteClick={handleDeleteStory}
-              onWithdrawClick={handleWithdrawStory}
-            />
+            <div className="bg-white rounded-lg border border-[#E5E5EA] divide-y divide-[#E5E5EA]">
+              {recentSubmissions.map((submission) => (
+                <div
+                  key={submission.id}
+                  onClick={() => router.push(`/dashboard/writer/story/${submission.id}`)}
+                  className="p-4 hover:bg-[#F9FAFB] cursor-pointer transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="text-[#141414] truncate mb-1"
+                        style={{
+                          fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                          fontSize: '16px',
+                          fontWeight: 500,
+                          lineHeight: '1.221'
+                        }}
+                      >
+                        {submission.title}
+                      </p>
+                      <p
+                        className="text-[#8E8E93]"
+                        style={{
+                          fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                          fontSize: '14px',
+                          fontWeight: 400,
+                          lineHeight: '1.5'
+                        }}
+                      >
+                        Updated {formatDate(submission.updatedAt)}
+                      </p>
+                    </div>
+                    <span
+                      className={`ml-4 px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${getStatusBadgeColor(submission.status)}`}
+                      style={{
+                        fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        lineHeight: '1.221'
+                      }}
+                    >
+                      {getStatusLabel(submission.status)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
+        </div>
+
+        {/* Achievements */}
+        <div>
+          <h2
+            className="text-[#141414] mb-6"
+            style={{
+              fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+              fontSize: '24px',
+              fontWeight: 500,
+              lineHeight: '1.221'
+            }}
+          >
+            Achievements
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {stats.achievements.map((achievement) => {
+              const IconComponent = ICON_MAP[achievement.icon] || Award;
+              return (
+                <div
+                  key={achievement.name}
+                  className={`bg-white rounded-lg border p-4 text-center transition-all ${
+                    achievement.earned
+                      ? 'border-green-500 shadow-sm'
+                      : 'border-[#E5E5EA] opacity-50'
+                  }`}
+                  title={achievement.description}
+                >
+                  <div
+                    className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
+                      achievement.earned ? 'bg-green-50' : 'bg-[#F9FAFB]'
+                    }`}
+                  >
+                    <IconComponent
+                      className={`h-6 w-6 ${achievement.earned ? 'text-green-600' : 'text-[#AEAEB2]'}`}
+                    />
+                  </div>
+                  <p
+                    className={achievement.earned ? 'text-[#141414]' : 'text-[#8E8E93]'}
+                    style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      lineHeight: '1.221'
+                    }}
+                  >
+                    {achievement.name}
+                  </p>
+                  {achievement.earned && (
+                    <CheckCircle className="h-4 w-4 text-green-600 mx-auto mt-2" />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

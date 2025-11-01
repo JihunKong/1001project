@@ -185,11 +185,11 @@ export async function GET(request: NextRequest) {
         { authorId: session.user.id }
       ];
     } else if (session.user.role === 'WRITER') {
-      // Volunteers see published books and their own submissions
-      where.OR = [
-        { isPublished: true },
-        { authorId: session.user.id }
-      ];
+      // Writers see published books by OTHER authors (excluding their own)
+      where.isPublished = true;
+      where.author = {
+        id: { not: session.user.id }
+      };
     }
     // ADMIN users see all books (no additional filters)
 

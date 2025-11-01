@@ -55,7 +55,7 @@ interface Stats {
   }>;
 }
 
-export default function WriterStories() {
+export default function WriterDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [submissions, setSubmissions] = useState<TextSubmission[]>([]);
@@ -240,7 +240,7 @@ export default function WriterStories() {
                 lineHeight: '1.221'
               }}
             >
-              My Stories
+              Stories
             </h1>
             <button
               onClick={() => router.push('/dashboard/writer/submit-text')}
