@@ -1,6 +1,6 @@
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
-import { randomUUID } from 'crypto';
+// Use Web Crypto API (global crypto object) instead of Node.js crypto module for Edge Runtime compatibility
 import { logger } from './lib/logger';
 import { setRequestContext } from './lib/request-context';
 
@@ -60,7 +60,7 @@ export default withAuth(
     const token = req.nextauth.token;
 
     // Set request context for logging
-    const requestId = randomUUID();
+    const requestId = crypto.randomUUID(); // Web Crypto API (compatible with Edge Runtime)
     setRequestContext({
       requestId,
       userId: token?.sub,
