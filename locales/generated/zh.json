@@ -90,9 +90,45 @@
       "all": "所有类别",
       "category": "类别",
       "ageRange": "年龄范围",
-      "language": "语言"
+      "language": "语言",
+      "allLanguages": "所有语言",
+      "allCategories": "所有类别"
     },
-    "empty": "没有已发布的故事"
+    "discover": {
+      "title": "发现已发布的故事",
+      "description": "探索来自世界各地其他作家发布的故事。为您的下一个故事获得灵感！"
+    },
+    "stats": {
+      "publishedBooks": "已发布的书籍",
+      "featured": "精选",
+      "languages": "语言",
+      "premium": "高级"
+    },
+    "sort": {
+      "recentlyPublished": "最近发布",
+      "titleAZ": "标题 (A-Z)",
+      "highestRated": "评分最高"
+    },
+    "empty": {
+      "noMatches": "找不到与您的筛选条件匹配的书籍。尝试调整搜索条件。",
+      "noBooks": "还没有已发布的书籍。请稍后再来！"
+    },
+    "book": {
+      "by": "作者",
+      "views": "浏览"
+    },
+    "actions": {
+      "readBook": "阅读书籍",
+      "viewDetails": "详情"
+    },
+    "contentType": {
+      "text": "文本",
+      "pdf": "PDF",
+      "epub": "ePub",
+      "audio": "音频",
+      "multimedia": "多媒体",
+      "interactive": "互动"
+    }
   },
   "notification": {
     "title": "通知",

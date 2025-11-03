@@ -90,9 +90,45 @@
       "all": "すべてのカテゴリ",
       "category": "カテゴリ",
       "ageRange": "年齢層",
-      "language": "言語"
+      "language": "言語",
+      "allLanguages": "すべての言語",
+      "allCategories": "すべてのカテゴリ"
     },
-    "empty": "公開されたストーリーはありません"
+    "discover": {
+      "title": "公開されたストーリーを発見",
+      "description": "世界中の他の作家が出版したストーリーを探索しましょう。次のストーリーのインスピレーションを得ましょう!"
+    },
+    "stats": {
+      "publishedBooks": "公開された本",
+      "featured": "注目",
+      "languages": "言語",
+      "premium": "プレミアム"
+    },
+    "sort": {
+      "recentlyPublished": "最近公開",
+      "titleAZ": "タイトル (あ-ん)",
+      "highestRated": "最高評価"
+    },
+    "empty": {
+      "noMatches": "フィルターに一致する本が見つかりませんでした。検索条件を調整してみてください。",
+      "noBooks": "まだ公開された本はありません。すぐに戻ってきてください!"
+    },
+    "book": {
+      "by": "著者:",
+      "views": "閲覧"
+    },
+    "actions": {
+      "readBook": "本を読む",
+      "viewDetails": "詳細"
+    },
+    "contentType": {
+      "text": "テキスト",
+      "pdf": "PDF",
+      "epub": "ePub",
+      "audio": "オーディオ",
+      "multimedia": "マルチメディア",
+      "interactive": "インタラクティブ"
+    }
   },
   "notification": {
     "title": "通知",

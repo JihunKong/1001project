@@ -90,9 +90,45 @@
       "all": "جميع الفئات",
       "category": "الفئة",
       "ageRange": "نطاق العمر",
-      "language": "اللغة"
+      "language": "اللغة",
+      "allLanguages": "جميع اللغات",
+      "allCategories": "جميع الفئات"
     },
-    "empty": "لا توجد قصص منشورة متاحة"
+    "discover": {
+      "title": "اكتشف القصص المنشورة",
+      "description": "استكشف قصصًا نشرها كتّاب آخرون من جميع أنحاء العالم. احصل على الإلهام لقصتك التالية!"
+    },
+    "stats": {
+      "publishedBooks": "الكتب المنشورة",
+      "featured": "مميز",
+      "languages": "اللغات",
+      "premium": "مميز"
+    },
+    "sort": {
+      "recentlyPublished": "نُشر مؤخرًا",
+      "titleAZ": "العنوان (أ-ي)",
+      "highestRated": "الأعلى تقييمًا"
+    },
+    "empty": {
+      "noMatches": "لم يتم العثور على كتب تطابق فلاترك. حاول تعديل معايير البحث الخاصة بك.",
+      "noBooks": "لا توجد كتب منشورة متاحة بعد. تحقق مرة أخرى قريبًا!"
+    },
+    "book": {
+      "by": "بقلم",
+      "views": "مشاهدات"
+    },
+    "actions": {
+      "readBook": "اقرأ الكتاب",
+      "viewDetails": "التفاصيل"
+    },
+    "contentType": {
+      "text": "نص",
+      "pdf": "PDF",
+      "epub": "ePub",
+      "audio": "صوتي",
+      "multimedia": "وسائط متعددة",
+      "interactive": "تفاعلي"
+    }
   },
   "notification": {
     "title": "الإشعارات",

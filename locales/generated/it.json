@@ -90,9 +90,45 @@
       "all": "Tutte le Categorie",
       "category": "Categoria",
       "ageRange": "Fascia d'Età",
-      "language": "Lingua"
+      "language": "Lingua",
+      "allLanguages": "Tutte le Lingue",
+      "allCategories": "Tutte le Categorie"
     },
-    "empty": "Nessuna storia pubblicata disponibile"
+    "discover": {
+      "title": "Scopri Storie Pubblicate",
+      "description": "Esplora storie pubblicate da altri scrittori di tutto il mondo. Lasciati ispirare per la tua prossima storia!"
+    },
+    "stats": {
+      "publishedBooks": "Libri Pubblicati",
+      "featured": "In Evidenza",
+      "languages": "Lingue",
+      "premium": "Premium"
+    },
+    "sort": {
+      "recentlyPublished": "Pubblicati di Recente",
+      "titleAZ": "Titolo (A-Z)",
+      "highestRated": "Più Votati"
+    },
+    "empty": {
+      "noMatches": "Nessun libro trovato che corrisponda ai tuoi filtri. Prova ad aggiustare i tuoi criteri di ricerca.",
+      "noBooks": "Ancora nessun libro pubblicato disponibile. Torna presto!"
+    },
+    "book": {
+      "by": "Di",
+      "views": "visualizzazioni"
+    },
+    "actions": {
+      "readBook": "Leggi il Libro",
+      "viewDetails": "Dettagli"
+    },
+    "contentType": {
+      "text": "Testo",
+      "pdf": "PDF",
+      "epub": "ePub",
+      "audio": "Audio",
+      "multimedia": "Multimediale",
+      "interactive": "Interattivo"
+    }
   },
   "notification": {
     "title": "Notifiche",

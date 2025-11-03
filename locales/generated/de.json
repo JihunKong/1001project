@@ -90,9 +90,45 @@
       "all": "Alle Kategorien",
       "category": "Kategorie",
       "ageRange": "Altersbereich",
-      "language": "Sprache"
+      "language": "Sprache",
+      "allLanguages": "Alle Sprachen",
+      "allCategories": "Alle Kategorien"
     },
-    "empty": "Keine veröffentlichten Geschichten verfügbar"
+    "discover": {
+      "title": "Entdecken Sie Veröffentlichte Geschichten",
+      "description": "Entdecken Sie Geschichten von anderen Autoren aus der ganzen Welt. Lassen Sie sich für Ihre nächste Geschichte inspirieren!"
+    },
+    "stats": {
+      "publishedBooks": "Veröffentlichte Bücher",
+      "featured": "Hervorgehoben",
+      "languages": "Sprachen",
+      "premium": "Premium"
+    },
+    "sort": {
+      "recentlyPublished": "Kürzlich Veröffentlicht",
+      "titleAZ": "Titel (A-Z)",
+      "highestRated": "Am Besten Bewertet"
+    },
+    "empty": {
+      "noMatches": "Keine Bücher gefunden, die Ihren Filtern entsprechen. Versuchen Sie, Ihre Suchkriterien anzupassen.",
+      "noBooks": "Noch keine veröffentlichten Bücher verfügbar. Schauen Sie bald wieder vorbei!"
+    },
+    "book": {
+      "by": "Von",
+      "views": "Ansichten"
+    },
+    "actions": {
+      "readBook": "Buch Lesen",
+      "viewDetails": "Details"
+    },
+    "contentType": {
+      "text": "Text",
+      "pdf": "PDF",
+      "epub": "ePub",
+      "audio": "Audio",
+      "multimedia": "Multimedia",
+      "interactive": "Interaktiv"
+    }
   },
   "notification": {
     "title": "Benachrichtigungen",

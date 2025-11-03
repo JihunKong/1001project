@@ -90,9 +90,45 @@
       "all": "모든 카테고리",
       "category": "카테고리",
       "ageRange": "연령대",
-      "language": "언어"
+      "language": "언어",
+      "allLanguages": "모든 언어",
+      "allCategories": "모든 카테고리"
     },
-    "empty": "출판된 스토리가 없습니다"
+    "discover": {
+      "title": "출판된 스토리 발견",
+      "description": "전 세계 다른 작가들이 출판한 스토리를 탐색하세요. 다음 스토리에 영감을 받으세요!"
+    },
+    "stats": {
+      "publishedBooks": "출판된 책",
+      "featured": "추천",
+      "languages": "언어",
+      "premium": "프리미엄"
+    },
+    "sort": {
+      "recentlyPublished": "최근 출판",
+      "titleAZ": "제목 (가-하)",
+      "highestRated": "최고 평점"
+    },
+    "empty": {
+      "noMatches": "필터와 일치하는 책을 찾을 수 없습니다. 검색 조건을 조정해 보세요.",
+      "noBooks": "아직 출판된 책이 없습니다. 곧 다시 확인해 주세요!"
+    },
+    "book": {
+      "by": "작가:",
+      "views": "조회"
+    },
+    "actions": {
+      "readBook": "책 읽기",
+      "viewDetails": "상세정보"
+    },
+    "contentType": {
+      "text": "텍스트",
+      "pdf": "PDF",
+      "epub": "ePub",
+      "audio": "오디오",
+      "multimedia": "멀티미디어",
+      "interactive": "인터랙티브"
+    }
   },
   "notification": {
     "title": "알림",

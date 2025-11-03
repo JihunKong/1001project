@@ -90,9 +90,45 @@
       "all": "Todas as Categorias",
       "category": "Categoria",
       "ageRange": "Faixa Etária",
-      "language": "Idioma"
+      "language": "Idioma",
+      "allLanguages": "Todos os Idiomas",
+      "allCategories": "Todas as Categorias"
     },
-    "empty": "Nenhuma história publicada disponível"
+    "discover": {
+      "title": "Descubra Histórias Publicadas",
+      "description": "Explore histórias publicadas por outros escritores de todo o mundo. Inspire-se para sua próxima história!"
+    },
+    "stats": {
+      "publishedBooks": "Livros Publicados",
+      "featured": "Destaque",
+      "languages": "Idiomas",
+      "premium": "Premium"
+    },
+    "sort": {
+      "recentlyPublished": "Publicados Recentemente",
+      "titleAZ": "Título (A-Z)",
+      "highestRated": "Mais Bem Avaliados"
+    },
+    "empty": {
+      "noMatches": "Nenhum livro encontrado correspondendo aos seus filtros. Tente ajustar seus critérios de busca.",
+      "noBooks": "Ainda não há livros publicados disponíveis. Volte em breve!"
+    },
+    "book": {
+      "by": "Por",
+      "views": "visualizações"
+    },
+    "actions": {
+      "readBook": "Ler Livro",
+      "viewDetails": "Detalhes"
+    },
+    "contentType": {
+      "text": "Texto",
+      "pdf": "PDF",
+      "epub": "ePub",
+      "audio": "Áudio",
+      "multimedia": "Multimídia",
+      "interactive": "Interativo"
+    }
   },
   "notification": {
     "title": "Notificações",

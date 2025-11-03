@@ -1,141 +1,156 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   BookOpen,
-  FileText,
-  Clock,
   Search,
   Filter,
-  Calendar,
   ArrowUpDown,
   Eye,
-  Edit,
-  Plus,
-  CheckCircle,
-  XCircle,
-  AlertCircle
+  Star,
+  Globe,
+  Award
 } from 'lucide-react';
-import { Card, StatusBadge, Button, Input, Select } from '@/components/figma/ui';
-import Modal from '@/components/figma/ui/Modal';
+import { Card, Button, Input, Select } from '@/components/figma/ui';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 
-interface Submission {
+interface Book {
   id: string;
   title: string;
-  content: string;
-  status: 'DRAFT' | 'PENDING' | 'STORY_REVIEW' | 'FORMAT_REVIEW' | 'CONTENT_REVIEW' | 'APPROVED' | 'PUBLISHED' | 'NEEDS_REVISION' | 'REJECTED';
+  subtitle?: string;
+  summary?: string;
+  contentType: 'TEXT' | 'PDF' | 'EPUB' | 'AUDIO' | 'MULTIMEDIA' | 'INTERACTIVE';
+  authorName: string;
+  authorAlias?: string;
+  language: string;
+  ageRange?: string;
+  readingLevel?: string;
+  category: string[];
+  genres: string[];
+  tags: string[];
+  coverImage?: string;
+  visibility: 'PUBLIC' | 'RESTRICTED' | 'CLASSROOM' | 'PRIVATE';
+  isPremium: boolean;
+  isPublished: boolean;
+  featured: boolean;
+  price?: number;
+  currency?: string;
+  viewCount: number;
+  rating: number;
+  publishedAt?: string;
   createdAt: string;
   updatedAt: string;
-  wordCount?: number;
-  characterCount?: number;
-  feedback?: Array<{
+  author?: {
     id: string;
-    content: string;
-    createdAt: string;
+    name: string;
     role: string;
-  }>;
-  reviewHistory?: Array<{
-    stage: string;
-    reviewer: string;
-    action: string;
-    timestamp: string;
-    comment?: string;
-  }>;
+  };
 }
 
-const statusConfig = {
-  DRAFT: { label: 'Draft', color: 'bg-gray-100 text-gray-700', icon: Edit },
-  PENDING: { label: 'Submitted', color: 'bg-blue-100 text-blue-700', icon: Clock },
-  STORY_REVIEW: { label: 'Story Review', color: 'bg-yellow-100 text-yellow-700', icon: FileText },
-  FORMAT_REVIEW: { label: 'Format Review', color: 'bg-purple-100 text-purple-700', icon: BookOpen },
-  CONTENT_REVIEW: { label: 'Content Review', color: 'bg-indigo-100 text-indigo-700', icon: AlertCircle },
-  APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-700', icon: CheckCircle },
-  PUBLISHED: { label: 'Published', color: 'bg-teal-100 text-teal-700', icon: BookOpen },
-  NEEDS_REVISION: { label: 'Needs Revision', color: 'bg-orange-100 text-orange-700', icon: AlertCircle },
-  REJECTED: { label: 'Rejected', color: 'bg-red-100 text-red-700', icon: XCircle }
-};
-
-export default function MyLibraryPage() {
+export default function WriterLibraryPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { t } = useTranslation();
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
+
+  const contentTypeLabels = {
+    TEXT: t('library.contentType.text'),
+    PDF: t('library.contentType.pdf'),
+    EPUB: t('library.contentType.epub'),
+    AUDIO: t('library.contentType.audio'),
+    MULTIMEDIA: t('library.contentType.multimedia'),
+    INTERACTIVE: t('library.contentType.interactive')
+  };
+  const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'date' | 'title' | 'status'>('date');
+  const [languageFilter, setLanguageFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'publishedAt' | 'title' | 'rating'>('publishedAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
-  const [showTimeline, setShowTimeline] = useState(false);
+
+  const fetchBooks = useCallback(async () => {
+    try {
+      // Build query params
+      const params = new URLSearchParams({
+        published: 'true',
+        sortBy,
+        sortOrder,
+      });
+
+      if (searchQuery) params.append('search', searchQuery);
+      if (languageFilter !== 'all') params.append('language', languageFilter);
+      if (categoryFilter !== 'all') params.append('category', categoryFilter);
+
+      const response = await fetch(`/api/books?${params.toString()}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBooks(data.books || []);
+      }
+    } catch (error) {
+      // Error handled silently - books will show empty state
+    } finally {
+      setLoading(false);
+    }
+  }, [searchQuery, languageFilter, categoryFilter, sortBy, sortOrder]);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login?callbackUrl=/dashboard/writer/library');
     } else if (status === 'authenticated') {
-      fetchSubmissions();
+      fetchBooks();
     }
-  }, [status, router]);
+  }, [status, router, fetchBooks]);
 
-  const fetchSubmissions = async () => {
-    try {
-      const response = await fetch('/api/writer/submissions');
-      if (response.ok) {
-        const data = await response.json();
-        setSubmissions(data.submissions || []);
-      }
-    } catch (error) {
-      // Error handled silently - submissions will show empty state
-    } finally {
-      setLoading(false);
+  // Trigger refetch when filters or sort changes
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchBooks();
     }
-  };
+  }, [status, fetchBooks]);
 
-  const filteredSubmissions = submissions
-    .filter(sub => {
-      const matchesSearch = sub.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || sub.status === statusFilter;
-      return matchesSearch && matchesStatus;
-    })
-    .sort((a, b) => {
-      let comparison = 0;
-      if (sortBy === 'date') {
-        comparison = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
-      } else if (sortBy === 'title') {
-        comparison = a.title.localeCompare(b.title);
-      } else if (sortBy === 'status') {
-        comparison = a.status.localeCompare(b.status);
-      }
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
+  const filteredBooks = books;
 
-  const getSubmissionStats = () => {
+  const getLibraryStats = () => {
     return {
-      total: submissions.length,
-      drafts: submissions.filter(s => s.status === 'DRAFT').length,
-      inReview: submissions.filter(s => ['STORY_REVIEW', 'FORMAT_REVIEW', 'CONTENT_REVIEW'].includes(s.status)).length,
-      published: submissions.filter(s => s.status === 'PUBLISHED').length,
-      needsAction: submissions.filter(s => s.status === 'NEEDS_REVISION').length
+      total: books.length,
+      featured: books.filter(b => b.featured).length,
+      languages: new Set(books.map(b => b.language)).size,
+      premium: books.filter(b => b.isPremium).length
     };
   };
 
-  const stats = getSubmissionStats();
+  const stats = getLibraryStats();
 
-  const statusOptions = [
-    { value: 'all', label: 'All Status' },
-    ...Object.entries(statusConfig).map(([value, config]) => ({
-      value,
-      label: config.label
+  // Get unique languages and categories from books
+  const availableLanguages = Array.from(new Set(books.map(b => b.language)));
+  const availableCategories = Array.from(
+    new Set(books.flatMap(b => b.category))
+  );
+
+  const languageOptions = [
+    { value: 'all', label: t('library.filters.allLanguages') },
+    ...availableLanguages.map(lang => ({
+      value: lang,
+      label: lang.toUpperCase()
+    }))
+  ];
+
+  const categoryOptions = [
+    { value: 'all', label: t('library.filters.allCategories') },
+    ...availableCategories.map(cat => ({
+      value: cat,
+      label: cat
     }))
   ];
 
   const sortOptions = [
-    { value: 'date', label: 'Sort by Date' },
-    { value: 'title', label: 'Sort by Title' },
-    { value: 'status', label: 'Sort by Status' }
+    { value: 'publishedAt', label: t('library.sort.recentlyPublished') },
+    { value: 'title', label: t('library.sort.titleAZ') },
+    { value: 'rating', label: t('library.sort.highestRated') }
   ];
 
   if (status === 'loading' || loading) {
@@ -150,376 +165,248 @@ export default function MyLibraryPage() {
     <>
       <div className="pb-20 lg:pb-4">
         <div id="main-content" data-role="writer" className="max-w-[1240px] px-4 sm:px-8 lg:px-12 pt-6 pb-20 lg:pb-4">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold text-figma-black">{t('library.title')}</h1>
-          <LanguageSelector variant="compact" />
-        </div>
-      </div>
-
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-        <Card variant="bordered" padding="md">
-          <div className="text-3xl font-semibold text-figma-black">{stats.total}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">{t('dashboard.writer.stats.total')}</div>
-        </Card>
-        <Card variant="bordered" padding="md">
-          <div className="text-3xl font-semibold text-gray-700">{stats.drafts}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">{t('dashboard.writer.stats.draft')}</div>
-        </Card>
-        <Card variant="bordered" padding="md">
-          <div className="text-3xl font-semibold text-yellow-600">{stats.inReview}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">{t('dashboard.writer.stats.inReview')}</div>
-        </Card>
-        <Card variant="bordered" padding="md">
-          <div className="text-3xl font-semibold text-teal-600">{stats.published}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">{t('dashboard.writer.stats.published')}</div>
-        </Card>
-        <Card variant="bordered" padding="md">
-          <div className="text-3xl font-semibold text-orange-600">{stats.needsAction}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">Needs Action</div>
-        </Card>
-      </div>
-
-      {/* Toolbar */}
-      <Card variant="bordered" padding="md" className="mb-6">
-        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-          <div className="flex flex-1 gap-4 w-full lg:w-auto">
-            {/* Search */}
-            <div className="flex-1">
-              <Input
-                type="text"
-                placeholder={t('common.search')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                leftIcon={<Search className="h-4 w-4" />}
-                className="min-h-[44px]"
-              />
-            </div>
-
-            {/* Status Filter */}
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-figma-gray-inactive flex-shrink-0" />
-              <Select
-                options={statusOptions}
-                value={statusFilter}
-                onChange={setStatusFilter}
-                placeholder="All Status"
-                className="min-h-[44px] min-w-[140px]"
-              />
-            </div>
-
-            {/* Sort */}
-            <div className="flex items-center gap-2">
-              <ArrowUpDown className="h-4 w-4 text-figma-gray-inactive flex-shrink-0" />
-              <Select
-                options={sortOptions}
-                value={sortBy}
-                onChange={(value) => setSortBy(value as 'date' | 'title' | 'status')}
-                placeholder="Sort by"
-                className="min-h-[44px] min-w-[140px]"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="min-h-[44px] min-w-[44px] px-3"
-                aria-label={`Sort order: ${sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
-              >
-                {sortOrder === 'asc' ? '↑' : '↓'}
-              </Button>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <h1 className="text-3xl font-bold text-figma-black">{t('library.title')}</h1>
+              <LanguageSelector variant="compact" />
             </div>
           </div>
 
-          {/* New Story Button */}
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => router.push('/dashboard/writer/submit-text')}
-            leftIcon={<Plus className="h-4 w-4" />}
-            className="min-h-[44px]"
-          >
-            {t('dashboard.writer.quickActions.writeNew')}
-          </Button>
-        </div>
-      </Card>
-
-      {/* Submissions Grid */}
-      {filteredSubmissions.length === 0 ? (
-        <Card variant="bordered" padding="lg" className="text-center">
-          <BookOpen className="h-12 w-12 text-figma-gray-inactive mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-figma-black mb-2">{t('common.noResults')}</h3>
-          <p className="text-figma-gray-inactive mb-4">
-            {searchQuery || statusFilter !== 'all'
-              ? t('library.filters.all')
-              : t('dashboard.writer.home.noStories')}
-          </p>
-          {!searchQuery && statusFilter === 'all' && (
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => router.push('/dashboard/writer/submit-text')}
-              className="min-h-[44px]"
-            >
-              {t('dashboard.writer.home.writeFirstStory')}
-            </Button>
-          )}
-        </Card>
-      ) : (
-        <div className="grid gap-4">
-          {filteredSubmissions.map((submission) => (
-            <Card
-              key={submission.id}
-              variant="bordered"
-              padding="lg"
-              hoverable
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-figma-black mb-2">
-                    {submission.title}
-                  </h3>
-                  <div className="flex items-center gap-4 text-sm text-figma-gray-inactive">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(submission.updatedAt).toLocaleDateString()}
-                    </span>
-                    {submission.wordCount && (
-                      <span>{submission.wordCount} words</span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <StatusBadge status={submission.status} size="md" />
-                </div>
+          {/* Library Description */}
+          <Card variant="bordered" padding="md" className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50">
+            <div className="flex items-start gap-4">
+              <BookOpen className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+              <div>
+                <h2 className="text-lg font-semibold text-figma-black mb-1">
+                  {t('library.discover.title')}
+                </h2>
+                <p className="text-sm text-figma-gray-inactive">
+                  {t('library.discover.description')}
+                </p>
               </div>
+            </div>
+          </Card>
 
-              {/* Actions */}
-              <div className="flex items-center gap-2 mt-4 flex-wrap">
-                {submission.status === 'DRAFT' && (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => router.push(`/dashboard/writer/submit-text?id=${submission.id}`)}
-                    leftIcon={<Edit className="h-3 w-3" />}
+          {/* Stats Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <Card variant="bordered" padding="md">
+              <div className="text-3xl font-semibold text-figma-black">{stats.total}</div>
+              <div className="text-sm text-figma-gray-inactive mt-1">{t('library.stats.publishedBooks')}</div>
+            </Card>
+            <Card variant="bordered" padding="md">
+              <div className="text-3xl font-semibold text-blue-600">{stats.featured}</div>
+              <div className="text-sm text-figma-gray-inactive mt-1">{t('library.stats.featured')}</div>
+            </Card>
+            <Card variant="bordered" padding="md">
+              <div className="text-3xl font-semibold text-purple-600">{stats.languages}</div>
+              <div className="text-sm text-figma-gray-inactive mt-1">{t('library.stats.languages')}</div>
+            </Card>
+            <Card variant="bordered" padding="md">
+              <div className="text-3xl font-semibold text-yellow-600">{stats.premium}</div>
+              <div className="text-sm text-figma-gray-inactive mt-1">{t('library.stats.premium')}</div>
+            </Card>
+          </div>
+
+          {/* Toolbar */}
+          <Card variant="bordered" padding="md" className="mb-6">
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              <div className="flex flex-1 gap-4 w-full lg:w-auto">
+                {/* Search */}
+                <div className="flex-1">
+                  <Input
+                    type="text"
+                    placeholder={t('common.search')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    leftIcon={<Search className="h-4 w-4" />}
                     className="min-h-[44px]"
-                  >
-                    {t('actions.edit')}
-                  </Button>
-                )}
-                {submission.status === 'NEEDS_REVISION' && (
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => router.push(`/dashboard/writer/submit-text?id=${submission.id}`)}
-                    leftIcon={<Edit className="h-3 w-3" />}
-                    className="min-h-[44px] bg-orange-600 hover:bg-orange-700 focus:ring-orange-300"
-                  >
-                    {t('actions.edit')}
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedSubmission(submission);
-                    setShowTimeline(true);
-                  }}
-                  leftIcon={<Eye className="h-3 w-3" />}
-                  className="min-h-[44px]"
-                >
-                  {t('actions.view')}
-                </Button>
-                {submission.status === 'PUBLISHED' && (
+                  />
+                </div>
+
+                {/* Language Filter */}
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-figma-gray-inactive flex-shrink-0" />
+                  <Select
+                    options={languageOptions}
+                    value={languageFilter}
+                    onChange={setLanguageFilter}
+                    placeholder="Language"
+                    className="min-h-[44px] min-w-[120px]"
+                  />
+                </div>
+
+                {/* Category Filter */}
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-figma-gray-inactive flex-shrink-0" />
+                  <Select
+                    options={categoryOptions}
+                    value={categoryFilter}
+                    onChange={setCategoryFilter}
+                    placeholder="Category"
+                    className="min-h-[44px] min-w-[140px]"
+                  />
+                </div>
+
+                {/* Sort */}
+                <div className="flex items-center gap-2">
+                  <ArrowUpDown className="h-4 w-4 text-figma-gray-inactive flex-shrink-0" />
+                  <Select
+                    options={sortOptions}
+                    value={sortBy}
+                    onChange={(value) => setSortBy(value as 'publishedAt' | 'title' | 'rating')}
+                    placeholder="Sort by"
+                    className="min-h-[44px] min-w-[160px]"
+                  />
                   <Button
                     variant="outline"
                     size="sm"
-                    className="min-h-[44px] text-teal-600 border-teal-600 hover:bg-teal-50"
-                    leftIcon={<BookOpen className="h-3 w-3" />}
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="min-h-[44px] min-w-[44px] px-3"
+                    aria-label={`Sort order: ${sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
                   >
-                    {t('actions.view')}
+                    {sortOrder === 'asc' ? '↑' : '↓'}
                   </Button>
-                )}
-              </div>
-
-              {/* Feedback Preview */}
-              {submission.feedback && submission.feedback.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-figma-gray-border">
-                  <div className="text-sm text-figma-gray-inactive">
-                    <span className="font-medium text-figma-black">{t('feedback.title')}:</span>
-                    <p className="mt-1 text-figma-black line-clamp-2">
-                      {submission.feedback[0].content}
-                    </p>
-                  </div>
                 </div>
-              )}
-            </Card>
-          ))}
-        </div>
-      )}
+              </div>
+            </div>
+          </Card>
 
-      {/* Timeline Modal */}
-      {showTimeline && selectedSubmission && (
-        <TimelineModal
-          submission={selectedSubmission}
-          onClose={() => {
-            setShowTimeline(false);
-            setSelectedSubmission(null);
-          }}
-        />
-      )}
+          {/* Books Grid */}
+          {filteredBooks.length === 0 ? (
+            <Card variant="bordered" padding="lg" className="text-center">
+              <BookOpen className="h-12 w-12 text-figma-gray-inactive mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-figma-black mb-2">{t('common.noResults')}</h3>
+              <p className="text-figma-gray-inactive mb-4">
+                {searchQuery || languageFilter !== 'all' || categoryFilter !== 'all'
+                  ? t('library.empty.noMatches')
+                  : t('library.empty.noBooks')}
+              </p>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {filteredBooks.map((book) => (
+                <Card
+                  key={book.id}
+                  variant="bordered"
+                  padding="lg"
+                  hoverable
+                >
+                  <div className="flex gap-4">
+                    {/* Cover Image */}
+                    <div className="flex-shrink-0">
+                      {book.coverImage ? (
+                        <Image
+                          src={book.coverImage}
+                          alt={book.title}
+                          width={96}
+                          height={128}
+                          className="w-24 h-32 object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="w-24 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
+                          <BookOpen className="h-8 w-8 text-figma-gray-inactive" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Book Info */}
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-lg font-semibold text-figma-black">
+                              {book.title}
+                            </h3>
+                            {book.featured && (
+                              <Award className="h-4 w-4 text-yellow-500" aria-label="Featured" />
+                            )}
+                            {book.isPremium && (
+                              <Star className="h-4 w-4 text-purple-500" aria-label="Premium" />
+                            )}
+                          </div>
+                          {book.subtitle && (
+                            <p className="text-sm text-figma-gray-inactive mb-2">
+                              {book.subtitle}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-3 text-sm text-figma-gray-inactive mb-3">
+                            <span className="flex items-center gap-1">
+                              {t('library.book.by')} {book.authorAlias || book.authorName}
+                            </span>
+                            <span>•</span>
+                            <span>{contentTypeLabels[book.contentType]}</span>
+                            <span>•</span>
+                            <span className="uppercase">{book.language}</span>
+                            {book.rating > 0 && (
+                              <>
+                                <span>•</span>
+                                <span className="flex items-center gap-1">
+                                  <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                                  {book.rating.toFixed(1)}
+                                </span>
+                              </>
+                            )}
+                            <span>•</span>
+                            <span>{book.viewCount} {t('library.book.views')}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Summary */}
+                      {book.summary && (
+                        <p className="text-sm text-figma-black line-clamp-2 mb-3">
+                          {book.summary}
+                        </p>
+                      )}
+
+                      {/* Categories & Tags */}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {book.category.slice(0, 3).map((cat) => (
+                          <span
+                            key={cat}
+                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
+                          >
+                            {cat}
+                          </span>
+                        ))}
+                        {book.genres.slice(0, 2).map((genre) => (
+                          <span
+                            key={genre}
+                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700"
+                          >
+                            {genre}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => router.push(`/books/${book.id}`)}
+                          leftIcon={<Eye className="h-3 w-3" />}
+                          className="min-h-[40px]"
+                        >
+                          {t('library.actions.readBook')}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => router.push(`/books/${book.id}`)}
+                          className="min-h-[40px]"
+                        >
+                          {t('library.actions.viewDetails')}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>
-  );
-}
-
-function TimelineModal({ submission, onClose }: { submission: Submission; onClose: () => void }) {
-  const { t } = useTranslation();
-  const stages = [
-    { key: 'DRAFT', label: t('status.DRAFT'), icon: Edit },
-    { key: 'PENDING', label: t('status.PENDING'), icon: Clock },
-    { key: 'STORY_REVIEW', label: t('status.IN_REVIEW'), icon: FileText },
-    { key: 'FORMAT_REVIEW', label: t('status.IN_REVIEW'), icon: BookOpen },
-    { key: 'CONTENT_REVIEW', label: t('status.IN_REVIEW'), icon: AlertCircle },
-    { key: 'PUBLISHED', label: t('status.PUBLISHED'), icon: CheckCircle }
-  ];
-
-  const getCurrentStageIndex = () => {
-    const index = stages.findIndex(s => s.key === submission.status);
-    return index >= 0 ? index : 0;
-  };
-
-  const currentStageIndex = getCurrentStageIndex();
-
-  return (
-    <Modal
-      isOpen={true}
-      onClose={onClose}
-      title={submission.title}
-      size="xl"
-    >
-      <div className="py-2">
-        <p className="text-figma-gray-inactive mb-6">Timeline</p>
-
-        {/* Timeline */}
-        <div className="relative">
-          <div className="absolute left-8 top-8 bottom-8 w-0.5 bg-figma-gray-border"></div>
-          <div
-            className="absolute left-8 top-8 w-0.5 bg-figma-black transition-all duration-500"
-            style={{ height: `${(currentStageIndex / (stages.length - 1)) * 100}%` }}
-          ></div>
-
-          <div className="space-y-8">
-            {stages.map((stage, index) => {
-              const isCompleted = index <= currentStageIndex;
-              const isCurrent = index === currentStageIndex;
-              const isRejected = submission.status === 'REJECTED';
-              const needsRevision = submission.status === 'NEEDS_REVISION';
-
-              return (
-                <div key={stage.key} className="relative flex items-start gap-4">
-                  <div
-                    className={`
-                      w-16 h-16 rounded-full flex items-center justify-center z-10
-                      ${isCompleted
-                        ? isRejected
-                          ? 'bg-red-600 text-white'
-                          : needsRevision
-                            ? 'bg-orange-600 text-white'
-                            : 'bg-figma-black text-white'
-                        : 'bg-gray-100 text-figma-gray-inactive border-2 border-figma-gray-border'
-                      }
-                      ${isCurrent ? 'ring-4 ring-gray-200' : ''}
-                    `}
-                  >
-                    {React.createElement(stage.icon, { className: 'h-6 w-6' })}
-                  </div>
-
-                  <div className="flex-1 pb-8">
-                    <h3 className={`text-lg font-semibold ${isCompleted ? 'text-figma-black' : 'text-figma-gray-inactive'}`}>
-                      {stage.label}
-                    </h3>
-
-                    {isCurrent && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-figma-black mt-1">
-                        Current
-                      </span>
-                    )}
-
-                    {/* Stage Details */}
-                    {submission.reviewHistory?.filter(h => h.stage === stage.key).map((history, idx) => (
-                      <div key={idx} className="mt-3 bg-gray-50 rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="text-sm">
-                            <span className="font-medium text-figma-black">{history.reviewer}</span>
-                            <span className="text-figma-gray-inactive"> · {history.action}</span>
-                          </div>
-                          <span className="text-xs text-figma-gray-inactive">
-                            {new Date(history.timestamp).toLocaleString()}
-                          </span>
-                        </div>
-                        {history.comment && (
-                          <p className="text-sm text-figma-black">{history.comment}</p>
-                        )}
-                      </div>
-                    ))}
-
-                    {/* Show feedback at current stage */}
-                    {isCurrent && submission.feedback && submission.feedback.length > 0 && (
-                      <div className="mt-3 space-y-2">
-                        {submission.feedback.map((fb) => (
-                          <div key={fb.id} className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <div className="flex items-start justify-between mb-2">
-                              <span className="text-sm font-medium text-figma-black">{fb.role}</span>
-                              <span className="text-xs text-figma-gray-inactive">
-                                {new Date(fb.createdAt).toLocaleString()}
-                              </span>
-                            </div>
-                            <p className="text-sm text-figma-black">{fb.content}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="mt-8 flex justify-end gap-3">
-          <Button
-            variant="outline"
-            size="md"
-            onClick={onClose}
-            className="min-h-[44px]"
-          >
-            {t('common.close')}
-          </Button>
-          {submission.status === 'NEEDS_REVISION' && (
-            <Button
-              variant="danger"
-              size="md"
-              onClick={() => window.location.href = `/dashboard/writer/submit-text?id=${submission.id}`}
-              className="min-h-[44px] bg-orange-600 hover:bg-orange-700 focus:ring-orange-300"
-            >
-              {t('actions.edit')}
-            </Button>
-          )}
-          {submission.status === 'DRAFT' && (
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => window.location.href = `/dashboard/writer/submit-text?id=${submission.id}`}
-              className="min-h-[44px]"
-            >
-              {t('actions.edit')}
-            </Button>
-          )}
-        </div>
-      </div>
-    </Modal>
   );
 }
