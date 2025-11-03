@@ -5,6 +5,7 @@ import { ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
+import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 
 interface GlobalNavigationBarProps {
   className?: string;
@@ -78,7 +79,7 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
 
         <div className="flex items-center gap-4 ml-auto">
           <NotificationDropdown />
-
+          <LanguageSelector variant="compact" />
 
           <div className="relative">
             <button

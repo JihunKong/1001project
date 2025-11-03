@@ -13,7 +13,7 @@ async function loadTranslations(lang: SupportedLanguage): Promise<TranslationDat
   }
 
   try {
-    const response = await fetch(`/locales/generated/${lang}.json`);
+    const response = await fetch(`/api/translations/${lang}`);
     if (!response.ok) {
       throw new Error(`Failed to load translations for ${lang}`);
     }

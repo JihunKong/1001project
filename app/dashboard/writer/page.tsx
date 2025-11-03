@@ -19,7 +19,6 @@ import {
 import DashboardLoadingState from '@/components/dashboard/DashboardLoadingState';
 import DashboardErrorState from '@/components/dashboard/DashboardErrorState';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 
 interface TextSubmission {
   id: string;
@@ -198,7 +197,6 @@ export default function WriterHome() {
             >
               {t('dashboard.writer.home.welcome')}, {session?.user?.name?.split(' ')[0] || 'Writer'}
             </h1>
-            <LanguageSelector variant="compact" />
           </div>
           <p
             className="text-[#8E8E93]"
