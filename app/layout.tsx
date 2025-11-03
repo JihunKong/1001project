@@ -1,16 +1,21 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Providers from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#9fcc40',
+};
+
 export const metadata: Metadata = {
   title: '1001 Stories - Global Education Platform',
   description: 'Discover, publish, and share stories from children in underserved communities worldwide.',
   keywords: ['education', 'stories', 'children', 'global', 'non-profit'],
   authors: [{ name: '1001 Stories Team' }],
-  viewport: 'width=device-width, initial-scale=1',
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -24,7 +29,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/manifest.json',
-  themeColor: '#9fcc40',
 };
 
 export default function RootLayout({
