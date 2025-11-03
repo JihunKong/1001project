@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 export async function PUT(
   request: NextRequest,
@@ -56,7 +57,7 @@ export async function PUT(
     return NextResponse.json({ comment: updatedComment }, { status: 200 });
 
   } catch (error) {
-    console.error('Error updating comment:', error);
+    logger.error('Error updating comment', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -100,7 +101,7 @@ export async function DELETE(
     return NextResponse.json({ success: true }, { status: 200 });
 
   } catch (error) {
-    console.error('Error deleting comment:', error);
+    logger.error('Error deleting comment', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

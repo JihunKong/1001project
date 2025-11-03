@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
+import { logger } from '@/lib/logger';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -275,7 +276,7 @@ export function logSecurityEvent(type: string, data: any, severity: SecurityEven
   securityEvents.push(event);
 
   // Log to console for immediate visibility
-  console.warn(`[SECURITY-${severity}] ${type}:`, event.data);
+  logger.warn(`[SECURITY-${severity}] ${type}`, event.data);
 
   // Keep only last 1000 events
   if (securityEvents.length > 1000) {
@@ -284,7 +285,7 @@ export function logSecurityEvent(type: string, data: any, severity: SecurityEven
 
   // Alert on critical events
   if (severity === 'CRITICAL') {
-    console.error('CRITICAL SECURITY EVENT:', event);
+    logger.error('CRITICAL SECURITY EVENT', event);
     // TODO: Send alert to security team
   }
 }

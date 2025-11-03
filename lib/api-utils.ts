@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 import type { ApiResponse, ApiError } from '@/types/api';
+import { logger } from '@/lib/logger';
 
 /**
  * Create a standardized success response
@@ -58,7 +59,7 @@ export function handleValidationError(error: ZodError): NextResponse {
  * Handle database errors
  */
 export function handleDatabaseError(error: unknown): NextResponse {
-  console.error('Database error:', error);
+  logger.error('Database error', error);
 
   if (error instanceof Error) {
     // Check for specific database error types
@@ -113,7 +114,7 @@ export function withErrorHandler<T extends unknown[], R>(
     try {
       return await handler(...args);
     } catch (error) {
-      console.error('Unhandled API error:', error);
+      logger.error('Unhandled API error', error);
 
       if (error instanceof ZodError) {
         return handleValidationError(error);

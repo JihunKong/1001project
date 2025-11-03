@@ -149,7 +149,6 @@ function LoginForm() {
         callbackUrl,
       });
     } catch (error) {
-      console.error(`${provider} login failed:`, error);
       setMessage(`Failed to sign in with ${provider}. Please try again.`);
     } finally {
       setSocialLoading(null);

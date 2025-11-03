@@ -88,7 +88,7 @@ export default function MyLibraryPage() {
         setSubmissions(data.submissions || []);
       }
     } catch (error) {
-      console.error('Failed to fetch submissions:', error);
+      // Error handled silently - submissions will show empty state
     } finally {
       setLoading(false);
     }

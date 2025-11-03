@@ -189,7 +189,6 @@ export default function SignupPage() {
         callbackUrl: '/dashboard',
       });
     } catch (error) {
-      console.error(`${provider} signup failed:`, error);
       setMessage(`Failed to sign up with ${provider}. Please try again.`);
     } finally {
       setSocialLoading(null);

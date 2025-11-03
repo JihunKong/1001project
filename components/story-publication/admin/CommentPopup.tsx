@@ -68,7 +68,7 @@ export default function CommentPopup({
       setReplyContent('');
       setShowReplyForm(false);
     } catch (error) {
-      console.error('Error replying to comment:', error);
+      // Error handled by parent component via onReply
     } finally {
       setIsSubmitting(false);
     }
@@ -82,7 +82,7 @@ export default function CommentPopup({
       await onEdit(comment.id, editContent);
       setIsEditMode(false);
     } catch (error) {
-      console.error('Error editing comment:', error);
+      // Error handled by parent component via onEdit
     } finally {
       setIsSubmitting(false);
     }
@@ -93,7 +93,7 @@ export default function CommentPopup({
     try {
       await onResolve(comment.id, !comment.isResolved);
     } catch (error) {
-      console.error('Error resolving comment:', error);
+      // Error handled by parent component via onResolve
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +106,7 @@ export default function CommentPopup({
     try {
       await onDelete(comment.id);
     } catch (error) {
-      console.error('Error deleting comment:', error);
+      // Error handled by parent component via onDelete
     } finally {
       setIsSubmitting(false);
     }

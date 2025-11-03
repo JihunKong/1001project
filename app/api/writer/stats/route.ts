@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 export async function GET() {
   try {
@@ -131,7 +132,7 @@ export async function GET() {
 
     return NextResponse.json(stats);
   } catch (error) {
-    console.error('Error fetching writer stats:', error);
+    logger.error('Error fetching writer stats', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

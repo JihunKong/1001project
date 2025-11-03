@@ -80,7 +80,7 @@ export default function WriterStories() {
       setTimeout(() => setNotification(null), 5000);
     },
     onError: (error) => {
-      console.error('SSE error:', error);
+      // SSE error handled silently - will retry automatically
     },
     enabled: session?.user?.role === 'WRITER'
   });
@@ -146,7 +146,6 @@ export default function WriterStories() {
       setNotification('Story deleted successfully');
       setTimeout(() => setNotification(null), 5000);
     } catch (err) {
-      console.error('Error deleting story:', err);
       setNotification('Failed to delete story. Please try again.');
       setTimeout(() => setNotification(null), 5000);
     }
@@ -167,7 +166,6 @@ export default function WriterStories() {
       setNotification('Story withdrawn successfully. You can now edit it.');
       setTimeout(() => setNotification(null), 5000);
     } catch (err) {
-      console.error('Error withdrawing story:', err);
       setNotification('Failed to withdraw story. Please try again.');
       setTimeout(() => setNotification(null), 5000);
     }

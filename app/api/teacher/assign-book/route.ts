@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { UserRole, AssignmentType } from '@prisma/client';
 import { z } from 'zod';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // Validation schema for book assignment
 const AssignBookSchema = z.object({
@@ -215,7 +216,7 @@ export async function POST(request: NextRequest) {
     return response;
 
   } catch (error) {
-    console.error('Error assigning book to class:', error);
+    logger.error('Error assigning book to class', error);
     return NextResponse.json(
       {
         error: 'Internal server error while assigning book',
@@ -329,7 +330,7 @@ export async function GET(request: NextRequest) {
     return response;
 
   } catch (error) {
-    console.error('Error fetching teacher assignments:', error);
+    logger.error('Error fetching teacher assignments', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

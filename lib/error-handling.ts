@@ -9,6 +9,7 @@
  */
 
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 // Error severity levels
 export enum ErrorSeverity {
@@ -199,12 +200,12 @@ export class ErrorLogger {
 
     // Log based on severity
     if (error instanceof AppError && error.severity === ErrorSeverity.CRITICAL) {
-      console.error('CRITICAL ERROR:', errorInfo);
+      logger.error('CRITICAL ERROR', errorInfo);
       // Here you would integrate with external monitoring services like Sentry
     } else if (error instanceof AppError && error.severity === ErrorSeverity.HIGH) {
-      console.error('HIGH SEVERITY ERROR:', errorInfo);
+      logger.error('HIGH SEVERITY ERROR', errorInfo);
     } else {
-      console.warn('Error occurred:', errorInfo);
+      logger.warn('Error occurred', errorInfo);
     }
 
     // In production, you would also send to monitoring services

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 // GET /api/admin/stats - Get comprehensive system statistics
 export async function GET(request: NextRequest) {
@@ -351,7 +352,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(stats);
 
   } catch (error) {
-    console.error('Error fetching admin statistics:', error);
+    logger.error('Error fetching admin statistics', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

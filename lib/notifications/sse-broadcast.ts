@@ -1,3 +1,5 @@
+import { logger } from '@/lib/logger';
+
 // Map to track active SSE connections
 const connections = new Map<string, ReadableStreamDefaultController>();
 
@@ -22,7 +24,7 @@ export function broadcastNotification(userId: string, notification: any) {
         timestamp: new Date().toISOString()
       })}\n\n`);
     } catch (error) {
-      console.error(`Error broadcasting notification to connection ${connectionId}:`, error);
+      logger.error(`Error broadcasting notification to connection ${connectionId}`, error);
       connections.delete(connectionId);
     }
   });
@@ -53,7 +55,7 @@ export function broadcastStatusChange(userId: string, submissionId: string, oldS
         timestamp: new Date().toISOString()
       })}\n\n`);
     } catch (error) {
-      console.error(`Error broadcasting status change to connection ${connectionId}:`, error);
+      logger.error(`Error broadcasting status change to connection ${connectionId}`, error);
       connections.delete(connectionId);
     }
   });

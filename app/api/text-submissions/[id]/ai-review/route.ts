@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { enqueueAIReview, getJobStatus } from '@/lib/queue';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 const AI_REVIEW_RATE_LIMIT = {
   windowMs: 15 * 60 * 1000,
@@ -92,7 +93,7 @@ export async function POST(
       { status: 202 }
     );
   } catch (error) {
-    console.error('[AI Review API] Error:', error);
+    logger.error('[AI Review API] Error', error);
     return NextResponse.json(
       {
         error: 'Internal server error. Please try again later.',
@@ -173,7 +174,7 @@ export async function GET(
       review: latestReview,
     });
   } catch (error) {
-    console.error('[AI Review API] Error:', error);
+    logger.error('[AI Review API] Error', error);
     return NextResponse.json(
       {
         error: 'Internal server error. Please try again later.',

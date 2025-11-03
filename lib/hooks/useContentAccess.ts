@@ -95,7 +95,7 @@ export function useContentAccess(storyId: string | null) {
         })
       })
     } catch (err) {
-      console.error('Failed to track preview:', err)
+      // Silently ignore preview tracking errors
     }
   }
 

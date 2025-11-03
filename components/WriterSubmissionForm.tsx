@@ -82,7 +82,7 @@ export default function WriterSubmissionForm({ onSubmit, initialData }: WriterSu
         setGrammarResult(result.data);
       }
     } catch (error) {
-      console.error('Grammar check failed:', error);
+      // Grammar check failed silently
     } finally {
       setIsCheckingGrammar(false);
     }
@@ -115,7 +115,7 @@ export default function WriterSubmissionForm({ onSubmit, initialData }: WriterSu
         setStructureResult(result.data);
       }
     } catch (error) {
-      console.error('Structure analysis failed:', error);
+      // Structure analysis failed silently
     } finally {
       setIsAnalyzingStructure(false);
     }
@@ -146,7 +146,7 @@ export default function WriterSubmissionForm({ onSubmit, initialData }: WriterSu
         }]);
       }
     } catch (error) {
-      console.error('Writing help failed:', error);
+      // Writing help failed silently
     } finally {
       setIsAskingQuestion(false);
     }
@@ -170,7 +170,7 @@ export default function WriterSubmissionForm({ onSubmit, initialData }: WriterSu
     try {
       await onSubmit(formData);
     } catch (error) {
-      console.error('Submission failed:', error);
+      // Submission error is handled by parent component
     } finally {
       setIsSubmitting(false);
     }

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole, AssignmentType } from '@prisma/client';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 // Validation schema for book assignment
 const AssignBookSchema = z.object({
@@ -268,7 +269,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Error assigning book to class:', error);
+    logger.error('Error assigning book to class', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -384,7 +385,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching book assignments:', error);
+    logger.error('Error fetching book assignments', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -70,7 +70,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
             });
           }
         } catch (err) {
-          console.error('Polling error:', err);
+          // Polling error - will retry or fail after max attempts
           if (attempts >= maxAttempts) {
             clearInterval(interval);
             setPollingInterval(null);
@@ -104,7 +104,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
           setIsLoading(false);
         }
       } catch (err) {
-        console.error('Error checking reviews:', err);
+        // Error checking reviews
         setIsLoading(false);
       }
     };
@@ -140,7 +140,6 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
         }
       }
     } catch (err) {
-      console.error('Error fetching AI reviews:', err);
       setError(err instanceof Error ? err.message : 'Failed to load AI reviews');
     } finally {
       setIsLoading(false);
@@ -165,7 +164,6 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
       setIsRegenerating(false);
       await fetchAutoReviews(true);
     } catch (err) {
-      console.error('Error regenerating AI reviews:', err);
       setError(err instanceof Error ? err.message : 'Failed to regenerate AI reviews');
       setIsRegenerating(false);
     }

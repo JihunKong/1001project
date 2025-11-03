@@ -58,7 +58,6 @@ export const useEnhancedAuth = () => {
       const validatedUpdates = validateCulturalUpdates(updates);
       return await auth.updateCulturalProfile(validatedUpdates);
     } catch (error) {
-      console.error('Failed to update cultural profile:', error);
       throw error;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,7 +78,6 @@ export const useEnhancedAuth = () => {
 
       return await auth.updatePrivacySettings(updates);
     } catch (error) {
-      console.error('Failed to update privacy settings:', error);
       throw error;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,7 +94,6 @@ export const useEnhancedAuth = () => {
       const validatedInfo = validateEducatorInfo(educatorInfo);
       return await auth.requestEducatorVerification(validatedInfo);
     } catch (error) {
-      console.error('Failed to request educator verification:', error);
       throw error;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

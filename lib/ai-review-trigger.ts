@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { AIReviewType, AIReviewStatus } from '@prisma/client';
 import OpenAI from 'openai';
+import { logger } from '@/lib/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -141,14 +142,14 @@ function convertHTMLToPlainText(html: string): { text: string; mapping: number[]
 function findTextPosition(htmlContent: string, searchText: string): { start: number; end: number } | null {
   try {
     if (!htmlContent || !searchText) {
-      console.warn('[AI Review] Empty htmlContent or searchText');
+      logger.warn('[AI Review] Empty htmlContent or searchText');
       return null;
     }
 
     const { text: plainText, mapping } = convertHTMLToPlainText(htmlContent);
 
     if (!plainText || plainText.length === 0) {
-      console.error('[AI Review] Failed to extract plain text from HTML');
+      logger.error('[AI Review] Failed to extract plain text from HTML');
       return null;
     }
 
@@ -207,7 +208,7 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
 
     return { start, end };
   } catch (error) {
-    console.error('[AI Review] Error in findTextPosition:', error);
+    logger.error('[AI Review] Error in findTextPosition', error);
     return null;
   }
 }
@@ -218,7 +219,7 @@ function createAnnotations(
   reviewType: AIReviewType
 ): AIAnnotation[] {
   if (!htmlContent || htmlContent.trim().length === 0) {
-    console.warn('[AI Review] Empty HTML content, skipping annotations');
+    logger.warn('[AI Review] Empty HTML content, skipping annotations');
     return [];
   }
 
@@ -246,7 +247,7 @@ function createAnnotations(
         failCount++;
       }
     } else {
-      console.warn(`[AI Review] Skipping invalid improvement #${improvementIndex}:`, typeof improvement === 'object' ? JSON.stringify(improvement) : improvement);
+      logger.warn(`[AI Review] Skipping invalid improvement #${improvementIndex}`, { improvement: typeof improvement === 'object' ? JSON.stringify(improvement) : improvement });
     }
   });
 
@@ -302,7 +303,7 @@ async function generateAIReview(
       tokensUsed: response.usage?.total_tokens || 0
     };
   } catch (error) {
-    console.error('[AI Review] OpenAI API error:', error);
+    logger.error('[AI Review] OpenAI API error', error);
     throw new Error(`Failed to generate AI review: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -313,7 +314,7 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
   });
 
   if (!submission) {
-    console.error(`Submission ${submissionId} not found for auto AI review`);
+    logger.error(`Submission ${submissionId} not found for auto AI review`);
     return;
   }
 
@@ -355,7 +356,7 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
         }
       });
     } catch (error) {
-      console.error(`[AI Review] Failed to create ${reviewType} review:`, error);
+      logger.error(`[AI Review] Failed to create ${reviewType} review`, error);
 
       await prisma.aIReview.create({
         data: {

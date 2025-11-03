@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 
 interface Teacher {
   id: string;
@@ -125,7 +126,7 @@ export async function GET(request: NextRequest) {
       total: filteredTeachers.length
     });
   } catch (error) {
-    console.error('Error fetching teachers:', error);
+    logger.error('Error fetching teachers', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -218,7 +219,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Error creating teacher:', error);
+    logger.error('Error creating teacher', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

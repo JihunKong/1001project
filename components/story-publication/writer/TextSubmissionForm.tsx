@@ -140,7 +140,6 @@ export default function TextSubmissionForm({
 
       if (!response.ok) {
         const error = await response.json();
-        console.error('API error response:', error);
         throw new Error(error.error || 'Failed to save submission');
       }
 
@@ -174,7 +173,6 @@ export default function TextSubmissionForm({
       }
 
     } catch (error) {
-      console.error('Error saving submission:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to save submission');
     } finally {
       setIsSubmitting(false);
@@ -199,7 +197,6 @@ export default function TextSubmissionForm({
         setShowTermsModal(true);
       },
       (errors) => {
-        console.error('Submission validation failed:', errors);
         toast.error('Please fill in all required fields before submitting');
       }
     )();

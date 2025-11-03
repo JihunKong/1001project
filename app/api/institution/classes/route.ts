@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { logger } from '@/lib/logger';
 
 interface ClassInfo {
   id: string;
@@ -217,7 +218,7 @@ export async function GET(request: NextRequest) {
       inactiveCount: filteredClasses.filter(c => !c.isActive).length
     });
   } catch (error) {
-    console.error('Error fetching classes:', error);
+    logger.error('Error fetching classes', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { logger } from '@/lib/logger'
 
 /**
  * Content Access Control System
@@ -169,9 +170,9 @@ export async function checkStoryAccess(
         }
       }
     }
-    
+
   } catch (error) {
-    console.error('Error checking story access:', error)
+    logger.error('Error checking story access', error)
     return {
       level: ContentAccess.RESTRICTED,
       canRead: false,
@@ -265,7 +266,7 @@ export async function trackPreviewUsage(
       // For now, skip tracking for anonymous users
     }
   } catch (error) {
-    console.error('Error tracking preview usage:', error)
+    logger.error('Error tracking preview usage', error)
   }
 }
 
@@ -308,9 +309,9 @@ export async function checkPreviewLimits(
       remaining,
       resetTime
     }
-    
+
   } catch (error) {
-    console.error('Error checking preview limits:', error)
+    logger.error('Error checking preview limits', error)
     return {
       exceeded: false,
       remaining: hourlyLimit,
@@ -376,9 +377,9 @@ export async function getUserSubscriptionFeatures(userId: string): Promise<{
         maxDownloads: subscription.maxDownloads
       }
     }
-    
+
   } catch (error) {
-    console.error('Error getting subscription features:', error)
+    logger.error('Error getting subscription features', error)
     return {
       hasActiveSubscription: false,
       plan: 'free',

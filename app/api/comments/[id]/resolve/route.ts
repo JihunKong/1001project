@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 export async function PUT(
   request: NextRequest,
@@ -76,7 +77,7 @@ export async function PUT(
     return NextResponse.json({ comment: updatedComment }, { status: 200 });
 
   } catch (error) {
-    console.error('Error resolving comment:', error);
+    logger.error('Error resolving comment', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

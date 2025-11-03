@@ -54,7 +54,6 @@ export default function DashboardRedirect() {
       router.push(targetRoute);
       clearTimeout(timeout);
     } catch (err) {
-      console.error('Redirect error:', err);
       setError('Failed to redirect to dashboard. Please try refreshing.');
       clearTimeout(timeout);
     }

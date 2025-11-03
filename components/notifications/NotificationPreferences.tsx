@@ -55,7 +55,6 @@ export default function NotificationPreferences() {
         throw new Error('Failed to fetch preferences');
       }
     } catch (error) {
-      console.error('Error fetching preferences:', error);
       setMessage({ text: 'Failed to load preferences', type: 'error' });
     } finally {
       setLoading(false);
@@ -88,7 +87,6 @@ export default function NotificationPreferences() {
         throw new Error(errorData.error || 'Failed to save preferences');
       }
     } catch (error) {
-      console.error('Error saving preferences:', error);
       setMessage({
         text: error instanceof Error ? error.message : 'Failed to save preferences',
         type: 'error'

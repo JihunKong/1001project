@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { supportedLocales, defaultLocale, type SupportedLocale } from './language';
+import { logger } from '@/lib/logger';
 
 /**
  * Get the current locale on the server side
@@ -15,7 +16,7 @@ export async function getServerLocale(): Promise<SupportedLocale> {
     }
   } catch (error) {
     // Fallback to default if cookies are not available
-    console.warn('Could not access cookies for locale detection:', error);
+    logger.warn('Could not access cookies for locale detection', { error });
   }
   
   return defaultLocale;

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { UserRole } from '@prisma/client'
+import { logger } from '@/lib/logger'
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
@@ -30,8 +31,7 @@ export async function executeWithControlledAccess<T>(
 ): Promise<T> {
 
   // Log all RLS bypass attempts for security monitoring
-  // eslint-disable-next-line no-console
-  console.log('[SECURITY] Controlled RLS Access:', {
+  logger.info('[SECURITY] Controlled RLS Access', {
     operation: context.operation,
     userRole: context.userRole,
     userId: context.userId,
@@ -64,7 +64,7 @@ export async function executeWithControlledAccess<T>(
 
         case 'SYSTEM_ADMIN':
           // Admin operations - log extensively
-          console.warn('[SECURITY] System admin operation requested:', context);
+          logger.warn('[SECURITY] System admin operation requested', context);
           await tx.$executeRaw`SELECT set_config('app.operation_type', 'SYSTEM_ADMIN', true)`
           break;
 
@@ -75,7 +75,7 @@ export async function executeWithControlledAccess<T>(
       return operation(tx)
     } catch (error: any) {
       // Log security violations
-      console.error('[SECURITY] RLS bypass failed:', {
+      logger.error('[SECURITY] RLS bypass failed', {
         error: error.message,
         context,
         timestamp: new Date().toISOString()
@@ -92,13 +92,12 @@ export async function executeWithControlledAccess<T>(
  */
 export async function executeWithRLSBypass<T>(operation: (client: any) => Promise<T>): Promise<T> {
   // Log usage of deprecated function for migration tracking
-  console.warn('[SECURITY] DEPRECATED: executeWithRLSBypass used. Migrate to executeWithControlledAccess');
-  // eslint-disable-next-line no-console
-  console.trace('Stack trace for deprecated function usage');
+  logger.warn('[SECURITY] DEPRECATED: executeWithRLSBypass used. Migrate to executeWithControlledAccess');
+  logger.warn('[SECURITY] Stack trace for deprecated function usage', { stack: new Error().stack });
 
   // For now, maintain compatibility but add security logging
   return systemPrisma.$transaction(async (tx) => {
-    console.warn('[SECURITY] RLS BYPASS USED - SECURITY RISK', {
+    logger.warn('[SECURITY] RLS BYPASS USED - SECURITY RISK', {
       timestamp: new Date().toISOString(),
       stack: new Error().stack
     });
@@ -109,7 +108,7 @@ export async function executeWithRLSBypass<T>(operation: (client: any) => Promis
       // Still bypass for compatibility, but log it
       await tx.$executeRaw`SET LOCAL row_security = off`
     } catch (error: any) {
-      console.error('RLS bypass setup failed:', error.message)
+      logger.error('RLS bypass setup failed', error)
     }
 
     return operation(tx)

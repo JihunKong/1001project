@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 // Validation schema for progress updates
 const UpdateProgressSchema = z.object({
@@ -208,7 +209,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response);
 
   } catch (error) {
-    console.error('Error fetching reading progress:', error);
+    logger.error('Error fetching reading progress', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -399,7 +400,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error updating reading progress:', error);
+    logger.error('Error updating reading progress', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

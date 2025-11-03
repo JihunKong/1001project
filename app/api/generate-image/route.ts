@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateCuteCartoonImage } from '@/lib/google-genai-image';
 import path from 'path';
 import fs from 'fs';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('[API] Error in generate-image:', error);
+    logger.error('[API] Error in generate-image', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

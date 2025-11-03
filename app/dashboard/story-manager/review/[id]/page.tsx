@@ -148,7 +148,6 @@ export default function StoryReviewPage() {
       const data = await response.json();
       setComments(data.comments || []);
     } catch (err) {
-      console.error('Error fetching comments:', err);
       toast.error('Failed to load comments');
     } finally {
       setLoadingComments(false);
@@ -186,7 +185,6 @@ export default function StoryReviewPage() {
       await fetchComments();
       toast.success('Comment added successfully!');
     } catch (err) {
-      console.error('Error creating comment:', err);
       toast.error('Failed to add comment');
     }
   };
@@ -230,7 +228,6 @@ export default function StoryReviewPage() {
       await fetchComments();
       toast.success('Reply added successfully!');
     } catch (err) {
-      console.error('Error adding reply:', err);
       toast.error('Failed to add reply');
     }
   };
@@ -252,7 +249,6 @@ export default function StoryReviewPage() {
       await fetchComments();
       toast.success(isResolved ? 'Comment resolved!' : 'Comment reopened!');
     } catch (err) {
-      console.error('Error resolving comment:', err);
       toast.error('Failed to resolve comment');
     }
   };
@@ -274,7 +270,6 @@ export default function StoryReviewPage() {
       await fetchComments();
       toast.success('Comment updated!');
     } catch (err) {
-      console.error('Error editing comment:', err);
       toast.error('Failed to edit comment');
     }
   };
@@ -293,7 +288,6 @@ export default function StoryReviewPage() {
       handleCloseCommentPopup();
       toast.success('Comment deleted!');
     } catch (err) {
-      console.error('Error deleting comment:', err);
       toast.error('Failed to delete comment');
     }
   };

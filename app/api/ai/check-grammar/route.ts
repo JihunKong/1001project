@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { checkGrammar } from '@/lib/ai/openai';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Grammar check error:', error);
+    logger.error('Grammar check error', error);
 
     return NextResponse.json({
       success: false,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 export async function POST(
   request: NextRequest,
@@ -71,7 +72,7 @@ export async function POST(
     return NextResponse.json({ reply }, { status: 201 });
 
   } catch (error) {
-    console.error('Error creating reply:', error);
+    logger.error('Error creating reply', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

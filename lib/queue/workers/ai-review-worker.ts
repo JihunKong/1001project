@@ -3,6 +3,7 @@ import { workerOptions } from '../config';
 import { AIReviewJobData } from '../ai-review-queue';
 import { checkGrammar, analyzeStructure } from '@/lib/ai/openai';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 async function processAIReview(job: Job<AIReviewJobData>) {
   const { submissionId, content, userId } = job.data;
@@ -67,25 +68,25 @@ export const aiReviewWorker = new Worker<AIReviewJobData>(
 );
 
 aiReviewWorker.on('completed', (job) => {
-  console.warn(`[AI Review Worker] Job ${job.id} completed successfully`);
+  logger.info('AI Review Worker: Job completed successfully', { jobId: job.id });
 });
 
 aiReviewWorker.on('failed', (job, err) => {
-  console.error(`[AI Review Worker] Job ${job?.id} failed:`, err.message);
+  logger.error('AI Review Worker: Job failed', { jobId: job?.id, error: err });
 });
 
 aiReviewWorker.on('error', (err) => {
-  console.error('[AI Review Worker] Worker error:', err);
+  logger.error('AI Review Worker: Worker error', err);
 });
 
 process.on('SIGTERM', async () => {
-  console.warn('[AI Review Worker] Received SIGTERM, closing worker...');
+  logger.info('AI Review Worker: Received SIGTERM, closing worker');
   await aiReviewWorker.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  console.warn('[AI Review Worker] Received SIGINT, closing worker...');
+  logger.info('AI Review Worker: Received SIGINT, closing worker');
   await aiReviewWorker.close();
   process.exit(0);
 });

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getWritingHelp } from '@/lib/ai/openai';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   try {
@@ -61,7 +62,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Writing help error:', error);
+    logger.error('Writing help error', error);
 
     return NextResponse.json({
       success: false,

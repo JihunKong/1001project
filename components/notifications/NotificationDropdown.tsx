@@ -42,7 +42,7 @@ export default function NotificationDropdown() {
         setUnreadCount(data.unreadCount || 0);
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      // Failed to fetch notifications - will show empty state
     } finally {
       setLoading(false);
     }
@@ -93,12 +93,12 @@ export default function NotificationDropdown() {
             break;
         }
       } catch (error) {
-        console.error('Error parsing SSE message:', error);
+        // Failed to parse SSE message - ignore and continue
       }
     };
 
     es.onerror = (error) => {
-      console.error('SSE connection error:', error);
+      // SSE connection error - close and cleanup
       es.close();
       setEventSource(null);
 
@@ -131,7 +131,7 @@ export default function NotificationDropdown() {
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      // Failed to mark as read
     }
   };
 
@@ -149,7 +149,7 @@ export default function NotificationDropdown() {
         setUnreadCount(0);
       }
     } catch (error) {
-      console.error('Error marking all as read:', error);
+      // Failed to mark all as read
     }
   };
 

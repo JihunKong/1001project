@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { TextSubmissionStatus, UserRole } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 // GET /api/story-manager/stats - Get story manager statistics
 export async function GET(_request: NextRequest) {
@@ -91,7 +92,7 @@ export async function GET(_request: NextRequest) {
     return NextResponse.json(stats);
 
   } catch (error) {
-    console.error('Error fetching story manager stats:', error);
+    logger.error('Error fetching story manager stats', error);
     return NextResponse.json(
       { error: 'Failed to fetch statistics' },
       { status: 500 }

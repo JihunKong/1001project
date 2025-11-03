@@ -162,7 +162,7 @@ export const EnhancedAuthProvider: React.FC<AuthProviderProps> = ({ children }) 
           dispatch({ type: 'AUTH_LOGOUT' });
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        // Error handled through AUTH_ERROR dispatch
         dispatch({ type: 'AUTH_ERROR', payload: 'Failed to initialize authentication' });
       }
     };
@@ -283,8 +283,7 @@ export const EnhancedAuthProvider: React.FC<AuthProviderProps> = ({ children }) 
       await clearUserData();
 
     } catch (error) {
-      console.error('Logout error:', error);
-      // Force logout even if server request fails
+      // Force logout even if server request fails - error handled silently
       dispatch({ type: 'AUTH_LOGOUT' });
     }
   }, []);

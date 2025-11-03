@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 // SSE Event Types
 export interface SSEEvent {
@@ -29,7 +30,7 @@ export function sendSSEEvent(controller: ReadableStreamDefaultController, event:
     const data = `data: ${JSON.stringify(event)}\n\n`;
     controller.enqueue(new TextEncoder().encode(data));
   } catch (error) {
-    console.error('Error sending SSE event:', error);
+    logger.error('Error sending SSE event', error);
   }
 }
 
@@ -54,7 +55,7 @@ export function broadcastSSEEvent(event: SSEEvent, targetUserId?: string, target
         sendSSEEvent(connection.controller, event);
       }
     } catch (error) {
-      console.error(`Error broadcasting to connection ${connectionId}:`, error);
+      logger.error(`Error broadcasting to connection ${connectionId}`, error);
       // Remove broken connection
       clearInterval(connection.heartbeatInterval);
       connections.delete(connectionId);
@@ -109,7 +110,7 @@ export async function notifySubmissionStatusChange(submissionId: string, newStat
     broadcastSSEEvent(event, undefined, UserRole.CONTENT_ADMIN);
 
   } catch (error) {
-    console.error('Error notifying submission status change:', error);
+    logger.error('Error notifying submission status change', error);
   }
 }
 
@@ -143,7 +144,7 @@ export async function notifyNewSubmission(submissionId: string) {
     broadcastSSEEvent(event, undefined, UserRole.CONTENT_ADMIN);
 
   } catch (error) {
-    console.error('Error notifying new submission:', error);
+    logger.error('Error notifying new submission', error);
   }
 }
 
@@ -172,6 +173,6 @@ export async function notifyFeedbackReceived(submissionId: string, reviewerRole:
     broadcastSSEEvent(event, authorId);
 
   } catch (error) {
-    console.error('Error notifying feedback received:', error);
+    logger.error('Error notifying feedback received', error);
   }
 }

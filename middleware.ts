@@ -1,5 +1,8 @@
 import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
+import { randomUUID } from 'crypto';
+import { logger } from './lib/logger';
+import { setRequestContext } from './lib/request-context';
 
 // Track redirects to prevent infinite loops
 const redirectTracker = new Map<string, { count: number; timestamp: number }>();
@@ -24,7 +27,12 @@ function isRedirectLoop(clientId: string): boolean {
 
   // Check if too many redirects
   if (tracker.count >= MAX_REDIRECTS) {
-    console.warn(`Redirect loop detected for client: ${clientId}`);
+    logger.warn('Redirect loop detected', {
+      clientId,
+      count: tracker.count,
+      maxRedirects: MAX_REDIRECTS,
+      timestamp: tracker.timestamp,
+    });
     return true;
   }
 
@@ -51,6 +59,17 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
+    // Set request context for logging
+    const requestId = randomUUID();
+    setRequestContext({
+      requestId,
+      userId: token?.sub,
+      userRole: token?.role as string | undefined,
+      path: pathname,
+      method: req.method,
+      timestamp: Date.now(),
+    });
+
     // Create unique client identifier
     const clientId = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
     const trackingKey = `${clientId}-${pathname}`;
@@ -66,7 +85,11 @@ export default withAuth(
       // Admin routes - check for redirect loops
       if (pathname.startsWith('/admin') && token.role !== 'ADMIN') {
         if (isRedirectLoop(trackingKey)) {
-          console.error('Admin redirect loop detected, allowing access to prevent lockup');
+          logger.error('Admin redirect loop detected, allowing access to prevent lockup', undefined, {
+            trackingKey,
+            pathname,
+            role: token.role,
+          });
           return NextResponse.next();
         }
         return NextResponse.redirect(new URL('/dashboard', req.url));
@@ -98,7 +121,13 @@ export default withAuth(
 
         if (dashboardRole !== expectedDashboardRole && dashboardRole !== 'page') {
           if (isRedirectLoop(trackingKey)) {
-            console.error('Dashboard redirect loop detected, allowing access to prevent lockup');
+            logger.error('Dashboard redirect loop detected, allowing access to prevent lockup', undefined, {
+              trackingKey,
+              pathname,
+              dashboardRole,
+              expectedDashboardRole,
+              role: token.role,
+            });
             return NextResponse.next();
           }
           return NextResponse.redirect(new URL(`/dashboard/${expectedDashboardRole}`, req.url));

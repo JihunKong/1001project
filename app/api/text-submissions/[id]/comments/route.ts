@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { NotificationService } from '@/lib/notifications/NotificationService';
 import { NotificationType } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 export async function GET(
   request: NextRequest,
@@ -79,7 +80,7 @@ export async function GET(
     return NextResponse.json({ comments }, { status: 200 });
 
   } catch (error) {
-    console.error('Error fetching comments:', error);
+    logger.error('Error fetching comments', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -167,13 +168,13 @@ export async function POST(
         }
       );
     } catch (notificationError) {
-      console.error('Failed to create notification for comment:', notificationError);
+      logger.error('Failed to create notification for comment', notificationError);
     }
 
     return NextResponse.json({ comment }, { status: 201 });
 
   } catch (error) {
-    console.error('Error creating comment:', error);
+    logger.error('Error creating comment', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -11,6 +11,7 @@ import {
   generateParentalConsentData
 } from '@/lib/coppa';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // Validation schema for user registration
 const SignupSchema = z.object({
@@ -328,7 +329,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Error during user registration:', error);
+    logger.error('Error during user registration', error);
 
     // Handle specific database errors
     if (error instanceof Error) {

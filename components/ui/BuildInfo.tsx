@@ -24,7 +24,9 @@ export default function BuildInfo({ className = '', showOnHover = true }: BuildI
     fetch('/build-info.json')
       .then(res => res.json())
       .then(data => setBuildInfo(data))
-      .catch(err => console.warn('Could not load build info:', err));
+      .catch(() => {
+        // Build info loading failed - component will show fallback UI
+      });
   }, []);
 
   if (!buildInfo) {

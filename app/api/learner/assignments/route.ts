@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole, SubmissionStatus, AssignmentType } from '@prisma/client';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 // Validation schema for assignment submission
 const SubmitAssignmentSchema = z.object({
@@ -260,7 +261,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching learner assignments:', error);
+    logger.error('Error fetching learner assignments', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -473,7 +474,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error submitting assignment:', error);
+    logger.error('Error submitting assignment', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

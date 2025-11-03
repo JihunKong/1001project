@@ -70,7 +70,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
         setPage(pageNum);
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      // Failed to fetch notifications - will show empty state
     } finally {
       setLoading(false);
     }
@@ -119,7 +119,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
         );
       }
     } catch (error) {
-      console.error('Error toggling notification read status:', error);
+      // Failed to toggle read status
     }
   };
 
@@ -141,7 +141,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
         setSelectedIds(new Set());
       }
     } catch (error) {
-      console.error('Error bulk marking as read:', error);
+      // Failed to bulk mark as read
     }
   };
 
@@ -161,7 +161,7 @@ export default function NotificationCenter({ className = '' }: NotificationCente
         setSelectedIds(new Set());
       }
     } catch (error) {
-      console.error('Error deleting notifications:', error);
+      // Failed to delete notifications
     }
   };
 

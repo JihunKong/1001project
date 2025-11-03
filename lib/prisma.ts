@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { logger } from '@/lib/logger'
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
@@ -27,10 +28,9 @@ export async function executeWithAuthContext<T>(operation: (client: any) => Prom
       await tx.$executeRaw`SELECT set_config('app.current_user_id', ${userId}, true)`
 
       // Keep RLS enabled for security - authentication operations should work within security constraints
-      // eslint-disable-next-line no-console
-      console.log(`[AUTH] Operating with secure context: role=${userRole}, userId=${userId}`)
+      logger.info(`[AUTH] Operating with secure context: role=${userRole}, userId=${userId}`)
     } catch (error: any) {
-      console.error('[AUTH] Context setup failed:', error.message)
+      logger.error('[AUTH] Context setup failed', error)
     }
 
     return operation(tx)

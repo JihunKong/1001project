@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { logger } from '@/lib/logger';
 
 // Validation schema for email verification
 const VerifySchema = z.object({
@@ -148,7 +149,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error during email verification:', error);
+    logger.error('Error during email verification', error);
 
     return NextResponse.json(
       { error: 'Internal server error during verification' },
@@ -221,7 +222,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error checking verification status:', error);
+    logger.error('Error checking verification status', error);
 
     return NextResponse.json(
       { error: 'Internal server error' },

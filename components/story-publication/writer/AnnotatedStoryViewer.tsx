@@ -54,7 +54,7 @@ export default function AnnotatedStoryViewer({
         const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`);
 
         if (!response.ok) {
-          console.error(`[AnnotatedStoryViewer] Failed to fetch AI reviews: ${response.status} ${response.statusText}`);
+          // Failed to fetch AI reviews - will show error state
           return;
         }
 
@@ -63,13 +63,13 @@ export default function AnnotatedStoryViewer({
 
         reviews.forEach((review: AIReview) => {
           if (!review.annotationData || review.annotationData.length === 0) {
-            console.warn(`[AnnotatedStoryViewer] Review ${review.reviewType} has no annotationData!`);
+            // Review has no annotation data - skip
           }
         });
 
         setAiReviews(reviews);
       } catch (error) {
-        console.error('[AnnotatedStoryViewer] Failed to fetch AI reviews:', error);
+        // Failed to fetch AI reviews
       } finally {
         setIsLoading(false);
       }
@@ -143,7 +143,7 @@ export default function AnnotatedStoryViewer({
     }
 
     if (plainStart === -1 || plainEnd === -1) {
-      console.warn(`[convertHTMLOffset] Could not map HTML offsets ${htmlStart}-${htmlEnd} to plain text`);
+      // Could not map HTML offsets to plain text
       return null;
     }
 
@@ -177,7 +177,7 @@ export default function AnnotatedStoryViewer({
     });
 
     if (startPos === null || endPos === null) {
-      console.warn(`[convertHTMLOffset] Could not determine ProseMirror positions for plain text ${plainStart}-${plainEnd}`);
+      // Could not determine ProseMirror positions
       return null;
     }
 
@@ -195,7 +195,7 @@ export default function AnnotatedStoryViewer({
 
     const startIndex = normalizedDoc.indexOf(normalizedSearch);
     if (startIndex === -1) {
-      console.warn(`[findTextInDocument] Text not found: "${searchText.substring(0, 30)}..."`);
+      // Text not found in document
       return null;
     }
 
@@ -230,7 +230,7 @@ export default function AnnotatedStoryViewer({
     });
 
     if (startPos === null || endPos === null) {
-      console.warn(`[findTextInDocument] Could not determine positions for: "${searchText.substring(0, 30)}..."`);
+      // Could not determine positions for text
       return null;
     }
 
@@ -259,12 +259,12 @@ export default function AnnotatedStoryViewer({
           });
         });
       } else {
-        console.warn(`[AnnotatedStoryViewer] Review ${review.reviewType} has no annotations to apply`);
+        // Review has no annotations to apply
       }
     });
 
     if (allAnnotations.length === 0) {
-      console.warn('[AnnotatedStoryViewer] No annotations to apply from any review!');
+      // No annotations to apply from any review
       return;
     }
 
@@ -286,7 +286,7 @@ export default function AnnotatedStoryViewer({
         }
 
         if (!position) {
-          console.error(`[AnnotatedStoryViewer] Annotation #${index} (${annotation.reviewType}) failed - could not determine position`);
+          // Annotation failed - could not determine position
           failCount++;
           return;
         }
@@ -295,7 +295,7 @@ export default function AnnotatedStoryViewer({
         const docSize = editor.state.doc.content.size;
 
         if (from >= to || from < 0 || to > docSize) {
-          console.error(`[AnnotatedStoryViewer] Annotation #${index} (${annotation.reviewType}) failed - invalid position range`);
+          // Annotation failed - invalid position range
           failCount++;
           return;
         }
@@ -311,13 +311,13 @@ export default function AnnotatedStoryViewer({
 
         successCount++;
       } catch (error) {
-        console.error(`[AnnotatedStoryViewer] Annotation #${index} failed with exception:`, error);
+        // Annotation failed with exception
         failCount++;
       }
     });
 
     if (successCount === 0 && allAnnotations.length > 0) {
-      console.error('[AnnotatedStoryViewer] ALL annotations failed to apply! Check position offsets.');
+      // All annotations failed to apply
     }
   }, [editor, aiReviews, content, convertHTMLOffsetToProseMirror, findTextInDocument]);
 

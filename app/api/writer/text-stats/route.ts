@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { UserRole, TextSubmissionStatus } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 export async function GET(_request: NextRequest) {
   try {
@@ -183,7 +184,7 @@ export async function GET(_request: NextRequest) {
 
     return NextResponse.json(stats);
   } catch (error) {
-    console.error('Error fetching volunteer text submission stats:', error);
+    logger.error('Error fetching volunteer text submission stats', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

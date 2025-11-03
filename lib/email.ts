@@ -1,10 +1,11 @@
 import nodemailer from 'nodemailer'
 import { isEmailServiceConfigured } from './auth-demo'
+import { logger } from '@/lib/logger'
 
 // Create reusable transporter only if email service is configured
 const createTransporter = () => {
   if (!isEmailServiceConfigured()) {
-    console.warn('Email service not configured. Emails will not be sent.');
+    logger.warn('Email service not configured. Emails will not be sent.');
     return null;
   }
   
@@ -214,14 +215,10 @@ const getWelcomeEmailHtml = (name: string, role: string) => {
 // Send verification email
 export async function sendVerificationEmail(email: string, url: string) {
   const transporter = createTransporter();
-  
+
   if (!transporter) {
-    // eslint-disable-next-line no-console
-    console.log(`[Email Service Disabled] Magic link for ${email}:`);
-    // eslint-disable-next-line no-console
-    console.log(url);
-    // eslint-disable-next-line no-console
-    console.log('To enable email sending, configure SMTP settings in .env.local');
+    logger.info(`[Email Service Disabled] Magic link for ${email}`, { url });
+    logger.info('To enable email sending, configure SMTP settings in .env.local');
     return { success: false, message: 'Email service not configured' };
   }
   
@@ -233,13 +230,11 @@ export async function sendVerificationEmail(email: string, url: string) {
       html: getVerificationEmailHtml(url),
     })
 
-    // eslint-disable-next-line no-console
-    console.log("Verification email sent: %s", info.messageId)
+    logger.info("Verification email sent", { messageId: info.messageId })
     return { success: true, messageId: info.messageId }
   } catch (error) {
-    console.error("Error sending verification email:", error)
-    // eslint-disable-next-line no-console
-    console.log(`Fallback - Magic link for ${email}: ${url}`);
+    logger.error("Error sending verification email", error)
+    logger.info(`Fallback - Magic link for ${email}`, { url });
     throw new Error("Failed to send verification email")
   }
 }
@@ -247,10 +242,9 @@ export async function sendVerificationEmail(email: string, url: string) {
 // Send welcome email
 export async function sendWelcomeEmail(email: string, name: string, role: string) {
   const transporter = createTransporter();
-  
+
   if (!transporter) {
-    // eslint-disable-next-line no-console
-    console.log(`[Email Service Disabled] Welcome email would be sent to ${email}`);
+    logger.info(`[Email Service Disabled] Welcome email would be sent to ${email}`);
     return { success: false, message: 'Email service not configured' };
   }
   
@@ -262,11 +256,10 @@ export async function sendWelcomeEmail(email: string, name: string, role: string
       html: getWelcomeEmailHtml(name, role),
     })
 
-    // eslint-disable-next-line no-console
-    console.log("Welcome email sent: %s", info.messageId)
+    logger.info("Welcome email sent", { messageId: info.messageId })
     return { success: true, messageId: info.messageId }
   } catch (error) {
-    console.error("Error sending welcome email:", error)
+    logger.error("Error sending welcome email", error)
     return { success: false, message: 'Failed to send welcome email' };
   }
 }
@@ -274,12 +267,9 @@ export async function sendWelcomeEmail(email: string, name: string, role: string
 // Send password reset email
 export async function sendPasswordResetEmail(email: string, url: string) {
   const transporter = createTransporter();
-  
+
   if (!transporter) {
-    // eslint-disable-next-line no-console
-    console.log(`[Email Service Disabled] Password reset link for ${email}:`);
-    // eslint-disable-next-line no-console
-    console.log(url);
+    logger.info(`[Email Service Disabled] Password reset link for ${email}`, { url });
     return { success: false, message: 'Email service not configured' };
   }
   
@@ -351,13 +341,11 @@ export async function sendPasswordResetEmail(email: string, url: string) {
       html,
     })
 
-    // eslint-disable-next-line no-console
-    console.log("Password reset email sent: %s", info.messageId)
+    logger.info("Password reset email sent", { messageId: info.messageId })
     return { success: true, messageId: info.messageId }
   } catch (error) {
-    console.error("Error sending password reset email:", error)
-    // eslint-disable-next-line no-console
-    console.log(`Fallback - Password reset link for ${email}: ${url}`);
+    logger.error("Error sending password reset email", error)
+    logger.info(`Fallback - Password reset link for ${email}`, { url });
     return { success: false, message: 'Failed to send password reset email' };
   }
 }
@@ -370,10 +358,9 @@ export async function sendEmail(options: {
   from?: string;
 }) {
   const transporter = createTransporter();
-  
+
   if (!transporter) {
-    // eslint-disable-next-line no-console
-    console.log(`[Email Service Disabled] Email would be sent to ${options.to}: ${options.subject}`);
+    logger.info(`[Email Service Disabled] Email would be sent to ${options.to}`, { subject: options.subject });
     return { success: false, message: 'Email service not configured' };
   }
   
@@ -385,11 +372,10 @@ export async function sendEmail(options: {
       html: options.html,
     });
 
-    // eslint-disable-next-line no-console
-    console.log("Email sent: %s", info.messageId);
+    logger.info("Email sent", { messageId: info.messageId });
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error("Error sending email:", error);
+    logger.error("Error sending email", error);
     return { success: false, message: 'Failed to send email' };
   }
 }

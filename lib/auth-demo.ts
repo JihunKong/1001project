@@ -2,6 +2,7 @@ import { UserRole } from '@prisma/client';
 import { executeWithAuthContext } from '@/lib/prisma';
 import { randomBytes } from 'crypto';
 import jwt from 'jsonwebtoken';
+import { logger } from '@/lib/logger';
 
 // Demo account email patterns
 const DEMO_EMAIL_PATTERNS = [
@@ -110,7 +111,7 @@ export async function getOrCreateDemoUser(email: string) {
 
     return user;
   } catch (error) {
-    console.error('Demo user creation failed:', error);
+    logger.error('Demo user creation failed', error);
     throw error;
   }
 }
@@ -142,7 +143,7 @@ export function verifyDemoToken(token: string): unknown {
   try {
     return jwt.verify(token, secret);
   } catch (error) {
-    console.error('Demo token verification failed:', error);
+    logger.error('Demo token verification failed', error);
     return null;
   }
 }

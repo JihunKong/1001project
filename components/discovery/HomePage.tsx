@@ -60,8 +60,7 @@ const HomePage: React.FC<HomePageProps> = ({
         setCulturalEvents(eventsResponse);
         setFeaturedCollections(collectionsResponse);
       } catch (error) {
-        console.error('Failed to load homepage content:', error);
-        // Fallback to default content
+        // Fallback to default content on error
         loadFallbackContent();
       } finally {
         setLoading(false);
@@ -371,7 +370,6 @@ async function fetchFeaturedCollections(): Promise<CulturalCollection[]> {
 
 function loadFallbackContent() {
   // Implement fallback content loading
-  console.warn('Loading fallback homepage content');
   // No data to load, but we still need to show the hero section
 }
 

@@ -5,6 +5,7 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { logger } from '@/lib/logger';
 
 // Content Security Policy directives
 const CSP_DIRECTIVES = {
@@ -327,11 +328,17 @@ export async function logAuditEvent(event: AuditLog): Promise<void> {
   // In production, send to logging service
   if (process.env.NODE_ENV === 'production') {
     // Send to CloudWatch, DataDog, etc.
-    // eslint-disable-next-line no-console
-    console.log('[AUDIT]', JSON.stringify(event));
+    logger.info('[AUDIT]', { event: JSON.stringify(event) });
   } else {
-    // eslint-disable-next-line no-console
-    console.log('[AUDIT]', event);
+    logger.info('[AUDIT]', {
+      action: event.action,
+      userId: event.userId,
+      resource: event.resource,
+      ip: event.ip,
+      userAgent: event.userAgent,
+      success: event.success,
+      metadata: event.metadata
+    });
   }
 }
 

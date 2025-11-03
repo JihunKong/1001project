@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { AIReviewType, AIReviewStatus } from '@prisma/client';
 import OpenAI from 'openai';
+import { logger } from '@/lib/logger';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -117,7 +118,7 @@ async function generateAIReview(content: string, reviewType: AIReviewType): Prom
       suggestions
     };
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    logger.error('OpenAI API error', error);
     throw new Error('Failed to generate AI review');
   }
 }
@@ -209,7 +210,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('AI Review error:', error);
+    logger.error('AI Review error', error);
 
     if (error instanceof Error && error.message === 'Failed to generate AI review') {
       return NextResponse.json(

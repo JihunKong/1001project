@@ -78,13 +78,11 @@ export default function StoryManagerDashboard() {
         // Better error messages to identify which API is failing
         if (!submissionsRes.ok) {
           const errorData = await submissionsRes.json().catch(() => ({}));
-          console.error('Submissions API error:', submissionsRes.status, errorData);
           throw new Error(`Failed to fetch submissions (${submissionsRes.status}): ${errorData.error || 'Unknown error'}`);
         }
 
         if (!statsRes.ok) {
           const errorData = await statsRes.json().catch(() => ({}));
-          console.error('Stats API error:', statsRes.status, errorData);
           throw new Error(`Failed to fetch stats (${statsRes.status}): ${errorData.error || 'Unknown error'}`);
         }
 
@@ -94,7 +92,6 @@ export default function StoryManagerDashboard() {
         setSubmissions(submissionsData.submissions || []);
         setStats(statsData);
       } catch (err) {
-        console.error('Dashboard fetch error:', err);
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);

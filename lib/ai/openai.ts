@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { logger } from '@/lib/logger';
 
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
@@ -47,7 +48,7 @@ export async function checkGrammar(content: string): Promise<GrammarCheckResult>
       suggestions: result.suggestions || []
     };
   } catch (error) {
-    console.error('Grammar check error:', error);
+    logger.error('Grammar check error', error);
     return {
       grammarIssues: [],
       grammarScore: 0,
@@ -83,7 +84,7 @@ export async function analyzeStructure(content: string): Promise<StructureAnalys
       suggestions: result.suggestions || []
     };
   } catch (error) {
-    console.error('Structure analysis error:', error);
+    logger.error('Structure analysis error', error);
     return {
       structureScore: 0,
       hasIntro: false,
@@ -114,7 +115,7 @@ export async function getWritingHelp(content: string, question: string): Promise
 
     return response.choices[0].message.content || 'AI 도우미가 응답하지 못했습니다.';
   } catch (error) {
-    console.error('Writing help error:', error);
+    logger.error('Writing help error', error);
     return 'AI 도우미에 문제가 발생했습니다. 나중에 다시 시도해주세요.';
   }
 }

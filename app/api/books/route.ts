@@ -10,6 +10,7 @@ import {
   buildSecureSearchQuery,
   RATE_LIMITS
 } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 // Validation schema for book creation
 const CreateBookSchema = z.object({
@@ -309,7 +310,7 @@ export async function GET(request: NextRequest) {
     return response;
 
   } catch (error) {
-    console.error('Error fetching books:', error);
+    logger.error('Error fetching books', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -396,7 +397,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Error creating book:', error);
+    logger.error('Error creating book', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

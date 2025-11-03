@@ -56,7 +56,6 @@ function SubmitTextPage() {
           }
         })
         .catch(err => {
-          console.error('Error loading submission:', err);
           setError(err instanceof Error ? err.message : 'Failed to load submission');
         })
         .finally(() => {
@@ -93,7 +92,6 @@ function SubmitTextPage() {
       setFormData(prev => ({ ...prev, status: 'DRAFT' }));
       alert('Submission withdrawn successfully. You can now edit and resubmit.');
     } catch (err) {
-      console.error('Error withdrawing submission:', err);
       alert(err instanceof Error ? err.message : 'Failed to withdraw submission');
     } finally {
       setWithdrawing(false);

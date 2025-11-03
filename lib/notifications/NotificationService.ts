@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { NotificationType, TextSubmissionStatus, UserRole } from '@prisma/client';
 import { EmailService } from './EmailService';
 import { broadcastNotification, broadcastStatusChange } from '@/lib/notifications/sse-broadcast';
+import { logger } from '@/lib/logger';
 
 export interface NotificationData {
   submissionId?: string;
@@ -63,7 +64,7 @@ export class NotificationService {
 
       return notification;
     } catch (error) {
-      console.error('Error creating notification:', error);
+      logger.error('Error creating notification', error);
       throw error;
     }
   }
@@ -125,7 +126,7 @@ export class NotificationService {
       await this.notifyReviewers(submission, newStatus, performedBy);
 
     } catch (error) {
-      console.error('Error handling status change:', error);
+      logger.error('Error handling status change', error);
       throw error;
     }
   }
@@ -269,7 +270,7 @@ export class NotificationService {
         emailTemplate.text
       );
     } catch (error) {
-      console.error('Error sending email notification:', error);
+      logger.error('Error sending email notification', error);
     }
   }
 
@@ -490,7 +491,7 @@ export class NotificationService {
 
       return notification;
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      logger.error('Error marking notification as read', error);
       throw error;
     }
   }
@@ -511,7 +512,7 @@ export class NotificationService {
 
       return result;
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
+      logger.error('Error marking all notifications as read', error);
       throw error;
     }
   }
@@ -532,7 +533,7 @@ export class NotificationService {
 
       return { notifications, unreadCount };
     } catch (error) {
-      console.error('Error getting notifications:', error);
+      logger.error('Error getting notifications', error);
       throw error;
     }
   }

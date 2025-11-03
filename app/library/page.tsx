@@ -41,7 +41,7 @@ export default function LibraryPage() {
         setBooks(data.books || []);
       }
     } catch (error) {
-      console.error('Failed to fetch books:', error);
+      // Error handled silently - books will show empty state
     } finally {
       setLoading(false);
     }

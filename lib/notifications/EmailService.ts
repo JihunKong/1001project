@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { logger } from '@/lib/logger';
 
 export class EmailService {
   private transporter: nodemailer.Transporter;
@@ -40,10 +41,9 @@ export class EmailService {
       };
 
       await this.transporter.sendMail(mailOptions);
-      // eslint-disable-next-line no-console
-      console.log(`Notification email sent to ${to}: ${subject}`);
+      logger.info(`Notification email sent to ${to}`, { subject });
     } catch (error) {
-      console.error('Error sending notification email:', error);
+      logger.error('Error sending notification email', error);
       throw error;
     }
   }

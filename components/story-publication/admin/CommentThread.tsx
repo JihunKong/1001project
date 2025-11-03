@@ -52,7 +52,7 @@ export default function CommentThread({
       setEditingId(null);
       setEditContent('');
     } catch (error) {
-      console.error('Error editing reply:', error);
+      // Error handled by parent component via onEdit
     } finally {
       setIsSubmitting(false);
     }
@@ -65,7 +65,7 @@ export default function CommentThread({
     try {
       await onDelete(commentId);
     } catch (error) {
-      console.error('Error deleting reply:', error);
+      // Error handled by parent component via onDelete
     } finally {
       setIsSubmitting(false);
     }

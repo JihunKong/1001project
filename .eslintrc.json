@@ -6,7 +6,7 @@
     // General code quality
     "prefer-const": "error",
     "no-var": "error",
-    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-console": "error",
     "eqeqeq": ["error", "always"],
     "no-eval": "error",
     "no-implied-eval": "error",
@@ -15,7 +15,13 @@
   },
   "overrides": [
     {
-      "files": ["**/api/**/*.ts"],
+      "files": ["lib/logger.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["components/ErrorBoundary.tsx"],
       "rules": {
         "no-console": "off"
       }

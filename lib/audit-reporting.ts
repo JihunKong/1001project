@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { getDeletionAuditStatistics } from '@/lib/gdpr-deletion'
+import { logger } from '@/lib/logger'
 
 /**
  * Automated GDPR Deletion Audit Reporting System
@@ -139,8 +140,7 @@ export async function generateAuditReport(
   }
 
   // Log report generation
-  // eslint-disable-next-line no-console
-  console.log(`AUDIT_REPORT_GENERATED: ${reportType}`, {
+  logger.info(`AUDIT_REPORT_GENERATED: ${reportType}`, {
     reportId,
     period: `${period.start.toISOString()} - ${period.end.toISOString()}`,
     complianceStatus,
