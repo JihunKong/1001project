@@ -11,6 +11,8 @@ import SubmissionTabs, { SubmissionStatus } from '@/components/SubmissionTabs';
 import SubmissionList from '@/components/SubmissionList';
 import DashboardLoadingState from '@/components/dashboard/DashboardLoadingState';
 import DashboardErrorState from '@/components/dashboard/DashboardErrorState';
+import { useTranslation } from '@/lib/i18n/useTranslation';
+import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 
 interface TextSubmission {
   id: string;
@@ -58,6 +60,7 @@ interface Stats {
 export default function WriterStories() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useTranslation();
   const [submissions, setSubmissions] = useState<TextSubmission[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -231,17 +234,20 @@ export default function WriterStories() {
 
         <div id="main-content" className="max-w-[1240px] px-4 sm:px-8 lg:px-12 py-10 pb-20 lg:pb-10">
           <div className="flex items-center justify-between mb-12">
-            <h1
-              className="text-[#141414]"
-              style={{
-                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                fontSize: '48px',
-                fontWeight: 500,
-                lineHeight: '1.221'
-              }}
-            >
-              My Stories
-            </h1>
+            <div className="flex items-center gap-4">
+              <h1
+                className="text-[#141414]"
+                style={{
+                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                  fontSize: '48px',
+                  fontWeight: 500,
+                  lineHeight: '1.221'
+                }}
+              >
+                {t('stories.title')}
+              </h1>
+              <LanguageSelector variant="compact" />
+            </div>
             <button
               onClick={() => router.push('/dashboard/writer/submit-text')}
               className="bg-[#141414] hover:bg-[#1f1f1f] !text-white px-8 py-3.5 rounded-lg flex items-center gap-2.5 transition-all hover:shadow-md"
@@ -254,7 +260,7 @@ export default function WriterStories() {
               }}
             >
               <PenTool className="h-5 w-5 !text-white" style={{ color: '#ffffff' }} />
-              Write Story
+              {t('dashboard.writer.quickActions.writeNew')}
             </button>
           </div>
 
@@ -282,7 +288,7 @@ export default function WriterStories() {
                     lineHeight: '1.221'
                   }}
                 >
-                  No stories yet
+                  {t('dashboard.writer.home.noStories')}
                 </h3>
                 <p
                   className="text-[#8E8E93] mb-8"
@@ -293,7 +299,7 @@ export default function WriterStories() {
                     lineHeight: '1.5'
                   }}
                 >
-                  Start your writing journey by creating your first story. Share your creativity with children around the world.
+                  {t('dashboard.writer.submit.instructions')}
                 </p>
                 <button
                   onClick={() => router.push('/dashboard/writer/submit-text')}
@@ -307,7 +313,7 @@ export default function WriterStories() {
                   }}
                 >
                   <PenTool className="h-5 w-5 !text-white" style={{ color: '#ffffff' }} />
-                  Write Your First Story
+                  {t('dashboard.writer.home.writeFirstStory')}
                 </button>
               </div>
             </div>

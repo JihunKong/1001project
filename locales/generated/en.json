@@ -1,0 +1,196 @@
+{
+  "dashboard": {
+    "writer": {
+      "home": {
+        "title": "Home",
+        "welcome": "Welcome back",
+        "subtitle": "Continue your writing journey and inspire young readers",
+        "noStories": "No stories yet",
+        "writeFirstStory": "Write Your First Story"
+      },
+      "stats": {
+        "title": "Your Statistics",
+        "total": "Total Stories",
+        "published": "Published",
+        "draft": "Drafts",
+        "inReview": "In Review",
+        "readers": "Readers Reached",
+        "views": "Total Views"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "writeNew": "Write New Story",
+        "viewLibrary": "Explore Library",
+        "manageStories": "Manage My Stories"
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "noActivity": "No recent activity"
+      },
+      "achievements": {
+        "title": "Achievements",
+        "firstStory": "First Story Published",
+        "tenStories": "10 Stories Published",
+        "hundredReaders": "100 Readers Reached"
+      },
+      "submit": {
+        "title": "Submit New Story",
+        "instructions": "Write your story below. You can save as draft or submit for review."
+      }
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "myStories": "My Stories",
+    "library": "Library",
+    "notifications": "Notifications",
+    "profile": "Profile"
+  },
+  "stories": {
+    "title": "My Stories",
+    "subtitle": "Manage your creative works",
+    "tabs": {
+      "all": "All",
+      "draft": "Draft",
+      "pending": "Pending",
+      "inReview": "In Review",
+      "needsRevision": "Needs Revision",
+      "approved": "Approved",
+      "published": "Published",
+      "rejected": "Rejected"
+    },
+    "empty": {
+      "draft": "No drafts yet. Start writing your first story!",
+      "pending": "No pending submissions",
+      "published": "No published stories yet"
+    },
+    "card": {
+      "status": "Status",
+      "createdAt": "Created",
+      "updatedAt": "Updated",
+      "viewCount": "Views",
+      "readTime": "Read Time"
+    }
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "submit": "Submit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "writeNew": "Write New Story",
+    "viewLibrary": "View Library"
+  },
+  "library": {
+    "title": "Published Library",
+    "subtitle": "Explore stories by other writers",
+    "filters": {
+      "all": "All Categories",
+      "category": "Category",
+      "ageRange": "Age Range",
+      "language": "Language"
+    },
+    "empty": "No published stories available"
+  },
+  "notification": {
+    "title": "Notifications",
+    "markAllRead": "Mark All as Read",
+    "empty": "No new notifications",
+    "type": {
+      "feedback": "Feedback Received",
+      "statusChange": "Status Changed",
+      "published": "Story Published"
+    }
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "PENDING": "Pending",
+    "IN_REVIEW": "In Review",
+    "NEEDS_REVISION": "Needs Revision",
+    "APPROVED": "Approved",
+    "PUBLISHED": "Published",
+    "REJECTED": "Rejected"
+  },
+  "form": {
+    "title": "Title",
+    "content": "Content",
+    "summary": "Summary",
+    "category": "Category",
+    "ageRange": "Age Range",
+    "language": "Language",
+    "tags": "Tags",
+    "required": "Required field",
+    "minLength": "Minimum {count} characters",
+    "maxLength": "Maximum {count} characters"
+  },
+  "feedback": {
+    "title": "Feedback",
+    "noFeedback": "No feedback yet",
+    "from": "From",
+    "date": "Date",
+    "comment": "Comment"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{count} minutes ago",
+    "hoursAgo": "{count} hours ago",
+    "daysAgo": "{count} days ago",
+    "weeksAgo": "{count} weeks ago",
+    "monthsAgo": "{count} months ago"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error occurred",
+    "success": "Success!",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "readMore": "Read More",
+    "showLess": "Show Less",
+    "noResults": "No results found",
+    "tryAgain": "Try Again",
+    "share": "Share",
+    "download": "Download",
+    "print": "Print",
+    "viewAll": "View all",
+    "updated": "Updated"
+  },
+  "language": {
+    "en": "English",
+    "ko": "Korean",
+    "es": "Spanish",
+    "ar": "Arabic",
+    "hi": "Hindi",
+    "fr": "French",
+    "de": "German",
+    "ja": "Japanese",
+    "pt": "Portuguese",
+    "ru": "Russian",
+    "it": "Italian",
+    "zh": "Chinese",
+    "selector": {
+      "title": "Select Language"
+    }
+  },
+  "error": {
+    "notFound": "Page not found",
+    "serverError": "Server error occurred",
+    "unauthorized": "Unauthorized access",
+    "networkError": "Network error. Check your connection."
+  },
+  "profile": {
+    "title": "My Profile",
+    "edit": "Edit Profile",
+    "name": "Name",
+    "email": "Email",
+    "bio": "Bio",
+    "location": "Location",
+    "joinedDate": "Joined"
+  }
+}

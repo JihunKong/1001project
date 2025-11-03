@@ -1,0 +1,196 @@
+{
+  "dashboard": {
+    "writer": {
+      "home": {
+        "title": "होम",
+        "welcome": "वापसी पर स्वागत है",
+        "subtitle": "अपनी लेखन यात्रा जारी रखें",
+        "noStories": "अभी तक कोई कहानियाँ नहीं",
+        "writeFirstStory": "अपनी पहली कहानी लिखें"
+      },
+      "stats": {
+        "title": "आपके आँकड़े",
+        "total": "कुल कहानियाँ",
+        "published": "प्रकाशित",
+        "draft": "मसौदे",
+        "inReview": "समीक्षाधीन",
+        "readers": "पाठकों तक पहुंचे",
+        "views": "कुल दृश्य"
+      },
+      "quickActions": {
+        "title": "त्वरित क्रियाएं",
+        "writeNew": "नई कहानी लिखें",
+        "viewLibrary": "पुस्तकालय देखें",
+        "manageStories": "मेरी कहानियाँ प्रबंधित करें"
+      },
+      "recentActivity": {
+        "title": "हाल की गतिविधि",
+        "noActivity": "कोई हालिया गतिविधि नहीं"
+      },
+      "achievements": {
+        "title": "उपलब्धियाँ",
+        "firstStory": "पहली कहानी प्रकाशित",
+        "tenStories": "10 कहानियाँ प्रकाशित",
+        "hundredReaders": "100 पाठकों तक पहुंचे"
+      },
+      "submit": {
+        "title": "नई कहानी जमा करें",
+        "instructions": "नीचे अपनी कहानी लिखें। आप ड्राफ्ट के रूप में सहेज सकते हैं या समीक्षा के लिए जमा कर सकते हैं।"
+      }
+    }
+  },
+  "nav": {
+    "home": "होम",
+    "myStories": "मेरी कहानियाँ",
+    "library": "पुस्तकालय",
+    "notifications": "सूचनाएं",
+    "profile": "प्रोफ़ाइल"
+  },
+  "stories": {
+    "title": "मेरी कहानियाँ",
+    "subtitle": "अपने रचनात्मक कार्यों का प्रबंधन करें",
+    "tabs": {
+      "all": "सभी",
+      "draft": "मसौदा",
+      "pending": "लंबित",
+      "inReview": "समीक्षाधीन",
+      "needsRevision": "संशोधन की आवश्यकता है",
+      "approved": "स्वीकृत",
+      "published": "प्रकाशित",
+      "rejected": "अस्वीकृत"
+    },
+    "empty": {
+      "draft": "अभी तक कोई मसौदा नहीं। अपनी पहली कहानी लिखना शुरू करें!",
+      "pending": "कोई लंबित सबमिशन नहीं",
+      "published": "अभी तक कोई प्रकाशित कहानियाँ नहीं"
+    },
+    "card": {
+      "status": "स्थिति",
+      "createdAt": "बनाया गया",
+      "updatedAt": "अपडेट किया गया",
+      "viewCount": "दृश्य",
+      "readTime": "पठन समय"
+    }
+  },
+  "actions": {
+    "view": "देखें",
+    "edit": "संपादित करें",
+    "delete": "हटाएं",
+    "submit": "जमा करें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "confirm": "पुष्टि करें",
+    "writeNew": "नई कहानी लिखें",
+    "viewLibrary": "पुस्तकालय देखें"
+  },
+  "library": {
+    "title": "प्रकाशित पुस्तकालय",
+    "subtitle": "अन्य लेखकों की कहानियाँ देखें",
+    "filters": {
+      "all": "सभी श्रेणियाँ",
+      "category": "श्रेणी",
+      "ageRange": "आयु सीमा",
+      "language": "भाषा"
+    },
+    "empty": "कोई प्रकाशित कहानियाँ उपलब्ध नहीं"
+  },
+  "notification": {
+    "title": "सूचनाएं",
+    "markAllRead": "सभी को पढ़ा हुआ चिह्नित करें",
+    "empty": "कोई नई सूचनाएं नहीं",
+    "type": {
+      "feedback": "प्रतिक्रिया प्राप्त",
+      "statusChange": "स्थिति बदली",
+      "published": "कहानी प्रकाशित"
+    }
+  },
+  "status": {
+    "DRAFT": "मसौदा",
+    "PENDING": "लंबित",
+    "IN_REVIEW": "समीक्षाधीन",
+    "NEEDS_REVISION": "संशोधन की आवश्यकता है",
+    "APPROVED": "स्वीकृत",
+    "PUBLISHED": "प्रकाशित",
+    "REJECTED": "अस्वीकृत"
+  },
+  "form": {
+    "title": "शीर्षक",
+    "content": "सामग्री",
+    "summary": "सारांश",
+    "category": "श्रेणी",
+    "ageRange": "आयु सीमा",
+    "language": "भाषा",
+    "tags": "टैग",
+    "required": "आवश्यक फ़ील्ड",
+    "minLength": "न्यूनतम {count} वर्ण",
+    "maxLength": "अधिकतम {count} वर्ण"
+  },
+  "feedback": {
+    "title": "प्रतिक्रिया",
+    "noFeedback": "अभी तक कोई प्रतिक्रिया नहीं",
+    "from": "से",
+    "date": "तारीख",
+    "comment": "टिप्पणी"
+  },
+  "time": {
+    "justNow": "अभी",
+    "minutesAgo": "{count} मिनट पहले",
+    "hoursAgo": "{count} घंटे पहले",
+    "daysAgo": "{count} दिन पहले",
+    "weeksAgo": "{count} सप्ताह पहले",
+    "monthsAgo": "{count} महीने पहले"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि हुई",
+    "success": "सफलता!",
+    "search": "खोजें",
+    "filter": "फ़िल्टर",
+    "sort": "क्रमबद्ध करें",
+    "close": "बंद करें",
+    "back": "वापस",
+    "next": "अगला",
+    "previous": "पिछला",
+    "readMore": "और पढ़ें",
+    "showLess": "कम दिखाएं",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "tryAgain": "पुनः प्रयास करें",
+    "share": "साझा करें",
+    "download": "डाउनलोड करें",
+    "print": "प्रिंट करें",
+    "viewAll": "सभी देखें",
+    "updated": "अपडेट किया गया"
+  },
+  "language": {
+    "en": "अंग्रेज़ी",
+    "ko": "कोरियाई",
+    "es": "स्पेनिश",
+    "ar": "अरबी",
+    "hi": "हिन्दी",
+    "fr": "फ़्रेंच",
+    "de": "जर्मन",
+    "ja": "जापानी",
+    "pt": "पुर्तगाली",
+    "ru": "रूसी",
+    "it": "इतालवी",
+    "zh": "चीनी",
+    "selector": {
+      "title": "भाषा चुनें"
+    }
+  },
+  "error": {
+    "notFound": "पृष्ठ नहीं मिला",
+    "serverError": "सर्वर त्रुटि हुई",
+    "unauthorized": "अनधिकृत पहुंच",
+    "networkError": "नेटवर्क त्रुटि। अपना कनेक्शन जांचें।"
+  },
+  "profile": {
+    "title": "मेरी प्रोफ़ाइल",
+    "edit": "प्रोफ़ाइल संपादित करें",
+    "name": "नाम",
+    "email": "ईमेल",
+    "bio": "परिचय",
+    "location": "स्थान",
+    "joinedDate": "शामिल हुए"
+  }
+}

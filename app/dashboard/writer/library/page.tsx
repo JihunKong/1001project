@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { Card, StatusBadge, Button, Input, Select } from '@/components/figma/ui';
 import Modal from '@/components/figma/ui/Modal';
+import { useTranslation } from '@/lib/i18n/useTranslation';
+import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 
 interface Submission {
   id: string;
@@ -60,6 +62,7 @@ const statusConfig = {
 export default function MyLibraryPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useTranslation();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -148,26 +151,29 @@ export default function MyLibraryPage() {
       <div className="pb-20 lg:pb-4">
         <div id="main-content" data-role="writer" className="max-w-[1240px] px-4 sm:px-8 lg:px-12 pt-6 pb-20 lg:pb-4">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-figma-black">Library</h1>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold text-figma-black">{t('library.title')}</h1>
+          <LanguageSelector variant="compact" />
+        </div>
       </div>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
         <Card variant="bordered" padding="md">
           <div className="text-3xl font-semibold text-figma-black">{stats.total}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">Total Stories</div>
+          <div className="text-sm text-figma-gray-inactive mt-1">{t('dashboard.writer.stats.total')}</div>
         </Card>
         <Card variant="bordered" padding="md">
           <div className="text-3xl font-semibold text-gray-700">{stats.drafts}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">Drafts</div>
+          <div className="text-sm text-figma-gray-inactive mt-1">{t('dashboard.writer.stats.draft')}</div>
         </Card>
         <Card variant="bordered" padding="md">
           <div className="text-3xl font-semibold text-yellow-600">{stats.inReview}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">In Review</div>
+          <div className="text-sm text-figma-gray-inactive mt-1">{t('dashboard.writer.stats.inReview')}</div>
         </Card>
         <Card variant="bordered" padding="md">
           <div className="text-3xl font-semibold text-teal-600">{stats.published}</div>
-          <div className="text-sm text-figma-gray-inactive mt-1">Published</div>
+          <div className="text-sm text-figma-gray-inactive mt-1">{t('dashboard.writer.stats.published')}</div>
         </Card>
         <Card variant="bordered" padding="md">
           <div className="text-3xl font-semibold text-orange-600">{stats.needsAction}</div>
@@ -183,7 +189,7 @@ export default function MyLibraryPage() {
             <div className="flex-1">
               <Input
                 type="text"
-                placeholder="Search stories..."
+                placeholder={t('common.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 leftIcon={<Search className="h-4 w-4" />}
@@ -233,7 +239,7 @@ export default function MyLibraryPage() {
             leftIcon={<Plus className="h-4 w-4" />}
             className="min-h-[44px]"
           >
-            New Story
+            {t('dashboard.writer.quickActions.writeNew')}
           </Button>
         </div>
       </Card>
@@ -242,11 +248,11 @@ export default function MyLibraryPage() {
       {filteredSubmissions.length === 0 ? (
         <Card variant="bordered" padding="lg" className="text-center">
           <BookOpen className="h-12 w-12 text-figma-gray-inactive mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-figma-black mb-2">No stories found</h3>
+          <h3 className="text-lg font-medium text-figma-black mb-2">{t('common.noResults')}</h3>
           <p className="text-figma-gray-inactive mb-4">
             {searchQuery || statusFilter !== 'all'
-              ? 'Try adjusting your filters'
-              : 'Start by writing your first story'}
+              ? t('library.filters.all')
+              : t('dashboard.writer.home.noStories')}
           </p>
           {!searchQuery && statusFilter === 'all' && (
             <Button
@@ -255,7 +261,7 @@ export default function MyLibraryPage() {
               onClick={() => router.push('/dashboard/writer/submit-text')}
               className="min-h-[44px]"
             >
-              Write Your First Story
+              {t('dashboard.writer.home.writeFirstStory')}
             </Button>
           )}
         </Card>
@@ -298,7 +304,7 @@ export default function MyLibraryPage() {
                     leftIcon={<Edit className="h-3 w-3" />}
                     className="min-h-[44px]"
                   >
-                    Continue Writing
+                    {t('actions.edit')}
                   </Button>
                 )}
                 {submission.status === 'NEEDS_REVISION' && (
@@ -309,7 +315,7 @@ export default function MyLibraryPage() {
                     leftIcon={<Edit className="h-3 w-3" />}
                     className="min-h-[44px] bg-orange-600 hover:bg-orange-700 focus:ring-orange-300"
                   >
-                    Revise Story
+                    {t('actions.edit')}
                   </Button>
                 )}
                 <Button
@@ -322,7 +328,7 @@ export default function MyLibraryPage() {
                   leftIcon={<Eye className="h-3 w-3" />}
                   className="min-h-[44px]"
                 >
-                  View Timeline
+                  {t('actions.view')}
                 </Button>
                 {submission.status === 'PUBLISHED' && (
                   <Button
@@ -331,7 +337,7 @@ export default function MyLibraryPage() {
                     className="min-h-[44px] text-teal-600 border-teal-600 hover:bg-teal-50"
                     leftIcon={<BookOpen className="h-3 w-3" />}
                   >
-                    View Published Story
+                    {t('actions.view')}
                   </Button>
                 )}
               </div>
@@ -340,7 +346,7 @@ export default function MyLibraryPage() {
               {submission.feedback && submission.feedback.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-figma-gray-border">
                   <div className="text-sm text-figma-gray-inactive">
-                    <span className="font-medium text-figma-black">Latest Feedback:</span>
+                    <span className="font-medium text-figma-black">{t('feedback.title')}:</span>
                     <p className="mt-1 text-figma-black line-clamp-2">
                       {submission.feedback[0].content}
                     </p>
@@ -369,13 +375,14 @@ export default function MyLibraryPage() {
 }
 
 function TimelineModal({ submission, onClose }: { submission: Submission; onClose: () => void }) {
+  const { t } = useTranslation();
   const stages = [
-    { key: 'DRAFT', label: 'Writing', icon: Edit },
-    { key: 'PENDING', label: 'Submitted', icon: Clock },
-    { key: 'STORY_REVIEW', label: 'Story Review', icon: FileText },
-    { key: 'FORMAT_REVIEW', label: 'Format Review', icon: BookOpen },
-    { key: 'CONTENT_REVIEW', label: 'Content Review', icon: AlertCircle },
-    { key: 'PUBLISHED', label: 'Published', icon: CheckCircle }
+    { key: 'DRAFT', label: t('status.DRAFT'), icon: Edit },
+    { key: 'PENDING', label: t('status.PENDING'), icon: Clock },
+    { key: 'STORY_REVIEW', label: t('status.IN_REVIEW'), icon: FileText },
+    { key: 'FORMAT_REVIEW', label: t('status.IN_REVIEW'), icon: BookOpen },
+    { key: 'CONTENT_REVIEW', label: t('status.IN_REVIEW'), icon: AlertCircle },
+    { key: 'PUBLISHED', label: t('status.PUBLISHED'), icon: CheckCircle }
   ];
 
   const getCurrentStageIndex = () => {
@@ -393,7 +400,7 @@ function TimelineModal({ submission, onClose }: { submission: Submission; onClos
       size="xl"
     >
       <div className="py-2">
-        <p className="text-figma-gray-inactive mb-6">Submission Timeline</p>
+        <p className="text-figma-gray-inactive mb-6">Timeline</p>
 
         {/* Timeline */}
         <div className="relative">
@@ -436,7 +443,7 @@ function TimelineModal({ submission, onClose }: { submission: Submission; onClos
 
                     {isCurrent && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-figma-black mt-1">
-                        Current Stage
+                        Current
                       </span>
                     )}
 
@@ -489,7 +496,7 @@ function TimelineModal({ submission, onClose }: { submission: Submission; onClos
             onClick={onClose}
             className="min-h-[44px]"
           >
-            Close
+            {t('common.close')}
           </Button>
           {submission.status === 'NEEDS_REVISION' && (
             <Button
@@ -498,7 +505,7 @@ function TimelineModal({ submission, onClose }: { submission: Submission; onClos
               onClick={() => window.location.href = `/dashboard/writer/submit-text?id=${submission.id}`}
               className="min-h-[44px] bg-orange-600 hover:bg-orange-700 focus:ring-orange-300"
             >
-              Revise Story
+              {t('actions.edit')}
             </Button>
           )}
           {submission.status === 'DRAFT' && (
@@ -508,7 +515,7 @@ function TimelineModal({ submission, onClose }: { submission: Submission; onClos
               onClick={() => window.location.href = `/dashboard/writer/submit-text?id=${submission.id}`}
               className="min-h-[44px]"
             >
-              Continue Writing
+              {t('actions.edit')}
             </Button>
           )}
         </div>

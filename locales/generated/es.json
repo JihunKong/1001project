@@ -1,0 +1,196 @@
+{
+  "dashboard": {
+    "writer": {
+      "home": {
+        "title": "Inicio",
+        "welcome": "Bienvenido de nuevo",
+        "subtitle": "Continúa tu viaje de escritura",
+        "noStories": "Aún no hay historias",
+        "writeFirstStory": "Escribe Tu Primera Historia"
+      },
+      "stats": {
+        "title": "Tus Estadísticas",
+        "total": "Historias Totales",
+        "published": "Publicadas",
+        "draft": "Borradores",
+        "inReview": "En Revisión",
+        "readers": "Lectores Alcanzados",
+        "views": "Vistas Totales"
+      },
+      "quickActions": {
+        "title": "Acciones Rápidas",
+        "writeNew": "Escribir Nueva Historia",
+        "viewLibrary": "Explorar Biblioteca",
+        "manageStories": "Gestionar Mis Historias"
+      },
+      "recentActivity": {
+        "title": "Actividad Reciente",
+        "noActivity": "Sin actividad reciente"
+      },
+      "achievements": {
+        "title": "Logros",
+        "firstStory": "Primera Historia Publicada",
+        "tenStories": "10 Historias Publicadas",
+        "hundredReaders": "100 Lectores Alcanzados"
+      },
+      "submit": {
+        "title": "Enviar Nueva Historia",
+        "instructions": "Escribe tu historia a continuación. Puedes guardar como borrador o enviar para revisión."
+      }
+    }
+  },
+  "nav": {
+    "home": "Inicio",
+    "myStories": "Mis Historias",
+    "library": "Biblioteca",
+    "notifications": "Notificaciones",
+    "profile": "Perfil"
+  },
+  "stories": {
+    "title": "Mis Historias",
+    "subtitle": "Gestiona tus obras creativas",
+    "tabs": {
+      "all": "Todas",
+      "draft": "Borrador",
+      "pending": "Pendiente",
+      "inReview": "En Revisión",
+      "needsRevision": "Necesita Revisión",
+      "approved": "Aprobadas",
+      "published": "Publicadas",
+      "rejected": "Rechazadas"
+    },
+    "empty": {
+      "draft": "Aún no hay borradores. ¡Comienza a escribir tu primera historia!",
+      "pending": "Sin envíos pendientes",
+      "published": "Aún no hay historias publicadas"
+    },
+    "card": {
+      "status": "Estado",
+      "createdAt": "Creado",
+      "updatedAt": "Actualizado",
+      "viewCount": "Vistas",
+      "readTime": "Tiempo de Lectura"
+    }
+  },
+  "actions": {
+    "view": "Ver",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "submit": "Enviar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "writeNew": "Escribir Nueva Historia",
+    "viewLibrary": "Ver Biblioteca"
+  },
+  "library": {
+    "title": "Biblioteca Publicada",
+    "subtitle": "Explora historias de otros escritores",
+    "filters": {
+      "all": "Todas las Categorías",
+      "category": "Categoría",
+      "ageRange": "Rango de Edad",
+      "language": "Idioma"
+    },
+    "empty": "No hay historias publicadas disponibles"
+  },
+  "notification": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar Todas como Leídas",
+    "empty": "Sin notificaciones nuevas",
+    "type": {
+      "feedback": "Comentarios Recibidos",
+      "statusChange": "Estado Cambiado",
+      "published": "Historia Publicada"
+    }
+  },
+  "status": {
+    "DRAFT": "Borrador",
+    "PENDING": "Pendiente",
+    "IN_REVIEW": "En Revisión",
+    "NEEDS_REVISION": "Necesita Revisión",
+    "APPROVED": "Aprobadas",
+    "PUBLISHED": "Publicadas",
+    "REJECTED": "Rechazadas"
+  },
+  "form": {
+    "title": "Título",
+    "content": "Contenido",
+    "summary": "Resumen",
+    "category": "Categoría",
+    "ageRange": "Rango de Edad",
+    "language": "Idioma",
+    "tags": "Etiquetas",
+    "required": "Campo obligatorio",
+    "minLength": "Mínimo {count} caracteres",
+    "maxLength": "Máximo {count} caracteres"
+  },
+  "feedback": {
+    "title": "Comentarios",
+    "noFeedback": "Aún no hay comentarios",
+    "from": "De",
+    "date": "Fecha",
+    "comment": "Comentario"
+  },
+  "time": {
+    "justNow": "Justo ahora",
+    "minutesAgo": "Hace {count} minutos",
+    "hoursAgo": "Hace {count} horas",
+    "daysAgo": "Hace {count} días",
+    "weeksAgo": "Hace {count} semanas",
+    "monthsAgo": "Hace {count} meses"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "¡Éxito!",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "readMore": "Leer Más",
+    "showLess": "Mostrar Menos",
+    "noResults": "No se encontraron resultados",
+    "tryAgain": "Intentar de Nuevo",
+    "share": "Compartir",
+    "download": "Descargar",
+    "print": "Imprimir",
+    "viewAll": "Ver todo",
+    "updated": "Actualizado"
+  },
+  "language": {
+    "en": "Inglés",
+    "ko": "Coreano",
+    "es": "Español",
+    "ar": "Árabe",
+    "hi": "Hindi",
+    "fr": "Francés",
+    "de": "Alemán",
+    "ja": "Japonés",
+    "pt": "Portugués",
+    "ru": "Ruso",
+    "it": "Italiano",
+    "zh": "Chino",
+    "selector": {
+      "title": "Seleccionar Idioma"
+    }
+  },
+  "error": {
+    "notFound": "Página no encontrada",
+    "serverError": "Ocurrió un error del servidor",
+    "unauthorized": "Acceso no autorizado",
+    "networkError": "Error de red. Verifica tu conexión."
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "edit": "Editar Perfil",
+    "name": "Nombre",
+    "email": "Correo",
+    "bio": "Biografía",
+    "location": "Ubicación",
+    "joinedDate": "Se Unió"
+  }
+}

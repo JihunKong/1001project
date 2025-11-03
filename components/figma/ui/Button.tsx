@@ -33,6 +33,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       transition-all duration-200
       focus:outline-none focus:ring-4 focus:ring-offset-2
       disabled:opacity-50 disabled:cursor-not-allowed
+      min-w-[44px]
     `;
 
     const variantClasses = {
@@ -73,7 +74,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizeClasses = {
-      sm: 'h-9 px-4 text-sm gap-2',
+      sm: 'h-11 px-4 text-sm gap-2',
       md: 'h-12 px-6 text-base gap-2',
       lg: 'h-14 px-8 text-lg gap-3'
     };

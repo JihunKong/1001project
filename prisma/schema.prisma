@@ -99,6 +99,12 @@ model User {
   // Comment system relations
   authoredComments        Comment[]        @relation("AuthoredComments")
 
+  // Institution management relations
+  institutionAdminOf      Institution[]    @relation("InstitutionAdmins")
+  institutionTeacherOf    Institution[]    @relation("InstitutionTeachers")
+  departmentHead          Department[]     @relation("DepartmentHead")
+  departmentTeacherOf     Department[]     @relation("DepartmentTeachers")
+
   @@index([email])
   @@index([role])
   @@map("users")
@@ -161,6 +167,63 @@ model Profile {
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("profiles")
+}
+
+// ==========================================
+// INSTITUTION MANAGEMENT SYSTEM
+// ==========================================
+
+model Institution {
+  id              String    @id @default(cuid())
+  name            String
+  code            String    @unique
+  type            String?
+  location        String?
+  country         String?
+  timezone        String    @default("UTC")
+
+  contactEmail    String?
+  contactPhone    String?
+  website         String?
+
+  maxTeachers     Int       @default(50)
+  maxStudents     Int       @default(1000)
+  maxClasses      Int       @default(100)
+
+  isActive        Boolean   @default(true)
+  verifiedAt      DateTime?
+
+  admins          User[]    @relation("InstitutionAdmins")
+  teachers        User[]    @relation("InstitutionTeachers")
+  departments     Department[]
+  classes         Class[]   @relation("InstitutionClasses")
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([code])
+  @@index([isActive])
+  @@map("institutions")
+}
+
+model Department {
+  id              String      @id @default(cuid())
+  institutionId   String
+  name            String
+  code            String
+  description     String?     @db.Text
+  headTeacherId   String?
+
+  institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  headTeacher     User?       @relation("DepartmentHead", fields: [headTeacherId], references: [id])
+  teachers        User[]      @relation("DepartmentTeachers")
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([institutionId, code])
+  @@index([institutionId])
+  @@map("departments")
 }
 
 // ==========================================
@@ -711,6 +774,7 @@ model Class {
   name            String
   description     String?          @db.Text
   teacherId       String
+  institutionId   String?
   subject         String
   gradeLevel      String
   schedule        Json             // Class schedule
@@ -721,6 +785,7 @@ model Class {
   settings        Json             // Class settings
 
   teacher         User             @relation("TeacherClasses", fields: [teacherId], references: [id])
+  institution     Institution?     @relation("InstitutionClasses", fields: [institutionId], references: [id])
   enrollments     ClassEnrollment[]
   assignments     Assignment[]
   lessons         Lesson[]
@@ -731,6 +796,7 @@ model Class {
   updatedAt       DateTime         @updatedAt
 
   @@index([teacherId])
+  @@index([institutionId])
   @@map("classes")
 }
 

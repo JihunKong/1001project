@@ -1,0 +1,141 @@
+key,context,en,ko,es,ar,hi,fr,de,ja,pt,ru,it,zh
+dashboard.writer.home.title,Page Title,Home,홈,Inicio,الصفحة الرئيسية,होम,Accueil,Startseite,ホーム,Início,Главная,Home,首页
+dashboard.writer.home.welcome,Greeting,Welcome back,다시 오신 것을 환영합니다,Bienvenido de nuevo,مرحبا بعودتك,वापसी पर स्वागत है,Bon retour,Willkommen zurück,おかえりなさい,Bem-vindo de volta,С возвращением,Bentornato,欢迎回来
+dashboard.writer.stats.title,Section Title,Your Statistics,통계,Tus Estadísticas,إحصائياتك,आपके आँकड़े,Vos Statistiques,Ihre Statistiken,あなたの統計,Suas Estatísticas,Ваша статистика,Le tue Statistiche,您的统计数据
+dashboard.writer.stats.total,Stats Card,Total Stories,전체 스토리,Historias Totales,القصص الإجمالية,कुल कहानियाँ,Histoires Totales,Gesamte Geschichten,総ストーリー,Histórias Totais,Всего историй,Storie Totali,总故事数
+dashboard.writer.stats.published,Stats Card,Published,출판됨,Publicadas,منشور,प्रकाशित,Publiées,Veröffentlicht,公開済み,Publicadas,Опубликовано,Pubblicate,已发布
+dashboard.writer.stats.draft,Stats Card,Drafts,초안,Borradores,مسودات,मसौदे,Brouillons,Entwürfe,下書き,Rascunhos,Черновики,Bozze,草稿
+dashboard.writer.stats.inReview,Stats Card,In Review,검토 중,En Revisión,قيد المراجعة,समीक्षाधीन,En Révision,In Überprüfung,レビュー中,Em Revisão,На рассмотрении,In Revisione,审核中
+dashboard.writer.stats.readers,Stats Card,Readers Reached,독자 도달,Lectores Alcanzados,القراء الذين تم الوصول إليهم,पाठकों तक पहुंचे,Lecteurs Atteints,Erreichte Leser,読者到達数,Leitores Alcançados,Читателей достигнуто,Lettori Raggiunti,到达读者数
+dashboard.writer.stats.views,Stats Card,Total Views,총 조회수,Vistas Totales,إجمالي المشاهدات,कुल दृश्य,Vues Totales,Gesamtansichten,総閲覧数,Visualizações Totais,Всего просмотров,Visualizzazioni Totali,总浏览量
+dashboard.writer.quickActions.title,Section Title,Quick Actions,빠른 작업,Acciones Rápidas,إجراءات سريعة,त्वरित क्रियाएं,Actions Rapides,Schnellaktionen,クイックアクション,Ações Rápidas,Быстрые действия,Azioni Rapide,快速操作
+dashboard.writer.quickActions.writeNew,Action Card,Write New Story,새 스토리 쓰기,Escribir Nueva Historia,اكتب قصة جديدة,नई कहानी लिखें,Écrire une Nouvelle Histoire,Neue Geschichte Schreiben,新しいストーリーを書く,Escrever Nova História,Написать новую историю,Scrivi una Nuova Storia,撰写新故事
+dashboard.writer.quickActions.viewLibrary,Action Card,Explore Library,라이브러리 탐색,Explorar Biblioteca,استكشف المكتبة,पुस्तकालय देखें,Explorer la Bibliothèque,Bibliothek Erkunden,ライブラリを探索,Explorar Biblioteca,Исследовать библиотеку,Esplora Biblioteca,探索图书馆
+dashboard.writer.quickActions.manageStories,Action Card,Manage My Stories,내 스토리 관리,Gestionar Mis Historias,إدارة قصصي,मेरी कहानियाँ प्रबंधित करें,Gérer Mes Histoires,Meine Geschichten Verwalten,ストーリーを管理,Gerenciar Minhas Histórias,Управлять историями,Gestisci le Mie Storie,管理我的故事
+dashboard.writer.recentActivity.title,Section Title,Recent Activity,최근 활동,Actividad Reciente,النشاط الأخير,हाल की गतिविधि,Activité Récente,Letzte Aktivität,最近のアクティビティ,Atividade Recente,Недавняя активность,Attività Recente,最近活动
+dashboard.writer.recentActivity.noActivity,Empty State,No recent activity,최근 활동 없음,Sin actividad reciente,لا يوجد نشاط حديث,कोई हालिया गतिविधि नहीं,Aucune activité récente,Keine aktuelle Aktivität,最近のアクティビティなし,Nenhuma atividade recente,Нет недавней активности,Nessuna attività recente,没有最近活动
+dashboard.writer.achievements.title,Section Title,Achievements,업적,Logros,الإنجازات,उपलब्धियाँ,Réalisations,Erfolge,実績,Conquistas,Достижения,Risultati,成就
+dashboard.writer.achievements.firstStory,Achievement,First Story Published,첫 번째 스토리 출판,Primera Historia Publicada,أول قصة منشورة,पहली कहानी प्रकाशित,Première Histoire Publiée,Erste Geschichte Veröffentlicht,初めてのストーリー公開,Primeira História Publicada,Первая опубликованная история,Prima Storia Pubblicata,发布的第一个故事
+dashboard.writer.achievements.tenStories,Achievement,10 Stories Published,10개 스토리 출판,10 Historias Publicadas,10 قصص منشورة,10 कहानियाँ प्रकाशित,10 Histoires Publiées,10 Geschichten Veröffentlicht,10ストーリー公開,10 Histórias Publicadas,10 опубликованных историй,10 Storie Pubblicate,发布10个故事
+dashboard.writer.achievements.hundredReaders,Achievement,100 Readers Reached,100명 독자 도달,100 Lectores Alcanzados,100 قارئ تم الوصول إليهم,100 पाठकों तक पहुंचे,100 Lecteurs Atteints,100 Leser Erreicht,100読者到達,100 Leitores Alcançados,100 читателей достигнуто,100 Lettori Raggiunti,到达100位读者
+nav.home,Navigation,Home,홈,Inicio,الرئيسية,होम,Accueil,Startseite,ホーム,Início,Главная,Home,首页
+nav.myStories,Navigation,My Stories,내 스토리,Mis Historias,قصصي,मेरी कहानियाँ,Mes Histoires,Meine Geschichten,マイストーリー,Minhas Histórias,Мои истории,Le Mie Storie,我的故事
+nav.library,Navigation,Library,라이브러리,Biblioteca,المكتبة,पुस्तकालय,Bibliothèque,Bibliothek,ライブラリ,Biblioteca,Библиотека,Biblioteca,图书馆
+nav.notifications,Navigation,Notifications,알림,Notificaciones,الإشعارات,सूचनाएं,Notifications,Benachrichtigungen,通知,Notificações,Уведомления,Notifiche,通知
+nav.profile,Navigation,Profile,프로필,Perfil,الملف الشخصي,प्रोफ़ाइल,Profil,Profil,プロフィール,Perfil,Профиль,Profilo,个人资料
+stories.title,Page Title,My Stories,내 스토리,Mis Historias,قصصي,मेरी कहानियाँ,Mes Histoires,Meine Geschichten,マイストーリー,Minhas Histórias,Мои истории,Le Mie Storie,我的故事
+stories.subtitle,Description,Manage your creative works,당신의 창작물 관리,Gestiona tus obras creativas,إدارة أعمالك الإبداعية,अपने रचनात्मक कार्यों का प्रबंधन करें,Gérez vos œuvres créatives,Verwalten Sie Ihre kreativen Werke,あなたの創作物を管理,Gerencie suas obras criativas,Управляйте своими творческими работами,Gestisci le tue opere creative,管理您的创作作品
+stories.tabs.all,Tab Label,All,전체,Todas,الكل,सभी,Toutes,Alle,すべて,Todas,Все,Tutte,全部
+stories.tabs.draft,Tab Label,Draft,초안,Borrador,مسودة,मसौदा,Brouillon,Entwurf,下書き,Rascunho,Черновик,Bozza,草稿
+stories.tabs.pending,Tab Label,Pending,대기 중,Pendiente,قيد الانتظار,लंबित,En Attente,Ausstehend,保留中,Pendente,В ожидании,In Attesa,待处理
+stories.tabs.inReview,Tab Label,In Review,검토 중,En Revisión,قيد المراجعة,समीक्षाधीन,En Révision,In Überprüfung,レビュー中,Em Revisão,На рассмотрении,In Revisione,审核中
+stories.tabs.needsRevision,Tab Label,Needs Revision,수정 필요,Necesita Revisión,يحتاج إلى مراجعة,संशोधन की आवश्यकता है,Nécessite Révision,Überarbeitung Erforderlich,修正が必要,Necessita Revisão,Требует доработки,Necessita Revisione,需要修改
+stories.tabs.approved,Tab Label,Approved,승인됨,Aprobadas,موافق عليها,स्वीकृत,Approuvées,Genehmigt,承認済み,Aprovadas,Одобрено,Approvate,已批准
+stories.tabs.published,Tab Label,Published,출판됨,Publicadas,منشور,प्रकाशित,Publiées,Veröffentlicht,公開済み,Publicadas,Опубликовано,Pubblicate,已发布
+stories.tabs.rejected,Tab Label,Rejected,거부됨,Rechazadas,مرفوض,अस्वीकृत,Rejetées,Abgelehnt,却下,Rejeitadas,Отклонено,Rifiutate,已拒绝
+stories.empty.draft,Empty State,No drafts yet. Start writing your first story!,아직 초안이 없습니다. 첫 번째 스토리를 작성하세요!,Aún no hay borradores. ¡Comienza a escribir tu primera historia!,لا توجد مسودات بعد. ابدأ كتابة قصتك الأولى!,अभी तक कोई मसौदा नहीं। अपनी पहली कहानी लिखना शुरू करें!,Pas encore de brouillons. Commencez à écrire votre première histoire !,Noch keine Entwürfe. Beginnen Sie mit Ihrer ersten Geschichte!,まだ下書きがありません。最初のストーリーを書き始めましょう！,Ainda não há rascunhos. Comece a escrever sua primeira história!,Пока нет черновиков. Начните писать свою первую историю!,Ancora nessuna bozza. Inizia a scrivere la tua prima storia!,还没有草稿。开始写你的第一个故事吧！
+stories.empty.pending,Empty State,No pending submissions,대기 중인 제출물 없음,Sin envíos pendientes,لا توجد طلبات معلقة,कोई लंबित सबमिशन नहीं,Aucune soumission en attente,Keine ausstehenden Einreichungen,保留中の提出物なし,Nenhuma submissão pendente,Нет ожидающих отправок,Nessuna sottomissione in attesa,没有待处理的提交
+stories.empty.published,Empty State,No published stories yet,아직 출판된 스토리 없음,Aún no hay historias publicadas,لا توجد قصص منشورة بعد,अभी तक कोई प्रकाशित कहानियाँ नहीं,Pas encore d'histoires publiées,Noch keine veröffentlichten Geschichten,まだ公開されたストーリーがありません,Ainda não há histórias publicadas,Пока нет опубликованных историй,Ancora nessuna storia pubblicata,还没有发布的故事
+stories.card.status,Card Field,Status,상태,Estado,الحالة,स्थिति,Statut,Status,ステータス,Status,Статус,Stato,状态
+stories.card.createdAt,Card Field,Created,생성됨,Creado,تم الإنشاء,बनाया गया,Créé,Erstellt,作成日,Criado,Создано,Creato,创建于
+stories.card.updatedAt,Card Field,Updated,업데이트됨,Actualizado,تم التحديث,अपडेट किया गया,Mis à Jour,Aktualisiert,更新日,Atualizado,Обновлено,Aggiornato,更新于
+stories.card.viewCount,Card Field,Views,조회수,Vistas,المشاهدات,दृश्य,Vues,Ansichten,閲覧数,Visualizações,Просмотры,Visualizzazioni,浏览量
+stories.card.readTime,Card Field,Read Time,읽기 시간,Tiempo de Lectura,وقت القراءة,पठन समय,Temps de Lecture,Lesezeit,読了時間,Tempo de Leitura,Время чтения,Tempo di Lettura,阅读时间
+actions.view,Button,View,보기,Ver,عرض,देखें,Voir,Ansehen,表示,Ver,Посмотреть,Visualizza,查看
+actions.edit,Button,Edit,편집,Editar,تعديل,संपादित करें,Modifier,Bearbeiten,編集,Editar,Редактировать,Modifica,编辑
+actions.delete,Button,Delete,삭제,Eliminar,حذف,हटाएं,Supprimer,Löschen,削除,Excluir,Удалить,Elimina,删除
+actions.submit,Button,Submit,제출,Enviar,إرسال,जमा करें,Soumettre,Einreichen,提出,Enviar,Отправить,Invia,提交
+actions.save,Button,Save,저장,Guardar,حفظ,सहेजें,Enregistrer,Speichern,保存,Salvar,Сохранить,Salva,保存
+actions.cancel,Button,Cancel,취소,Cancelar,إلغاء,रद्द करें,Annuler,Abbrechen,キャンセル,Cancelar,Отмена,Annulla,取消
+actions.confirm,Button,Confirm,확인,Confirmar,تأكيد,पुष्टि करें,Confirmer,Bestätigen,確認,Confirmar,Подтвердить,Conferma,确认
+actions.writeNew,Button,Write New Story,새 스토리 쓰기,Escribir Nueva Historia,اكتب قصة جديدة,नई कहानी लिखें,Écrire une Nouvelle Histoire,Neue Geschichte Schreiben,新しいストーリーを書く,Escrever Nova História,Написать новую историю,Scrivi una Nuova Storia,撰写新故事
+actions.viewLibrary,Button,View Library,라이브러리 보기,Ver Biblioteca,عرض المكتبة,पुस्तकालय देखें,Voir la Bibliothèque,Bibliothek Anzeigen,ライブラリを表示,Ver Biblioteca,Посмотреть библиотеку,Visualizza Biblioteca,查看图书馆
+library.title,Page Title,Published Library,출판된 라이브러리,Biblioteca Publicada,المكتبة المنشورة,प्रकाशित पुस्तकालय,Bibliothèque Publiée,Veröffentlichte Bibliothek,公開ライブラリ,Biblioteca Publicada,Опубликованная библиотека,Biblioteca Pubblicata,已发布图书馆
+library.subtitle,Description,Explore stories by other writers,다른 작가들의 스토리 탐색,Explora historias de otros escritores,استكشف قصص كتاب آخرين,अन्य लेखकों की कहानियाँ देखें,Explorez des histoires d'autres écrivains,Entdecken Sie Geschichten anderer Autoren,他の作家のストーリーを探索,Explore histórias de outros escritores,Исследуйте истории других авторов,Esplora storie di altri scrittori,探索其他作家的故事
+library.filters.all,Filter Option,All Categories,모든 카테고리,Todas las Categorías,جميع الفئات,सभी श्रेणियाँ,Toutes les Catégories,Alle Kategorien,すべてのカテゴリ,Todas as Categorias,Все категории,Tutte le Categorie,所有类别
+library.filters.category,Filter Label,Category,카테고리,Categoría,الفئة,श्रेणी,Catégorie,Kategorie,カテゴリ,Categoria,Категория,Categoria,类别
+library.filters.ageRange,Filter Label,Age Range,연령대,Rango de Edad,نطاق العمر,आयु सीमा,Tranche d'Âge,Altersbereich,年齢層,Faixa Etária,Возрастной диапазон,Fascia d'Età,年龄范围
+library.filters.language,Filter Label,Language,언어,Idioma,اللغة,भाषा,Langue,Sprache,言語,Idioma,Язык,Lingua,语言
+library.empty,Empty State,No published stories available,출판된 스토리가 없습니다,No hay historias publicadas disponibles,لا توجد قصص منشورة متاحة,कोई प्रकाशित कहानियाँ उपलब्ध नहीं,Aucune histoire publiée disponible,Keine veröffentlichten Geschichten verfügbar,公開されたストーリーはありません,Nenhuma história publicada disponível,Нет опубликованных историй,Nessuna storia pubblicata disponibile,没有已发布的故事
+notification.title,Page Title,Notifications,알림,Notificaciones,الإشعارات,सूचनाएं,Notifications,Benachrichtigungen,通知,Notificações,Уведомления,Notifiche,通知
+notification.markAllRead,Action,Mark All as Read,모두 읽음으로 표시,Marcar Todas como Leídas,وضع علامة على الكل كمقروء,सभी को पढ़ा हुआ चिह्नित करें,Tout Marquer comme Lu,Alle als Gelesen Markieren,すべて既読にする,Marcar Todas como Lidas,Отметить все как прочитанные,Segna Tutte come Lette,全部标记为已读
+notification.empty,Empty State,No new notifications,새 알림이 없습니다,Sin notificaciones nuevas,لا توجد إشعارات جديدة,कोई नई सूचनाएं नहीं,Aucune nouvelle notification,Keine neuen Benachrichtigungen,新しい通知はありません,Nenhuma notificação nova,Нет новых уведомлений,Nessuna nuova notifica,没有新通知
+notification.type.feedback,Type,Feedback Received,피드백 받음,Comentarios Recibidos,تلقي الملاحظات,प्रतिक्रिया प्राप्त,Retour Reçu,Feedback Erhalten,フィードバック受信,Feedback Recebido,Получен отзыв,Feedback Ricevuto,收到反馈
+notification.type.statusChange,Type,Status Changed,상태 변경됨,Estado Cambiado,تغيير الحالة,स्थिति बदली,Statut Modifié,Status Geändert,ステータス変更,Status Alterado,Статус изменен,Stato Cambiato,状态已更改
+notification.type.published,Type,Story Published,스토리 출판됨,Historia Publicada,قصة منشورة,कहानी प्रकाशित,Histoire Publiée,Geschichte Veröffentlicht,ストーリー公開,História Publicada,История опубликована,Storia Pubblicata,故事已发布
+status.DRAFT,Status Badge,Draft,초안,Borrador,مسودة,मसौदा,Brouillon,Entwurf,下書き,Rascunho,Черновик,Bozza,草稿
+status.PENDING,Status Badge,Pending,대기 중,Pendiente,قيد الانتظار,लंबित,En Attente,Ausstehend,保留中,Pendente,В ожидании,In Attesa,待处理
+status.IN_REVIEW,Status Badge,In Review,검토 중,En Revisión,قيد المراجعة,समीक्षाधीन,En Révision,In Überprüfung,レビュー中,Em Revisão,На рассмотрении,In Revisione,审核中
+status.NEEDS_REVISION,Status Badge,Needs Revision,수정 필요,Necesita Revisión,يحتاج إلى مراجعة,संशोधन की आवश्यकता है,Nécessite Révision,Überarbeitung Erforderlich,修正が必要,Necessita Revisão,Требует доработки,Necessita Revisione,需要修改
+status.APPROVED,Status Badge,Approved,승인됨,Aprobadas,موافق عليها,स्वीकृत,Approuvées,Genehmigt,承認済み,Aprovadas,Одобрено,Approvate,已批准
+status.PUBLISHED,Status Badge,Published,출판됨,Publicadas,منشور,प्रकाशित,Publiées,Veröffentlicht,公開済み,Publicadas,Опубликовано,Pubblicate,已发布
+status.REJECTED,Status Badge,Rejected,거부됨,Rechazadas,مرفوض,अस्वीकृत,Rejetées,Abgelehnt,却下,Rejeitadas,Отклонено,Rifiutate,已拒绝
+form.title,Form Field,Title,제목,Título,العنوان,शीर्षक,Titre,Titel,タイトル,Título,Заголовок,Titolo,标题
+form.content,Form Field,Content,내용,Contenido,المحتوى,सामग्री,Contenu,Inhalt,コンテンツ,Conteúdo,Содержание,Contenuto,内容
+form.summary,Form Field,Summary,요약,Resumen,ملخص,सारांश,Résumé,Zusammenfassung,概要,Resumo,Резюме,Riassunto,摘要
+form.category,Form Field,Category,카테고리,Categoría,الفئة,श्रेणी,Catégorie,Kategorie,カテゴリ,Categoria,Категория,Categoria,类别
+form.ageRange,Form Field,Age Range,연령대,Rango de Edad,نطاق العمر,आयु सीमा,Tranche d'Âge,Altersbereich,年齢層,Faixa Etária,Возрастной диапазон,Fascia d'Età,年龄范围
+form.language,Form Field,Language,언어,Idioma,اللغة,भाषा,Langue,Sprache,言語,Idioma,Язык,Lingua,语言
+form.tags,Form Field,Tags,태그,Etiquetas,العلامات,टैग,Étiquettes,Schlagwörter,タグ,Tags,Теги,Tag,标签
+form.required,Validation,Required field,필수 항목,Campo obligatorio,حقل إلزامي,आवश्यक फ़ील्ड,Champ obligatoire,Pflichtfeld,必須項目,Campo obrigatório,Обязательное поле,Campo obbligatorio,必填字段
+form.minLength,Validation,Minimum {count} characters,최소 {count}자,Mínimo {count} caracteres,الحد الأدنى {count} حرفا,न्यूनतम {count} वर्ण,Minimum {count} caractères,Mindestens {count} Zeichen,最低{count}文字,Mínimo {count} caracteres,Минимум {count} символов,Minimo {count} caratteri,最少{count}个字符
+form.maxLength,Validation,Maximum {count} characters,최대 {count}자,Máximo {count} caracteres,الحد الأقصى {count} حرفا,अधिकतम {count} वर्ण,Maximum {count} caractères,Maximal {count} Zeichen,最大{count}文字,Máximo {count} caracteres,Максимум {count} символов,Massimo {count} caratteri,最多{count}个字符
+feedback.title,Section Title,Feedback,피드백,Comentarios,الملاحظات,प्रतिक्रिया,Retour,Feedback,フィードバック,Feedback,Отзыв,Feedback,反馈
+feedback.noFeedback,Empty State,No feedback yet,아직 피드백이 없습니다,Aún no hay comentarios,لا توجد ملاحظات بعد,अभी तक कोई प्रतिक्रिया नहीं,Pas encore de retour,Noch kein Feedback,まだフィードバックがありません,Ainda não há feedback,Пока нет отзывов,Ancora nessun feedback,还没有反馈
+feedback.from,Field Label,From,보낸 사람,De,من,से,De,Von,送信者,De,От,Da,来自
+feedback.date,Field Label,Date,날짜,Fecha,التاريخ,तारीख,Date,Datum,日付,Data,Дата,Data,日期
+feedback.comment,Field Label,Comment,댓글,Comentario,تعليق,टिप्पणी,Commentaire,Kommentar,コメント,Comentário,Комментарий,Commento,评论
+time.justNow,Relative Time,Just now,방금,Justo ahora,الآن,अभी,À l'instant,Gerade eben,たった今,Agora mesmo,Только что,Proprio ora,刚刚
+time.minutesAgo,Relative Time,{count} minutes ago,{count}분 전,Hace {count} minutos,منذ {count} دقائق,{count} मिनट पहले,Il y a {count} minutes,Vor {count} Minuten,{count}分前,{count} minutos atrás,{count} минут назад,{count} minuti fa,{count}分钟前
+time.hoursAgo,Relative Time,{count} hours ago,{count}시간 전,Hace {count} horas,منذ {count} ساعات,{count} घंटे पहले,Il y a {count} heures,Vor {count} Stunden,{count}時間前,{count} horas atrás,{count} часов назад,{count} ore fa,{count}小时前
+time.daysAgo,Relative Time,{count} days ago,{count}일 전,Hace {count} días,منذ {count} أيام,{count} दिन पहले,Il y a {count} jours,Vor {count} Tagen,{count}日前,{count} dias atrás,{count} дней назад,{count} giorni fa,{count}天前
+time.weeksAgo,Relative Time,{count} weeks ago,{count}주 전,Hace {count} semanas,منذ {count} أسابيع,{count} सप्ताह पहले,Il y a {count} semaines,Vor {count} Wochen,{count}週間前,{count} semanas atrás,{count} недель назад,{count} settimane fa,{count}周前
+time.monthsAgo,Relative Time,{count} months ago,{count}개월 전,Hace {count} meses,منذ {count} أشهر,{count} महीने पहले,Il y a {count} mois,Vor {count} Monaten,{count}ヶ月前,{count} meses atrás,{count} месяцев назад,{count} mesi fa,{count}个月前
+common.loading,State,Loading...,로딩 중...,Cargando...,جار التحميل...,लोड हो रहा है...,Chargement...,Wird geladen...,読み込み中...,Carregando...,Загрузка...,Caricamento...,加载中...
+common.error,State,Error occurred,오류 발생,Ocurrió un error,حدث خطأ,त्रुटि हुई,Une erreur s'est produite,Ein Fehler ist aufgetreten,エラーが発生しました,Ocorreu um erro,Произошла ошибка,Si è verificato un errore,发生错误
+common.success,State,Success!,성공!,¡Éxito!,نجاح!,सफलता!,Succès !,Erfolg!,成功！,Sucesso!,Успех!,Successo!,成功！
+common.search,Action,Search,검색,Buscar,بحث,खोजें,Rechercher,Suchen,検索,Pesquisar,Поиск,Cerca,搜索
+common.filter,Action,Filter,필터,Filtrar,تصفية,फ़िल्टर,Filtrer,Filtern,フィルター,Filtrar,Фильтр,Filtra,筛选
+common.sort,Action,Sort,정렬,Ordenar,ترتيب,क्रमबद्ध करें,Trier,Sortieren,並べ替え,Ordenar,Сортировать,Ordina,排序
+common.close,Action,Close,닫기,Cerrar,إغلاق,बंद करें,Fermer,Schließen,閉じる,Fechar,Закрыть,Chiudi,关闭
+common.back,Action,Back,뒤로,Atrás,رجوع,वापस,Retour,Zurück,戻る,Voltar,Назад,Indietro,返回
+common.next,Action,Next,다음,Siguiente,التالي,अगला,Suivant,Weiter,次へ,Próximo,Далее,Avanti,下一步
+common.previous,Action,Previous,이전,Anterior,السابق,पिछला,Précédent,Zurück,前へ,Anterior,Назад,Precedente,上一步
+common.readMore,Action,Read More,더 보기,Leer Más,اقرأ أكثر,और पढ़ें,Lire Plus,Mehr Lesen,続きを読む,Leia Mais,Читать далее,Leggi di Più,阅读更多
+common.showLess,Action,Show Less,간략히 보기,Mostrar Menos,أظهر أقل,कम दिखाएं,Afficher Moins,Weniger Anzeigen,表示を減らす,Mostrar Menos,Показать меньше,Mostra Meno,显示更少
+common.noResults,Empty State,No results found,결과 없음,No se encontraron resultados,لم يتم العثور على نتائج,कोई परिणाम नहीं मिला,Aucun résultat trouvé,Keine Ergebnisse gefunden,結果が見つかりませんでした,Nenhum resultado encontrado,Результатов не найдено,Nessun risultato trovato,未找到结果
+common.tryAgain,Action,Try Again,다시 시도,Intentar de Nuevo,حاول مرة أخرى,पुनः प्रयास करें,Réessayer,Erneut Versuchen,再試行,Tentar Novamente,Попробовать снова,Riprova,重试
+common.share,Action,Share,공유,Compartir,مشاركة,साझा करें,Partager,Teilen,共有,Compartilhar,Поделиться,Condividi,分享
+common.download,Action,Download,다운로드,Descargar,تحميل,डाउनलोड करें,Télécharger,Herunterladen,ダウンロード,Baixar,Скачать,Scarica,下载
+common.print,Action,Print,인쇄,Imprimir,طباعة,प्रिंट करें,Imprimer,Drucken,印刷,Imprimir,Печать,Stampa,打印
+language.en,Language Name,English,영어,Inglés,الإنجليزية,अंग्रेज़ी,Anglais,Englisch,英語,Inglês,Английский,Inglese,英语
+language.ko,Language Name,Korean,한국어,Coreano,الكورية,कोरियाई,Coréen,Koreanisch,韓国語,Coreano,Корейский,Coreano,韩语
+language.es,Language Name,Spanish,스페인어,Español,الإسبانية,स्पेनिश,Espagnol,Spanisch,スペイン語,Espanhol,Испанский,Spagnolo,西班牙语
+language.ar,Language Name,Arabic,아랍어,Árabe,العربية,अरबी,Arabe,Arabisch,アラビア語,Árabe,Арабский,Arabo,阿拉伯语
+language.hi,Language Name,Hindi,힌디어,Hindi,الهندية,हिन्दी,Hindi,Hindi,ヒンディー語,Hindi,Хинди,Hindi,印地语
+language.fr,Language Name,French,프랑스어,Francés,الفرنسية,फ़्रेंच,Français,Französisch,フランス語,Francês,Французский,Francese,法语
+language.de,Language Name,German,독일어,Alemán,الألمانية,जर्मन,Allemand,Deutsch,ドイツ語,Alemão,Немецкий,Tedesco,德语
+language.ja,Language Name,Japanese,일본어,Japonés,اليابانية,जापानी,Japonais,Japanisch,日本語,Japonês,Японский,Giapponese,日语
+language.pt,Language Name,Portuguese,포르투갈어,Portugués,البرتغالية,पुर्तगाली,Portugais,Portugiesisch,ポルトガル語,Português,Португальский,Portoghese,葡萄牙语
+language.ru,Language Name,Russian,러시아어,Ruso,الروسية,रूसी,Russe,Russisch,ロシア語,Russo,Русский,Russo,俄语
+language.it,Language Name,Italian,이탈리아어,Italiano,الإيطالية,इतालवी,Italien,Italienisch,イタリア語,Italiano,Итальянский,Italiano,意大利语
+language.zh,Language Name,Chinese,중국어,Chino,الصينية,चीनी,Chinois,Chinesisch,中国語,Chinês,Китайский,Cinese,中文
+language.selector.title,Component,Select Language,언어 선택,Seleccionar Idioma,اختر اللغة,भाषा चुनें,Sélectionner la Langue,Sprache Wählen,言語を選択,Selecionar Idioma,Выбрать язык,Seleziona Lingua,选择语言
+error.notFound,Error Message,Page not found,페이지를 찾을 수 없습니다,Página no encontrada,الصفحة غير موجودة,पृष्ठ नहीं मिला,Page non trouvée,Seite nicht gefunden,ページが見つかりません,Página não encontrada,Страница не найдена,Pagina non trovata,页面未找到
+error.serverError,Error Message,Server error occurred,서버 오류 발생,Ocurrió un error del servidor,حدث خطأ في الخادم,सर्वर त्रुटि हुई,Une erreur du serveur s'est produite,Ein Serverfehler ist aufgetreten,サーバーエラーが発生しました,Ocorreu um erro do servidor,Произошла ошибка сервера,Si è verificato un errore del server,发生服务器错误
+error.unauthorized,Error Message,Unauthorized access,무단 액세스,Acceso no autorizado,الوصول غير المصرح به,अनधिकृत पहुंच,Accès non autorisé,Unbefugter Zugriff,不正アクセス,Acesso não autorizado,Неавторизованный доступ,Accesso non autorizzato,未授权访问
+error.networkError,Error Message,Network error. Check your connection.,네트워크 오류. 연결을 확인하세요.,Error de red. Verifica tu conexión.,خطأ في الشبكة. تحقق من اتصالك.,नेटवर्क त्रुटि। अपना कनेक्शन जांचें।,Erreur réseau. Vérifiez votre connexion.,Netzwerkfehler. Überprüfen Sie Ihre Verbindung.,ネットワークエラー。接続を確認してください。,Erro de rede. Verifique sua conexão.,Сетевая ошибка. Проверьте соединение.,Errore di rete. Controlla la tua connessione.,网络错误。检查您的连接。
+profile.title,Page Title,My Profile,내 프로필,Mi Perfil,ملفي الشخصي,मेरी प्रोफ़ाइल,Mon Profil,Mein Profil,マイプロフィール,Meu Perfil,Мой профиль,Il Mio Profilo,我的个人资料
+profile.edit,Action,Edit Profile,프로필 편집,Editar Perfil,تعديل الملف الشخصي,प्रोफ़ाइल संपादित करें,Modifier le Profil,Profil Bearbeiten,プロフィールを編集,Editar Perfil,Редактировать профиль,Modifica Profilo,编辑个人资料
+profile.name,Field Label,Name,이름,Nombre,الاسم,नाम,Nom,Name,名前,Nome,Имя,Nome,姓名
+profile.email,Field Label,Email,이메일,Correo,البريد الإلكتروني,ईमेल,Email,E-Mail,メール,Email,Эл. почта,Email,电子邮件
+profile.bio,Field Label,Bio,소개,Biografía,السيرة الذاتية,परिचय,Bio,Biografie,プロフィール,Bio,Биография,Bio,简介
+profile.location,Field Label,Location,위치,Ubicación,الموقع,स्थान,Emplacement,Standort,場所,Localização,Местоположение,Posizione,位置
+profile.joinedDate,Field Label,Joined,가입일,Se Unió,انضم,शामिल हुए,Rejoint,Beigetreten,参加日,Ingressou,Присоединился,Iscritto,加入日期
+dashboard.writer.submit.title,Page Title,Submit New Story,새 스토리 제출,Enviar Nueva Historia,إرسال قصة جديدة,नई कहानी जमा करें,Soumettre une Nouvelle Histoire,Neue Geschichte Einreichen,新しいストーリーを提出,Enviar Nova História,Отправить новую историю,Invia una Nuova Storia,提交新故事
+dashboard.writer.submit.instructions,Instructions,Write your story below. You can save as draft or submit for review.,아래에 스토리를 작성하세요. 초안으로 저장하거나 검토를 위해 제출할 수 있습니다.,Escribe tu historia a continuación. Puedes guardar como borrador o enviar para revisión.,اكتب قصتك أدناه. يمكنك الحفظ كمسودة أو الإرسال للمراجعة.,नीचे अपनी कहानी लिखें। आप ड्राफ्ट के रूप में सहेज सकते हैं या समीक्षा के लिए जमा कर सकते हैं।,Écrivez votre histoire ci-dessous. Vous pouvez enregistrer en tant que brouillon ou soumettre pour révision.,Schreiben Sie Ihre Geschichte unten. Sie können als Entwurf speichern oder zur Überprüfung einreichen.,以下にストーリーを書いてください。下書きとして保存するか、レビュー用に提出できます。,Escreva sua história abaixo. Você pode salvar como rascunho ou enviar para revisão.,Напишите свою историю ниже. Вы можете сохранить как черновик или отправить на рассмотрение.,Scrivi la tua storia qui sotto. Puoi salvare come bozza o inviare per la revisione.,在下方写下您的故事。您可以保存为草稿或提交审核。
+dashboard.writer.home.subtitle,Subtitle,Continue your writing journey and inspire young readers,글쓰기 여정을 계속하세요,Continúa tu viaje de escritura,تابع رحلتك في الكتابة,अपनी लेखन यात्रा जारी रखें,Poursuivez votre voyage,Setzen Sie Ihre Reise fort,ライティングの旅を続けましょう,Continue sua jornada de escrita,Продолжайте свой путь,Continua il tuo viaggio,继续您的写作之旅
+dashboard.writer.home.noStories,Empty State,No stories yet,아직 스토리 없음,Aún no hay historias,لا توجد قصص بعد,अभी तक कोई कहानियाँ नहीं,Pas encore d'histoires,Noch keine Geschichten,まだストーリーがありません,Ainda não há histórias,Пока нет историй,Ancora nessuna storia,还没有故事
+dashboard.writer.home.writeFirstStory,Action Button,Write Your First Story,첫 번째 스토리 쓰기,Escribe Tu Primera Historia,اكتب قصتك الأولى,अपनी पहली कहानी लिखें,Écrivez Votre Première Histoire,Schreiben Sie Ihre Erste Geschichte,最初のストーリーを書く,Escreva Sua Primeira História,Написать первую историю,Scrivi la Tua Prima Storia,撰写您的第一个故事
+common.viewAll,Link,View all,모두 보기,Ver todo,عرض الكل,सभी देखें,Voir tout,Alle ansehen,すべて表示,Ver tudo,Посмотреть все,Vedi tutto,查看全部
+common.updated,Time,Updated,업데이트됨,Actualizado,تم التحديث,अपडेट किया गया,Mis à jour,Aktualisiert,更新,Atualizado,Обновлено,Aggiornato,更新于

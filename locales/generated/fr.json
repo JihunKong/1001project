@@ -1,0 +1,196 @@
+{
+  "dashboard": {
+    "writer": {
+      "home": {
+        "title": "Accueil",
+        "welcome": "Bon retour",
+        "subtitle": "Poursuivez votre voyage",
+        "noStories": "Pas encore d'histoires",
+        "writeFirstStory": "Écrivez Votre Première Histoire"
+      },
+      "stats": {
+        "title": "Vos Statistiques",
+        "total": "Histoires Totales",
+        "published": "Publiées",
+        "draft": "Brouillons",
+        "inReview": "En Révision",
+        "readers": "Lecteurs Atteints",
+        "views": "Vues Totales"
+      },
+      "quickActions": {
+        "title": "Actions Rapides",
+        "writeNew": "Écrire une Nouvelle Histoire",
+        "viewLibrary": "Explorer la Bibliothèque",
+        "manageStories": "Gérer Mes Histoires"
+      },
+      "recentActivity": {
+        "title": "Activité Récente",
+        "noActivity": "Aucune activité récente"
+      },
+      "achievements": {
+        "title": "Réalisations",
+        "firstStory": "Première Histoire Publiée",
+        "tenStories": "10 Histoires Publiées",
+        "hundredReaders": "100 Lecteurs Atteints"
+      },
+      "submit": {
+        "title": "Soumettre une Nouvelle Histoire",
+        "instructions": "Écrivez votre histoire ci-dessous. Vous pouvez enregistrer en tant que brouillon ou soumettre pour révision."
+      }
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "myStories": "Mes Histoires",
+    "library": "Bibliothèque",
+    "notifications": "Notifications",
+    "profile": "Profil"
+  },
+  "stories": {
+    "title": "Mes Histoires",
+    "subtitle": "Gérez vos œuvres créatives",
+    "tabs": {
+      "all": "Toutes",
+      "draft": "Brouillon",
+      "pending": "En Attente",
+      "inReview": "En Révision",
+      "needsRevision": "Nécessite Révision",
+      "approved": "Approuvées",
+      "published": "Publiées",
+      "rejected": "Rejetées"
+    },
+    "empty": {
+      "draft": "Pas encore de brouillons. Commencez à écrire votre première histoire !",
+      "pending": "Aucune soumission en attente",
+      "published": "Pas encore d'histoires publiées"
+    },
+    "card": {
+      "status": "Statut",
+      "createdAt": "Créé",
+      "updatedAt": "Mis à Jour",
+      "viewCount": "Vues",
+      "readTime": "Temps de Lecture"
+    }
+  },
+  "actions": {
+    "view": "Voir",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "submit": "Soumettre",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "writeNew": "Écrire une Nouvelle Histoire",
+    "viewLibrary": "Voir la Bibliothèque"
+  },
+  "library": {
+    "title": "Bibliothèque Publiée",
+    "subtitle": "Explorez des histoires d'autres écrivains",
+    "filters": {
+      "all": "Toutes les Catégories",
+      "category": "Catégorie",
+      "ageRange": "Tranche d'Âge",
+      "language": "Langue"
+    },
+    "empty": "Aucune histoire publiée disponible"
+  },
+  "notification": {
+    "title": "Notifications",
+    "markAllRead": "Tout Marquer comme Lu",
+    "empty": "Aucune nouvelle notification",
+    "type": {
+      "feedback": "Retour Reçu",
+      "statusChange": "Statut Modifié",
+      "published": "Histoire Publiée"
+    }
+  },
+  "status": {
+    "DRAFT": "Brouillon",
+    "PENDING": "En Attente",
+    "IN_REVIEW": "En Révision",
+    "NEEDS_REVISION": "Nécessite Révision",
+    "APPROVED": "Approuvées",
+    "PUBLISHED": "Publiées",
+    "REJECTED": "Rejetées"
+  },
+  "form": {
+    "title": "Titre",
+    "content": "Contenu",
+    "summary": "Résumé",
+    "category": "Catégorie",
+    "ageRange": "Tranche d'Âge",
+    "language": "Langue",
+    "tags": "Étiquettes",
+    "required": "Champ obligatoire",
+    "minLength": "Minimum {count} caractères",
+    "maxLength": "Maximum {count} caractères"
+  },
+  "feedback": {
+    "title": "Retour",
+    "noFeedback": "Pas encore de retour",
+    "from": "De",
+    "date": "Date",
+    "comment": "Commentaire"
+  },
+  "time": {
+    "justNow": "À l'instant",
+    "minutesAgo": "Il y a {count} minutes",
+    "hoursAgo": "Il y a {count} heures",
+    "daysAgo": "Il y a {count} jours",
+    "weeksAgo": "Il y a {count} semaines",
+    "monthsAgo": "Il y a {count} mois"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "success": "Succès !",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "readMore": "Lire Plus",
+    "showLess": "Afficher Moins",
+    "noResults": "Aucun résultat trouvé",
+    "tryAgain": "Réessayer",
+    "share": "Partager",
+    "download": "Télécharger",
+    "print": "Imprimer",
+    "viewAll": "Voir tout",
+    "updated": "Mis à jour"
+  },
+  "language": {
+    "en": "Anglais",
+    "ko": "Coréen",
+    "es": "Espagnol",
+    "ar": "Arabe",
+    "hi": "Hindi",
+    "fr": "Français",
+    "de": "Allemand",
+    "ja": "Japonais",
+    "pt": "Portugais",
+    "ru": "Russe",
+    "it": "Italien",
+    "zh": "Chinois",
+    "selector": {
+      "title": "Sélectionner la Langue"
+    }
+  },
+  "error": {
+    "notFound": "Page non trouvée",
+    "serverError": "Une erreur du serveur s'est produite",
+    "unauthorized": "Accès non autorisé",
+    "networkError": "Erreur réseau. Vérifiez votre connexion."
+  },
+  "profile": {
+    "title": "Mon Profil",
+    "edit": "Modifier le Profil",
+    "name": "Nom",
+    "email": "Email",
+    "bio": "Bio",
+    "location": "Emplacement",
+    "joinedDate": "Rejoint"
+  }
+}

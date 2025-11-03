@@ -1,0 +1,196 @@
+{
+  "dashboard": {
+    "writer": {
+      "home": {
+        "title": "Startseite",
+        "welcome": "Willkommen zurück",
+        "subtitle": "Setzen Sie Ihre Reise fort",
+        "noStories": "Noch keine Geschichten",
+        "writeFirstStory": "Schreiben Sie Ihre Erste Geschichte"
+      },
+      "stats": {
+        "title": "Ihre Statistiken",
+        "total": "Gesamte Geschichten",
+        "published": "Veröffentlicht",
+        "draft": "Entwürfe",
+        "inReview": "In Überprüfung",
+        "readers": "Erreichte Leser",
+        "views": "Gesamtansichten"
+      },
+      "quickActions": {
+        "title": "Schnellaktionen",
+        "writeNew": "Neue Geschichte Schreiben",
+        "viewLibrary": "Bibliothek Erkunden",
+        "manageStories": "Meine Geschichten Verwalten"
+      },
+      "recentActivity": {
+        "title": "Letzte Aktivität",
+        "noActivity": "Keine aktuelle Aktivität"
+      },
+      "achievements": {
+        "title": "Erfolge",
+        "firstStory": "Erste Geschichte Veröffentlicht",
+        "tenStories": "10 Geschichten Veröffentlicht",
+        "hundredReaders": "100 Leser Erreicht"
+      },
+      "submit": {
+        "title": "Neue Geschichte Einreichen",
+        "instructions": "Schreiben Sie Ihre Geschichte unten. Sie können als Entwurf speichern oder zur Überprüfung einreichen."
+      }
+    }
+  },
+  "nav": {
+    "home": "Startseite",
+    "myStories": "Meine Geschichten",
+    "library": "Bibliothek",
+    "notifications": "Benachrichtigungen",
+    "profile": "Profil"
+  },
+  "stories": {
+    "title": "Meine Geschichten",
+    "subtitle": "Verwalten Sie Ihre kreativen Werke",
+    "tabs": {
+      "all": "Alle",
+      "draft": "Entwurf",
+      "pending": "Ausstehend",
+      "inReview": "In Überprüfung",
+      "needsRevision": "Überarbeitung Erforderlich",
+      "approved": "Genehmigt",
+      "published": "Veröffentlicht",
+      "rejected": "Abgelehnt"
+    },
+    "empty": {
+      "draft": "Noch keine Entwürfe. Beginnen Sie mit Ihrer ersten Geschichte!",
+      "pending": "Keine ausstehenden Einreichungen",
+      "published": "Noch keine veröffentlichten Geschichten"
+    },
+    "card": {
+      "status": "Status",
+      "createdAt": "Erstellt",
+      "updatedAt": "Aktualisiert",
+      "viewCount": "Ansichten",
+      "readTime": "Lesezeit"
+    }
+  },
+  "actions": {
+    "view": "Ansehen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "submit": "Einreichen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "writeNew": "Neue Geschichte Schreiben",
+    "viewLibrary": "Bibliothek Anzeigen"
+  },
+  "library": {
+    "title": "Veröffentlichte Bibliothek",
+    "subtitle": "Entdecken Sie Geschichten anderer Autoren",
+    "filters": {
+      "all": "Alle Kategorien",
+      "category": "Kategorie",
+      "ageRange": "Altersbereich",
+      "language": "Sprache"
+    },
+    "empty": "Keine veröffentlichten Geschichten verfügbar"
+  },
+  "notification": {
+    "title": "Benachrichtigungen",
+    "markAllRead": "Alle als Gelesen Markieren",
+    "empty": "Keine neuen Benachrichtigungen",
+    "type": {
+      "feedback": "Feedback Erhalten",
+      "statusChange": "Status Geändert",
+      "published": "Geschichte Veröffentlicht"
+    }
+  },
+  "status": {
+    "DRAFT": "Entwurf",
+    "PENDING": "Ausstehend",
+    "IN_REVIEW": "In Überprüfung",
+    "NEEDS_REVISION": "Überarbeitung Erforderlich",
+    "APPROVED": "Genehmigt",
+    "PUBLISHED": "Veröffentlicht",
+    "REJECTED": "Abgelehnt"
+  },
+  "form": {
+    "title": "Titel",
+    "content": "Inhalt",
+    "summary": "Zusammenfassung",
+    "category": "Kategorie",
+    "ageRange": "Altersbereich",
+    "language": "Sprache",
+    "tags": "Schlagwörter",
+    "required": "Pflichtfeld",
+    "minLength": "Mindestens {count} Zeichen",
+    "maxLength": "Maximal {count} Zeichen"
+  },
+  "feedback": {
+    "title": "Feedback",
+    "noFeedback": "Noch kein Feedback",
+    "from": "Von",
+    "date": "Datum",
+    "comment": "Kommentar"
+  },
+  "time": {
+    "justNow": "Gerade eben",
+    "minutesAgo": "Vor {count} Minuten",
+    "hoursAgo": "Vor {count} Stunden",
+    "daysAgo": "Vor {count} Tagen",
+    "weeksAgo": "Vor {count} Wochen",
+    "monthsAgo": "Vor {count} Monaten"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten",
+    "success": "Erfolg!",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "close": "Schließen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "readMore": "Mehr Lesen",
+    "showLess": "Weniger Anzeigen",
+    "noResults": "Keine Ergebnisse gefunden",
+    "tryAgain": "Erneut Versuchen",
+    "share": "Teilen",
+    "download": "Herunterladen",
+    "print": "Drucken",
+    "viewAll": "Alle ansehen",
+    "updated": "Aktualisiert"
+  },
+  "language": {
+    "en": "Englisch",
+    "ko": "Koreanisch",
+    "es": "Spanisch",
+    "ar": "Arabisch",
+    "hi": "Hindi",
+    "fr": "Französisch",
+    "de": "Deutsch",
+    "ja": "Japanisch",
+    "pt": "Portugiesisch",
+    "ru": "Russisch",
+    "it": "Italienisch",
+    "zh": "Chinesisch",
+    "selector": {
+      "title": "Sprache Wählen"
+    }
+  },
+  "error": {
+    "notFound": "Seite nicht gefunden",
+    "serverError": "Ein Serverfehler ist aufgetreten",
+    "unauthorized": "Unbefugter Zugriff",
+    "networkError": "Netzwerkfehler. Überprüfen Sie Ihre Verbindung."
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "edit": "Profil Bearbeiten",
+    "name": "Name",
+    "email": "E-Mail",
+    "bio": "Biografie",
+    "location": "Standort",
+    "joinedDate": "Beigetreten"
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "dashboard": {
+    "writer": {
+      "home": {
+        "title": "ホーム",
+        "welcome": "おかえりなさい",
+        "subtitle": "ライティングの旅を続けましょう",
+        "noStories": "まだストーリーがありません",
+        "writeFirstStory": "最初のストーリーを書く"
+      },
+      "stats": {
+        "title": "あなたの統計",
+        "total": "総ストーリー",
+        "published": "公開済み",
+        "draft": "下書き",
+        "inReview": "レビュー中",
+        "readers": "読者到達数",
+        "views": "総閲覧数"
+      },
+      "quickActions": {
+        "title": "クイックアクション",
+        "writeNew": "新しいストーリーを書く",
+        "viewLibrary": "ライブラリを探索",
+        "manageStories": "ストーリーを管理"
+      },
+      "recentActivity": {
+        "title": "最近のアクティビティ",
+        "noActivity": "最近のアクティビティなし"
+      },
+      "achievements": {
+        "title": "実績",
+        "firstStory": "初めてのストーリー公開",
+        "tenStories": "10ストーリー公開",
+        "hundredReaders": "100読者到達"
+      },
+      "submit": {
+        "title": "新しいストーリーを提出",
+        "instructions": "以下にストーリーを書いてください。下書きとして保存するか、レビュー用に提出できます。"
+      }
+    }
+  },
+  "nav": {
+    "home": "ホーム",
+    "myStories": "マイストーリー",
+    "library": "ライブラリ",
+    "notifications": "通知",
+    "profile": "プロフィール"
+  },
+  "stories": {
+    "title": "マイストーリー",
+    "subtitle": "あなたの創作物を管理",
+    "tabs": {
+      "all": "すべて",
+      "draft": "下書き",
+      "pending": "保留中",
+      "inReview": "レビュー中",
+      "needsRevision": "修正が必要",
+      "approved": "承認済み",
+      "published": "公開済み",
+      "rejected": "却下"
+    },
+    "empty": {
+      "draft": "まだ下書きがありません。最初のストーリーを書き始めましょう！",
+      "pending": "保留中の提出物なし",
+      "published": "まだ公開されたストーリーがありません"
+    },
+    "card": {
+      "status": "ステータス",
+      "createdAt": "作成日",
+      "updatedAt": "更新日",
+      "viewCount": "閲覧数",
+      "readTime": "読了時間"
+    }
+  },
+  "actions": {
+    "view": "表示",
+    "edit": "編集",
+    "delete": "削除",
+    "submit": "提出",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "confirm": "確認",
+    "writeNew": "新しいストーリーを書く",
+    "viewLibrary": "ライブラリを表示"
+  },
+  "library": {
+    "title": "公開ライブラリ",
+    "subtitle": "他の作家のストーリーを探索",
+    "filters": {
+      "all": "すべてのカテゴリ",
+      "category": "カテゴリ",
+      "ageRange": "年齢層",
+      "language": "言語"
+    },
+    "empty": "公開されたストーリーはありません"
+  },
+  "notification": {
+    "title": "通知",
+    "markAllRead": "すべて既読にする",
+    "empty": "新しい通知はありません",
+    "type": {
+      "feedback": "フィードバック受信",
+      "statusChange": "ステータス変更",
+      "published": "ストーリー公開"
+    }
+  },
+  "status": {
+    "DRAFT": "下書き",
+    "PENDING": "保留中",
+    "IN_REVIEW": "レビュー中",
+    "NEEDS_REVISION": "修正が必要",
+    "APPROVED": "承認済み",
+    "PUBLISHED": "公開済み",
+    "REJECTED": "却下"
+  },
+  "form": {
+    "title": "タイトル",
+    "content": "コンテンツ",
+    "summary": "概要",
+    "category": "カテゴリ",
+    "ageRange": "年齢層",
+    "language": "言語",
+    "tags": "タグ",
+    "required": "必須項目",
+    "minLength": "最低{count}文字",
+    "maxLength": "最大{count}文字"
+  },
+  "feedback": {
+    "title": "フィードバック",
+    "noFeedback": "まだフィードバックがありません",
+    "from": "送信者",
+    "date": "日付",
+    "comment": "コメント"
+  },
+  "time": {
+    "justNow": "たった今",
+    "minutesAgo": "{count}分前",
+    "hoursAgo": "{count}時間前",
+    "daysAgo": "{count}日前",
+    "weeksAgo": "{count}週間前",
+    "monthsAgo": "{count}ヶ月前"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "success": "成功！",
+    "search": "検索",
+    "filter": "フィルター",
+    "sort": "並べ替え",
+    "close": "閉じる",
+    "back": "戻る",
+    "next": "次へ",
+    "previous": "前へ",
+    "readMore": "続きを読む",
+    "showLess": "表示を減らす",
+    "noResults": "結果が見つかりませんでした",
+    "tryAgain": "再試行",
+    "share": "共有",
+    "download": "ダウンロード",
+    "print": "印刷",
+    "viewAll": "すべて表示",
+    "updated": "更新"
+  },
+  "language": {
+    "en": "英語",
+    "ko": "韓国語",
+    "es": "スペイン語",
+    "ar": "アラビア語",
+    "hi": "ヒンディー語",
+    "fr": "フランス語",
+    "de": "ドイツ語",
+    "ja": "日本語",
+    "pt": "ポルトガル語",
+    "ru": "ロシア語",
+    "it": "イタリア語",
+    "zh": "中国語",
+    "selector": {
+      "title": "言語を選択"
+    }
+  },
+  "error": {
+    "notFound": "ページが見つかりません",
+    "serverError": "サーバーエラーが発生しました",
+    "unauthorized": "不正アクセス",
+    "networkError": "ネットワークエラー。接続を確認してください。"
+  },
+  "profile": {
+    "title": "マイプロフィール",
+    "edit": "プロフィールを編集",
+    "name": "名前",
+    "email": "メール",
+    "bio": "プロフィール",
+    "location": "場所",
+    "joinedDate": "参加日"
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "dashboard": {
+    "writer": {
+      "home": {
+        "title": "首页",
+        "welcome": "欢迎回来",
+        "subtitle": "继续您的写作之旅",
+        "noStories": "还没有故事",
+        "writeFirstStory": "撰写您的第一个故事"
+      },
+      "stats": {
+        "title": "您的统计数据",
+        "total": "总故事数",
+        "published": "已发布",
+        "draft": "草稿",
+        "inReview": "审核中",
+        "readers": "到达读者数",
+        "views": "总浏览量"
+      },
+      "quickActions": {
+        "title": "快速操作",
+        "writeNew": "撰写新故事",
+        "viewLibrary": "探索图书馆",
+        "manageStories": "管理我的故事"
+      },
+      "recentActivity": {
+        "title": "最近活动",
+        "noActivity": "没有最近活动"
+      },
+      "achievements": {
+        "title": "成就",
+        "firstStory": "发布的第一个故事",
+        "tenStories": "发布10个故事",
+        "hundredReaders": "到达100位读者"
+      },
+      "submit": {
+        "title": "提交新故事",
+        "instructions": "在下方写下您的故事。您可以保存为草稿或提交审核。"
+      }
+    }
+  },
+  "nav": {
+    "home": "首页",
+    "myStories": "我的故事",
+    "library": "图书馆",
+    "notifications": "通知",
+    "profile": "个人资料"
+  },
+  "stories": {
+    "title": "我的故事",
+    "subtitle": "管理您的创作作品",
+    "tabs": {
+      "all": "全部",
+      "draft": "草稿",
+      "pending": "待处理",
+      "inReview": "审核中",
+      "needsRevision": "需要修改",
+      "approved": "已批准",
+      "published": "已发布",
+      "rejected": "已拒绝"
+    },
+    "empty": {
+      "draft": "还没有草稿。开始写你的第一个故事吧！",
+      "pending": "没有待处理的提交",
+      "published": "还没有发布的故事"
+    },
+    "card": {
+      "status": "状态",
+      "createdAt": "创建于",
+      "updatedAt": "更新于",
+      "viewCount": "浏览量",
+      "readTime": "阅读时间"
+    }
+  },
+  "actions": {
+    "view": "查看",
+    "edit": "编辑",
+    "delete": "删除",
+    "submit": "提交",
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "writeNew": "撰写新故事",
+    "viewLibrary": "查看图书馆"
+  },
+  "library": {
+    "title": "已发布图书馆",
+    "subtitle": "探索其他作家的故事",
+    "filters": {
+      "all": "所有类别",
+      "category": "类别",
+      "ageRange": "年龄范围",
+      "language": "语言"
+    },
+    "empty": "没有已发布的故事"
+  },
+  "notification": {
+    "title": "通知",
+    "markAllRead": "全部标记为已读",
+    "empty": "没有新通知",
+    "type": {
+      "feedback": "收到反馈",
+      "statusChange": "状态已更改",
+      "published": "故事已发布"
+    }
+  },
+  "status": {
+    "DRAFT": "草稿",
+    "PENDING": "待处理",
+    "IN_REVIEW": "审核中",
+    "NEEDS_REVISION": "需要修改",
+    "APPROVED": "已批准",
+    "PUBLISHED": "已发布",
+    "REJECTED": "已拒绝"
+  },
+  "form": {
+    "title": "标题",
+    "content": "内容",
+    "summary": "摘要",
+    "category": "类别",
+    "ageRange": "年龄范围",
+    "language": "语言",
+    "tags": "标签",
+    "required": "必填字段",
+    "minLength": "最少{count}个字符",
+    "maxLength": "最多{count}个字符"
+  },
+  "feedback": {
+    "title": "反馈",
+    "noFeedback": "还没有反馈",
+    "from": "来自",
+    "date": "日期",
+    "comment": "评论"
+  },
+  "time": {
+    "justNow": "刚刚",
+    "minutesAgo": "{count}分钟前",
+    "hoursAgo": "{count}小时前",
+    "daysAgo": "{count}天前",
+    "weeksAgo": "{count}周前",
+    "monthsAgo": "{count}个月前"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "发生错误",
+    "success": "成功！",
+    "search": "搜索",
+    "filter": "筛选",
+    "sort": "排序",
+    "close": "关闭",
+    "back": "返回",
+    "next": "下一步",
+    "previous": "上一步",
+    "readMore": "阅读更多",
+    "showLess": "显示更少",
+    "noResults": "未找到结果",
+    "tryAgain": "重试",
+    "share": "分享",
+    "download": "下载",
+    "print": "打印",
+    "viewAll": "查看全部",
+    "updated": "更新于"
+  },
+  "language": {
+    "en": "英语",
+    "ko": "韩语",
+    "es": "西班牙语",
+    "ar": "阿拉伯语",
+    "hi": "印地语",
+    "fr": "法语",
+    "de": "德语",
+    "ja": "日语",
+    "pt": "葡萄牙语",
+    "ru": "俄语",
+    "it": "意大利语",
+    "zh": "中文",
+    "selector": {
+      "title": "选择语言"
+    }
+  },
+  "error": {
+    "notFound": "页面未找到",
+    "serverError": "发生服务器错误",
+    "unauthorized": "未授权访问",
+    "networkError": "网络错误。检查您的连接。"
+  },
+  "profile": {
+    "title": "我的个人资料",
+    "edit": "编辑个人资料",
+    "name": "姓名",
+    "email": "电子邮件",
+    "bio": "简介",
+    "location": "位置",
+    "joinedDate": "加入日期"
+  }
+}

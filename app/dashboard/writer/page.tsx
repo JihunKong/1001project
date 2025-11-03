@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import DashboardLoadingState from '@/components/dashboard/DashboardLoadingState';
 import DashboardErrorState from '@/components/dashboard/DashboardErrorState';
+import { useTranslation } from '@/lib/i18n/useTranslation';
+import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 
 interface TextSubmission {
   id: string;
@@ -62,6 +64,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 export default function WriterHome() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useTranslation();
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentSubmissions, setRecentSubmissions] = useState<TextSubmission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -131,17 +134,17 @@ export default function WriterHome() {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'DRAFT':
-        return 'Draft';
+        return t('status.DRAFT');
       case 'PENDING':
       case 'SUBMITTED':
-        return 'Pending';
+        return t('status.PENDING');
       case 'STORY_REVIEW':
       case 'IN_REVIEW':
-        return 'In Review';
+        return t('status.IN_REVIEW');
       case 'PUBLISHED':
-        return 'Published';
+        return t('status.PUBLISHED');
       case 'NEEDS_REVISION':
-        return 'Needs Revision';
+        return t('status.NEEDS_REVISION');
       default:
         return status;
     }
@@ -181,19 +184,22 @@ export default function WriterHome() {
   return (
     <div className="pb-20 lg:pb-4">
       <div id="main-content" className="max-w-[1240px] px-4 sm:px-8 lg:px-12 py-10 pb-20 lg:pb-10">
-        {/* Welcome Header */}
+        {/* Welcome Header with Language Selector */}
         <div className="mb-12">
-          <h1
-            className="text-[#141414] mb-2"
-            style={{
-              fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-              fontSize: '48px',
-              fontWeight: 500,
-              lineHeight: '1.221'
-            }}
-          >
-            Welcome back, {session?.user?.name?.split(' ')[0] || 'Writer'}
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1
+              className="text-[#141414]"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '48px',
+                fontWeight: 500,
+                lineHeight: '1.221'
+              }}
+            >
+              {t('dashboard.writer.home.welcome')}, {session?.user?.name?.split(' ')[0] || 'Writer'}
+            </h1>
+            <LanguageSelector variant="compact" />
+          </div>
           <p
             className="text-[#8E8E93]"
             style={{
@@ -203,7 +209,7 @@ export default function WriterHome() {
               lineHeight: '1.5'
             }}
           >
-            Continue your writing journey and inspire young readers around the world
+            {t('dashboard.writer.home.subtitle')}
           </p>
         </div>
 
@@ -225,7 +231,7 @@ export default function WriterHome() {
                 lineHeight: '1.5'
               }}
             >
-              Total Stories
+              {t('dashboard.writer.stats.total')}
             </p>
             <p
               className="text-[#141414]"
@@ -256,7 +262,7 @@ export default function WriterHome() {
                 lineHeight: '1.5'
               }}
             >
-              Published
+              {t('dashboard.writer.stats.published')}
             </p>
             <p
               className="text-[#141414]"
@@ -287,7 +293,7 @@ export default function WriterHome() {
                 lineHeight: '1.5'
               }}
             >
-              In Review
+              {t('dashboard.writer.stats.inReview')}
             </p>
             <p
               className="text-[#141414]"
@@ -318,7 +324,7 @@ export default function WriterHome() {
                 lineHeight: '1.5'
               }}
             >
-              Readers Reached
+              {t('dashboard.writer.stats.readers')}
             </p>
             <p
               className="text-[#141414]"
@@ -345,7 +351,7 @@ export default function WriterHome() {
               lineHeight: '1.221'
             }}
           >
-            Quick Actions
+            {t('dashboard.writer.quickActions.title')}
           </h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <button
@@ -361,7 +367,7 @@ export default function WriterHome() {
                   lineHeight: '1.221'
                 }}
               >
-                Write Story
+                {t('dashboard.writer.quickActions.writeNew')}
               </span>
             </button>
 
@@ -379,7 +385,7 @@ export default function WriterHome() {
                   lineHeight: '1.221'
                 }}
               >
-                View Library
+                {t('dashboard.writer.quickActions.viewLibrary')}
               </span>
             </button>
 
@@ -397,7 +403,7 @@ export default function WriterHome() {
                   lineHeight: '1.221'
                 }}
               >
-                My Stories
+                {t('nav.myStories')}
               </span>
             </button>
 
@@ -415,13 +421,13 @@ export default function WriterHome() {
                   lineHeight: '1.221'
                 }}
               >
-                Notifications
+                {t('nav.notifications')}
               </span>
             </button>
           </div>
         </div>
 
-        {/* Recent Activity */}
+        {/* {t('dashboard.writer.recentActivity.title')} */}
         <div className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2
@@ -433,7 +439,7 @@ export default function WriterHome() {
                 lineHeight: '1.221'
               }}
             >
-              Recent Activity
+              {t('dashboard.writer.recentActivity.title')}
             </h2>
             <button
               onClick={() => router.push('/dashboard/writer/stories')}
@@ -445,7 +451,7 @@ export default function WriterHome() {
                 lineHeight: '1.5'
               }}
             >
-              View all
+              {t('common.viewAll')}
             </button>
           </div>
           {recentSubmissions.length === 0 ? (
@@ -462,7 +468,7 @@ export default function WriterHome() {
                   lineHeight: '1.5'
                 }}
               >
-                No stories yet. Start writing to see your activity here.
+                {t('dashboard.writer.home.noStories')}
               </p>
               <button
                 onClick={() => router.push('/dashboard/writer/submit-text')}
@@ -475,7 +481,7 @@ export default function WriterHome() {
                 }}
               >
                 <PenTool className="h-5 w-5" />
-                Write Your First Story
+                {t('dashboard.writer.home.writeFirstStory')}
               </button>
             </div>
           ) : (
@@ -508,7 +514,7 @@ export default function WriterHome() {
                           lineHeight: '1.5'
                         }}
                       >
-                        Updated {formatDate(submission.updatedAt)}
+                        {t('common.updated')} {formatDate(submission.updatedAt)}
                       </p>
                     </div>
                     <span
@@ -529,7 +535,7 @@ export default function WriterHome() {
           )}
         </div>
 
-        {/* Achievements */}
+        {/* {t('dashboard.writer.achievements.title')} */}
         <div>
           <h2
             className="text-[#141414] mb-6"
@@ -540,7 +546,7 @@ export default function WriterHome() {
               lineHeight: '1.221'
             }}
           >
-            Achievements
+            {t('dashboard.writer.achievements.title')}
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {stats.achievements.map((achievement) => {

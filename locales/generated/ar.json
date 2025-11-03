@@ -1,0 +1,196 @@
+{
+  "dashboard": {
+    "writer": {
+      "home": {
+        "title": "الصفحة الرئيسية",
+        "welcome": "مرحبا بعودتك",
+        "subtitle": "تابع رحلتك في الكتابة",
+        "noStories": "لا توجد قصص بعد",
+        "writeFirstStory": "اكتب قصتك الأولى"
+      },
+      "stats": {
+        "title": "إحصائياتك",
+        "total": "القصص الإجمالية",
+        "published": "منشور",
+        "draft": "مسودات",
+        "inReview": "قيد المراجعة",
+        "readers": "القراء الذين تم الوصول إليهم",
+        "views": "إجمالي المشاهدات"
+      },
+      "quickActions": {
+        "title": "إجراءات سريعة",
+        "writeNew": "اكتب قصة جديدة",
+        "viewLibrary": "استكشف المكتبة",
+        "manageStories": "إدارة قصصي"
+      },
+      "recentActivity": {
+        "title": "النشاط الأخير",
+        "noActivity": "لا يوجد نشاط حديث"
+      },
+      "achievements": {
+        "title": "الإنجازات",
+        "firstStory": "أول قصة منشورة",
+        "tenStories": "10 قصص منشورة",
+        "hundredReaders": "100 قارئ تم الوصول إليهم"
+      },
+      "submit": {
+        "title": "إرسال قصة جديدة",
+        "instructions": "اكتب قصتك أدناه. يمكنك الحفظ كمسودة أو الإرسال للمراجعة."
+      }
+    }
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "myStories": "قصصي",
+    "library": "المكتبة",
+    "notifications": "الإشعارات",
+    "profile": "الملف الشخصي"
+  },
+  "stories": {
+    "title": "قصصي",
+    "subtitle": "إدارة أعمالك الإبداعية",
+    "tabs": {
+      "all": "الكل",
+      "draft": "مسودة",
+      "pending": "قيد الانتظار",
+      "inReview": "قيد المراجعة",
+      "needsRevision": "يحتاج إلى مراجعة",
+      "approved": "موافق عليها",
+      "published": "منشور",
+      "rejected": "مرفوض"
+    },
+    "empty": {
+      "draft": "لا توجد مسودات بعد. ابدأ كتابة قصتك الأولى!",
+      "pending": "لا توجد طلبات معلقة",
+      "published": "لا توجد قصص منشورة بعد"
+    },
+    "card": {
+      "status": "الحالة",
+      "createdAt": "تم الإنشاء",
+      "updatedAt": "تم التحديث",
+      "viewCount": "المشاهدات",
+      "readTime": "وقت القراءة"
+    }
+  },
+  "actions": {
+    "view": "عرض",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "submit": "إرسال",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "writeNew": "اكتب قصة جديدة",
+    "viewLibrary": "عرض المكتبة"
+  },
+  "library": {
+    "title": "المكتبة المنشورة",
+    "subtitle": "استكشف قصص كتاب آخرين",
+    "filters": {
+      "all": "جميع الفئات",
+      "category": "الفئة",
+      "ageRange": "نطاق العمر",
+      "language": "اللغة"
+    },
+    "empty": "لا توجد قصص منشورة متاحة"
+  },
+  "notification": {
+    "title": "الإشعارات",
+    "markAllRead": "وضع علامة على الكل كمقروء",
+    "empty": "لا توجد إشعارات جديدة",
+    "type": {
+      "feedback": "تلقي الملاحظات",
+      "statusChange": "تغيير الحالة",
+      "published": "قصة منشورة"
+    }
+  },
+  "status": {
+    "DRAFT": "مسودة",
+    "PENDING": "قيد الانتظار",
+    "IN_REVIEW": "قيد المراجعة",
+    "NEEDS_REVISION": "يحتاج إلى مراجعة",
+    "APPROVED": "موافق عليها",
+    "PUBLISHED": "منشور",
+    "REJECTED": "مرفوض"
+  },
+  "form": {
+    "title": "العنوان",
+    "content": "المحتوى",
+    "summary": "ملخص",
+    "category": "الفئة",
+    "ageRange": "نطاق العمر",
+    "language": "اللغة",
+    "tags": "العلامات",
+    "required": "حقل إلزامي",
+    "minLength": "الحد الأدنى {count} حرفا",
+    "maxLength": "الحد الأقصى {count} حرفا"
+  },
+  "feedback": {
+    "title": "الملاحظات",
+    "noFeedback": "لا توجد ملاحظات بعد",
+    "from": "من",
+    "date": "التاريخ",
+    "comment": "تعليق"
+  },
+  "time": {
+    "justNow": "الآن",
+    "minutesAgo": "منذ {count} دقائق",
+    "hoursAgo": "منذ {count} ساعات",
+    "daysAgo": "منذ {count} أيام",
+    "weeksAgo": "منذ {count} أسابيع",
+    "monthsAgo": "منذ {count} أشهر"
+  },
+  "common": {
+    "loading": "جار التحميل...",
+    "error": "حدث خطأ",
+    "success": "نجاح!",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "readMore": "اقرأ أكثر",
+    "showLess": "أظهر أقل",
+    "noResults": "لم يتم العثور على نتائج",
+    "tryAgain": "حاول مرة أخرى",
+    "share": "مشاركة",
+    "download": "تحميل",
+    "print": "طباعة",
+    "viewAll": "عرض الكل",
+    "updated": "تم التحديث"
+  },
+  "language": {
+    "en": "الإنجليزية",
+    "ko": "الكورية",
+    "es": "الإسبانية",
+    "ar": "العربية",
+    "hi": "الهندية",
+    "fr": "الفرنسية",
+    "de": "الألمانية",
+    "ja": "اليابانية",
+    "pt": "البرتغالية",
+    "ru": "الروسية",
+    "it": "الإيطالية",
+    "zh": "الصينية",
+    "selector": {
+      "title": "اختر اللغة"
+    }
+  },
+  "error": {
+    "notFound": "الصفحة غير موجودة",
+    "serverError": "حدث خطأ في الخادم",
+    "unauthorized": "الوصول غير المصرح به",
+    "networkError": "خطأ في الشبكة. تحقق من اتصالك."
+  },
+  "profile": {
+    "title": "ملفي الشخصي",
+    "edit": "تعديل الملف الشخصي",
+    "name": "الاسم",
+    "email": "البريد الإلكتروني",
+    "bio": "السيرة الذاتية",
+    "location": "الموقع",
+    "joinedDate": "انضم"
+  }
+}
