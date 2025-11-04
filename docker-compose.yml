@@ -1,5 +1,6 @@
 services:
   app:
+    image: ${APP_IMAGE:-1001-stories-app:latest}
     build:
       context: .
       dockerfile: Dockerfile

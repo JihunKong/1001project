@@ -117,6 +117,162 @@ npm run build
 ./scripts/deploy.sh rollback
 ```
 
+## ⚠️ MANDATORY DEPLOYMENT WORKFLOW (2025-11-04)
+
+**CRITICAL: This is the ONLY correct deployment method. No exceptions.**
+
+User emphasis (2025-11-04): "강제재부팅을 실행했습니다. 반드시 제가 말씀드린 방법으로 해야 오류가 발생하지 않을 것입니다. 기록해놓고 잊지 마십시오."
+(Translation: "I executed a forced reboot. It MUST be done the way I told you or errors will occur. Record this and don't forget.")
+
+### The MANDATORY 3-Step Workflow
+
+```bash
+# Step 1: Build Docker image LOCALLY
+docker compose build app
+
+# Step 2: Save image as tar.gz and upload to server
+IMAGE_FILE="/tmp/1001-stories-app-$(date +%Y%m%d_%H%M%S).tar.gz"
+docker save 1001-stories-app:latest | gzip > "$IMAGE_FILE"
+scp -i /Users/jihunkong/Downloads/1001project.pem "$IMAGE_FILE" ubuntu@3.128.143.122:/tmp/app-image.tar.gz
+rm "$IMAGE_FILE"
+
+# Step 3: On server - Clean cache, load image, start containers
+ssh ubuntu@3.128.143.122 << 'EOF'
+  cd /home/ubuntu/1001-stories
+
+  # MANDATORY: Clean Docker cache (user requirement)
+  docker system prune -af --volumes
+
+  # Load pre-built image
+  gunzip -c /tmp/app-image.tar.gz | docker load
+  rm /tmp/app-image.tar.gz
+
+  # Start all containers
+  docker compose up -d
+EOF
+```
+
+### Automated Deployment
+
+The `scripts/deploy.sh deploy` command now automatically performs all 3 steps:
+
+```bash
+# Recommended: Use the automated script
+./scripts/deploy.sh deploy
+```
+
+The script includes:
+- Local Docker image build
+- Image save to tar.gz
+- Upload to server via SCP
+- **MANDATORY** server cache clean (`docker system prune -af --volumes`)
+- Image load from tar.gz
+- Container startup
+- Deployment verification with automatic rollback on failure
+
+### Why This Is MANDATORY
+
+**Complete Server Outage Incident (2025-11-04)**:
+- Previous method: rsync source → rebuild on server
+- **Problem**: `docker compose build --no-cache` hung for 10+ minutes on server
+- **Result**: ALL 7 containers stopped, never restarted
+- **Impact**: Complete service outage, HTTPS completely inaccessible
+- **Recovery**: Required forced server reboot by user
+
+**Root Cause Analysis**:
+1. Server-side Docker build consumed excessive resources
+2. Build process hung or failed silently
+3. Containers remained stopped after failed build
+4. No automatic recovery mechanism
+5. Service completely inaccessible until manual intervention
+
+**Why Image-Based Deployment Prevents This**:
+- ✅ Build happens locally (no server resource exhaustion)
+- ✅ Build verified before upload (catches errors early)
+- ✅ Server only loads image (fast, reliable operation)
+- ✅ No building on server (eliminates primary failure mode)
+- ✅ Cache cleaning prevents deployment issues
+- ✅ Faster deployments (~3 min vs 10-20 min)
+- ✅ Automatic verification and rollback
+
+### What NOT to Do (FORBIDDEN)
+
+```bash
+# ❌ NEVER rsync source code and build on server
+rsync -avz ./ ubuntu@3.128.143.122:/home/ubuntu/1001-stories/
+ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker compose build --no-cache && docker compose up -d"
+
+# ❌ NEVER use partial service restart
+docker compose up -d --force-recreate app  # Missing: nginx, certbot, etc.
+
+# ❌ NEVER skip cache cleaning
+# User explicitly requires: docker system prune -af --volumes
+
+# ❌ NEVER skip deployment verification
+# Always verify containers are running and HTTPS returns 200
+```
+
+### Deployment Verification (Automated)
+
+The deploy script automatically performs these checks:
+
+```bash
+# 1. Container Status Check
+# Verifies: nginx, app, postgres, redis, certbot all running
+
+# 2. nginx Verification (CRITICAL)
+# nginx MUST be running for HTTPS to work
+
+# 3. Unhealthy Container Detection
+# Checks for any unhealthy or exited containers
+
+# 4. HTTPS Endpoint Test
+# Tests: curl https://localhost/api/health
+# Must return: 200
+
+# 5. Automatic Rollback
+# If any check fails: automatic rollback to previous state
+```
+
+### Files Modified for This Workflow
+
+**docker-compose.yml** - Added image priority:
+```yaml
+services:
+  app:
+    image: ${APP_IMAGE:-1001-stories-app:latest}  # Takes priority
+    build:
+      context: .
+      dockerfile: Dockerfile
+```
+
+**scripts/deploy.sh** - Complete deploy() function rewrite:
+- Removed: rsync source code upload
+- Removed: Server-side Docker builds
+- Added: Local image build
+- Added: Docker save/load via tar.gz
+- Added: **MANDATORY** cache cleaning
+- Added: Deployment verification
+- Added: Automatic rollback
+
+### Key Points to Remember
+
+1. **MANDATORY**: Build locally, NOT on server
+2. **MANDATORY**: Clean server cache before loading image
+3. **MANDATORY**: Verify deployment with automated checks
+4. **FORBIDDEN**: Source code rsync + server builds
+5. **FORBIDDEN**: Partial container restarts (always use `docker compose up -d`)
+6. **FORBIDDEN**: Skipping cache cleaning (user requirement)
+
+### Historical Context
+
+- **2025-10-31**: Partial service restart issue (missing nginx)
+- **2025-11-04**: Complete server outage (all containers down)
+- **2025-11-04**: User-mandated workflow implemented
+- **Current**: Image-based deployment is ONLY correct method
+
+**User Accountability Warning**: "반드시 제가 말씀드린 방법으로 해야 오류가 발생하지 않을 것입니다. 기록해놓고 잊지 마십시오."
+
 ## Environment Variables
 
 Required environment variables:

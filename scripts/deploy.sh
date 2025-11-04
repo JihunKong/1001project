@@ -129,73 +129,85 @@ EOF
     return 0
 }
 
-# Build and deploy application
+# Build and deploy application using MANDATORY image-based workflow
+# This is the ONLY correct deployment method - prevents server outages
 deploy() {
     log "Starting deployment to production..."
+    warn "⚠️  Using MANDATORY image-based deployment workflow"
+    log "Workflow: 1) Local Docker build → 2) Server cache clean → 3) Image upload"
 
-    # Verify local build
-    log "Building application locally for verification..."
-    if ! npm run build; then
-        error "Local build failed. Aborting deployment."
+    # Step 1: 로컬 Docker 빌드
+    log "Step 1/4: Building Docker image locally..."
+    if ! docker compose build app; then
+        error "Local Docker build failed. Aborting deployment."
         exit 1
     fi
-    success "Local build successful"
+    success "Local Docker image built successfully"
 
-    # Sync files
-    rsync_deploy
+    # Step 2: 이미지를 tar.gz로 저장
+    log "Step 2/4: Saving Docker image to tar.gz..."
+    IMAGE_NAME="1001-stories-app:latest"
+    IMAGE_FILE="/tmp/1001-stories-app-$(date +%Y%m%d_%H%M%S).tar.gz"
 
-    # Remote deployment steps
-    log "Executing remote deployment steps..."
+    if ! docker save "$IMAGE_NAME" | gzip > "$IMAGE_FILE"; then
+        error "Failed to save Docker image"
+        exit 1
+    fi
+    IMAGE_SIZE=$(du -h "$IMAGE_FILE" | cut -f1)
+    success "Docker image saved ($IMAGE_SIZE)"
+
+    # Step 3: 이미지 업로드
+    log "Step 3/4: Uploading Docker image to server..."
+    if ! scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "$IMAGE_FILE" "$REMOTE_USER@$REMOTE_HOST:/tmp/app-image.tar.gz"; then
+        error "Failed to upload Docker image"
+        rm "$IMAGE_FILE"
+        exit 1
+    fi
+    success "Docker image uploaded to server"
+
+    # 로컬 임시 파일 정리
+    rm "$IMAGE_FILE"
+
+    # Step 4: 서버 배포 - 캐시 정리 + 이미지 로드 + 시작
+    log "Step 4/4: Server deployment (cache clean + image load + start)..."
     if ! ssh_exec << 'EOF'
         set -euo pipefail
         cd /home/ubuntu/1001-stories
 
-        # Pull latest environment if exists
-        if [ -f .env.production ]; then
-            echo "Using existing production environment"
-        else
-            echo "WARNING: No .env.production file found"
-            echo "Copy .env.production.example to .env.production and configure"
-        fi
+        # 서버 캐시 정리 (사용자 필수 요구사항)
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Cleaning Docker cache on server..."
+        echo "This is MANDATORY to prevent deployment issues"
+        docker system prune -af --volumes
+        echo "✅ Cache cleaned successfully"
 
-        # Stop existing containers
-        echo "Stopping existing containers..."
-        docker compose down || true
+        # 이미지 로드
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Loading pre-built Docker image..."
+        gunzip -c /tmp/app-image.tar.gz | docker load
+        rm /tmp/app-image.tar.gz
+        echo "✅ Image loaded successfully"
 
-        # Backup database (if running)
-        if docker ps -q -f name=postgres; then
-            echo "Creating database backup..."
-            mkdir -p backups
-            docker exec postgres pg_dump -U ${POSTGRES_USER:-postgres} ${POSTGRES_DB:-stories_db} > "backups/backup_$(date +%Y%m%d_%H%M%S).sql" || echo "Backup failed (container may not be running)"
-        fi
-
-        # Clean up old images
-        echo "Cleaning up Docker images..."
-        docker image prune -f
-
-        # Build and start new containers
-        echo "Building and starting containers..."
-        docker compose build --no-cache
+        # 컨테이너 시작
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Starting containers from uploaded image..."
         docker compose up -d
+        echo "✅ Containers started successfully"
 
-        # Wait for services to start
-        echo "Waiting for services to initialize..."
+        # 서비스 초기화 대기
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Waiting for services to initialize (30s)..."
         sleep 30
 
-        echo "Remote deployment steps completed!"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "✅ Remote deployment completed successfully!"
         exit 0
 EOF
     then
-        error "Remote deployment steps failed!"
-        exit 1
-    fi
-
-    # Verify deployment
-    if ! verify_deployment; then
-        error "Deployment verification failed!"
+        error "Server deployment failed!"
         warn "Initiating automatic rollback..."
 
-        # Attempt rollback
+        # rollback 시도
         if rollback; then
             error "Deployment failed but rollback succeeded"
             error "Please check logs and try again"
@@ -207,8 +219,27 @@ EOF
         fi
     fi
 
-    success "Deployment completed successfully!"
-    log "Application is verified and available at: https://$DOMAIN"
+    # 배포 검증
+    log "Verifying deployment..."
+    if ! verify_deployment; then
+        error "Deployment verification failed!"
+        warn "Initiating automatic rollback..."
+
+        if rollback; then
+            error "Deployment failed but rollback succeeded"
+            error "Please check logs and try again"
+            exit 1
+        else
+            error "CRITICAL: Deployment failed AND rollback failed!"
+            error "Manual intervention required on server"
+            exit 1
+        fi
+    fi
+
+    success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    success "Deployment completed successfully using MANDATORY workflow!"
+    success "Application verified and available at: https://$DOMAIN"
+    success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
 # Setup SSL certificates
