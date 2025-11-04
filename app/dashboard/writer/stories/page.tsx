@@ -12,7 +12,6 @@ import SubmissionList from '@/components/SubmissionList';
 import DashboardLoadingState from '@/components/dashboard/DashboardLoadingState';
 import DashboardErrorState from '@/components/dashboard/DashboardErrorState';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 
 interface TextSubmission {
   id: string;
@@ -232,20 +231,17 @@ export default function WriterStories() {
 
         <div id="main-content" className="max-w-[1240px] px-4 sm:px-8 lg:px-12 py-10 pb-20 lg:pb-10">
           <div className="flex items-center justify-between mb-12">
-            <div className="flex items-center gap-4">
-              <h1
-                className="text-[#141414]"
-                style={{
-                  fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-                  fontSize: '48px',
-                  fontWeight: 500,
-                  lineHeight: '1.221'
-                }}
-              >
-                {t('stories.title')}
-              </h1>
-              <LanguageSelector variant="compact" />
-            </div>
+            <h1
+              className="text-[#141414]"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '48px',
+                fontWeight: 500,
+                lineHeight: '1.221'
+              }}
+            >
+              {t('stories.title')}
+            </h1>
             <button
               onClick={() => router.push('/dashboard/writer/submit-text')}
               className="bg-[#141414] hover:bg-[#1f1f1f] !text-white px-8 py-3.5 rounded-lg flex items-center gap-2.5 transition-all hover:shadow-md"

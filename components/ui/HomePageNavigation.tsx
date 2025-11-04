@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { BookOpen, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 
 export default function HomePageNavigation() {
   const { data: session, status } = useSession();
@@ -107,6 +108,7 @@ export default function HomePageNavigation() {
 
           {/* Right Side - Auth Buttons */}
           <div className="flex items-center space-x-4">
+            <LanguageSelector variant="compact" />
             {loading ? (
               <div className="flex items-center space-x-4">
                 <div className="w-16 h-10 bg-gray-200 animate-pulse rounded-full"></div>

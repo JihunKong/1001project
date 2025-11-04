@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export type SubmissionStatus = 'DRAFT' | 'PENDING' | 'STORY_REVIEW' | 'PUBLISHED' | 'NEEDS_REVISION';
 
@@ -16,15 +17,16 @@ interface SubmissionTabsProps {
   onTabChange: (status: SubmissionStatus) => void;
 }
 
-const TAB_CONFIG = [
-  { key: 'DRAFT' as const, label: 'Draft' },
-  { key: 'PENDING' as const, label: 'Submitted' },
-  { key: 'STORY_REVIEW' as const, label: 'Under Review' },
-  { key: 'PUBLISHED' as const, label: 'Published' },
-  { key: 'NEEDS_REVISION' as const, label: 'Feedback' },
-];
-
 export default function SubmissionTabs({ statusCounts, activeTab, onTabChange }: SubmissionTabsProps) {
+  const { t } = useTranslation();
+
+  const TAB_CONFIG = [
+    { key: 'DRAFT' as const, label: t('stories.tabs.draft') },
+    { key: 'PENDING' as const, label: t('stories.tabs.pending') },
+    { key: 'STORY_REVIEW' as const, label: t('stories.tabs.inReview') },
+    { key: 'PUBLISHED' as const, label: t('stories.tabs.published') },
+    { key: 'NEEDS_REVISION' as const, label: t('stories.tabs.needsRevision') },
+  ];
   return (
     <div className="border-b border-[#E5E5EA]">
       <div className="flex items-center gap-8">
