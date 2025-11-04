@@ -118,8 +118,8 @@ RUN mkdir -p uploads tmp public/generated-images && \
     chmod 775 uploads tmp public/generated-images
 
 # Security: Remove write permissions from application files
-RUN find /app -type f -exec chmod 644 {} \; && \
-    find /app -type d -exec chmod 755 {} \; && \
+RUN find /app -type f -exec chmod 644 {} + && \
+    find /app -type d -exec chmod 755 {} + && \
     chmod +x /app/server.js && \
     chmod +x /app/node_modules/@prisma/engines/schema-engine-* 2>/dev/null || true && \
     chmod +x /app/node_modules/@prisma/engines/query-engine-* 2>/dev/null || true
