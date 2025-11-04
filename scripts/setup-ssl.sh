@@ -1,85 +1,221 @@
 #!/bin/bash
 
-# SSL Certificate Setup Script for 1001 Stories
-# This script sets up Let's Encrypt SSL certificates with Docker and nginx
+# 1001 Stories SSL Certificate Setup Script
+# This script helps generate initial SSL certificates for HTTPS access
 
-set -e
+set -euo pipefail
 
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Configuration
 DOMAIN="1001stories.seedsofempowerment.org"
-EMAIL="admin@seedsofempowerment.org"  # Replace with your email
-DOCKER_COMPOSE_FILE="docker-compose.yml"
+EMAIL="noreply@1001stories.org"
 
-echo "🔐 Setting up SSL certificates for $DOMAIN"
+# Logging functions
+log() {
+    echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+}
 
-# Create necessary directories
-echo "📁 Creating certificate directories..."
-mkdir -p ./certbot/conf
-mkdir -p ./certbot/www
-mkdir -p ./certbot/logs
-mkdir -p ./nginx/logs
+error() {
+    echo -e "${RED}[ERROR]${NC} $1" >&2
+}
 
-# Create initial dummy certificate to start nginx
-echo "🔧 Creating dummy certificate for initial setup..."
-mkdir -p "./certbot/conf/live/$DOMAIN"
+success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
 
-# Generate dummy certificates
-openssl req -x509 -nodes -newkey rsa:4096 \
-    -days 1 \
-    -keyout "./certbot/conf/live/$DOMAIN/privkey.pem" \
-    -out "./certbot/conf/live/$DOMAIN/fullchain.pem" \
-    -subj "/CN=$DOMAIN"
+warn() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
 
-# Create dummy chain file
-cp "./certbot/conf/live/$DOMAIN/fullchain.pem" "./certbot/conf/live/$DOMAIN/chain.pem"
+# Check prerequisites
+check_prerequisites() {
+    log "Checking prerequisites..."
 
-echo "🐳 Starting containers with dummy certificates..."
-docker-compose -f $DOCKER_COMPOSE_FILE up -d nginx
+    # Check if docker compose is installed
+    if ! command -v docker &> /dev/null; then
+        error "Docker is not installed"
+        exit 1
+    fi
 
-# Wait for nginx to start
-echo "⏳ Waiting for nginx to start..."
-sleep 10
+    # Check if docker-compose.yml exists
+    if [ ! -f "docker-compose.yml" ]; then
+        error "docker-compose.yml not found. Please run this script from the project root directory"
+        exit 1
+    fi
 
-# Test if nginx is running
-if ! curl -f http://localhost/.well-known/acme-challenge/test 2>/dev/null; then
-    echo "⚠️  nginx may not be ready, but continuing..."
-fi
+    # Check if certbot directories exist
+    if [ ! -d "certbot" ]; then
+        log "Creating certbot directories..."
+        mkdir -p certbot/conf certbot/www certbot/logs
+    fi
 
-# Remove dummy certificate
-echo "🗑️  Removing dummy certificate..."
-rm -rf "./certbot/conf/live/$DOMAIN"
+    success "Prerequisites check passed"
+}
 
-# Obtain real certificate
-echo "🔒 Obtaining real SSL certificate from Let's Encrypt..."
-docker-compose -f $DOCKER_COMPOSE_FILE run --rm certbot \
-    certonly --webroot \
-    --webroot-path=/var/www/certbot \
-    --email $EMAIL \
-    --agree-tos \
-    --no-eff-email \
-    --force-renewal \
-    -d $DOMAIN
+# Check if certificates already exist
+check_existing_certs() {
+    log "Checking for existing SSL certificates..."
 
-# Reload nginx with real certificate
-echo "🔄 Reloading nginx with real certificate..."
-docker-compose -f $DOCKER_COMPOSE_FILE exec nginx nginx -s reload
+    if [ -d "certbot/conf/live/$DOMAIN" ]; then
+        warn "SSL certificates already exist for $DOMAIN"
 
-# Test SSL certificate
-echo "🧪 Testing SSL certificate..."
-if curl -f https://$DOMAIN/api/health; then
-    echo "✅ SSL certificate setup completed successfully!"
-    echo "🌐 Your site is now available at: https://$DOMAIN"
-else
-    echo "❌ SSL setup may have issues. Check the logs:"
-    echo "   docker-compose logs nginx"
-    echo "   docker-compose logs certbot"
-fi
+        # Show certificate expiry
+        if [ -f "certbot/conf/live/$DOMAIN/cert.pem" ]; then
+            EXPIRY=$(openssl x509 -enddate -noout -in "certbot/conf/live/$DOMAIN/cert.pem" | cut -d= -f2)
+            echo "  Certificate expires: $EXPIRY"
+        fi
 
-echo ""
-echo "📋 Next steps:"
-echo "1. Verify your site works: https://$DOMAIN"
-echo "2. Test automatic renewal: docker-compose exec certbot certbot renew --dry-run"
-echo "3. Monitor logs: docker-compose logs -f"
+        read -p "Do you want to regenerate the certificates? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            log "Skipping certificate generation"
+            return 1
+        fi
 
-echo ""
-echo "🔄 Certificate auto-renewal is configured to run every 12 hours"
-echo "📅 Certificates are valid for 90 days and will auto-renew when they have 30 days left"
+        # Backup existing certificates
+        BACKUP_DIR="certbot/conf/backup-$(date +%Y%m%d-%H%M%S)"
+        log "Backing up existing certificates to $BACKUP_DIR..."
+        mkdir -p "$BACKUP_DIR"
+        cp -r "certbot/conf/live/$DOMAIN" "$BACKUP_DIR/"
+        success "Backup created"
+    fi
+
+    return 0
+}
+
+# Ensure nginx is running for ACME challenge
+ensure_nginx() {
+    log "Ensuring nginx service is running..."
+
+    # Check if nginx container is running
+    if ! docker ps | grep -q "1001-stories-nginx"; then
+        log "Starting nginx service..."
+        docker compose up -d nginx
+        sleep 5
+    fi
+
+    # Verify nginx is accessible
+    if ! docker exec 1001-stories-nginx nginx -t &> /dev/null; then
+        error "nginx configuration test failed"
+        docker exec 1001-stories-nginx nginx -t
+        exit 1
+    fi
+
+    success "nginx is running and healthy"
+}
+
+# Generate SSL certificates
+generate_certificates() {
+    log "Generating SSL certificates for $DOMAIN..."
+
+    # Run certbot with entrypoint override
+    # This avoids the infinite loop in the docker-compose.yml entrypoint
+    docker compose run --rm --entrypoint /bin/sh certbot -c "certbot certonly \
+        --webroot -w /var/www/certbot \
+        -d $DOMAIN \
+        --email $EMAIL \
+        --agree-tos \
+        --non-interactive \
+        --force-renewal"
+
+    if [ $? -eq 0 ]; then
+        success "SSL certificates generated successfully"
+
+        # Show certificate details
+        if [ -f "certbot/conf/live/$DOMAIN/cert.pem" ]; then
+            EXPIRY=$(openssl x509 -enddate -noout -in "certbot/conf/live/$DOMAIN/cert.pem" | cut -d= -f2)
+            echo "  Certificate expires: $EXPIRY"
+        fi
+
+        return 0
+    else
+        error "Certificate generation failed"
+        return 1
+    fi
+}
+
+# Restart nginx to apply certificates
+restart_nginx() {
+    log "Restarting nginx to apply SSL certificates..."
+
+    docker compose restart nginx
+    sleep 3
+
+    # Verify nginx reloaded successfully
+    if docker ps | grep -q "1001-stories-nginx"; then
+        success "nginx restarted successfully"
+    else
+        error "nginx restart failed"
+        docker compose logs nginx --tail=20
+        exit 1
+    fi
+}
+
+# Restart certbot to apply new configuration
+restart_certbot() {
+    log "Restarting certbot service..."
+
+    docker compose up -d --force-recreate certbot
+    sleep 2
+
+    # Check certbot logs
+    log "Certbot status:"
+    docker compose logs certbot --tail=5
+}
+
+# Test HTTPS endpoint
+test_https() {
+    log "Testing HTTPS endpoint..."
+
+    sleep 5
+
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://$DOMAIN/api/health || echo "000")
+
+    if [ "$HTTP_CODE" = "200" ]; then
+        success "HTTPS endpoint is working! (HTTP $HTTP_CODE)"
+        success "SSL setup completed successfully!"
+        echo ""
+        echo "You can now access the application at: https://$DOMAIN"
+    else
+        warn "HTTPS endpoint test failed (HTTP $HTTP_CODE)"
+        echo "Please check:"
+        echo "  1. nginx configuration: docker compose logs nginx"
+        echo "  2. Certificate files exist in: certbot/conf/live/$DOMAIN/"
+        echo "  3. Domain DNS points to this server"
+    fi
+}
+
+# Main execution
+main() {
+    echo "======================================"
+    echo "1001 Stories SSL Certificate Setup"
+    echo "======================================"
+    echo ""
+
+    check_prerequisites
+
+    if ! check_existing_certs; then
+        exit 0
+    fi
+
+    ensure_nginx
+    generate_certificates
+
+    if [ $? -eq 0 ]; then
+        restart_nginx
+        restart_certbot
+        test_https
+    else
+        error "SSL setup failed"
+        exit 1
+    fi
+}
+
+# Run main function
+main

@@ -204,7 +204,26 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done;'"
+    entrypoint: |
+      /bin/sh -c '
+        # Check if SSL certificates exist
+        if [ ! -d "/etc/letsencrypt/live/1001stories.seedsofempowerment.org" ]; then
+          echo "⚠️  No SSL certificates found!"
+          echo ""
+          echo "Initial certificate generation required. Please run:"
+          echo "  docker compose run --rm --entrypoint /bin/sh certbot -c \"certbot certonly --webroot -w /var/www/certbot -d 1001stories.seedsofempowerment.org --email noreply@1001stories.org --agree-tos --non-interactive\""
+          echo ""
+          echo "Or use the SSL setup script: ./scripts/setup-ssl.sh"
+          exit 1
+        fi
+
+        echo "✅ SSL certificates found. Starting renewal daemon..."
+        trap exit TERM
+        while :; do
+          certbot renew --webroot -w /var/www/certbot --quiet
+          sleep 12h & wait $${!}
+        done
+      '
 
   # Prometheus for monitoring (lightweight setup)
   prometheus:

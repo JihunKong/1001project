@@ -549,12 +549,122 @@ docker compose up -d
 - **Follow the documented processes and learn from previous failures**
 - **Use Local Docker → Build Success → Git → Server workflow ALWAYS**
 
+## SSL Certificate Setup (CRITICAL - 2025-11-04)
+
+**⚠️ SSL Restoration Procedures - Documented from Production Incident**
+
+### Initial SSL Certificate Generation
+
+If SSL certificates are missing or need regeneration, use:
+
+```bash
+# Method 1: Automated script (Recommended)
+./scripts/setup-ssl.sh
+
+# Method 2: Manual generation
+docker compose run --rm --entrypoint /bin/sh certbot -c "certbot certonly \
+  --webroot -w /var/www/certbot \
+  -d 1001stories.seedsofempowerment.org \
+  --email noreply@1001stories.org \
+  --agree-tos --non-interactive"
+
+# Restart services to apply certificates
+docker compose restart nginx
+docker compose up -d --force-recreate certbot
+```
+
+### Improved docker-compose.yml Certbot Service
+
+**Problem Solved (2025-11-04)**:
+- Original certbot entrypoint was infinite renewal loop
+- Caused `docker compose run certbot [command]` to hang indefinitely
+- Made initial certificate generation impossible
+
+**Solution Applied**:
+Modified certbot service entrypoint to check for existing certificates before starting renewal daemon:
+
+```yaml
+certbot:
+  entrypoint: |
+    /bin/sh -c '
+      # Check if SSL certificates exist
+      if [ ! -d "/etc/letsencrypt/live/1001stories.seedsofempowerment.org" ]; then
+        echo "⚠️  No SSL certificates found!"
+        echo "Please run initial certificate generation first."
+        exit 1
+      fi
+
+      echo "✅ SSL certificates found. Starting renewal daemon..."
+      trap exit TERM
+      while :; do
+        certbot renew --webroot -w /var/www/certbot --quiet
+        sleep 12h & wait ${!}
+      done
+    '
+```
+
+### SSL Certificate Verification
+
+```bash
+# Test HTTPS endpoint
+curl -s -o /dev/null -w "%{http_code}" https://1001stories.seedsofempowerment.org/api/health
+# Should return: 200
+
+# Check certificate expiry
+openssl x509 -enddate -noout -in certbot/conf/live/1001stories.seedsofempowerment.org/cert.pem
+# Example: notAfter=Feb  2 03:15:33 2026 GMT
+
+# View certbot logs
+docker compose logs certbot --tail=30
+# Should show: "✅ SSL certificates found. Starting renewal daemon..."
+```
+
+### Troubleshooting SSL Issues
+
+**Issue**: HTTPS not working / nginx crash loop
+```bash
+# 1. Check certificate files exist
+ls -la certbot/conf/live/1001stories.seedsofempowerment.org/
+# Should have: fullchain.pem, privkey.pem, cert.pem, chain.pem
+
+# 2. Verify nginx config
+docker exec 1001-stories-nginx nginx -t
+# Should show: "syntax is ok" and "test is successful"
+
+# 3. Check nginx logs
+docker compose logs nginx --tail=50
+```
+
+**Issue**: Certbot renewal failing
+```bash
+# Check certbot can reach Let's Encrypt
+docker exec 1001-stories-certbot wget -O- https://acme-v02.api.letsencrypt.org/directory
+# Should return JSON response
+
+# Verify ACME challenge path accessible
+curl http://1001stories.seedsofempowerment.org/.well-known/acme-challenge/test
+# nginx should serve this path
+```
+
+**Issue**: Deploy script deleted SSL certificates
+- **Root Cause**: `rsync --delete` removed certbot directory not in git
+- **Prevention**: Deploy script updated with `--exclude=certbot` and `--exclude=public/generated-images`
+- **Recovery**: Run `./scripts/setup-ssl.sh` to regenerate certificates
+
+### Certificate Auto-Renewal
+
+- Certificates valid for 90 days
+- Auto-renewal runs every 12 hours (certbot container)
+- Renewal triggers when <30 days remaining
+- No manual intervention required for renewals
+
 ## Support & Resources
 
 - **GitHub Issues**: Report bugs and features
 - **Deployment Logs**: `./scripts/deploy.sh logs`
 - **Database GUI**: `npx prisma studio`
 - **Local Testing**: `./scripts/test-docker-local.sh`
+- **SSL Setup**: `./scripts/setup-ssl.sh`
 - 항상 적절한 agent, mcp를 불러와서 사용하세요.
 - ultra think를 하세요
 - ultra think, 적절한 agent를 배치하세요. mcp에서 최신 코드들을 확인하세요.
