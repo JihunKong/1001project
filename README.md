@@ -34,7 +34,7 @@ Visit `http://localhost:3000`
 - **Backend**: Next.js API Routes, NextAuth.js
 - **Database**: PostgreSQL with Prisma ORM
 - **AI**: OpenAI (image generation, TTS), Upstage (chatbot, parsing)
-- **Deployment**: Docker Compose on AWS Lightsail
+- **Deployment**: Docker Compose on AWS EC2
 
 ## 📁 Project Structure
 
@@ -122,7 +122,7 @@ npx playwright test tests/auth-flow.spec.ts
 # Build for production
 npm run build
 
-# Deploy to AWS Lightsail
+# Deploy to AWS EC2
 ./scripts/deploy.sh deploy
 
 # Check deployment status
@@ -136,7 +136,7 @@ npm run build
 
 - **URL**: https://1001stories.seedsofempowerment.org
 - **IP**: 3.128.143.122
-- **Platform**: AWS Lightsail (Ubuntu 22.04 LTS)
+- **Platform**: AWS EC2 (Ubuntu 22.04 LTS)
 - **Containers**: nginx, PostgreSQL, Redis, app
 
 ## 👥 User Roles
@@ -240,7 +240,7 @@ This project is licensed under the MIT License.
 
 - Built for Seeds of Empowerment non-profit
 - Powered by OpenAI and Upstage AI
-- Deployed on AWS Lightsail
+- Deployed on AWS EC2
 
 ## 📞 Support
 

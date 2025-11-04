@@ -107,7 +107,7 @@ npx playwright test tests/landing-page.spec.ts
 # Build for production
 npm run build
 
-# Deploy to AWS Lightsail
+# Deploy to AWS EC2
 ./scripts/deploy.sh deploy
 
 # Check deployment logs
@@ -259,7 +259,7 @@ docker-compose logs app  # View logs
 ## Production Server
 
 - **IP**: 13.209.14.175
-- **Platform**: AWS Lightsail
+- **Platform**: AWS EC2
 - **OS**: Ubuntu 22.04 LTS
 - **Docker**: Compose with nginx, PostgreSQL, app containers
 - **SSL**: Configured via nginx
