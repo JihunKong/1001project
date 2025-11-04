@@ -182,7 +182,7 @@ export default function WriterStories() {
   };
 
   if (status === 'loading' || loading) {
-    return <DashboardLoadingState message="Loading your dashboard..." role="writer" />;
+    return <DashboardLoadingState message={t('common.loadingDashboard')} role="writer" />;
   }
 
   if (error) {

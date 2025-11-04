@@ -44,7 +44,14 @@
     "myStories": "マイストーリー",
     "library": "ライブラリ",
     "notifications": "通知",
-    "profile": "プロフィール"
+    "profile": "プロフィール",
+    "skipToMain": "メインコンテンツへスキップ",
+    "mainNavigation": "メインナビゲーション",
+    "mobileNavigation": "モバイルナビゲーション",
+    "currentPage": "現在のページ",
+    "userMenu": "ユーザーメニュー",
+    "helpSupport": "ヘルプとサポート",
+    "signOut": "サインアウト"
   },
   "stories": {
     "title": "マイストーリー",
@@ -128,6 +135,18 @@
       "audio": "オーディオ",
       "multimedia": "マルチメディア",
       "interactive": "インタラクティブ"
+    },
+    "placeholders": {
+      "language": "言語",
+      "category": "カテゴリ",
+      "sortBy": "並べ替え"
+    },
+    "aria": {
+      "sortOrder": "並び順",
+      "ascending": "昇順",
+      "descending": "降順",
+      "featured": "注目",
+      "premium": "プレミアム"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "フィードバック受信",
       "statusChange": "ステータス変更",
       "published": "ストーリー公開"
-    }
+    },
+    "subtitle": "ストーリーの進捗を確認",
+    "sseDisconnected": "通知サービスが切断されました",
+    "reconnect": "再接続"
   },
   "status": {
     "DRAFT": "下書き",
@@ -195,7 +217,12 @@
     "download": "ダウンロード",
     "print": "印刷",
     "viewAll": "すべて表示",
-    "updated": "更新"
+    "updated": "更新",
+    "writer": "ライター",
+    "breadcrumb": "パンくずリスト",
+    "loadingDashboard": "ダッシュボードを読み込んでいます...",
+    "loadingStory": "ストーリーを読み込んでいます...",
+    "loadingForm": "フォームを読み込んでいます..."
   },
   "language": {
     "en": "英語",

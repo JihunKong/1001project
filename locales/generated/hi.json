@@ -44,7 +44,14 @@
     "myStories": "मेरी कहानियाँ",
     "library": "पुस्तकालय",
     "notifications": "सूचनाएं",
-    "profile": "प्रोफ़ाइल"
+    "profile": "प्रोफ़ाइल",
+    "skipToMain": "मुख्य सामग्री पर जाएं",
+    "mainNavigation": "मुख्य नेविगेशन",
+    "mobileNavigation": "मोबाइल नेविगेशन",
+    "currentPage": "वर्तमान पृष्ठ",
+    "userMenu": "उपयोगकर्ता मेनू",
+    "helpSupport": "सहायता और समर्थन",
+    "signOut": "साइन आउट"
   },
   "stories": {
     "title": "मेरी कहानियाँ",
@@ -128,6 +135,18 @@
       "audio": "ऑडियो",
       "multimedia": "मल्टीमीडिया",
       "interactive": "इंटरैक्टिव"
+    },
+    "placeholders": {
+      "language": "भाषा",
+      "category": "श्रेणी",
+      "sortBy": "इसके द्वारा क्रमबद्ध करें"
+    },
+    "aria": {
+      "sortOrder": "क्रम व्यवस्था",
+      "ascending": "आरोही",
+      "descending": "अवरोही",
+      "featured": "फीचर्ड",
+      "premium": "प्रीमियम"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "प्रतिक्रिया प्राप्त",
       "statusChange": "स्थिति बदली",
       "published": "कहानी प्रकाशित"
-    }
+    },
+    "subtitle": "अपनी कहानी की प्रगति पर अपडेट रहें",
+    "sseDisconnected": "सूचना सेवा डिस्कनेक्ट हो गई",
+    "reconnect": "पुनः कनेक्ट करें"
   },
   "status": {
     "DRAFT": "मसौदा",
@@ -195,7 +217,12 @@
     "download": "डाउनलोड करें",
     "print": "प्रिंट करें",
     "viewAll": "सभी देखें",
-    "updated": "अपडेट किया गया"
+    "updated": "अपडेट किया गया",
+    "writer": "लेखक",
+    "breadcrumb": "ब्रेडक्रम्ब",
+    "loadingDashboard": "आपका डैशबोर्ड लोड हो रहा है...",
+    "loadingStory": "आपकी कहानी लोड हो रही है...",
+    "loadingForm": "सबमिशन फॉर्म लोड हो रहा है..."
   },
   "language": {
     "en": "अंग्रेज़ी",

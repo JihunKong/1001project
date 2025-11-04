@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 import { LanguageSelector } from '@/components/i18n/LanguageSelector';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface GlobalNavigationBarProps {
   className?: string;
@@ -13,6 +14,7 @@ interface GlobalNavigationBarProps {
 
 export default function GlobalNavigationBar({ className = '' }: GlobalNavigationBarProps) {
   const { data: session } = useSession();
+  const { t } = useTranslation();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
@@ -95,7 +97,7 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
               </div>
               <div className="hidden sm:block text-left">
                 <p className="text-sm font-medium text-figma-black">
-                  {session?.user?.name || 'Writer'}
+                  {session?.user?.name || t('common.writer')}
                 </p>
                 <p className="text-xs text-figma-gray-inactive">
                   {session?.user?.role || 'WRITER'}
@@ -113,11 +115,11 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
                 <div
                   className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-lg border border-figma-gray-border z-20"
                   role="menu"
-                  aria-label="User menu"
+                  aria-label={t('nav.userMenu')}
                 >
                   <div className="p-3 border-b border-figma-gray-border">
                     <p className="text-sm font-medium text-figma-black">
-                      {session?.user?.name || 'Writer'}
+                      {session?.user?.name || t('common.writer')}
                     </p>
                     <p className="text-xs text-figma-gray-inactive mt-1">
                       {session?.user?.email}
@@ -129,7 +131,7 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
                       className="block px-3 py-2 text-sm text-figma-gray-inactive hover:bg-gray-50 hover:text-figma-black rounded-lg transition-all"
                       onClick={() => setShowUserMenu(false)}
                     >
-                      Help & Support
+                      {t('nav.helpSupport')}
                     </Link>
                   </div>
                   <div className="p-2 border-t border-figma-gray-border">
@@ -140,7 +142,7 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
                       }}
                       className="block w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-all"
                     >
-                      Sign Out
+                      {t('nav.signOut')}
                     </button>
                   </div>
                 </div>

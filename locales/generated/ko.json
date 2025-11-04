@@ -44,7 +44,14 @@
     "myStories": "내 스토리",
     "library": "라이브러리",
     "notifications": "알림",
-    "profile": "프로필"
+    "profile": "프로필",
+    "skipToMain": "본문으로 건너뛰기",
+    "mainNavigation": "주 내비게이션",
+    "mobileNavigation": "모바일 내비게이션",
+    "currentPage": "현재 페이지",
+    "userMenu": "사용자 메뉴",
+    "helpSupport": "도움말 및 지원",
+    "signOut": "로그아웃"
   },
   "stories": {
     "title": "내 스토리",
@@ -128,6 +135,18 @@
       "audio": "오디오",
       "multimedia": "멀티미디어",
       "interactive": "인터랙티브"
+    },
+    "placeholders": {
+      "language": "언어",
+      "category": "카테고리",
+      "sortBy": "정렬 기준"
+    },
+    "aria": {
+      "sortOrder": "정렬 순서",
+      "ascending": "오름차순",
+      "descending": "내림차순",
+      "featured": "추천",
+      "premium": "프리미엄"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "피드백 받음",
       "statusChange": "상태 변경됨",
       "published": "스토리 출판됨"
-    }
+    },
+    "subtitle": "스토리 진행 상황 업데이트",
+    "sseDisconnected": "알림 서비스 연결 끊김",
+    "reconnect": "재연결"
   },
   "status": {
     "DRAFT": "초안",
@@ -195,7 +217,12 @@
     "download": "다운로드",
     "print": "인쇄",
     "viewAll": "모두 보기",
-    "updated": "업데이트됨"
+    "updated": "업데이트됨",
+    "writer": "작가",
+    "breadcrumb": "이동경로",
+    "loadingDashboard": "대시보드 로딩 중...",
+    "loadingStory": "스토리 로딩 중...",
+    "loadingForm": "제출 양식 로딩 중..."
   },
   "language": {
     "en": "영어",

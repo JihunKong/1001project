@@ -44,7 +44,14 @@
     "myStories": "Мои истории",
     "library": "Библиотека",
     "notifications": "Уведомления",
-    "profile": "Профиль"
+    "profile": "Профиль",
+    "skipToMain": "Перейти к основному содержанию",
+    "mainNavigation": "Основная навигация",
+    "mobileNavigation": "Мобильная навигация",
+    "currentPage": "текущая страница",
+    "userMenu": "Меню пользователя",
+    "helpSupport": "Помощь и поддержка",
+    "signOut": "Выйти"
   },
   "stories": {
     "title": "Мои истории",
@@ -128,6 +135,18 @@
       "audio": "Аудио",
       "multimedia": "Мультимедиа",
       "interactive": "Интерактивный"
+    },
+    "placeholders": {
+      "language": "Язык",
+      "category": "Категория",
+      "sortBy": "Сортировать по"
+    },
+    "aria": {
+      "sortOrder": "Порядок сортировки",
+      "ascending": "По возрастанию",
+      "descending": "По убыванию",
+      "featured": "Рекомендуемое",
+      "premium": "Премиум"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "Получен отзыв",
       "statusChange": "Статус изменен",
       "published": "История опубликована"
-    }
+    },
+    "subtitle": "Следите за прогрессом",
+    "sseDisconnected": "Служба уведомлений отключена",
+    "reconnect": "Переподключить"
   },
   "status": {
     "DRAFT": "Черновик",
@@ -195,7 +217,12 @@
     "download": "Скачать",
     "print": "Печать",
     "viewAll": "Посмотреть все",
-    "updated": "Обновлено"
+    "updated": "Обновлено",
+    "writer": "Автор",
+    "breadcrumb": "Хлебные крошки",
+    "loadingDashboard": "Загрузка панели...",
+    "loadingStory": "Загрузка истории...",
+    "loadingForm": "Загрузка формы..."
   },
   "language": {
     "en": "Английский",

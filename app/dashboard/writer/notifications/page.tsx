@@ -5,8 +5,10 @@ import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 import { UserRole } from '@prisma/client';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function WriterNotificationsPage() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export default function WriterNotificationsPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#874FFF] mx-auto"></div>
-          <p className="mt-4 text-figma-gray-inactive">Loading...</p>
+          <p className="mt-4 text-figma-gray-inactive">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -34,8 +36,8 @@ export default function WriterNotificationsPage() {
     <div data-role="writer" className="min-h-screen pb-20 lg:pb-4">
       <div className="max-w-[1240px] px-4 sm:px-8 lg:px-12 py-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-figma-black">Notifications</h1>
-          <p className="text-sm text-figma-gray-inactive mt-1">Stay updated on your story progress</p>
+          <h1 className="text-3xl font-bold text-figma-black">{t('notification.title')}</h1>
+          <p className="text-sm text-figma-gray-inactive mt-1">{t('notification.subtitle')}</p>
         </div>
 
         <NotificationCenter />

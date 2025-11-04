@@ -44,7 +44,14 @@
     "myStories": "Mis Historias",
     "library": "Biblioteca",
     "notifications": "Notificaciones",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "skipToMain": "Saltar al contenido principal",
+    "mainNavigation": "Navegación principal",
+    "mobileNavigation": "Navegación móvil",
+    "currentPage": "página actual",
+    "userMenu": "Menú de usuario",
+    "helpSupport": "Ayuda y Soporte",
+    "signOut": "Cerrar Sesión"
   },
   "stories": {
     "title": "Mis Historias",
@@ -128,6 +135,18 @@
       "audio": "Audio",
       "multimedia": "Multimedia",
       "interactive": "Interactivo"
+    },
+    "placeholders": {
+      "language": "Idioma",
+      "category": "Categoría",
+      "sortBy": "Ordenar por"
+    },
+    "aria": {
+      "sortOrder": "Orden de clasificación",
+      "ascending": "Ascendente",
+      "descending": "Descendente",
+      "featured": "Destacado",
+      "premium": "Premium"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "Comentarios Recibidos",
       "statusChange": "Estado Cambiado",
       "published": "Historia Publicada"
-    }
+    },
+    "subtitle": "Mantente al día con tu progreso",
+    "sseDisconnected": "Servicio de notificaciones desconectado",
+    "reconnect": "Reconectar"
   },
   "status": {
     "DRAFT": "Borrador",
@@ -195,7 +217,12 @@
     "download": "Descargar",
     "print": "Imprimir",
     "viewAll": "Ver todo",
-    "updated": "Actualizado"
+    "updated": "Actualizado",
+    "writer": "Escritor",
+    "breadcrumb": "Migas de pan",
+    "loadingDashboard": "Cargando tu panel...",
+    "loadingStory": "Cargando tu historia...",
+    "loadingForm": "Cargando formulario..."
   },
   "language": {
     "en": "Inglés",

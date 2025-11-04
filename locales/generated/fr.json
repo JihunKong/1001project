@@ -44,7 +44,14 @@
     "myStories": "Mes Histoires",
     "library": "Bibliothèque",
     "notifications": "Notifications",
-    "profile": "Profil"
+    "profile": "Profil",
+    "skipToMain": "Passer au contenu principal",
+    "mainNavigation": "Navigation principale",
+    "mobileNavigation": "Navigation mobile",
+    "currentPage": "page actuelle",
+    "userMenu": "Menu utilisateur",
+    "helpSupport": "Aide et Support",
+    "signOut": "Déconnexion"
   },
   "stories": {
     "title": "Mes Histoires",
@@ -128,6 +135,18 @@
       "audio": "Audio",
       "multimedia": "Multimédia",
       "interactive": "Interactif"
+    },
+    "placeholders": {
+      "language": "Langue",
+      "category": "Catégorie",
+      "sortBy": "Trier par"
+    },
+    "aria": {
+      "sortOrder": "Ordre de tri",
+      "ascending": "Croissant",
+      "descending": "Décroissant",
+      "featured": "En vedette",
+      "premium": "Premium"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "Retour Reçu",
       "statusChange": "Statut Modifié",
       "published": "Histoire Publiée"
-    }
+    },
+    "subtitle": "Restez informé de vos progrès",
+    "sseDisconnected": "Service de notification déconnecté",
+    "reconnect": "Reconnecter"
   },
   "status": {
     "DRAFT": "Brouillon",
@@ -195,7 +217,12 @@
     "download": "Télécharger",
     "print": "Imprimer",
     "viewAll": "Voir tout",
-    "updated": "Mis à jour"
+    "updated": "Mis à jour",
+    "writer": "Écrivain",
+    "breadcrumb": "Fil d'Ariane",
+    "loadingDashboard": "Chargement de votre tableau de bord...",
+    "loadingStory": "Chargement de votre histoire...",
+    "loadingForm": "Chargement du formulaire..."
   },
   "language": {
     "en": "Anglais",

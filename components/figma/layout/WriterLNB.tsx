@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Bookmark, User, FileText } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface NavItem {
   id: string;
@@ -11,29 +12,30 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-const navItems: NavItem[] = [
-  {
-    id: 'home',
-    label: 'Home',
-    href: '/dashboard/writer',
-    icon: Home
-  },
-  {
-    id: 'stories',
-    label: 'My Stories',
-    href: '/dashboard/writer/stories',
-    icon: FileText
-  },
-  {
-    id: 'library',
-    label: 'Library',
-    href: '/dashboard/writer/library',
-    icon: Bookmark
-  }
-];
-
 export default function WriterLNB() {
   const pathname = usePathname();
+  const { t } = useTranslation();
+
+  const navItems: NavItem[] = [
+    {
+      id: 'home',
+      label: t('nav.home'),
+      href: '/dashboard/writer',
+      icon: Home
+    },
+    {
+      id: 'stories',
+      label: t('nav.myStories'),
+      href: '/dashboard/writer/stories',
+      icon: FileText
+    },
+    {
+      id: 'library',
+      label: t('nav.library'),
+      href: '/dashboard/writer/library',
+      icon: Bookmark
+    }
+  ];
 
   const isActive = (item: NavItem) => {
     if (item.href === '/dashboard/writer') {
@@ -48,14 +50,14 @@ export default function WriterLNB() {
       <aside
         className="w-60 bg-white border-r border-figma-gray-border fixed left-0 top-0 bottom-0 hidden lg:flex lg:flex-col overflow-y-auto z-10"
         role="navigation"
-        aria-label="Main navigation"
+        aria-label={t('nav.mainNavigation')}
       >
         {/* Skip Navigation Link for Screen Readers */}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-figma-black focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none focus:ring-4 focus:ring-soe-green-400"
         >
-          Skip to main content
+          {t('nav.skipToMain')}
         </a>
 
         <div className="flex items-center gap-2 px-4 border-b border-figma-gray-border h-[80px]">
@@ -83,7 +85,7 @@ export default function WriterLNB() {
               >
                 <Icon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                 <span>{item.label}</span>
-                {active && <span className="sr-only">(current page)</span>}
+                {active && <span className="sr-only">({t('nav.currentPage')})</span>}
               </Link>
             );
           })}
@@ -94,7 +96,7 @@ export default function WriterLNB() {
       <nav
         className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-figma-gray-border z-50 pb-safe"
         role="navigation"
-        aria-label="Mobile navigation"
+        aria-label={t('nav.mobileNavigation')}
       >
         <div className="flex items-center justify-around">
           {navItems.map((item) => {
@@ -114,7 +116,7 @@ export default function WriterLNB() {
               >
                 <Icon className="w-6 h-6" aria-hidden="true" />
                 <span className="text-xs font-medium">{item.label}</span>
-                {active && <span className="sr-only">(current page)</span>}
+                {active && <span className="sr-only">({t('nav.currentPage')})</span>}
               </Link>
             );
           })}

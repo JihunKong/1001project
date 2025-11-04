@@ -44,7 +44,14 @@
     "myStories": "Meine Geschichten",
     "library": "Bibliothek",
     "notifications": "Benachrichtigungen",
-    "profile": "Profil"
+    "profile": "Profil",
+    "skipToMain": "Zum Hauptinhalt springen",
+    "mainNavigation": "Hauptnavigation",
+    "mobileNavigation": "Mobile Navigation",
+    "currentPage": "aktuelle Seite",
+    "userMenu": "Benutzermenü",
+    "helpSupport": "Hilfe & Support",
+    "signOut": "Abmelden"
   },
   "stories": {
     "title": "Meine Geschichten",
@@ -128,6 +135,18 @@
       "audio": "Audio",
       "multimedia": "Multimedia",
       "interactive": "Interaktiv"
+    },
+    "placeholders": {
+      "language": "Sprache",
+      "category": "Kategorie",
+      "sortBy": "Sortieren nach"
+    },
+    "aria": {
+      "sortOrder": "Sortierreihenfolge",
+      "ascending": "Aufsteigend",
+      "descending": "Absteigend",
+      "featured": "Hervorgehoben",
+      "premium": "Premium"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "Feedback Erhalten",
       "statusChange": "Status Geändert",
       "published": "Geschichte Veröffentlicht"
-    }
+    },
+    "subtitle": "Bleibe über deinen Fortschritt informiert",
+    "sseDisconnected": "Benachrichtigungsdienst getrennt",
+    "reconnect": "Neu verbinden"
   },
   "status": {
     "DRAFT": "Entwurf",
@@ -195,7 +217,12 @@
     "download": "Herunterladen",
     "print": "Drucken",
     "viewAll": "Alle ansehen",
-    "updated": "Aktualisiert"
+    "updated": "Aktualisiert",
+    "writer": "Autor",
+    "breadcrumb": "Brotkrumen",
+    "loadingDashboard": "Lade dein Dashboard...",
+    "loadingStory": "Lade deine Geschichte...",
+    "loadingForm": "Lade Formular..."
   },
   "language": {
     "en": "Englisch",

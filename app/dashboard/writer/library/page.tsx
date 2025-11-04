@@ -230,7 +230,7 @@ export default function WriterLibraryPage() {
                     options={languageOptions}
                     value={languageFilter}
                     onChange={setLanguageFilter}
-                    placeholder="Language"
+                    placeholder={t('library.placeholders.language')}
                     className="min-h-[44px] min-w-[120px]"
                   />
                 </div>
@@ -242,7 +242,7 @@ export default function WriterLibraryPage() {
                     options={categoryOptions}
                     value={categoryFilter}
                     onChange={setCategoryFilter}
-                    placeholder="Category"
+                    placeholder={t('library.placeholders.category')}
                     className="min-h-[44px] min-w-[140px]"
                   />
                 </div>
@@ -254,7 +254,7 @@ export default function WriterLibraryPage() {
                     options={sortOptions}
                     value={sortBy}
                     onChange={(value) => setSortBy(value as 'publishedAt' | 'title' | 'rating')}
-                    placeholder="Sort by"
+                    placeholder={t('library.placeholders.sortBy')}
                     className="min-h-[44px] min-w-[160px]"
                   />
                   <Button
@@ -262,7 +262,7 @@ export default function WriterLibraryPage() {
                     size="sm"
                     onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
                     className="min-h-[44px] min-w-[44px] px-3"
-                    aria-label={`Sort order: ${sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
+                    aria-label={`${t('library.aria.sortOrder')}: ${sortOrder === 'asc' ? t('library.aria.ascending') : t('library.aria.descending')}`}
                   >
                     {sortOrder === 'asc' ? '↑' : '↓'}
                   </Button>
@@ -318,10 +318,10 @@ export default function WriterLibraryPage() {
                               {book.title}
                             </h3>
                             {book.featured && (
-                              <Award className="h-4 w-4 text-yellow-500" aria-label="Featured" />
+                              <Award className="h-4 w-4 text-yellow-500" aria-label={t('library.aria.featured')} />
                             )}
                             {book.isPremium && (
-                              <Star className="h-4 w-4 text-purple-500" aria-label="Premium" />
+                              <Star className="h-4 w-4 text-purple-500" aria-label={t('library.aria.premium')} />
                             )}
                           </div>
                           {book.subtitle && (

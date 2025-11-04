@@ -7,8 +7,10 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 function SubmitTextPage() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const editId = searchParams.get('edit');
   const [loading, setLoading] = useState(!!editId);
@@ -107,13 +109,13 @@ function SubmitTextPage() {
       <div className="pb-20 lg:pb-4">
         <div id="main-content" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-16 lg:py-12">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-[#8E8E93]">
+        <nav aria-label={t('common.breadcrumb')} className="flex items-center gap-2 text-sm text-[#8E8E93]">
           <Link href="/dashboard" className="hover:text-[#141414] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soe-green-300">
             Dashboard
           </Link>
           <span aria-hidden="true">/</span>
           <Link href="/dashboard/writer" className="hover:text-[#141414] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soe-green-300">
-            Writer
+            {t('common.writer')}
           </Link>
           <span aria-hidden="true">/</span>
           <span className="font-medium text-[#141414]">
@@ -149,7 +151,7 @@ function SubmitTextPage() {
                   fontSize: '16px',
                   fontWeight: 400
                 }}>
-                  Loading your story...
+                  {t('common.loadingStory')}
                 </p>
               </div>
             </div>
@@ -252,18 +254,21 @@ function SubmitTextPage() {
   );
 }
 
+function LoadingFallback() {
+  const { t } = useTranslation();
+  return (
+    <div className="flex min-h-[calc(100vh-60px)] items-center justify-center px-4">
+      <div className="text-center">
+        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-[#141414]" />
+        <p className="mt-4 text-[#8E8E93]">{t('common.loadingForm')}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function SubmitTextPageWrapper() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[calc(100vh-60px)] items-center justify-center px-4">
-          <div className="text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-[#141414]" />
-            <p className="mt-4 text-[#8E8E93]">Loading submission form...</p>
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingFallback />}>
       <SubmitTextPage />
     </Suspense>
   );

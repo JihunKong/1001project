@@ -44,7 +44,14 @@
     "myStories": "Le Mie Storie",
     "library": "Biblioteca",
     "notifications": "Notifiche",
-    "profile": "Profilo"
+    "profile": "Profilo",
+    "skipToMain": "Vai al contenuto principale",
+    "mainNavigation": "Navigazione principale",
+    "mobileNavigation": "Navigazione mobile",
+    "currentPage": "pagina corrente",
+    "userMenu": "Menu utente",
+    "helpSupport": "Aiuto e Supporto",
+    "signOut": "Esci"
   },
   "stories": {
     "title": "Le Mie Storie",
@@ -128,6 +135,18 @@
       "audio": "Audio",
       "multimedia": "Multimediale",
       "interactive": "Interattivo"
+    },
+    "placeholders": {
+      "language": "Lingua",
+      "category": "Categoria",
+      "sortBy": "Ordina per"
+    },
+    "aria": {
+      "sortOrder": "Ordine di ordinamento",
+      "ascending": "Crescente",
+      "descending": "Decrescente",
+      "featured": "In evidenza",
+      "premium": "Premium"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "Feedback Ricevuto",
       "statusChange": "Stato Cambiato",
       "published": "Storia Pubblicata"
-    }
+    },
+    "subtitle": "Rimani aggiornato sui progressi",
+    "sseDisconnected": "Servizio notifiche disconnesso",
+    "reconnect": "Riconnetti"
   },
   "status": {
     "DRAFT": "Bozza",
@@ -195,7 +217,12 @@
     "download": "Scarica",
     "print": "Stampa",
     "viewAll": "Vedi tutto",
-    "updated": "Aggiornato"
+    "updated": "Aggiornato",
+    "writer": "Scrittore",
+    "breadcrumb": "Breadcrumb",
+    "loadingDashboard": "Caricamento della dashboard...",
+    "loadingStory": "Caricamento della storia...",
+    "loadingForm": "Caricamento del modulo..."
   },
   "language": {
     "en": "Inglese",

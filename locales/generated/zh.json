@@ -44,7 +44,14 @@
     "myStories": "我的故事",
     "library": "图书馆",
     "notifications": "通知",
-    "profile": "个人资料"
+    "profile": "个人资料",
+    "skipToMain": "跳转到主要内容",
+    "mainNavigation": "主导航",
+    "mobileNavigation": "移动导航",
+    "currentPage": "当前页面",
+    "userMenu": "用户菜单",
+    "helpSupport": "帮助与支持",
+    "signOut": "退出登录"
   },
   "stories": {
     "title": "我的故事",
@@ -128,6 +135,18 @@
       "audio": "音频",
       "multimedia": "多媒体",
       "interactive": "互动"
+    },
+    "placeholders": {
+      "language": "语言",
+      "category": "类别",
+      "sortBy": "排序方式"
+    },
+    "aria": {
+      "sortOrder": "排序顺序",
+      "ascending": "升序",
+      "descending": "降序",
+      "featured": "精选",
+      "premium": "高级"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "收到反馈",
       "statusChange": "状态已更改",
       "published": "故事已发布"
-    }
+    },
+    "subtitle": "了解您的故事进展",
+    "sseDisconnected": "通知服务断开连接",
+    "reconnect": "重新连接"
   },
   "status": {
     "DRAFT": "草稿",
@@ -195,7 +217,12 @@
     "download": "下载",
     "print": "打印",
     "viewAll": "查看全部",
-    "updated": "更新于"
+    "updated": "更新于",
+    "writer": "作家",
+    "breadcrumb": "面包屑导航",
+    "loadingDashboard": "加载您的仪表板...",
+    "loadingStory": "加载您的故事...",
+    "loadingForm": "加载提交表单..."
   },
   "language": {
     "en": "英语",

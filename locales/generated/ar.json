@@ -44,7 +44,14 @@
     "myStories": "قصصي",
     "library": "المكتبة",
     "notifications": "الإشعارات",
-    "profile": "الملف الشخصي"
+    "profile": "الملف الشخصي",
+    "skipToMain": "انتقل إلى المحتوى الرئيسي",
+    "mainNavigation": "التنقل الرئيسي",
+    "mobileNavigation": "التنقل عبر الهاتف المحمول",
+    "currentPage": "الصفحة الحالية",
+    "userMenu": "قائمة المستخدم",
+    "helpSupport": "المساعدة والدعم",
+    "signOut": "تسجيل الخروج"
   },
   "stories": {
     "title": "قصصي",
@@ -128,6 +135,18 @@
       "audio": "صوتي",
       "multimedia": "وسائط متعددة",
       "interactive": "تفاعلي"
+    },
+    "placeholders": {
+      "language": "اللغة",
+      "category": "الفئة",
+      "sortBy": "ترتيب حسب"
+    },
+    "aria": {
+      "sortOrder": "ترتيب الفرز",
+      "ascending": "تصاعدي",
+      "descending": "تنازلي",
+      "featured": "مميز",
+      "premium": "مميز"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "تلقي الملاحظات",
       "statusChange": "تغيير الحالة",
       "published": "قصة منشورة"
-    }
+    },
+    "subtitle": "ابقَ على اطلاع بتقدم قصتك",
+    "sseDisconnected": "خدمة الإشعارات غير متصلة",
+    "reconnect": "إعادة الاتصال"
   },
   "status": {
     "DRAFT": "مسودة",
@@ -195,7 +217,12 @@
     "download": "تحميل",
     "print": "طباعة",
     "viewAll": "عرض الكل",
-    "updated": "تم التحديث"
+    "updated": "تم التحديث",
+    "writer": "كاتب",
+    "breadcrumb": "مسار التنقل",
+    "loadingDashboard": "جارٍ تحميل لوحة التحكم...",
+    "loadingStory": "جارٍ تحميل قصتك...",
+    "loadingForm": "جارٍ تحميل نموذج الإرسال..."
   },
   "language": {
     "en": "الإنجليزية",

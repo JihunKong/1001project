@@ -44,7 +44,14 @@
     "myStories": "My Stories",
     "library": "Library",
     "notifications": "Notifications",
-    "profile": "Profile"
+    "profile": "Profile",
+    "skipToMain": "Skip to main content",
+    "mainNavigation": "Main navigation",
+    "mobileNavigation": "Mobile navigation",
+    "currentPage": "current page",
+    "userMenu": "User menu",
+    "helpSupport": "Help & Support",
+    "signOut": "Sign Out"
   },
   "stories": {
     "title": "My Stories",
@@ -128,6 +135,18 @@
       "audio": "Audio",
       "multimedia": "Multimedia",
       "interactive": "Interactive"
+    },
+    "placeholders": {
+      "language": "Language",
+      "category": "Category",
+      "sortBy": "Sort by"
+    },
+    "aria": {
+      "sortOrder": "Sort order",
+      "ascending": "Ascending",
+      "descending": "Descending",
+      "featured": "Featured",
+      "premium": "Premium"
     }
   },
   "notification": {
@@ -138,7 +157,10 @@
       "feedback": "Feedback Received",
       "statusChange": "Status Changed",
       "published": "Story Published"
-    }
+    },
+    "subtitle": "Stay updated on your story progress",
+    "sseDisconnected": "Notification service disconnected",
+    "reconnect": "Reconnect"
   },
   "status": {
     "DRAFT": "Draft",
@@ -195,7 +217,12 @@
     "download": "Download",
     "print": "Print",
     "viewAll": "View all",
-    "updated": "Updated"
+    "updated": "Updated",
+    "writer": "Writer",
+    "breadcrumb": "Breadcrumb",
+    "loadingDashboard": "Loading your dashboard...",
+    "loadingStory": "Loading your story...",
+    "loadingForm": "Loading submission form..."
   },
   "language": {
     "en": "English",

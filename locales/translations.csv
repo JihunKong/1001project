@@ -161,3 +161,26 @@ library.contentType.epub,Content Type,ePub,ePub,ePub,ePub,ePub,ePub,ePub,ePub,eP
 library.contentType.audio,Content Type,Audio,오디오,Audio,صوتي,ऑडियो,Audio,Audio,オーディオ,Áudio,Аудио,Audio,音频
 library.contentType.multimedia,Content Type,Multimedia,멀티미디어,Multimedia,وسائط متعددة,मल्टीमीडिया,Multimédia,Multimedia,マルチメディア,Multimídia,Мультимедиа,Multimediale,多媒体
 library.contentType.interactive,Content Type,Interactive,인터랙티브,Interactivo,تفاعلي,इंटरैक्टिव,Interactif,Interaktiv,インタラクティブ,Interativo,Интерактивный,Interattivo,互动
+nav.skipToMain,Accessibility,Skip to main content,본문으로 건너뛰기,Saltar al contenido principal,انتقل إلى المحتوى الرئيسي,मुख्य सामग्री पर जाएं,Passer au contenu principal,Zum Hauptinhalt springen,メインコンテンツへスキップ,Pular para o conteúdo principal,Перейти к основному содержанию,Vai al contenuto principale,跳转到主要内容
+nav.mainNavigation,Accessibility,Main navigation,주 내비게이션,Navegación principal,التنقل الرئيسي,मुख्य नेविगेशन,Navigation principale,Hauptnavigation,メインナビゲーション,Navegação principal,Основная навигация,Navigazione principale,主导航
+nav.mobileNavigation,Accessibility,Mobile navigation,모바일 내비게이션,Navegación móvil,التنقل عبر الهاتف المحمول,मोबाइल नेविगेशन,Navigation mobile,Mobile Navigation,モバイルナビゲーション,Navegação móvel,Мобильная навигация,Navigazione mobile,移动导航
+nav.currentPage,Accessibility,current page,현재 페이지,página actual,الصفحة الحالية,वर्तमान पृष्ठ,page actuelle,aktuelle Seite,現在のページ,página atual,текущая страница,pagina corrente,当前页面
+nav.userMenu,Accessibility,User menu,사용자 메뉴,Menú de usuario,قائمة المستخدم,उपयोगकर्ता मेनू,Menu utilisateur,Benutzermenü,ユーザーメニュー,Menu do usuário,Меню пользователя,Menu utente,用户菜单
+nav.helpSupport,Navigation,Help & Support,도움말 및 지원,Ayuda y Soporte,المساعدة والدعم,सहायता और समर्थन,Aide et Support,Hilfe & Support,ヘルプとサポート,Ajuda e Suporte,Помощь и поддержка,Aiuto e Supporto,帮助与支持
+nav.signOut,Navigation,Sign Out,로그아웃,Cerrar Sesión,تسجيل الخروج,साइन आउट,Déconnexion,Abmelden,サインアウト,Sair,Выйти,Esci,退出登录
+common.writer,Role Label,Writer,작가,Escritor,كاتب,लेखक,Écrivain,Autor,ライター,Escritor,Автор,Scrittore,作家
+common.breadcrumb,Accessibility,Breadcrumb,이동경로,Migas de pan,مسار التنقل,ब्रेडक्रम्ब,Fil d'Ariane,Brotkrumen,パンくずリスト,Navegação estrutural,Хлебные крошки,Breadcrumb,面包屑导航
+common.loadingDashboard,Loading State,Loading your dashboard...,대시보드 로딩 중...,Cargando tu panel...,جارٍ تحميل لوحة التحكم...,आपका डैशबोर्ड लोड हो रहा है...,Chargement de votre tableau de bord...,Lade dein Dashboard...,ダッシュボードを読み込んでいます...,Carregando seu painel...,Загрузка панели...,Caricamento della dashboard...,加载您的仪表板...
+common.loadingStory,Loading State,Loading your story...,스토리 로딩 중...,Cargando tu historia...,جارٍ تحميل قصتك...,आपकी कहानी लोड हो रही है...,Chargement de votre histoire...,Lade deine Geschichte...,ストーリーを読み込んでいます...,Carregando sua história...,Загрузка истории...,Caricamento della storia...,加载您的故事...
+common.loadingForm,Loading State,Loading submission form...,제출 양식 로딩 중...,Cargando formulario...,جارٍ تحميل نموذج الإرسال...,सबमिशन फॉर्म लोड हो रहा है...,Chargement du formulaire...,Lade Formular...,フォームを読み込んでいます...,Carregando formulário...,Загрузка формы...,Caricamento del modulo...,加载提交表单...
+notification.subtitle,Description,Stay updated on your story progress,스토리 진행 상황 업데이트,Mantente al día con tu progreso,ابقَ على اطلاع بتقدم قصتك,अपनी कहानी की प्रगति पर अपडेट रहें,Restez informé de vos progrès,Bleibe über deinen Fortschritt informiert,ストーリーの進捗を確認,Fique atualizado sobre o progresso,Следите за прогрессом,Rimani aggiornato sui progressi,了解您的故事进展
+notification.sseDisconnected,Error Message,Notification service disconnected,알림 서비스 연결 끊김,Servicio de notificaciones desconectado,خدمة الإشعارات غير متصلة,सूचना सेवा डिस्कनेक्ट हो गई,Service de notification déconnecté,Benachrichtigungsdienst getrennt,通知サービスが切断されました,Serviço de notificação desconectado,Служба уведомлений отключена,Servizio notifiche disconnesso,通知服务断开连接
+notification.reconnect,Action,Reconnect,재연결,Reconectar,إعادة الاتصال,पुनः कनेक्ट करें,Reconnecter,Neu verbinden,再接続,Reconectar,Переподключить,Riconnetti,重新连接
+library.placeholders.language,Placeholder,Language,언어,Idioma,اللغة,भाषा,Langue,Sprache,言語,Idioma,Язык,Lingua,语言
+library.placeholders.category,Placeholder,Category,카테고리,Categoría,الفئة,श्रेणी,Catégorie,Kategorie,カテゴリ,Categoria,Категория,Categoria,类别
+library.placeholders.sortBy,Placeholder,Sort by,정렬 기준,Ordenar por,ترتيب حسب,इसके द्वारा क्रमबद्ध करें,Trier par,Sortieren nach,並べ替え,Ordenar por,Сортировать по,Ordina per,排序方式
+library.aria.sortOrder,Accessibility,Sort order,정렬 순서,Orden de clasificación,ترتيب الفرز,क्रम व्यवस्था,Ordre de tri,Sortierreihenfolge,並び順,Ordem de classificação,Порядок сортировки,Ordine di ordinamento,排序顺序
+library.aria.ascending,Accessibility,Ascending,오름차순,Ascendente,تصاعدي,आरोही,Croissant,Aufsteigend,昇順,Crescente,По возрастанию,Crescente,升序
+library.aria.descending,Accessibility,Descending,내림차순,Descendente,تنازلي,अवरोही,Décroissant,Absteigend,降順,Decrescente,По убыванию,Decrescente,降序
+library.aria.featured,Icon Label,Featured,추천,Destacado,مميز,फीचर्ड,En vedette,Hervorgehoben,注目,Destaque,Рекомендуемое,In evidenza,精选
+library.aria.premium,Icon Label,Premium,프리미엄,Premium,مميز,प्रीमियम,Premium,Premium,プレミアム,Premium,Премиум,Premium,高级
