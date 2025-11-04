@@ -52,6 +52,8 @@ rsync_deploy() {
         --exclude=uploads \
         --exclude=nginx/logs \
         --exclude=nginx/ssl \
+        --exclude=certbot \
+        --exclude=public/generated-images \
         -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no" \
         ./ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
 }
