@@ -58,6 +58,77 @@ rsync_deploy() {
         ./ "$REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/"
 }
 
+# Verify deployment health
+verify_deployment() {
+    log "Verifying deployment health..."
+
+    # Run verification on remote server
+    if ! ssh_exec << 'EOF'
+        set -euo pipefail
+        cd /home/ubuntu/1001-stories
+
+        echo "=== Container Status Check ==="
+        REQUIRED_CONTAINERS="nginx app postgres redis certbot"
+        RUNNING_CONTAINERS=$(docker compose ps --format json | jq -r '.Name' 2>/dev/null || docker compose ps --services --filter "status=running")
+
+        # Check each required container
+        for container in $REQUIRED_CONTAINERS; do
+            if ! echo "$RUNNING_CONTAINERS" | grep -q "$container"; then
+                echo "ERROR: Required container '$container' is not running!"
+                docker compose ps
+                exit 1
+            fi
+        done
+
+        # Verify nginx specifically (CRITICAL for HTTPS)
+        if ! docker ps --format '{{.Names}}' | grep -q "nginx"; then
+            echo "CRITICAL ERROR: nginx container is not running!"
+            echo "HTTPS will not work without nginx!"
+            docker compose ps
+            exit 1
+        fi
+
+        echo "✅ All required containers are running"
+
+        # Check for unhealthy or exited containers
+        if docker compose ps | grep -q "unhealthy\|Exit"; then
+            echo "ERROR: Some containers are unhealthy or exited"
+            docker compose ps
+            docker compose logs --tail=100
+            exit 1
+        fi
+
+        echo "✅ No unhealthy containers detected"
+
+        echo ""
+        echo "=== HTTPS Endpoint Test ==="
+        # Wait a bit more for nginx to be ready
+        sleep 10
+
+        # Test HTTPS endpoint
+        HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://localhost/api/health 2>&1 || echo "000")
+
+        if [ "$HTTP_STATUS" != "200" ]; then
+            echo "ERROR: HTTPS health check failed (status: $HTTP_STATUS)"
+            echo "Expected: 200, Got: $HTTP_STATUS"
+            docker compose logs nginx --tail=50
+            exit 1
+        fi
+
+        echo "✅ HTTPS endpoint test passed (200 OK)"
+        echo ""
+        echo "=== Deployment Verification: SUCCESSFUL ==="
+        exit 0
+EOF
+    then
+        error "Deployment verification FAILED!"
+        return 1
+    fi
+
+    success "Deployment verification PASSED!"
+    return 0
+}
+
 # Build and deploy application
 deploy() {
     log "Starting deployment to production..."
@@ -75,7 +146,7 @@ deploy() {
 
     # Remote deployment steps
     log "Executing remote deployment steps..."
-    ssh_exec << 'EOF'
+    if ! ssh_exec << 'EOF'
         set -euo pipefail
         cd /home/ubuntu/1001-stories
 
@@ -107,23 +178,37 @@ deploy() {
         docker compose build --no-cache
         docker compose up -d
 
-        # Wait for services to be healthy
-        echo "Waiting for services to start..."
+        # Wait for services to start
+        echo "Waiting for services to initialize..."
         sleep 30
 
-        # Check service health
-        if docker compose ps | grep -q "unhealthy\|Exit"; then
-            echo "ERROR: Some services are unhealthy"
-            docker compose ps
-            docker compose logs --tail=50
+        echo "Remote deployment steps completed!"
+        exit 0
+EOF
+    then
+        error "Remote deployment steps failed!"
+        exit 1
+    fi
+
+    # Verify deployment
+    if ! verify_deployment; then
+        error "Deployment verification failed!"
+        warn "Initiating automatic rollback..."
+
+        # Attempt rollback
+        if rollback; then
+            error "Deployment failed but rollback succeeded"
+            error "Please check logs and try again"
+            exit 1
+        else
+            error "CRITICAL: Deployment failed AND rollback failed!"
+            error "Manual intervention required on server"
             exit 1
         fi
-
-        echo "Deployment completed successfully!"
-EOF
+    fi
 
     success "Deployment completed successfully!"
-    log "Application should be available at: https://$DOMAIN"
+    log "Application is verified and available at: https://$DOMAIN"
 }
 
 # Setup SSL certificates

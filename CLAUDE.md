@@ -487,9 +487,58 @@ When working with books and PDFs:
 - **Use security-auditor for security reviews**
 - **Don't ignore available tools and agents**
 
-### 7. Docker Compose Partial Service Restart (CRITICAL - 2025-10-31)
+### 7. Docker Compose Partial Service Restart (CRITICAL)
 
-**⚠️ nginx 컨테이너 미실행 문제 - 반복적으로 발생**
+**⚠️ ALL Containers Down - Complete Server Failure (2025-11-04)**
+
+**Most Recent Incident (2025-11-04 - SSR Language Deployment)**:
+- **Problem**: After deploying SSR language changes, server was completely inaccessible
+- **Discovery**: ALL Docker containers were DOWN (not a single container running)
+- **Root Cause**: Previous deployment operations likely ran `docker compose down` but never completed `docker compose up -d`
+- **Impact**: Complete service outage - HTTPS returned SSL_ERROR_SYSCALL
+
+**Symptoms**:
+```bash
+# Server shows NO containers running
+ssh ubuntu@3.128.143.122 "docker ps"
+# CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+# (empty - no containers running at all)
+
+# HTTPS health check fails completely
+curl https://1001stories.seedsofempowerment.org/api/health
+# curl: (35) error:02FFF036:system library:func(4095):Connection reset by peer
+```
+
+**Solution Applied**:
+```bash
+# Simply start all services
+cd /home/ubuntu/1001-stories
+docker compose up -d
+
+# Verify all 7 containers started
+docker ps
+# Should show: nginx, app, postgres, redis, certbot, prometheus, node-exporter (7 containers)
+
+# Test HTTPS endpoint
+curl https://1001stories.seedsofempowerment.org/api/health
+# Should return: 200
+```
+
+**Prevention Implemented (2025-11-04)**:
+1. **Enhanced deploy.sh with verification**:
+   - Added `verify_deployment()` function
+   - Checks all required containers are running
+   - Specifically verifies nginx (critical for HTTPS)
+   - Tests HTTPS endpoint for 200 response
+   - Automatic rollback on verification failure
+
+2. **Mandatory verification checklist**:
+   - ✅ Container status: All 5 required containers running
+   - ✅ nginx check: CRITICAL for HTTPS access
+   - ✅ No unhealthy/exited containers
+   - ✅ HTTPS endpoint test: Must return 200
+
+**⚠️ nginx 컨테이너 미실행 문제 - 반복적으로 발생 (2025-10-31)**
 
 **문제**:
 - 배포 시 `docker compose up -d --force-recreate app` 사용
@@ -521,13 +570,31 @@ docker compose build app
 docker compose up -d
 ```
 
-**배포 체크리스트**:
-1. 배포 후 반드시 모든 컨테이너 확인
-2. nginx 컨테이너 실행 여부 확인
-3. HTTPS 접속 테스트 (200 응답 확인)
-4. 서비스 명시 시 주의 - 가급적 서비스명 생략
+**MANDATORY Deployment Verification (Updated 2025-11-04)**:
+```bash
+# Improved deploy.sh now automatically performs these checks:
 
-**검증 명령어**:
+# 1. Container Status Check
+# - Verifies nginx, app, postgres, redis, certbot are all running
+# - Fails if any required container is missing
+
+# 2. nginx Verification (CRITICAL)
+# - Specifically checks nginx container is running
+# - HTTPS will not work without nginx
+
+# 3. Unhealthy Container Detection
+# - Checks for any unhealthy or exited containers
+
+# 4. HTTPS Endpoint Test
+# - Tests https://localhost/api/health
+# - Must return 200 status code
+
+# 5. Automatic Rollback
+# - If any check fails, initiates automatic rollback
+# - Prevents broken deployments from staying live
+```
+
+**Manual Verification Commands** (if needed):
 ```bash
 # 1. 모든 컨테이너 상태 확인
 docker ps --format 'table {{.Names}}\t{{.Status}}'
@@ -542,6 +609,13 @@ curl -s -o /dev/null -w "%{http_code}" https://1001stories.seedsofempowerment.or
 # 4. 필요시 전체 서비스 재시작
 docker compose up -d
 ```
+
+**Key Lessons Learned**:
+1. **NEVER assume containers are running** - Always verify after deployment
+2. **nginx is CRITICAL** - Service is inaccessible without it
+3. **Automated verification is essential** - Manual checks are error-prone
+4. **Rollback capability required** - Must be able to recover quickly
+5. **Complete outages possible** - Not just partial service failures
 
 ### Accountability Warning
 - **Repeated mistakes are not accidents - they indicate systematic problems**
