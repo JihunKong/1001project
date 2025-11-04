@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { SupportedLanguage, getLanguagePreferenceClient, setLanguagePreferenceClient, isRTLLanguage } from './language-cookie';
+import { SupportedLanguage, isRTLLanguage } from './language-cookie';
+import { useLanguage } from './LanguageContext';
 
 type TranslationData = Record<string, any>;
 
@@ -52,30 +53,18 @@ export interface UseTranslationReturn {
 }
 
 export function useTranslation(): UseTranslationReturn {
-  const [language, setLanguageState] = useState<SupportedLanguage>('en');
+  const { language, changeLanguage, isRTL } = useLanguage();
   const [translations, setTranslations] = useState<TranslationData>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const lang = getLanguagePreferenceClient();
-    setLanguageState(lang);
-
-    loadTranslations(lang).then(data => {
-      setTranslations(data);
-      setIsLoading(false);
-    });
-  }, []);
-
-  const setLanguage = useCallback((lang: SupportedLanguage) => {
-    setLanguageState(lang);
-    setLanguagePreferenceClient(lang);
     setIsLoading(true);
 
-    loadTranslations(lang).then(data => {
+    loadTranslations(language).then(data => {
       setTranslations(data);
       setIsLoading(false);
     });
-  }, []);
+  }, [language]);
 
   const t = useCallback((key: string): string => {
     return getNestedValue(translations, key);
@@ -84,8 +73,8 @@ export function useTranslation(): UseTranslationReturn {
   return {
     t,
     language,
-    setLanguage,
-    isRTL: isRTLLanguage(language),
+    setLanguage: changeLanguage,
+    isRTL,
     isLoading,
   };
 }

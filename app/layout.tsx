@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
+import { headers } from 'next/headers';
 import './globals.css';
 import Providers from './providers';
+import { LanguageProvider } from '@/lib/i18n/LanguageContext';
+import { SupportedLanguage, isRTLLanguage } from '@/lib/i18n/language-cookie';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -31,17 +34,23 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const language = (headersList.get('x-user-language') || 'en') as SupportedLanguage;
+  const isRTL = isRTLLanguage(language);
+
   return (
-    <html lang="en">
+    <html lang={language} dir={isRTL ? 'rtl' : 'ltr'}>
       <body className={inter.className}>
-        <Providers>
-          {children}
-        </Providers>
+        <LanguageProvider initialLanguage={language}>
+          <Providers>
+            {children}
+          </Providers>
+        </LanguageProvider>
       </body>
     </html>
   );

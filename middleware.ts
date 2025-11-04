@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 // Use Web Crypto API (global crypto object) instead of Node.js crypto module for Edge Runtime compatibility
 import { logger } from './lib/logger';
 import { setRequestContext } from './lib/request-context';
+import { getLanguagePreferenceFromHeaders } from './lib/i18n/language-cookie';
 
 // Track redirects to prevent infinite loops
 const redirectTracker = new Map<string, { count: number; timestamp: number }>();
@@ -135,7 +136,14 @@ export default withAuth(
       }
     }
 
-    return NextResponse.next();
+    // Read language preference from cookie and set header for server components
+    const cookieHeader = req.headers.get('cookie');
+    const language = getLanguagePreferenceFromHeaders(cookieHeader || undefined);
+
+    const response = NextResponse.next();
+    response.headers.set('x-user-language', language);
+
+    return response;
   },
   {
     callbacks: {
