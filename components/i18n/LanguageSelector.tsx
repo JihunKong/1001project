@@ -53,7 +53,7 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
         window.location.reload();
       }
     } catch (error) {
-      console.error('Failed to reset language:', error);
+      // Failed to reset language
     }
   };
 

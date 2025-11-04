@@ -15,7 +15,10 @@
         "draft": "Bozze",
         "inReview": "In Revisione",
         "readers": "Lettori Raggiunti",
-        "views": "Visualizzazioni Totali"
+        "views": "Visualizzazioni Totali",
+        "totalWords": "Parole totali",
+        "avgReadTime": "Tempo medio di lettura",
+        "completionRate": "Tasso di completamento"
       },
       "quickActions": {
         "title": "Azioni Rapide",
@@ -44,32 +47,45 @@
     "myStories": "Le Mie Storie",
     "library": "Biblioteca",
     "notifications": "Notifiche",
-    "profile": "Profilo",
+    "profile": "Il mio profilo",
     "skipToMain": "Vai al contenuto principale",
     "mainNavigation": "Navigazione principale",
     "mobileNavigation": "Navigazione mobile",
     "currentPage": "pagina corrente",
     "userMenu": "Menu utente",
     "helpSupport": "Aiuto e Supporto",
-    "signOut": "Esci"
+    "signOut": "Esci",
+    "aboutUs": "Chi siamo",
+    "programs": "Programmi",
+    "getInvolved": "Partecipa",
+    "signIn": "Accedi",
+    "signup": "Iscriviti",
+    "dashboard": "Dashboard",
+    "help": "Aiuto e supporto",
+    "logout": "Esci",
+    "language": "Lingua"
   },
   "stories": {
     "title": "Le Mie Storie",
     "subtitle": "Gestisci le tue opere creative",
     "tabs": {
-      "all": "Tutte",
+      "all": "Tutte le storie",
       "draft": "Bozza",
       "pending": "In Attesa",
       "inReview": "In Revisione",
       "needsRevision": "Necessita Revisione",
       "approved": "Approvate",
       "published": "Pubblicate",
-      "rejected": "Rifiutate"
+      "rejected": "Rifiutate",
+      "submitted": "Inviato",
+      "underReview": "In revisione"
     },
     "empty": {
       "draft": "Ancora nessuna bozza. Inizia a scrivere la tua prima storia!",
       "pending": "Nessuna sottomissione in attesa",
-      "published": "Ancora nessuna storia pubblicata"
+      "published": "Ancora nessuna storia pubblicata",
+      "noStories": "Ancora nessuna storia",
+      "allStories": "Nessuna storia trovata"
     },
     "card": {
       "status": "Stato",
@@ -77,6 +93,18 @@
       "updatedAt": "Aggiornato",
       "viewCount": "Visualizzazioni",
       "readTime": "Tempo di Lettura"
+    },
+    "status": {
+      "draft": "Bozza",
+      "pending": "In attesa di revisione",
+      "inReview": "In revisione",
+      "needsRevision": "Richiede revisione",
+      "approved": "Approvato"
+    },
+    "action": {
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "view": "Vedi dettagli"
     }
   },
   "actions": {
@@ -88,7 +116,11 @@
     "cancel": "Annulla",
     "confirm": "Conferma",
     "writeNew": "Scrivi una Nuova Storia",
-    "viewLibrary": "Visualizza Biblioteca"
+    "viewLibrary": "Visualizza Biblioteca",
+    "writeNewStory": "Scrivi una nuova storia",
+    "viewDetails": "Visualizza dettagli",
+    "withdraw": "Ritira",
+    "resubmit": "Reinvia"
   },
   "library": {
     "title": "Biblioteca Pubblicata",
@@ -160,7 +192,22 @@
     },
     "subtitle": "Rimani aggiornato sui progressi",
     "sseDisconnected": "Servizio notifiche disconnesso",
-    "reconnect": "Riconnetti"
+    "reconnect": "Riconnetti",
+    "statusChanged": "Lo stato della tua storia è cambiato in {status}",
+    "feedbackReceived": "Nuovo feedback ricevuto per {title}",
+    "storyApproved": "Congratulazioni! La tua storia è stata approvata",
+    "revisionRequested": "Revisione richiesta per la tua storia",
+    "storyPublished": "La tua storia è stata pubblicata!",
+    "saveSuccess": "Storia salvata con successo",
+    "saveError": "Impossibile salvare la storia. Riprova.",
+    "submitSuccess": "Storia inviata per la revisione",
+    "submitError": "Impossibile inviare la storia. Riprova.",
+    "deleteSuccess": "Storia eliminata con successo",
+    "deleteError": "Impossibile eliminare la storia. Riprova.",
+    "withdrawSuccess": "Invio ritirato con successo",
+    "withdrawError": "Impossibile ritirare l'invio. Riprova.",
+    "updateSuccess": "Storia aggiornata con successo",
+    "updateError": "Impossibile aggiornare la storia. Riprova."
   },
   "status": {
     "DRAFT": "Bozza",
@@ -169,7 +216,16 @@
     "NEEDS_REVISION": "Necessita Revisione",
     "APPROVED": "Approvate",
     "PUBLISHED": "Pubblicate",
-    "REJECTED": "Rifiutate"
+    "REJECTED": "Rifiutate",
+    "description": {
+      "draft": "La tua storia è salvata come bozza",
+      "pending": "La tua storia è in attesa di revisione",
+      "inReview": "La tua storia è in fase di revisione",
+      "needsRevision": "La tua storia necessita di revisione",
+      "approved": "La tua storia è stata approvata",
+      "published": "La tua storia è ora pubblicata",
+      "rejected": "La tua storia non è stata approvata"
+    }
   },
   "form": {
     "title": "Titolo",
@@ -181,14 +237,23 @@
     "tags": "Tag",
     "required": "Campo obbligatorio",
     "minLength": "Minimo {count} caratteri",
-    "maxLength": "Massimo {count} caratteri"
+    "maxLength": "Massimo {count} caratteri",
+    "storyTitle": "Titolo della storia",
+    "storyContent": "Contenuto della storia",
+    "characterCount": "Conteggio caratteri",
+    "saveDraft": "Salva come bozza",
+    "submitForReview": "Invia per revisione"
   },
   "feedback": {
     "title": "Feedback",
     "noFeedback": "Ancora nessun feedback",
-    "from": "Da",
+    "from": "Feedback da",
     "date": "Data",
-    "comment": "Commento"
+    "comment": "Commento",
+    "reviewer": "Revisore",
+    "suggestions": "Suggerimenti",
+    "requestedChanges": "Modifiche richieste",
+    "viewAll": "Visualizza tutti i feedback"
   },
   "time": {
     "justNow": "Proprio ora",
@@ -201,7 +266,7 @@
   "common": {
     "loading": "Caricamento...",
     "error": "Si è verificato un errore",
-    "success": "Successo!",
+    "success": "Successo",
     "search": "Cerca",
     "filter": "Filtra",
     "sort": "Ordina",
@@ -222,7 +287,10 @@
     "breadcrumb": "Breadcrumb",
     "loadingDashboard": "Caricamento della dashboard...",
     "loadingStory": "Caricamento della storia...",
-    "loadingForm": "Caricamento del modulo..."
+    "loadingForm": "Caricamento del modulo...",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "confirm": "Conferma"
   },
   "language": {
     "en": "Inglese",
@@ -255,5 +323,179 @@
     "bio": "Bio",
     "location": "Posizione",
     "joinedDate": "Iscritto"
+  },
+  "hero": {
+    "title": "Scopri, pubblica e condividi storie da tutto il mondo",
+    "subtitle": "Dare potere ai bambini attraverso le storie",
+    "description": "Una piattaforma globale senza scopo di lucro che collega scrittori, educatori e studenti attraverso il potere della narrazione",
+    "cta": "Esplora storie"
+  },
+  "features": {
+    "discover": {
+      "title": "Scopri storie globali",
+      "description": "Accedi a una ricca biblioteca di storie di bambini in comunità svantaggiate in tutto il mondo"
+    },
+    "publish": {
+      "title": "Pubblica le tue storie",
+      "description": "Condividi la tua voce con il mondo attraverso la nostra piattaforma di pubblicazione collaborativa"
+    },
+    "learning": {
+      "title": "Apprendimento potenziato dall'IA",
+      "description": "Spiegazioni interattive delle parole e analisi dei contenuti per una migliore comprensione"
+    }
+  },
+  "programs": {
+    "empowerment": {
+      "title": "Semi di empowerment",
+      "description": "Sostenere i bambini nelle comunità svantaggiate attraverso l'istruzione e la narrazione"
+    },
+    "diversity": {
+      "title": "Iniziativa di diversità globale",
+      "description": "Celebrare voci e prospettive diverse da ogni angolo del mondo"
+    },
+    "english": {
+      "title": "Apprendimento della lingua inglese",
+      "description": "Storie interattive progettate per studenti di inglese"
+    }
+  },
+  "footer": {
+    "cta": {
+      "title": "Unisciti alla nostra comunità globale",
+      "description": "Inizia a scoprire, creare e condividere storie oggi",
+      "primary": "Inizia",
+      "secondary": "Scopri di più"
+    },
+    "copyright": "© 2025 1001 Stories. Tutti i diritti riservati.",
+    "privacy": "Informativa sulla privacy",
+    "terms": "Termini di servizio",
+    "contact": "Contattaci"
+  },
+  "about": {
+    "hero": {
+      "title": "La nostra missione: Dare potere ai bambini attraverso le storie",
+      "subtitle": "Collegare le voci delle comunità svantaggiate con il mondo",
+      "scroll": "Scorri per saperne di più"
+    },
+    "content": {
+      "vision": {
+        "title": "La nostra visione",
+        "text": "Crediamo che ogni bambino abbia una storia che vale la pena condividere. 1001 Stories è una piattaforma globale senza scopo di lucro dedicata a scoprire, pubblicare e condividere storie di bambini in comunità svantaggiate."
+      },
+      "impact": {
+        "title": "Il nostro impatto",
+        "text": "Attraverso il nostro programma Seeds of Empowerment, reinvestiamo tutti i ricavi nel supporto all'istruzione e all'espressione creativa dei bambini nelle comunità svantaggiate in tutto il mondo."
+      },
+      "platform": {
+        "title": "La nostra piattaforma",
+        "text": "1001 Stories collega scrittori, educatori e studenti attraverso un innovativo sistema multi-ruolo che facilita la scoperta, l'apprendimento e l'espressione creativa."
+      },
+      "technology": {
+        "title": "Apprendimento potenziato dall'IA",
+        "text": "La nostra piattaforma sfrutta la tecnologia AI per fornire spiegazioni interattive delle parole, analisi dei contenuti e assistenza educativa, rendendo le storie più accessibili e coinvolgenti per gli studenti di tutto il mondo."
+      },
+      "community": {
+        "title": "La nostra comunità",
+        "text": "Unisciti a una rete globale di narratori, educatori e studenti impegnati a celebrare la diversità e a dare potere alla prossima generazione attraverso il potere delle storie."
+      }
+    },
+    "testimonial1": {
+      "quote": "1001 Stories ha trasformato il nostro approccio all'alfabetizzazione in classe. La diversa raccolta di voci aiuta gli studenti a vedersi nelle storie.",
+      "author": "Sarah Johnson",
+      "role": "Insegnante di scuola elementare"
+    },
+    "testimonial2": {
+      "quote": "Poter condividere la mia storia e vederla pubblicata mi ha dato una fiducia che non sapevo di avere. Ora aiuto anche altri bambini a trovare la loro voce.",
+      "author": "Maria Gonzalez",
+      "role": "Scrittrice studentessa"
+    },
+    "stats": {
+      "stories": {
+        "number": "10,000+",
+        "label": "Storie pubblicate"
+      },
+      "countries": {
+        "number": "50+",
+        "label": "Paesi rappresentati"
+      },
+      "students": {
+        "number": "100,000+",
+        "label": "Studenti raggiunti"
+      },
+      "languages": {
+        "number": "25+",
+        "label": "Lingue supportate"
+      }
+    },
+    "team": {
+      "title": "Incontra il nostro team",
+      "member1": {
+        "name": "Dr. Emily Chen",
+        "role": "Fondatrice e direttrice esecutiva"
+      },
+      "member2": {
+        "name": "Michael Okonkwo",
+        "role": "Responsabile programmi globali"
+      }
+    },
+    "footer": {
+      "contact": {
+        "title": "Contattaci",
+        "email": "contact@1001stories.org"
+      },
+      "social": {
+        "title": "Seguici"
+      },
+      "newsletter": {
+        "title": "Iscriviti alla nostra newsletter"
+      }
+    }
+  },
+  "timeline": {
+    "submitted": "Inviato",
+    "underReview": "In revisione",
+    "feedbackProvided": "Feedback fornito",
+    "approved": "Approvato per pubblicazione",
+    "published": "Pubblicato"
+  },
+  "aiReview": {
+    "title": "Revisione IA",
+    "generating": "Generazione revisione IA...",
+    "regenerate": "Rigenera",
+    "strengths": "Punti di forza",
+    "improvements": "Miglioramenti suggeriti",
+    "overall": "Valutazione complessiva"
+  },
+  "submission": {
+    "details": "Dettagli invio",
+    "lastUpdated": "Ultimo aggiornamento",
+    "submittedAt": "Inviato il",
+    "wordCount": "Conteggio parole",
+    "readTime": "Tempo di lettura stimato"
+  },
+  "achievements": {
+    "firstStory": {
+      "name": "Prima Storia",
+      "description": "Invia la tua prima storia sulla piattaforma"
+    },
+    "publishedAuthor": {
+      "name": "Autore Pubblicato",
+      "description": "Pubblica la tua prima storia"
+    },
+    "bestsellingWriter": {
+      "name": "Scrittore Bestseller",
+      "description": "Pubblica 3 storie"
+    },
+    "globalImpact": {
+      "name": "Impatto Globale",
+      "description": "Raggiungi oltre 500 lettori in tutto il mondo"
+    },
+    "prolificWriter": {
+      "name": "Scrittore Prolifico",
+      "description": "Invia 5 o più storie"
+    },
+    "consistentContributor": {
+      "name": "Contributore Costante",
+      "description": "Attivo negli ultimi 30 giorni"
+    }
   }
 }

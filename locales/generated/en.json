@@ -15,7 +15,10 @@
         "draft": "Drafts",
         "inReview": "In Review",
         "readers": "Readers Reached",
-        "views": "Total Views"
+        "views": "Total Views",
+        "totalWords": "Total Words",
+        "avgReadTime": "Avg. Read Time",
+        "completionRate": "Completion Rate"
       },
       "quickActions": {
         "title": "Quick Actions",
@@ -44,32 +47,45 @@
     "myStories": "My Stories",
     "library": "Library",
     "notifications": "Notifications",
-    "profile": "Profile",
+    "profile": "My Profile",
     "skipToMain": "Skip to main content",
     "mainNavigation": "Main navigation",
     "mobileNavigation": "Mobile navigation",
     "currentPage": "current page",
     "userMenu": "User menu",
     "helpSupport": "Help & Support",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "aboutUs": "About Us",
+    "programs": "Programs",
+    "getInvolved": "Get Involved",
+    "signIn": "Sign In",
+    "signup": "Sign Up",
+    "dashboard": "Dashboard",
+    "help": "Help & Support",
+    "logout": "Log Out",
+    "language": "Language"
   },
   "stories": {
     "title": "My Stories",
     "subtitle": "Manage your creative works",
     "tabs": {
-      "all": "All",
+      "all": "All Stories",
       "draft": "Draft",
       "pending": "Pending",
       "inReview": "In Review",
       "needsRevision": "Needs Revision",
       "approved": "Approved",
       "published": "Published",
-      "rejected": "Rejected"
+      "rejected": "Rejected",
+      "submitted": "Submitted",
+      "underReview": "Under Review"
     },
     "empty": {
       "draft": "No drafts yet. Start writing your first story!",
       "pending": "No pending submissions",
-      "published": "No published stories yet"
+      "published": "No published stories yet",
+      "noStories": "No stories yet",
+      "allStories": "No stories found"
     },
     "card": {
       "status": "Status",
@@ -77,6 +93,18 @@
       "updatedAt": "Updated",
       "viewCount": "Views",
       "readTime": "Read Time"
+    },
+    "status": {
+      "draft": "Draft",
+      "pending": "Pending Review",
+      "inReview": "In Review",
+      "needsRevision": "Needs Revision",
+      "approved": "Approved"
+    },
+    "action": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View Details"
     }
   },
   "actions": {
@@ -88,7 +116,11 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "writeNew": "Write New Story",
-    "viewLibrary": "View Library"
+    "viewLibrary": "View Library",
+    "writeNewStory": "Write New Story",
+    "viewDetails": "View Details",
+    "withdraw": "Withdraw",
+    "resubmit": "Resubmit"
   },
   "library": {
     "title": "Published Library",
@@ -160,7 +192,22 @@
     },
     "subtitle": "Stay updated on your story progress",
     "sseDisconnected": "Notification service disconnected",
-    "reconnect": "Reconnect"
+    "reconnect": "Reconnect",
+    "statusChanged": "Your story status changed to {status}",
+    "feedbackReceived": "New feedback received for {title}",
+    "storyApproved": "Congratulations! Your story has been approved",
+    "revisionRequested": "Revision requested for your story",
+    "storyPublished": "Your story has been published!",
+    "saveSuccess": "Story saved successfully",
+    "saveError": "Failed to save story. Please try again.",
+    "submitSuccess": "Story submitted for review",
+    "submitError": "Failed to submit story. Please try again.",
+    "deleteSuccess": "Story deleted successfully",
+    "deleteError": "Failed to delete story. Please try again.",
+    "withdrawSuccess": "Submission withdrawn successfully",
+    "withdrawError": "Failed to withdraw submission. Please try again.",
+    "updateSuccess": "Story updated successfully",
+    "updateError": "Failed to update story. Please try again."
   },
   "status": {
     "DRAFT": "Draft",
@@ -169,7 +216,16 @@
     "NEEDS_REVISION": "Needs Revision",
     "APPROVED": "Approved",
     "PUBLISHED": "Published",
-    "REJECTED": "Rejected"
+    "REJECTED": "Rejected",
+    "description": {
+      "draft": "Your story is saved as a draft",
+      "pending": "Your story is awaiting review",
+      "inReview": "Your story is being reviewed",
+      "needsRevision": "Your story needs revision",
+      "approved": "Your story has been approved",
+      "published": "Your story is now published",
+      "rejected": "Your story was not approved"
+    }
   },
   "form": {
     "title": "Title",
@@ -181,14 +237,23 @@
     "tags": "Tags",
     "required": "Required field",
     "minLength": "Minimum {count} characters",
-    "maxLength": "Maximum {count} characters"
+    "maxLength": "Maximum {count} characters",
+    "storyTitle": "Story Title",
+    "storyContent": "Story Content",
+    "characterCount": "Character count",
+    "saveDraft": "Save as Draft",
+    "submitForReview": "Submit for Review"
   },
   "feedback": {
     "title": "Feedback",
     "noFeedback": "No feedback yet",
-    "from": "From",
+    "from": "Feedback from",
     "date": "Date",
-    "comment": "Comment"
+    "comment": "Comment",
+    "reviewer": "Reviewer",
+    "suggestions": "Suggestions",
+    "requestedChanges": "Requested Changes",
+    "viewAll": "View All Feedback"
   },
   "time": {
     "justNow": "Just now",
@@ -200,8 +265,8 @@
   },
   "common": {
     "loading": "Loading...",
-    "error": "Error occurred",
-    "success": "Success!",
+    "error": "An error occurred",
+    "success": "Success",
     "search": "Search",
     "filter": "Filter",
     "sort": "Sort",
@@ -222,7 +287,10 @@
     "breadcrumb": "Breadcrumb",
     "loadingDashboard": "Loading your dashboard...",
     "loadingStory": "Loading your story...",
-    "loadingForm": "Loading submission form..."
+    "loadingForm": "Loading submission form...",
+    "cancel": "Cancel",
+    "save": "Save",
+    "confirm": "Confirm"
   },
   "language": {
     "en": "English",
@@ -255,5 +323,179 @@
     "bio": "Bio",
     "location": "Location",
     "joinedDate": "Joined"
+  },
+  "hero": {
+    "title": "Discover, Publish, and Share Stories from Around the World",
+    "subtitle": "Empowering Children Through Stories",
+    "description": "A global non-profit platform connecting writers, educators, and students through the power of storytelling",
+    "cta": "Explore Stories"
+  },
+  "features": {
+    "discover": {
+      "title": "Discover Global Stories",
+      "description": "Access a rich library of stories from children in underserved communities worldwide"
+    },
+    "publish": {
+      "title": "Publish Your Stories",
+      "description": "Share your voice with the world through our collaborative publishing platform"
+    },
+    "learning": {
+      "title": "AI-Enhanced Learning",
+      "description": "Interactive word explanations and content parsing for better understanding"
+    }
+  },
+  "programs": {
+    "empowerment": {
+      "title": "Seeds of Empowerment",
+      "description": "Supporting children in underserved communities through education and storytelling"
+    },
+    "diversity": {
+      "title": "Global Diversity Initiative",
+      "description": "Celebrating diverse voices and perspectives from every corner of the world"
+    },
+    "english": {
+      "title": "English Language Learning",
+      "description": "Interactive stories designed for English language learners"
+    }
+  },
+  "footer": {
+    "cta": {
+      "title": "Join Our Global Community",
+      "description": "Start discovering, creating, and sharing stories today",
+      "primary": "Get Started",
+      "secondary": "Learn More"
+    },
+    "copyright": "© 2025 1001 Stories. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us"
+  },
+  "about": {
+    "hero": {
+      "title": "Our Mission: Empowering Children Through Stories",
+      "subtitle": "Connecting voices from underserved communities with the world",
+      "scroll": "Scroll to learn more"
+    },
+    "content": {
+      "vision": {
+        "title": "Our Vision",
+        "text": "We believe every child has a story worth sharing. 1001 Stories is a global non-profit platform dedicated to discovering, publishing, and sharing stories from children in underserved communities."
+      },
+      "impact": {
+        "title": "Our Impact",
+        "text": "Through our Seeds of Empowerment program, we reinvest all revenue back into supporting children's education and creative expression in underserved communities worldwide."
+      },
+      "platform": {
+        "title": "Our Platform",
+        "text": "1001 Stories connects writers, educators, and students through an innovative multi-role system that facilitates discovery, learning, and creative expression."
+      },
+      "technology": {
+        "title": "AI-Enhanced Learning",
+        "text": "Our platform leverages AI technology to provide interactive word explanations, content parsing, and educational assistance, making stories more accessible and engaging for learners worldwide."
+      },
+      "community": {
+        "title": "Our Community",
+        "text": "Join a global network of storytellers, educators, and learners committed to celebrating diversity and empowering the next generation through the power of stories."
+      }
+    },
+    "testimonial1": {
+      "quote": "1001 Stories has transformed how we approach literacy in our classroom. The diverse collection of voices helps students see themselves in the stories.",
+      "author": "Sarah Johnson",
+      "role": "Elementary School Teacher"
+    },
+    "testimonial2": {
+      "quote": "Being able to share my story and see it published gave me confidence I never knew I had. Now I help other children find their voice too.",
+      "author": "Maria Gonzalez",
+      "role": "Student Writer"
+    },
+    "stats": {
+      "stories": {
+        "number": "10,000+",
+        "label": "Stories Published"
+      },
+      "countries": {
+        "number": "50+",
+        "label": "Countries Represented"
+      },
+      "students": {
+        "number": "100,000+",
+        "label": "Students Reached"
+      },
+      "languages": {
+        "number": "25+",
+        "label": "Languages Supported"
+      }
+    },
+    "team": {
+      "title": "Meet Our Team",
+      "member1": {
+        "name": "Dr. Emily Chen",
+        "role": "Founder & Executive Director"
+      },
+      "member2": {
+        "name": "Michael Okonkwo",
+        "role": "Head of Global Programs"
+      }
+    },
+    "footer": {
+      "contact": {
+        "title": "Get in Touch",
+        "email": "contact@1001stories.org"
+      },
+      "social": {
+        "title": "Follow Us"
+      },
+      "newsletter": {
+        "title": "Subscribe to Our Newsletter"
+      }
+    }
+  },
+  "timeline": {
+    "submitted": "Submitted",
+    "underReview": "Under Review",
+    "feedbackProvided": "Feedback Provided",
+    "approved": "Approved for Publication",
+    "published": "Published"
+  },
+  "aiReview": {
+    "title": "AI Review",
+    "generating": "Generating AI review...",
+    "regenerate": "Regenerate",
+    "strengths": "Strengths",
+    "improvements": "Suggested Improvements",
+    "overall": "Overall Assessment"
+  },
+  "submission": {
+    "details": "Submission Details",
+    "lastUpdated": "Last updated",
+    "submittedAt": "Submitted at",
+    "wordCount": "Word count",
+    "readTime": "Estimated read time"
+  },
+  "achievements": {
+    "firstStory": {
+      "name": "First Story",
+      "description": "Submit your first story to the platform"
+    },
+    "publishedAuthor": {
+      "name": "Published Author",
+      "description": "Have your first story published"
+    },
+    "bestsellingWriter": {
+      "name": "Bestselling Writer",
+      "description": "Have 3 stories published"
+    },
+    "globalImpact": {
+      "name": "Global Impact",
+      "description": "Reach 500+ readers worldwide"
+    },
+    "prolificWriter": {
+      "name": "Prolific Writer",
+      "description": "Submit 5 or more stories"
+    },
+    "consistentContributor": {
+      "name": "Consistent Contributor",
+      "description": "Active in the last 30 days"
+    }
   }
 }

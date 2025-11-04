@@ -15,7 +15,10 @@
         "draft": "下書き",
         "inReview": "レビュー中",
         "readers": "読者到達数",
-        "views": "総閲覧数"
+        "views": "総閲覧数",
+        "totalWords": "総単語数",
+        "avgReadTime": "平均読み時間",
+        "completionRate": "完了率"
       },
       "quickActions": {
         "title": "クイックアクション",
@@ -44,32 +47,45 @@
     "myStories": "マイストーリー",
     "library": "ライブラリ",
     "notifications": "通知",
-    "profile": "プロフィール",
+    "profile": "マイプロフィール",
     "skipToMain": "メインコンテンツへスキップ",
     "mainNavigation": "メインナビゲーション",
     "mobileNavigation": "モバイルナビゲーション",
     "currentPage": "現在のページ",
     "userMenu": "ユーザーメニュー",
     "helpSupport": "ヘルプとサポート",
-    "signOut": "サインアウト"
+    "signOut": "サインアウト",
+    "aboutUs": "私たちについて",
+    "programs": "プログラム",
+    "getInvolved": "参加する",
+    "signIn": "サインイン",
+    "signup": "サインアップ",
+    "dashboard": "ダッシュボード",
+    "help": "ヘルプとサポート",
+    "logout": "ログアウト",
+    "language": "言語"
   },
   "stories": {
     "title": "マイストーリー",
     "subtitle": "あなたの創作物を管理",
     "tabs": {
-      "all": "すべて",
+      "all": "すべてのストーリー",
       "draft": "下書き",
       "pending": "保留中",
       "inReview": "レビュー中",
       "needsRevision": "修正が必要",
       "approved": "承認済み",
       "published": "公開済み",
-      "rejected": "却下"
+      "rejected": "却下",
+      "submitted": "提出済み",
+      "underReview": "レビュー中"
     },
     "empty": {
       "draft": "まだ下書きがありません。最初のストーリーを書き始めましょう！",
       "pending": "保留中の提出物なし",
-      "published": "まだ公開されたストーリーがありません"
+      "published": "まだ公開されたストーリーがありません",
+      "noStories": "まだストーリーはありません",
+      "allStories": "ストーリーが見つかりません"
     },
     "card": {
       "status": "ステータス",
@@ -77,6 +93,18 @@
       "updatedAt": "更新日",
       "viewCount": "閲覧数",
       "readTime": "読了時間"
+    },
+    "status": {
+      "draft": "下書き",
+      "pending": "レビュー待ち",
+      "inReview": "レビュー中",
+      "needsRevision": "修正が必要",
+      "approved": "承認済み"
+    },
+    "action": {
+      "edit": "編集",
+      "delete": "削除",
+      "view": "詳細を見る"
     }
   },
   "actions": {
@@ -88,7 +116,11 @@
     "cancel": "キャンセル",
     "confirm": "確認",
     "writeNew": "新しいストーリーを書く",
-    "viewLibrary": "ライブラリを表示"
+    "viewLibrary": "ライブラリを表示",
+    "writeNewStory": "新しいストーリーを書く",
+    "viewDetails": "詳細を表示",
+    "withdraw": "取り下げ",
+    "resubmit": "再送信"
   },
   "library": {
     "title": "公開ライブラリ",
@@ -160,7 +192,22 @@
     },
     "subtitle": "ストーリーの進捗を確認",
     "sseDisconnected": "通知サービスが切断されました",
-    "reconnect": "再接続"
+    "reconnect": "再接続",
+    "statusChanged": "ストーリーのステータスが{status}に変更されました",
+    "feedbackReceived": "{title}の新しいフィードバックを受け取りました",
+    "storyApproved": "おめでとうございます！ストーリーが承認されました",
+    "revisionRequested": "ストーリーの修正がリクエストされました",
+    "storyPublished": "ストーリーが公開されました！",
+    "saveSuccess": "ストーリーが正常に保存されました",
+    "saveError": "ストーリーの保存に失敗しました。もう一度お試しください。",
+    "submitSuccess": "レビューのためにストーリーが提出されました",
+    "submitError": "ストーリーの提出に失敗しました。もう一度お試しください。",
+    "deleteSuccess": "ストーリーが正常に削除されました",
+    "deleteError": "ストーリーの削除に失敗しました。もう一度お試しください。",
+    "withdrawSuccess": "提出が正常に撤回されました",
+    "withdrawError": "提出の撤回に失敗しました。もう一度お試しください。",
+    "updateSuccess": "ストーリーが正常に更新されました",
+    "updateError": "ストーリーの更新に失敗しました。もう一度お試しください。"
   },
   "status": {
     "DRAFT": "下書き",
@@ -169,7 +216,16 @@
     "NEEDS_REVISION": "修正が必要",
     "APPROVED": "承認済み",
     "PUBLISHED": "公開済み",
-    "REJECTED": "却下"
+    "REJECTED": "却下",
+    "description": {
+      "draft": "あなたのストーリーは下書きとして保存されています",
+      "pending": "あなたのストーリーはレビュー待ちです",
+      "inReview": "あなたのストーリーはレビュー中です",
+      "needsRevision": "あなたのストーリーは修正が必要です",
+      "approved": "あなたのストーリーが承認されました",
+      "published": "あなたのストーリーが公開されました",
+      "rejected": "あなたのストーリーは承認されませんでした"
+    }
   },
   "form": {
     "title": "タイトル",
@@ -181,14 +237,23 @@
     "tags": "タグ",
     "required": "必須項目",
     "minLength": "最低{count}文字",
-    "maxLength": "最大{count}文字"
+    "maxLength": "最大{count}文字",
+    "storyTitle": "ストーリータイトル",
+    "storyContent": "ストーリーコンテンツ",
+    "characterCount": "文字数",
+    "saveDraft": "下書きとして保存",
+    "submitForReview": "レビューのために提出"
   },
   "feedback": {
     "title": "フィードバック",
     "noFeedback": "まだフィードバックがありません",
-    "from": "送信者",
+    "from": "フィードバック元",
     "date": "日付",
-    "comment": "コメント"
+    "comment": "コメント",
+    "reviewer": "レビュアー",
+    "suggestions": "提案",
+    "requestedChanges": "要求された変更",
+    "viewAll": "すべてのフィードバックを表示"
   },
   "time": {
     "justNow": "たった今",
@@ -201,7 +266,7 @@
   "common": {
     "loading": "読み込み中...",
     "error": "エラーが発生しました",
-    "success": "成功！",
+    "success": "成功",
     "search": "検索",
     "filter": "フィルター",
     "sort": "並べ替え",
@@ -222,7 +287,10 @@
     "breadcrumb": "パンくずリスト",
     "loadingDashboard": "ダッシュボードを読み込んでいます...",
     "loadingStory": "ストーリーを読み込んでいます...",
-    "loadingForm": "フォームを読み込んでいます..."
+    "loadingForm": "フォームを読み込んでいます...",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "confirm": "確認"
   },
   "language": {
     "en": "英語",
@@ -255,5 +323,179 @@
     "bio": "プロフィール",
     "location": "場所",
     "joinedDate": "参加日"
+  },
+  "hero": {
+    "title": "世界中のストーリーを発見、公開、共有",
+    "subtitle": "物語で子どもたちに力を",
+    "description": "ストーリーテリングの力を通じて作家、教育者、学生をつなぐグローバルな非営利プラットフォーム",
+    "cta": "ストーリーを探索"
+  },
+  "features": {
+    "discover": {
+      "title": "グローバルストーリーを発見",
+      "description": "世界中の恵まれないコミュニティの子どもたちからの豊富なストーリーライブラリにアクセス"
+    },
+    "publish": {
+      "title": "ストーリーを公開",
+      "description": "コラボレーティブな出版プラットフォームを通じてあなたの声を世界と共有"
+    },
+    "learning": {
+      "title": "AI強化学習",
+      "description": "より良い理解のためのインタラクティブな単語説明とコンテンツ解析"
+    }
+  },
+  "programs": {
+    "empowerment": {
+      "title": "エンパワーメントの種",
+      "description": "教育とストーリーテリングを通じて恵まれないコミュニティの子どもたちをサポート"
+    },
+    "diversity": {
+      "title": "グローバル多様性イニシアチブ",
+      "description": "世界中のあらゆる場所からの多様な声と視点を祝う"
+    },
+    "english": {
+      "title": "英語学習",
+      "description": "英語学習者向けのインタラクティブストーリー"
+    }
+  },
+  "footer": {
+    "cta": {
+      "title": "グローバルコミュニティに参加",
+      "description": "今日からストーリーを発見、作成、共有しましょう",
+      "primary": "始める",
+      "secondary": "もっと詳しく"
+    },
+    "copyright": "© 2025 1001 Stories. 全著作権所有。",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "contact": "お問い合わせ"
+  },
+  "about": {
+    "hero": {
+      "title": "私たちの使命: 物語で子どもたちに力を",
+      "subtitle": "恵まれないコミュニティの声を世界とつなぐ",
+      "scroll": "スクロールして詳細を確認"
+    },
+    "content": {
+      "vision": {
+        "title": "私たちのビジョン",
+        "text": "すべての子どもには共有する価値のある物語があると信じています。1001 Storiesは、恵まれないコミュニティの子どもたちの物語を発見、出版、共有することに専念するグローバルな非営利プラットフォームです。"
+      },
+      "impact": {
+        "title": "私たちの影響",
+        "text": "Seeds of Empowermentプログラムを通じて、世界中の恵まれないコミュニティにおける子どもたちの教育と創造的表現の支援にすべての収益を再投資しています。"
+      },
+      "platform": {
+        "title": "私たちのプラットフォーム",
+        "text": "1001 Storiesは、発見、学習、創造的表現を促進する革新的なマルチロールシステムを通じて、作家、教育者、学生をつなぎます。"
+      },
+      "technology": {
+        "title": "AI強化学習",
+        "text": "私たちのプラットフォームはAI技術を活用して、インタラクティブな単語説明、コンテンツ解析、教育支援を提供し、世界中の学習者にとってストーリーをよりアクセスしやすく魅力的なものにします。"
+      },
+      "community": {
+        "title": "私たちのコミュニティ",
+        "text": "物語の力を通じて多様性を祝い、次世代に力を与えることに尽力するストーリーテラー、教育者、学習者のグローバルネットワークに参加しましょう。"
+      }
+    },
+    "testimonial1": {
+      "quote": "1001 Storiesは、私たちの教室での識字へのアプローチを変革しました。多様な声のコレクションは、学生が物語の中で自分自身を見るのに役立ちます。",
+      "author": "サラ・ジョンソン",
+      "role": "小学校教師"
+    },
+    "testimonial2": {
+      "quote": "私の物語を共有し、それが出版されるのを見ることができたことで、私は自分が持っているとは知らなかった自信を得ました。今では他の子どもたちも自分の声を見つけるのを手伝っています。",
+      "author": "マリア・ゴンザレス",
+      "role": "学生作家"
+    },
+    "stats": {
+      "stories": {
+        "number": "10,000+",
+        "label": "公開されたストーリー"
+      },
+      "countries": {
+        "number": "50+",
+        "label": "代表国"
+      },
+      "students": {
+        "number": "100,000+",
+        "label": "到達した学生"
+      },
+      "languages": {
+        "number": "25+",
+        "label": "サポートされる言語"
+      }
+    },
+    "team": {
+      "title": "私たちのチームに会う",
+      "member1": {
+        "name": "エミリー・チェン博士",
+        "role": "創設者兼エグゼクティブディレクター"
+      },
+      "member2": {
+        "name": "マイケル・オコンコ",
+        "role": "グローバルプログラム責任者"
+      }
+    },
+    "footer": {
+      "contact": {
+        "title": "お問い合わせ",
+        "email": "contact@1001stories.org"
+      },
+      "social": {
+        "title": "フォローする"
+      },
+      "newsletter": {
+        "title": "ニュースレターを購読"
+      }
+    }
+  },
+  "timeline": {
+    "submitted": "提出済み",
+    "underReview": "レビュー中",
+    "feedbackProvided": "フィードバック提供済み",
+    "approved": "出版承認済み",
+    "published": "公開済み"
+  },
+  "aiReview": {
+    "title": "AIレビュー",
+    "generating": "AIレビュー生成中...",
+    "regenerate": "再生成",
+    "strengths": "強み",
+    "improvements": "改善提案",
+    "overall": "総合評価"
+  },
+  "submission": {
+    "details": "提出詳細",
+    "lastUpdated": "最終更新",
+    "submittedAt": "提出日時",
+    "wordCount": "単語数",
+    "readTime": "推定読み時間"
+  },
+  "achievements": {
+    "firstStory": {
+      "name": "最初のストーリー",
+      "description": "プラットフォームに最初のストーリーを提出する"
+    },
+    "publishedAuthor": {
+      "name": "出版作家",
+      "description": "最初のストーリーを出版する"
+    },
+    "bestsellingWriter": {
+      "name": "ベストセラー作家",
+      "description": "3つのストーリーを出版する"
+    },
+    "globalImpact": {
+      "name": "グローバルインパクト",
+      "description": "世界中で500人以上の読者に届ける"
+    },
+    "prolificWriter": {
+      "name": "多作な作家",
+      "description": "5つ以上のストーリーを提出する"
+    },
+    "consistentContributor": {
+      "name": "一貫した貢献者",
+      "description": "過去30日間アクティブ"
+    }
   }
 }

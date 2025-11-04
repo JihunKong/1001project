@@ -15,7 +15,10 @@
         "draft": "Entwürfe",
         "inReview": "In Überprüfung",
         "readers": "Erreichte Leser",
-        "views": "Gesamtansichten"
+        "views": "Gesamtansichten",
+        "totalWords": "Gesamtwörter",
+        "avgReadTime": "Durchschn. Lesezeit",
+        "completionRate": "Fertigstellungsrate"
       },
       "quickActions": {
         "title": "Schnellaktionen",
@@ -44,32 +47,45 @@
     "myStories": "Meine Geschichten",
     "library": "Bibliothek",
     "notifications": "Benachrichtigungen",
-    "profile": "Profil",
+    "profile": "Mein Profil",
     "skipToMain": "Zum Hauptinhalt springen",
     "mainNavigation": "Hauptnavigation",
     "mobileNavigation": "Mobile Navigation",
     "currentPage": "aktuelle Seite",
     "userMenu": "Benutzermenü",
     "helpSupport": "Hilfe & Support",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "aboutUs": "Über uns",
+    "programs": "Programme",
+    "getInvolved": "Mitmachen",
+    "signIn": "Anmelden",
+    "signup": "Registrieren",
+    "dashboard": "Dashboard",
+    "help": "Hilfe & Support",
+    "logout": "Abmelden",
+    "language": "Sprache"
   },
   "stories": {
     "title": "Meine Geschichten",
     "subtitle": "Verwalten Sie Ihre kreativen Werke",
     "tabs": {
-      "all": "Alle",
+      "all": "Alle Geschichten",
       "draft": "Entwurf",
       "pending": "Ausstehend",
       "inReview": "In Überprüfung",
       "needsRevision": "Überarbeitung Erforderlich",
       "approved": "Genehmigt",
       "published": "Veröffentlicht",
-      "rejected": "Abgelehnt"
+      "rejected": "Abgelehnt",
+      "submitted": "Eingereicht",
+      "underReview": "Wird überprüft"
     },
     "empty": {
       "draft": "Noch keine Entwürfe. Beginnen Sie mit Ihrer ersten Geschichte!",
       "pending": "Keine ausstehenden Einreichungen",
-      "published": "Noch keine veröffentlichten Geschichten"
+      "published": "Noch keine veröffentlichten Geschichten",
+      "noStories": "Noch keine Geschichten",
+      "allStories": "Keine Geschichten gefunden"
     },
     "card": {
       "status": "Status",
@@ -77,6 +93,18 @@
       "updatedAt": "Aktualisiert",
       "viewCount": "Ansichten",
       "readTime": "Lesezeit"
+    },
+    "status": {
+      "draft": "Entwurf",
+      "pending": "Überprüfung ausstehend",
+      "inReview": "Wird überprüft",
+      "needsRevision": "Überarbeitung erforderlich",
+      "approved": "Genehmigt"
+    },
+    "action": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "view": "Details anzeigen"
     }
   },
   "actions": {
@@ -88,7 +116,11 @@
     "cancel": "Abbrechen",
     "confirm": "Bestätigen",
     "writeNew": "Neue Geschichte Schreiben",
-    "viewLibrary": "Bibliothek Anzeigen"
+    "viewLibrary": "Bibliothek Anzeigen",
+    "writeNewStory": "Neue Geschichte schreiben",
+    "viewDetails": "Details anzeigen",
+    "withdraw": "Zurückziehen",
+    "resubmit": "Erneut einreichen"
   },
   "library": {
     "title": "Veröffentlichte Bibliothek",
@@ -160,7 +192,22 @@
     },
     "subtitle": "Bleibe über deinen Fortschritt informiert",
     "sseDisconnected": "Benachrichtigungsdienst getrennt",
-    "reconnect": "Neu verbinden"
+    "reconnect": "Neu verbinden",
+    "statusChanged": "Ihr Story-Status wurde auf {status} geändert",
+    "feedbackReceived": "Neues Feedback für {title} erhalten",
+    "storyApproved": "Glückwunsch! Ihre Geschichte wurde genehmigt",
+    "revisionRequested": "Überarbeitung für Ihre Geschichte angefordert",
+    "storyPublished": "Ihre Geschichte wurde veröffentlicht!",
+    "saveSuccess": "Geschichte erfolgreich gespeichert",
+    "saveError": "Speichern der Geschichte fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "submitSuccess": "Geschichte zur Überprüfung eingereicht",
+    "submitError": "Einreichung der Geschichte fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "deleteSuccess": "Geschichte erfolgreich gelöscht",
+    "deleteError": "Löschen der Geschichte fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "withdrawSuccess": "Einreichung erfolgreich zurückgezogen",
+    "withdrawError": "Zurückziehen der Einreichung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "updateSuccess": "Geschichte erfolgreich aktualisiert",
+    "updateError": "Aktualisierung der Geschichte fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
   "status": {
     "DRAFT": "Entwurf",
@@ -169,7 +216,16 @@
     "NEEDS_REVISION": "Überarbeitung Erforderlich",
     "APPROVED": "Genehmigt",
     "PUBLISHED": "Veröffentlicht",
-    "REJECTED": "Abgelehnt"
+    "REJECTED": "Abgelehnt",
+    "description": {
+      "draft": "Ihre Geschichte ist als Entwurf gespeichert",
+      "pending": "Ihre Geschichte wartet auf Überprüfung",
+      "inReview": "Ihre Geschichte wird überprüft",
+      "needsRevision": "Ihre Geschichte muss überarbeitet werden",
+      "approved": "Ihre Geschichte wurde genehmigt",
+      "published": "Ihre Geschichte ist jetzt veröffentlicht",
+      "rejected": "Ihre Geschichte wurde nicht genehmigt"
+    }
   },
   "form": {
     "title": "Titel",
@@ -181,14 +237,23 @@
     "tags": "Schlagwörter",
     "required": "Pflichtfeld",
     "minLength": "Mindestens {count} Zeichen",
-    "maxLength": "Maximal {count} Zeichen"
+    "maxLength": "Maximal {count} Zeichen",
+    "storyTitle": "Geschichtstitel",
+    "storyContent": "Geschichtsinhalt",
+    "characterCount": "Zeichenzahl",
+    "saveDraft": "Als Entwurf speichern",
+    "submitForReview": "Zur Überprüfung einreichen"
   },
   "feedback": {
     "title": "Feedback",
     "noFeedback": "Noch kein Feedback",
-    "from": "Von",
+    "from": "Feedback von",
     "date": "Datum",
-    "comment": "Kommentar"
+    "comment": "Kommentar",
+    "reviewer": "Gutachter",
+    "suggestions": "Vorschläge",
+    "requestedChanges": "Angeforderte Änderungen",
+    "viewAll": "Alle Feedbacks anzeigen"
   },
   "time": {
     "justNow": "Gerade eben",
@@ -199,9 +264,9 @@
     "monthsAgo": "Vor {count} Monaten"
   },
   "common": {
-    "loading": "Wird geladen...",
+    "loading": "Lädt...",
     "error": "Ein Fehler ist aufgetreten",
-    "success": "Erfolg!",
+    "success": "Erfolg",
     "search": "Suchen",
     "filter": "Filtern",
     "sort": "Sortieren",
@@ -222,7 +287,10 @@
     "breadcrumb": "Brotkrumen",
     "loadingDashboard": "Lade dein Dashboard...",
     "loadingStory": "Lade deine Geschichte...",
-    "loadingForm": "Lade Formular..."
+    "loadingForm": "Lade Formular...",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "confirm": "Bestätigen"
   },
   "language": {
     "en": "Englisch",
@@ -255,5 +323,179 @@
     "bio": "Biografie",
     "location": "Standort",
     "joinedDate": "Beigetreten"
+  },
+  "hero": {
+    "title": "Entdecken, veröffentlichen und teilen Sie Geschichten aus aller Welt",
+    "subtitle": "Kinder durch Geschichten stärken",
+    "description": "Eine globale gemeinnützige Plattform, die Autoren, Pädagogen und Studenten durch die Kraft des Geschichtenerzählens verbindet",
+    "cta": "Geschichten erkunden"
+  },
+  "features": {
+    "discover": {
+      "title": "Entdecken Sie globale Geschichten",
+      "description": "Greifen Sie auf eine umfangreiche Bibliothek von Geschichten von Kindern in unterversorgten Gemeinden weltweit zu"
+    },
+    "publish": {
+      "title": "Veröffentlichen Sie Ihre Geschichten",
+      "description": "Teilen Sie Ihre Stimme mit der Welt über unsere kollaborative Veröffentlichungsplattform"
+    },
+    "learning": {
+      "title": "KI-verstärktes Lernen",
+      "description": "Interaktive Worterklärungen und Inhaltsanalyse für besseres Verständnis"
+    }
+  },
+  "programs": {
+    "empowerment": {
+      "title": "Samen der Ermächtigung",
+      "description": "Unterstützung von Kindern in unterversorgten Gemeinden durch Bildung und Geschichtenerzählen"
+    },
+    "diversity": {
+      "title": "Globale Diversitätsinitiative",
+      "description": "Feier verschiedener Stimmen und Perspektiven aus allen Ecken der Welt"
+    },
+    "english": {
+      "title": "Englisch lernen",
+      "description": "Interaktive Geschichten für Englischlernende"
+    }
+  },
+  "footer": {
+    "cta": {
+      "title": "Treten Sie unserer globalen Gemeinschaft bei",
+      "description": "Beginnen Sie heute Geschichten zu entdecken, zu erstellen und zu teilen",
+      "primary": "Loslegen",
+      "secondary": "Mehr erfahren"
+    },
+    "copyright": "© 2025 1001 Stories. Alle Rechte vorbehalten.",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen",
+    "contact": "Kontaktieren Sie uns"
+  },
+  "about": {
+    "hero": {
+      "title": "Unsere Mission: Kinder durch Geschichten stärken",
+      "subtitle": "Stimmen aus unterversorgten Gemeinden mit der Welt verbinden",
+      "scroll": "Scrollen Sie, um mehr zu erfahren"
+    },
+    "content": {
+      "vision": {
+        "title": "Unsere Vision",
+        "text": "Wir glauben, dass jedes Kind eine Geschichte hat, die es wert ist, geteilt zu werden. 1001 Stories ist eine globale gemeinnützige Plattform, die sich der Entdeckung, Veröffentlichung und dem Teilen von Geschichten von Kindern in unterversorgten Gemeinden widmet."
+      },
+      "impact": {
+        "title": "Unsere Wirkung",
+        "text": "Durch unser Seeds of Empowerment-Programm investieren wir alle Einnahmen zurück in die Unterstützung der Bildung und des kreativen Ausdrucks von Kindern in unterversorgten Gemeinden weltweit."
+      },
+      "platform": {
+        "title": "Unsere Plattform",
+        "text": "1001 Stories verbindet Autoren, Pädagogen und Studenten durch ein innovatives Multi-Rollen-System, das Entdeckung, Lernen und kreativen Ausdruck erleichtert."
+      },
+      "technology": {
+        "title": "KI-verstärktes Lernen",
+        "text": "Unsere Plattform nutzt KI-Technologie, um interaktive Worterklärungen, Inhaltsanalyse und pädagogische Unterstützung bereitzustellen, wodurch Geschichten für Lernende weltweit zugänglicher und ansprechender werden."
+      },
+      "community": {
+        "title": "Unsere Gemeinschaft",
+        "text": "Treten Sie einem globalen Netzwerk von Geschichtenerzählern, Pädagogen und Lernenden bei, die sich dafür einsetzen, Vielfalt zu feiern und die nächste Generation durch die Kraft von Geschichten zu stärken."
+      }
+    },
+    "testimonial1": {
+      "quote": "1001 Stories hat verändert, wie wir Alphabetisierung in unserem Klassenzimmer angehen. Die vielfältige Sammlung von Stimmen hilft Schülern, sich selbst in den Geschichten zu sehen.",
+      "author": "Sarah Johnson",
+      "role": "Grundschullehrerin"
+    },
+    "testimonial2": {
+      "quote": "Die Möglichkeit, meine Geschichte zu teilen und sie veröffentlicht zu sehen, gab mir ein Selbstvertrauen, von dem ich nicht wusste, dass ich es hatte. Jetzt helfe ich auch anderen Kindern, ihre Stimme zu finden.",
+      "author": "Maria Gonzalez",
+      "role": "Studentische Schriftstellerin"
+    },
+    "stats": {
+      "stories": {
+        "number": "10,000+",
+        "label": "Veröffentlichte Geschichten"
+      },
+      "countries": {
+        "number": "50+",
+        "label": "Vertretene Länder"
+      },
+      "students": {
+        "number": "100,000+",
+        "label": "Erreichte Schüler"
+      },
+      "languages": {
+        "number": "25+",
+        "label": "Unterstützte Sprachen"
+      }
+    },
+    "team": {
+      "title": "Lernen Sie unser Team kennen",
+      "member1": {
+        "name": "Dr. Emily Chen",
+        "role": "Gründerin und Geschäftsführerin"
+      },
+      "member2": {
+        "name": "Michael Okonkwo",
+        "role": "Leiter globale Programme"
+      }
+    },
+    "footer": {
+      "contact": {
+        "title": "Kontakt",
+        "email": "contact@1001stories.org"
+      },
+      "social": {
+        "title": "Folgen Sie uns"
+      },
+      "newsletter": {
+        "title": "Abonnieren Sie unseren Newsletter"
+      }
+    }
+  },
+  "timeline": {
+    "submitted": "Eingereicht",
+    "underReview": "Wird überprüft",
+    "feedbackProvided": "Feedback gegeben",
+    "approved": "Zur Veröffentlichung freigegeben",
+    "published": "Veröffentlicht"
+  },
+  "aiReview": {
+    "title": "KI-Überprüfung",
+    "generating": "KI-Überprüfung wird erstellt...",
+    "regenerate": "Neu generieren",
+    "strengths": "Stärken",
+    "improvements": "Vorgeschlagene Verbesserungen",
+    "overall": "Gesamtbewertung"
+  },
+  "submission": {
+    "details": "Einreichungsdetails",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "submittedAt": "Eingereicht am",
+    "wordCount": "Wortzahl",
+    "readTime": "Geschätzte Lesezeit"
+  },
+  "achievements": {
+    "firstStory": {
+      "name": "Erste Geschichte",
+      "description": "Reichen Sie Ihre erste Geschichte auf der Plattform ein"
+    },
+    "publishedAuthor": {
+      "name": "Veröffentlichter Autor",
+      "description": "Lassen Sie Ihre erste Geschichte veröffentlichen"
+    },
+    "bestsellingWriter": {
+      "name": "Bestsellerautor",
+      "description": "Lassen Sie 3 Geschichten veröffentlichen"
+    },
+    "globalImpact": {
+      "name": "Globale Wirkung",
+      "description": "Erreichen Sie weltweit über 500 Leser"
+    },
+    "prolificWriter": {
+      "name": "Produktiver Autor",
+      "description": "Reichen Sie 5 oder mehr Geschichten ein"
+    },
+    "consistentContributor": {
+      "name": "Konstanter Mitwirkender",
+      "description": "Aktiv in den letzten 30 Tagen"
+    }
   }
 }

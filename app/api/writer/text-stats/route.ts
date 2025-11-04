@@ -141,43 +141,43 @@ export async function GET(_request: NextRequest) {
       // Recent activity
       recentSubmissions: recentSubmissions.length,
 
-      // Achievements
+      // Achievements with translation keys
       achievements: [
         {
-          name: 'First Story',
+          nameKey: 'achievements.firstStory.name',
+          descriptionKey: 'achievements.firstStory.description',
           icon: 'PenTool',
           earned: achievements.firstSubmission,
-          description: 'Submit your first story to the platform',
         },
         {
-          name: 'Published Author',
+          nameKey: 'achievements.publishedAuthor.name',
+          descriptionKey: 'achievements.publishedAuthor.description',
           icon: 'BookOpen',
           earned: achievements.firstPublished,
-          description: 'Have your first story published',
         },
         {
-          name: 'Bestselling Writer',
+          nameKey: 'achievements.bestsellingWriter.name',
+          descriptionKey: 'achievements.bestsellingWriter.description',
           icon: 'Award',
           earned: achievements.publishedAuthor,
-          description: 'Have 3 stories published',
         },
         {
-          name: 'Global Impact',
+          nameKey: 'achievements.globalImpact.name',
+          descriptionKey: 'achievements.globalImpact.description',
           icon: 'Globe',
           earned: achievements.globalReach,
-          description: 'Reach 500+ readers worldwide',
         },
         {
-          name: 'Prolific Writer',
+          nameKey: 'achievements.prolificWriter.name',
+          descriptionKey: 'achievements.prolificWriter.description',
           icon: 'FileText',
           earned: achievements.prolificWriter,
-          description: 'Submit 5 or more stories',
         },
         {
-          name: 'Consistent Contributor',
+          nameKey: 'achievements.consistentContributor.name',
+          descriptionKey: 'achievements.consistentContributor.description',
           icon: 'Calendar',
           earned: achievements.consistent,
-          description: 'Active in the last 30 days',
         },
       ],
     };

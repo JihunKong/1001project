@@ -15,7 +15,10 @@
         "draft": "草稿",
         "inReview": "审核中",
         "readers": "到达读者数",
-        "views": "总浏览量"
+        "views": "总浏览量",
+        "totalWords": "总字数",
+        "avgReadTime": "平均阅读时间",
+        "completionRate": "完成率"
       },
       "quickActions": {
         "title": "快速操作",
@@ -44,32 +47,45 @@
     "myStories": "我的故事",
     "library": "图书馆",
     "notifications": "通知",
-    "profile": "个人资料",
+    "profile": "我的个人资料",
     "skipToMain": "跳转到主要内容",
     "mainNavigation": "主导航",
     "mobileNavigation": "移动导航",
     "currentPage": "当前页面",
     "userMenu": "用户菜单",
     "helpSupport": "帮助与支持",
-    "signOut": "退出登录"
+    "signOut": "退出登录",
+    "aboutUs": "关于我们",
+    "programs": "计划",
+    "getInvolved": "参与",
+    "signIn": "登录",
+    "signup": "注册",
+    "dashboard": "仪表板",
+    "help": "帮助与支持",
+    "logout": "登出",
+    "language": "语言"
   },
   "stories": {
     "title": "我的故事",
     "subtitle": "管理您的创作作品",
     "tabs": {
-      "all": "全部",
+      "all": "所有故事",
       "draft": "草稿",
       "pending": "待处理",
       "inReview": "审核中",
       "needsRevision": "需要修改",
       "approved": "已批准",
       "published": "已发布",
-      "rejected": "已拒绝"
+      "rejected": "已拒绝",
+      "submitted": "已提交",
+      "underReview": "审核中"
     },
     "empty": {
       "draft": "还没有草稿。开始写你的第一个故事吧！",
       "pending": "没有待处理的提交",
-      "published": "还没有发布的故事"
+      "published": "还没有发布的故事",
+      "noStories": "还没有故事",
+      "allStories": "未找到故事"
     },
     "card": {
       "status": "状态",
@@ -77,6 +93,18 @@
       "updatedAt": "更新于",
       "viewCount": "浏览量",
       "readTime": "阅读时间"
+    },
+    "status": {
+      "draft": "草稿",
+      "pending": "待审核",
+      "inReview": "审核中",
+      "needsRevision": "需要修改",
+      "approved": "已批准"
+    },
+    "action": {
+      "edit": "编辑",
+      "delete": "删除",
+      "view": "查看详情"
     }
   },
   "actions": {
@@ -88,7 +116,11 @@
     "cancel": "取消",
     "confirm": "确认",
     "writeNew": "撰写新故事",
-    "viewLibrary": "查看图书馆"
+    "viewLibrary": "查看图书馆",
+    "writeNewStory": "写新故事",
+    "viewDetails": "查看详情",
+    "withdraw": "撤回",
+    "resubmit": "重新提交"
   },
   "library": {
     "title": "已发布图书馆",
@@ -160,7 +192,22 @@
     },
     "subtitle": "了解您的故事进展",
     "sseDisconnected": "通知服务断开连接",
-    "reconnect": "重新连接"
+    "reconnect": "重新连接",
+    "statusChanged": "您的故事状态已更改为{status}",
+    "feedbackReceived": "收到{title}的新反馈",
+    "storyApproved": "恭喜！您的故事已获批准",
+    "revisionRequested": "已请求修改您的故事",
+    "storyPublished": "您的故事已发布！",
+    "saveSuccess": "故事保存成功",
+    "saveError": "保存故事失败。请重试。",
+    "submitSuccess": "故事已提交审核",
+    "submitError": "提交故事失败。请重试。",
+    "deleteSuccess": "故事删除成功",
+    "deleteError": "删除故事失败。请重试。",
+    "withdrawSuccess": "提交已成功撤回",
+    "withdrawError": "撤回提交失败。请重试。",
+    "updateSuccess": "故事更新成功",
+    "updateError": "更新故事失败。请重试。"
   },
   "status": {
     "DRAFT": "草稿",
@@ -169,7 +216,16 @@
     "NEEDS_REVISION": "需要修改",
     "APPROVED": "已批准",
     "PUBLISHED": "已发布",
-    "REJECTED": "已拒绝"
+    "REJECTED": "已拒绝",
+    "description": {
+      "draft": "您的故事已保存为草稿",
+      "pending": "您的故事正在等待审核",
+      "inReview": "您的故事正在审核中",
+      "needsRevision": "您的故事需要修订",
+      "approved": "您的故事已获批准",
+      "published": "您的故事已发布",
+      "rejected": "您的故事未获批准"
+    }
   },
   "form": {
     "title": "标题",
@@ -181,14 +237,23 @@
     "tags": "标签",
     "required": "必填字段",
     "minLength": "最少{count}个字符",
-    "maxLength": "最多{count}个字符"
+    "maxLength": "最多{count}个字符",
+    "storyTitle": "故事标题",
+    "storyContent": "故事内容",
+    "characterCount": "字符计数",
+    "saveDraft": "保存为草稿",
+    "submitForReview": "提交审核"
   },
   "feedback": {
     "title": "反馈",
     "noFeedback": "还没有反馈",
-    "from": "来自",
+    "from": "反馈来自",
     "date": "日期",
-    "comment": "评论"
+    "comment": "评论",
+    "reviewer": "审核员",
+    "suggestions": "建议",
+    "requestedChanges": "请求的更改",
+    "viewAll": "查看所有反馈"
   },
   "time": {
     "justNow": "刚刚",
@@ -201,7 +266,7 @@
   "common": {
     "loading": "加载中...",
     "error": "发生错误",
-    "success": "成功！",
+    "success": "成功",
     "search": "搜索",
     "filter": "筛选",
     "sort": "排序",
@@ -222,7 +287,10 @@
     "breadcrumb": "面包屑导航",
     "loadingDashboard": "加载您的仪表板...",
     "loadingStory": "加载您的故事...",
-    "loadingForm": "加载提交表单..."
+    "loadingForm": "加载提交表单...",
+    "cancel": "取消",
+    "save": "保存",
+    "confirm": "确认"
   },
   "language": {
     "en": "英语",
@@ -255,5 +323,179 @@
     "bio": "简介",
     "location": "位置",
     "joinedDate": "加入日期"
+  },
+  "hero": {
+    "title": "发现、发布和分享来自世界各地的故事",
+    "subtitle": "通过故事赋予儿童力量",
+    "description": "全球非营利平台，通过讲故事的力量连接作家、教育者和学生",
+    "cta": "探索故事"
+  },
+  "features": {
+    "discover": {
+      "title": "发现全球故事",
+      "description": "访问来自世界各地服务不足社区儿童的丰富故事库"
+    },
+    "publish": {
+      "title": "发布你的故事",
+      "description": "通过我们的协作出版平台与世界分享你的声音"
+    },
+    "learning": {
+      "title": "AI增强学习",
+      "description": "互动词汇解释和内容解析，帮助更好理解"
+    }
+  },
+  "programs": {
+    "empowerment": {
+      "title": "赋权之种",
+      "description": "通过教育和讲故事支持服务不足社区的儿童"
+    },
+    "diversity": {
+      "title": "全球多样性倡议",
+      "description": "庆祝来自世界各个角落的多样化声音和观点"
+    },
+    "english": {
+      "title": "英语学习",
+      "description": "为英语学习者设计的互动故事"
+    }
+  },
+  "footer": {
+    "cta": {
+      "title": "加入我们的全球社区",
+      "description": "今天开始发现、创建和分享故事",
+      "primary": "开始",
+      "secondary": "了解更多"
+    },
+    "copyright": "© 2025 1001 Stories. 保留所有权利。",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "contact": "联系我们"
+  },
+  "about": {
+    "hero": {
+      "title": "我们的使命：通过故事赋予儿童力量",
+      "subtitle": "将服务不足社区的声音与世界联系起来",
+      "scroll": "滚动了解更多"
+    },
+    "content": {
+      "vision": {
+        "title": "我们的愿景",
+        "text": "我们相信每个孩子都有值得分享的故事。1001 Stories是一个全球非营利平台，致力于发现、发布和分享来自服务不足社区儿童的故事。"
+      },
+      "impact": {
+        "title": "我们的影响",
+        "text": "通过我们的赋权之种计划，我们将所有收入重新投资于支持全球服务不足社区儿童的教育和创意表达。"
+      },
+      "platform": {
+        "title": "我们的平台",
+        "text": "1001 Stories通过创新的多角色系统连接作家、教育者和学生，促进发现、学习和创意表达。"
+      },
+      "technology": {
+        "title": "AI增强学习",
+        "text": "我们的平台利用AI技术提供互动词汇解释、内容解析和教育辅助，使故事对全球学习者更加可及和吸引人。"
+      },
+      "community": {
+        "title": "我们的社区",
+        "text": "加入一个致力于庆祝多样性并通过故事的力量赋予下一代能力的全球讲故事者、教育者和学习者网络。"
+      }
+    },
+    "testimonial1": {
+      "quote": "1001 Stories改变了我们在课堂上处理识字的方式。多样化的声音集合帮助学生在故事中看到自己。",
+      "author": "莎拉·约翰逊",
+      "role": "小学教师"
+    },
+    "testimonial2": {
+      "quote": "能够分享我的故事并看到它被出版给了我从未知道自己拥有的信心。现在我也帮助其他孩子找到他们的声音。",
+      "author": "玛丽亚·冈萨雷斯",
+      "role": "学生作家"
+    },
+    "stats": {
+      "stories": {
+        "number": "10,000+",
+        "label": "已发布故事"
+      },
+      "countries": {
+        "number": "50+",
+        "label": "代表国家"
+      },
+      "students": {
+        "number": "100,000+",
+        "label": "已触及学生"
+      },
+      "languages": {
+        "number": "25+",
+        "label": "支持的语言"
+      }
+    },
+    "team": {
+      "title": "认识我们的团队",
+      "member1": {
+        "name": "陈艾米莉博士",
+        "role": "创始人兼执行董事"
+      },
+      "member2": {
+        "name": "迈克尔·奥孔科",
+        "role": "全球计划负责人"
+      }
+    },
+    "footer": {
+      "contact": {
+        "title": "联系我们",
+        "email": "contact@1001stories.org"
+      },
+      "social": {
+        "title": "关注我们"
+      },
+      "newsletter": {
+        "title": "订阅我们的新闻通讯"
+      }
+    }
+  },
+  "timeline": {
+    "submitted": "已提交",
+    "underReview": "审核中",
+    "feedbackProvided": "已提供反馈",
+    "approved": "已批准发布",
+    "published": "已发布"
+  },
+  "aiReview": {
+    "title": "AI审核",
+    "generating": "正在生成AI审核...",
+    "regenerate": "重新生成",
+    "strengths": "优势",
+    "improvements": "建议改进",
+    "overall": "总体评估"
+  },
+  "submission": {
+    "details": "提交详情",
+    "lastUpdated": "最后更新",
+    "submittedAt": "提交于",
+    "wordCount": "字数",
+    "readTime": "预计阅读时间"
+  },
+  "achievements": {
+    "firstStory": {
+      "name": "第一个故事",
+      "description": "向平台提交您的第一个故事"
+    },
+    "publishedAuthor": {
+      "name": "出版作者",
+      "description": "发表您的第一个故事"
+    },
+    "bestsellingWriter": {
+      "name": "畅销作家",
+      "description": "发表3个故事"
+    },
+    "globalImpact": {
+      "name": "全球影响力",
+      "description": "全球覆盖500+读者"
+    },
+    "prolificWriter": {
+      "name": "多产作家",
+      "description": "提交5个或更多故事"
+    },
+    "consistentContributor": {
+      "name": "持续贡献者",
+      "description": "过去30天内活跃"
+    }
   }
 }

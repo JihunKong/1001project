@@ -44,10 +44,10 @@ interface Stats {
   };
   recentSubmissions: number;
   achievements: Array<{
-    name: string;
+    nameKey: string;
+    descriptionKey: string;
     icon: string;
     earned: boolean;
-    description: string;
   }>;
 }
 
@@ -551,13 +551,13 @@ export default function WriterHome() {
               const IconComponent = ICON_MAP[achievement.icon] || Award;
               return (
                 <div
-                  key={achievement.name}
+                  key={achievement.nameKey}
                   className={`bg-white rounded-lg border p-4 text-center transition-all ${
                     achievement.earned
                       ? 'border-green-500 shadow-sm'
                       : 'border-[#E5E5EA] opacity-50'
                   }`}
-                  title={achievement.description}
+                  title={t(achievement.descriptionKey)}
                 >
                   <div
                     className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center ${
@@ -577,7 +577,7 @@ export default function WriterHome() {
                       lineHeight: '1.221'
                     }}
                   >
-                    {achievement.name}
+                    {t(achievement.nameKey)}
                   </p>
                   {achievement.earned && (
                     <CheckCircle className="h-4 w-4 text-green-600 mx-auto mt-2" />
