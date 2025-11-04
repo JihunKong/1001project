@@ -5,7 +5,7 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = ['en', 'ko', 'es', 'ar',
 export const RTL_LANGUAGES: SupportedLanguage[] = ['ar'];
 
 const LANGUAGE_COOKIE_NAME = 'preferred-language';
-const COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
+const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 
 export function isRTLLanguage(lang: SupportedLanguage): boolean {
   return RTL_LANGUAGES.includes(lang);
