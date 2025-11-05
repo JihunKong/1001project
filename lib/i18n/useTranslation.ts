@@ -61,7 +61,7 @@ export function useTranslation(): UseTranslationReturn {
     setIsLoading(true);
 
     loadTranslations(language).then(data => {
-      setTranslations(data);
+      setTranslations({ ...data });
       setIsLoading(false);
     });
   }, [language]);

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import {
   SupportedLanguage,
@@ -21,6 +22,7 @@ interface LanguageProviderProps {
 }
 
 export function LanguageProvider({ children, initialLanguage }: LanguageProviderProps) {
+  const router = useRouter();
   const [language, setLanguage] = useState<SupportedLanguage>(initialLanguage);
   const [isRTL, setIsRTL] = useState<boolean>(isRTLLanguage(initialLanguage));
 
@@ -28,7 +30,8 @@ export function LanguageProvider({ children, initialLanguage }: LanguageProvider
     setLanguagePreferenceClient(newLanguage);
     setLanguage(newLanguage);
     setIsRTL(isRTLLanguage(newLanguage));
-  }, []);
+    router.refresh();
+  }, [router]);
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage, isRTL }}>
