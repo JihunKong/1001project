@@ -102,20 +102,48 @@ verify_deployment() {
 
         echo ""
         echo "=== HTTPS Endpoint Test ==="
-        # Wait a bit more for nginx to be ready
-        sleep 10
+        # Wait for nginx and app to be fully ready
+        echo "Waiting 30 seconds for services to stabilize..."
+        sleep 30
 
-        # Test HTTPS endpoint
-        HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://localhost/api/health 2>&1 || echo "000")
+        # Test HTTPS endpoint with retry logic
+        MAX_RETRIES=3
+        RETRY_COUNT=0
+        HTTP_STATUS="000"
+
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            echo "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES: Testing HTTPS endpoint..."
+            HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://localhost/api/health 2>&1 || echo "000")
+
+            if [ "$HTTP_STATUS" = "200" ]; then
+                echo "✅ HTTPS endpoint test passed (200 OK)"
+                break
+            fi
+
+            echo "Status: $HTTP_STATUS (Expected: 200)"
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Retrying in 10 seconds..."
+                sleep 10
+            fi
+        done
 
         if [ "$HTTP_STATUS" != "200" ]; then
-            echo "ERROR: HTTPS health check failed (status: $HTTP_STATUS)"
+            echo "ERROR: HTTPS health check failed after $MAX_RETRIES attempts (status: $HTTP_STATUS)"
             echo "Expected: 200, Got: $HTTP_STATUS"
+            echo ""
+            echo "=== Debugging Information ==="
+            echo "Container status:"
+            docker compose ps
+            echo ""
+            echo "Nginx logs (last 50 lines):"
             docker compose logs nginx --tail=50
+            echo ""
+            echo "App logs (last 50 lines):"
+            docker compose logs app --tail=50
             exit 1
         fi
-
-        echo "✅ HTTPS endpoint test passed (200 OK)"
         echo ""
         echo "=== Deployment Verification: SUCCESSFUL ==="
         exit 0
@@ -299,7 +327,7 @@ rollback() {
             sleep 15
 
             # Restore database
-            docker exec -i postgres psql -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-stories_db} < "$LATEST_BACKUP"
+            docker exec -i 1001-stories-postgres psql -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-stories_db} < "$LATEST_BACKUP"
         else
             echo "No backup found for rollback"
         fi
