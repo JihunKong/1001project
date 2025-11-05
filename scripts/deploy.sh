@@ -228,11 +228,10 @@ deploy() {
         sleep 30
 
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "✅ Remote deployment completed successfully!"
-        exit 0
+        echo "✅ Container startup completed successfully!"
 EOF
     then
-        error "Server deployment failed!"
+        error "Server deployment failed during container startup!"
         warn "Initiating automatic rollback..."
 
         # rollback 시도
@@ -247,7 +246,7 @@ EOF
         fi
     fi
 
-    # 배포 검증
+    # 배포 검증 (Step 4 continued)
     log "Verifying deployment..."
     if ! verify_deployment; then
         error "Deployment verification failed!"
