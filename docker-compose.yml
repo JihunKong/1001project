@@ -170,7 +170,7 @@ services:
           cpus: '0.1'
           memory: 64M
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/api/health"]
+      test: ["CMD", "curl", "-k", "-f", "https://localhost/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

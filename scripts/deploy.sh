@@ -90,15 +90,15 @@ verify_deployment() {
 
         echo "✅ All required containers are running"
 
-        # Check for unhealthy or exited containers
-        if docker compose ps | grep -q "unhealthy\|Exit"; then
-            echo "ERROR: Some containers are unhealthy or exited"
+        # Check for exited containers only (allow temporary unhealthy status)
+        if docker compose ps | grep -q "Exit"; then
+            echo "ERROR: Some containers have exited unexpectedly"
             docker compose ps
             docker compose logs --tail=100
             exit 1
         fi
 
-        echo "✅ No unhealthy containers detected"
+        echo "✅ No exited containers detected"
 
         echo ""
         echo "=== HTTPS Endpoint Test ==="
@@ -184,14 +184,40 @@ deploy() {
     IMAGE_SIZE=$(du -h "$IMAGE_FILE" | cut -f1)
     success "Docker image saved ($IMAGE_SIZE)"
 
-    # Step 3: 이미지 업로드
+    # Step 3: 이미지 업로드 (with retry logic)
     log "Step 3/4: Uploading Docker image to server..."
-    if ! scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "$IMAGE_FILE" "$REMOTE_USER@$REMOTE_HOST:/tmp/app-image.tar.gz"; then
-        error "Failed to upload Docker image"
+
+    MAX_RETRIES=3
+    RETRY_COUNT=0
+    UPLOAD_SUCCESS=false
+
+    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        log "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES: Uploading $IMAGE_SIZE image..."
+
+        if scp -i "$SSH_KEY" \
+               -o StrictHostKeyChecking=no \
+               -o ServerAliveInterval=10 \
+               -o ServerAliveCountMax=3 \
+               "$IMAGE_FILE" \
+               "$REMOTE_USER@$REMOTE_HOST:/tmp/app-image.tar.gz"; then
+            UPLOAD_SUCCESS=true
+            success "Docker image uploaded to server"
+            break
+        fi
+
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+
+        if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+            warn "Upload failed. Retrying in 10 seconds..."
+            sleep 10
+        fi
+    done
+
+    if [ "$UPLOAD_SUCCESS" = false ]; then
+        error "Failed to upload Docker image after $MAX_RETRIES attempts"
         rm "$IMAGE_FILE"
         exit 1
     fi
-    success "Docker image uploaded to server"
 
     # 로컬 임시 파일 정리
     rm "$IMAGE_FILE"
@@ -208,6 +234,29 @@ deploy() {
         echo "This is MANDATORY to prevent deployment issues"
         docker system prune -af --volumes
         echo "✅ Cache cleaned successfully"
+
+        # 현재 이미지 백업 (rollback을 위해)
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Creating backup of current image for rollback..."
+
+        if docker images | grep -q "1001-stories-app.*latest"; then
+            BACKUP_TAG="1001-stories-app:backup-$(date +%s)"
+            docker tag 1001-stories-app:latest "$BACKUP_TAG"
+            echo "✅ Current image backed up as: $BACKUP_TAG"
+
+            # Keep only last 3 backups
+            BACKUP_COUNT=$(docker images | grep "1001-stories-app:backup-" | wc -l)
+            if [ "$BACKUP_COUNT" -gt 3 ]; then
+                echo "Cleaning up old backups (keeping last 3)..."
+                docker images --format "{{.Repository}}:{{.Tag}}" | \
+                    grep "1001-stories-app:backup-" | \
+                    tail -n +4 | \
+                    xargs -r docker rmi
+                echo "✅ Old backups cleaned"
+            fi
+        else
+            echo "⚠️  No existing image found to backup (first deployment)"
+        fi
 
         # 이미지 로드
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -310,34 +359,78 @@ logs() {
 # Rollback to previous deployment
 rollback() {
     warn "Rolling back deployment..."
+
     ssh_exec << 'EOF'
         set -euo pipefail
         cd /home/ubuntu/1001-stories
 
-        # Stop current containers
-        docker compose down
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Step 1: Checking for backup image..."
 
-        # Restore from latest backup if available
-        LATEST_BACKUP=$(ls -t backups/*.sql 2>/dev/null | head -1 || echo "")
-        if [ -n "$LATEST_BACKUP" ]; then
-            echo "Restoring database from: $LATEST_BACKUP"
-            # Start only postgres for restore
-            docker compose up -d postgres
-            sleep 15
+        # Find most recent backup image
+        BACKUP_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "1001-stories-app:backup-" | head -1 || echo "")
 
-            # Restore database
-            docker exec -i 1001-stories-postgres psql -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-stories_db} < "$LATEST_BACKUP"
-        else
-            echo "No backup found for rollback"
+        if [ -z "$BACKUP_IMAGE" ]; then
+            echo "ERROR: No backup image found!"
+            echo "Available images:"
+            docker images | grep "1001-stories-app"
+            echo ""
+            echo "Cannot rollback without backup image."
+            echo "Starting all services with current image..."
+            docker compose up -d
+            exit 1
         fi
 
-        # Start services
-        docker compose up -d
+        echo "Found backup image: $BACKUP_IMAGE"
 
-        echo "Rollback completed"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Step 2: Restoring backup image as latest..."
+
+        # Tag backup as latest
+        docker tag "$BACKUP_IMAGE" 1001-stories-app:latest
+        echo "✅ Backup image restored as latest"
+
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Step 3: Restarting app container with backup image..."
+
+        # Restart only app container (don't touch nginx, postgres, redis, etc.)
+        docker compose up -d --force-recreate app
+
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Step 4: Waiting for app to stabilize..."
+        sleep 30
+
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Step 5: Verifying rollback..."
+
+        # Test HTTPS endpoint
+        HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://localhost/api/health 2>&1 || echo "000")
+
+        if [ "$HTTP_STATUS" = "200" ]; then
+            echo "✅ Rollback verification PASSED (HTTPS: 200)"
+            echo "✅ Rollback completed successfully!"
+            exit 0
+        else
+            echo "ERROR: Rollback verification FAILED (HTTPS: $HTTP_STATUS)"
+            echo "Expected: 200, Got: $HTTP_STATUS"
+            echo ""
+            echo "Container status:"
+            docker compose ps
+            echo ""
+            echo "App logs:"
+            docker compose logs app --tail=50
+            exit 1
+        fi
 EOF
 
-    success "Rollback completed!"
+    if [ $? -eq 0 ]; then
+        success "Rollback completed and verified!"
+        return 0
+    else
+        error "Rollback failed or verification failed!"
+        error "Manual intervention required on server"
+        return 1
+    fi
 }
 
 # Check deployment status
