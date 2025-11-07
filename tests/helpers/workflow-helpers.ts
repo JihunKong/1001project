@@ -350,16 +350,16 @@ async function verifyWorkflowHistory(
   console.log(`🔍 Verifying workflow history: ${expectedFromStatus} → ${expectedToStatus}`);
 
   const response = await page.request.get(
-    `/api/text-submissions/${submissionId}/workflow-history`
+    `/api/text-submissions/${submissionId}`
   );
 
   if (!response.ok()) {
-    console.log(`❌ Failed to fetch workflow history: ${response.status()}`);
+    console.log(`❌ Failed to fetch submission: ${response.status()}`);
     return false;
   }
 
   const data = await response.json();
-  const history: WorkflowHistoryEntry[] = data.history || data;
+  const history: WorkflowHistoryEntry[] = data.submission?.workflowHistory || [];
 
   const matchingEntry = history.find(
     (entry) =>
@@ -435,16 +435,16 @@ async function getWorkflowHistory(
   console.log(`📥 Fetching workflow history for ${submissionId}`);
 
   const response = await page.request.get(
-    `/api/text-submissions/${submissionId}/workflow-history`
+    `/api/text-submissions/${submissionId}`
   );
 
   if (!response.ok()) {
-    console.log(`❌ Failed to fetch workflow history: ${response.status()}`);
+    console.log(`❌ Failed to fetch submission: ${response.status()}`);
     return [];
   }
 
   const data = await response.json();
-  const history = data.history || data;
+  const history = data.submission?.workflowHistory || [];
 
   console.log(`✅ Workflow history fetched: ${history.length} entries`);
   return history;
