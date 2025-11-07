@@ -58,12 +58,10 @@ export function useTranslation(): UseTranslationReturn {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log('[useTranslation] Language changed to:', language);
     setIsLoading(true);
 
     loadTranslations(language)
       .then(data => {
-        console.log('[useTranslation] Loaded translations for:', language, 'Keys:', Object.keys(data).length);
         setTranslations({ ...data });
         setIsLoading(false);
       })

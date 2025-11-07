@@ -29,23 +29,17 @@ export function LanguageProvider({ children, initialLanguage }: LanguageProvider
 
   useEffect(() => {
     const cookieLang = getLanguagePreferenceClient();
-    console.log('[LanguageContext] Mount - cookie:', cookieLang, 'initial:', initialLanguage);
 
     if (cookieLang !== language) {
-      console.log('[LanguageContext] Syncing language from cookie:', cookieLang);
       setLanguage(cookieLang);
       setIsRTL(isRTLLanguage(cookieLang));
     }
-  }, []);
+  }, [initialLanguage, language]);
 
   const changeLanguage = useCallback((newLanguage: SupportedLanguage) => {
-    console.log('[LanguageContext] changeLanguage called:', newLanguage, 'current:', language);
-
     setLanguagePreferenceClient(newLanguage);
     setLanguage(newLanguage);
     setIsRTL(isRTLLanguage(newLanguage));
-
-    console.log('[LanguageContext] Language state updated, forcing page reload...');
 
     setTimeout(() => {
       window.location.reload();
