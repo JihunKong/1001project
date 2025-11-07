@@ -7,8 +7,10 @@ import Image from 'next/image';
 import { BookOpen, LogOut, LayoutDashboard, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { LanguageSelector } from '@/components/i18n/LanguageSelector';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function HomePageNavigation() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const router = useRouter();
   const loading = status === 'loading';
@@ -46,7 +48,7 @@ export default function HomePageNavigation() {
               className="text-[#2B2B2B] hover:text-[#91C549] font-medium transition-colors"
               style={{ fontFamily: 'Poppins', fontSize: '16px' }}
             >
-              About US
+              {t('nav.aboutUs')}
             </Link>
 
             <div
@@ -58,7 +60,7 @@ export default function HomePageNavigation() {
                 className="flex items-center text-[#2B2B2B] hover:text-[#91C549] font-medium transition-colors"
                 style={{ fontFamily: 'Poppins', fontSize: '16px' }}
               >
-                Programs
+                {t('nav.programs')}
                 <ChevronDown className="ml-1 w-4 h-4" />
               </button>
 
@@ -69,21 +71,21 @@ export default function HomePageNavigation() {
                     className="block px-4 py-2 text-[#2B2B2B] hover:bg-gray-50 hover:text-[#91C549] transition-colors"
                     style={{ fontFamily: 'Poppins', fontSize: '14px' }}
                   >
-                    English Learning Programs
+                    {t('programs.englishLearning.title')}
                   </Link>
                   <Link
                     href="/programs/writing-volunteer"
                     className="block px-4 py-2 text-[#2B2B2B] hover:bg-gray-50 hover:text-[#91C549] transition-colors"
                     style={{ fontFamily: 'Poppins', fontSize: '14px' }}
                   >
-                    Writing Volunteer
+                    {t('programs.writingVolunteer.title')}
                   </Link>
                   <Link
                     href="/programs/kid-library"
                     className="block px-4 py-2 text-[#2B2B2B] hover:bg-gray-50 hover:text-[#91C549] transition-colors"
                     style={{ fontFamily: 'Poppins', fontSize: '14px' }}
                   >
-                    Kid Library
+                    {t('programs.kidLibrarySection.title')}
                   </Link>
                 </div>
               )}
@@ -94,7 +96,7 @@ export default function HomePageNavigation() {
               className="text-[#2B2B2B] hover:text-[#91C549] font-medium transition-colors"
               style={{ fontFamily: 'Poppins', fontSize: '16px' }}
             >
-              Library
+              {t('nav.library')}
             </Link>
 
             <Link
@@ -102,7 +104,7 @@ export default function HomePageNavigation() {
               className="text-[#2B2B2B] hover:text-[#91C549] font-medium transition-colors"
               style={{ fontFamily: 'Poppins', fontSize: '16px' }}
             >
-              Volunteer
+              {t('nav.volunteer')}
             </Link>
           </div>
 
@@ -122,7 +124,7 @@ export default function HomePageNavigation() {
                   style={{ fontFamily: 'Poppins', fontSize: '16px' }}
                 >
                   <LayoutDashboard className="h-4 w-4 mr-2" />
-                  Dashboard
+                  {t('nav.dashboard')}
                 </button>
                 <button
                   onClick={handleLogout}
@@ -130,7 +132,7 @@ export default function HomePageNavigation() {
                   style={{ fontFamily: 'Poppins', fontSize: '16px' }}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  {t('nav.logout')}
                 </button>
               </div>
             ) : (
@@ -140,14 +142,14 @@ export default function HomePageNavigation() {
                   className="text-[#2B2B2B] hover:text-[#91C549] px-5 py-2 rounded-full font-medium transition-colors"
                   style={{ fontFamily: 'Poppins', fontSize: '16px' }}
                 >
-                  Log in
+                  {t('nav.login')}
                 </Link>
                 <Link
                   href="/signup"
                   className="bg-gradient-to-r from-[#04A59D] to-[#91C549] hover:opacity-90 text-white px-6 py-3 rounded-full font-medium transition-opacity shadow-md"
                   style={{ fontFamily: 'Poppins', fontSize: '16px' }}
                 >
-                  Sign Up
+                  {t('nav.signup')}
                 </Link>
               </>
             )}

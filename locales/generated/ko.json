@@ -43,27 +43,15 @@
     }
   },
   "nav": {
-    "home": "홈",
-    "myStories": "내 스토리",
-    "library": "라이브러리",
-    "notifications": "알림",
-    "profile": "내 프로필",
-    "skipToMain": "본문으로 건너뛰기",
-    "mainNavigation": "주 내비게이션",
-    "mobileNavigation": "모바일 내비게이션",
-    "currentPage": "현재 페이지",
-    "userMenu": "사용자 메뉴",
-    "helpSupport": "도움말 및 지원",
-    "signOut": "로그아웃",
     "aboutUs": "소개",
     "programs": "프로그램",
-    "getInvolved": "참여하기",
-    "signIn": "로그인",
+    "library": "도서관",
+    "volunteer": "자원봉사",
+    "login": "로그인",
     "signup": "회원가입",
+    "english": "한국어",
     "dashboard": "대시보드",
-    "help": "도움말",
-    "logout": "로그아웃",
-    "language": "언어"
+    "logout": "로그아웃"
   },
   "stories": {
     "title": "내 스토리",
@@ -331,31 +319,38 @@
     "cta": "도서관 둘러보기"
   },
   "features": {
-    "discover": {
-      "title": "세계의 이야기 발견",
-      "description": "전 세계 소외된 지역 어린이들의 풍부한 이야기 라이브러리에 액세스"
+    "kidLibrary": {
+      "title": "어린이 도서관",
+      "description": "전 세계 어린 작가들이 쓴 이야기를 발견하세요. 스토리텔링을 통해 꿈을 탐험합니다."
     },
-    "publish": {
-      "title": "이야기 출판",
-      "description": "협업 출판 플랫폼을 통해 세계와 당신의 목소리를 공유하세요"
+    "globalMentoring": {
+      "title": "글로벌 멘토링",
+      "description": "국경을 넘어 배움에 영감을 주는 이야기를 통해 어린 마음과 글로벌 멘토를 연결합니다."
     },
-    "learning": {
-      "title": "AI 강화 학습",
-      "description": "더 나은 이해를 위한 대화형 단어 설명 및 콘텐츠 분석"
+    "learningProgram": {
+      "title": "학습 프로그램",
+      "description": "상상력과 자신감을 키우는 이야기를 통해 어린이들이 영어를 배울 수 있도록 돕습니다."
+    },
+    "volunteerSupport": {
+      "title": "자원봉사 지원",
+      "description": "학생들은 작가로서 자신의 이야기를 출판하면서 학교와 기관에 자랑스럽게 공유할 수 있는 자원봉사 인증서를 받을 수 있습니다."
     }
   },
   "programs": {
-    "empowerment": {
-      "title": "역량 강화의 씨앗",
-      "description": "교육과 스토리텔링을 통해 소외된 지역 어린이들을 지원"
+    "englishLearning": {
+      "title": "영어 학습 프로그램",
+      "description": "영감을 주는 이야기를 통해 영어를 배우세요. 우리 프로그램은 어린이들이 언어, 문화, 상상력을 탐험하면서 실제 의사소통 능력을 키울 수 있도록 합니다.",
+      "cta": "자세히 보기"
     },
-    "diversity": {
-      "title": "글로벌 다양성 이니셔티브",
-      "description": "세계 모든 곳의 다양한 목소리와 관점을 축하"
+    "writingVolunteer": {
+      "title": "글쓰기 자원봉사",
+      "description": "이야기를 쓰고 영향을 미치세요. 글쓰기 자원봉사를 통해 학생들은 젊은 작가가 되며 학교와 기관에 자랑스럽게 공유할 수 있는 자원봉사 인증서를 받습니다.",
+      "cta": "자세히 보기"
     },
-    "english": {
-      "title": "영어 학습",
-      "description": "영어 학습자를 위해 설계된 대화형 이야기"
+    "kidLibrarySection": {
+      "title": "어린이 도서관",
+      "description": "어린이 도서관은 다양한 문화권의 어린이들이 쓴 이야기를 읽고 들을 수 있는 글로벌 스토리 컬렉션입니다. 다양한 목소리를 발견하고 공감을 배우며 스토리텔링을 통해 세상을 탐험하는 곳입니다.",
+      "cta": "도서관 둘러보기"
     }
   },
   "footer": {
@@ -365,10 +360,12 @@
       "primary": "시작하기",
       "secondary": "자세히 알아보기"
     },
-    "copyright": "© 2025 1001 Stories. 모든 권리 보유.",
+    "tagline": "스토리를 통해 어린이들의 목소리에 힘을 실어주고 세상에 영감을 줍니다.",
+    "contact": "연락처",
+    "contactForm": "문의 양식",
+    "copyright": "©2024 1001 Stories. 모든 권리 보유",
     "privacy": "개인정보 처리방침",
-    "terms": "서비스 약관",
-    "contact": "문의하기"
+    "terms": "서비스 약관"
   },
   "about": {
     "hero": {
@@ -497,5 +494,11 @@
       "name": "꾸준한 기여자",
       "description": "지난 30일 동안 활동"
     }
+  },
+  "footerCta": {
+    "title": "함께 여정을 시작하세요",
+    "description": "글로벌 스토리텔러 커뮤니티에 참여하고 문화유산 보존을 도와주세요.",
+    "signIn": "로그인",
+    "signUp": "회원가입"
   }
 }

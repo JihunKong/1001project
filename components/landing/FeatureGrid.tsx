@@ -2,51 +2,54 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Feature {
   icon: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
 }
 
 const features: Feature[] = [
   {
     icon: '/landing/icons/icon-kid-library.svg',
-    title: 'Kid Library',
-    description: 'Discover stories written by young authors around the world. Explore dreams through storytelling.'
+    titleKey: 'features.kidLibrary.title',
+    descriptionKey: 'features.kidLibrary.description'
   },
   {
     icon: '/landing/icons/icon-global-mentoring.svg',
-    title: 'Global Mentoring',
-    description: 'Bridging young minds and global mentors through stories that inspire learning beyond borders.'
+    titleKey: 'features.globalMentoring.title',
+    descriptionKey: 'features.globalMentoring.description'
   },
   {
     icon: '/landing/icons/icon-learning-program.svg',
-    title: 'Learning Program',
-    description: 'Empowering children to learn English through stories that spark imagination and confidence.'
+    titleKey: 'features.learningProgram.title',
+    descriptionKey: 'features.learningProgram.description'
   },
   {
     icon: '/landing/icons/icon-volunteer.svg',
-    title: 'Volunteer Support',
-    description: 'Students can publish their stories as authors while earning a certified record of volunteer service.'
+    titleKey: 'features.volunteerSupport.title',
+    descriptionKey: 'features.volunteerSupport.description'
   }
 ];
 
 const FeatureGrid: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="py-12 bg-[#F9FCF7]">
       <div className="max-w-[1240px] mx-auto px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
             <div
-              key={feature.title}
+              key={feature.titleKey}
               className="flex flex-col items-center text-center space-y-4"
             >
               {/* Icon */}
               <div className="w-[85px] h-[85px] relative">
                 <Image
                   src={feature.icon}
-                  alt={feature.title}
+                  alt={t(feature.titleKey)}
                   width={85}
                   height={85}
                   className="object-contain"
@@ -62,7 +65,7 @@ const FeatureGrid: React.FC = () => {
                   lineHeight: '36px'
                 }}
               >
-                {feature.title}
+                {t(feature.titleKey)}
               </h3>
 
               {/* Description */}
@@ -75,7 +78,7 @@ const FeatureGrid: React.FC = () => {
                   lineHeight: '24px'
                 }}
               >
-                {feature.description}
+                {t(feature.descriptionKey)}
               </p>
             </div>
           ))}

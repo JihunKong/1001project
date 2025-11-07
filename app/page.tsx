@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { BookOpen } from 'lucide-react';
@@ -6,8 +8,10 @@ import EnhancedHeroSection from '@/components/ui/EnhancedHeroSection';
 import FeatureGrid from '@/components/landing/FeatureGrid';
 import ProgramSections from '@/components/landing/ProgramSections';
 import FooterCTA from '@/components/landing/FooterCTA';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function Home() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -45,7 +49,7 @@ export default function Home() {
                 className="text-[#FAFAFA]"
                 style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 500, lineHeight: '38px' }}
               >
-                Empowering young voices and inspiring the world through stories.
+                {t('footer.tagline')}
               </p>
 
               {/* Social Icons */}
@@ -69,7 +73,7 @@ export default function Home() {
                 className="text-[#FAFAFA] font-semibold"
                 style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
               >
-                Contact
+                {t('footer.contact')}
               </h3>
               <div className="space-y-2">
                 <a
@@ -84,7 +88,7 @@ export default function Home() {
                   className="block text-[#FAFAFA] hover:underline"
                   style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 400, lineHeight: '24px' }}
                 >
-                  Contact Form
+                  {t('footer.contactForm')}
                 </Link>
               </div>
             </div>
@@ -99,7 +103,7 @@ export default function Home() {
               className="text-[#FAFAFA] font-semibold"
               style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
             >
-              ©2024 1001 Stories. All rights reserved
+              {t('footer.copyright')}
             </p>
             <div className="flex space-x-6">
               <Link
@@ -107,14 +111,14 @@ export default function Home() {
                 className="text-[#FAFAFA] hover:underline font-semibold"
                 style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
               >
-                Privacy Policy
+                {t('footer.privacy')}
               </Link>
               <Link
                 href="/terms"
                 className="text-[#FAFAFA] hover:underline font-semibold"
                 style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
               >
-                Terms of Service
+                {t('footer.terms')}
               </Link>
             </div>
           </div>

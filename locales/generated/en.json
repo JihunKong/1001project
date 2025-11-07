@@ -43,27 +43,15 @@
     }
   },
   "nav": {
-    "home": "Home",
-    "myStories": "My Stories",
-    "library": "Library",
-    "notifications": "Notifications",
-    "profile": "My Profile",
-    "skipToMain": "Skip to main content",
-    "mainNavigation": "Main navigation",
-    "mobileNavigation": "Mobile navigation",
-    "currentPage": "current page",
-    "userMenu": "User menu",
-    "helpSupport": "Help & Support",
-    "signOut": "Sign Out",
-    "aboutUs": "About Us",
+    "aboutUs": "About US",
     "programs": "Programs",
-    "getInvolved": "Get Involved",
-    "signIn": "Sign In",
+    "library": "Library",
+    "volunteer": "Volunteer",
+    "login": "Log in",
     "signup": "Sign Up",
+    "english": "English",
     "dashboard": "Dashboard",
-    "help": "Help & Support",
-    "logout": "Log Out",
-    "language": "Language"
+    "logout": "Logout"
   },
   "stories": {
     "title": "My Stories",
@@ -331,31 +319,38 @@
     "cta": "Explore Library"
   },
   "features": {
-    "discover": {
-      "title": "Discover Global Stories",
-      "description": "Access a rich library of stories from children in underserved communities worldwide"
+    "kidLibrary": {
+      "title": "Kid Library",
+      "description": "Discover stories written by young authors around the world. Explore dreams through storytelling."
     },
-    "publish": {
-      "title": "Publish Your Stories",
-      "description": "Share your voice with the world through our collaborative publishing platform"
+    "globalMentoring": {
+      "title": "Global Mentoring",
+      "description": "Bridging young minds and global mentors through stories that inspire learning beyond borders."
     },
-    "learning": {
-      "title": "AI-Enhanced Learning",
-      "description": "Interactive word explanations and content parsing for better understanding"
+    "learningProgram": {
+      "title": "Learning Program",
+      "description": "Empowering children to learn English through stories that spark imagination and confidence."
+    },
+    "volunteerSupport": {
+      "title": "Volunteer Support",
+      "description": "Students can publish their stories as authors while earning a certified record of volunteer service."
     }
   },
   "programs": {
-    "empowerment": {
-      "title": "Seeds of Empowerment",
-      "description": "Supporting children in underserved communities through education and storytelling"
+    "englishLearning": {
+      "title": "English Learning Programs",
+      "description": "Learn English through stories that inspire. Our program lets children explore language, culture, and imagination while building real communication skills.",
+      "cta": "Learn More"
     },
-    "diversity": {
-      "title": "Global Diversity Initiative",
-      "description": "Celebrating diverse voices and perspectives from every corner of the world"
+    "writingVolunteer": {
+      "title": "Writing Volunteer",
+      "description": "Write a story, make an impact. Through Writing Volunteer, students become young authors while earning a Volunteer Certificate they can proudly share with schools and organizations.",
+      "cta": "Learn More"
     },
-    "english": {
-      "title": "English Language Learning",
-      "description": "Interactive stories designed for English language learners"
+    "kidLibrarySection": {
+      "title": "Kid Library",
+      "description": "Kid Library is a global story collection where children can read and listen to stories written by kids from different cultures. It's a place to discover diverse voices, learn empathy, and explore the world through storytelling.",
+      "cta": "Explore Library"
     }
   },
   "footer": {
@@ -365,10 +360,12 @@
       "primary": "Get Started",
       "secondary": "Learn More"
     },
-    "copyright": "© 2025 1001 Stories. All rights reserved.",
+    "tagline": "Empowering young voices and inspiring the world through stories.",
+    "contact": "Contact",
+    "contactForm": "Contact Form",
+    "copyright": "©2024 1001 Stories. All rights reserved",
     "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "contact": "Contact Us"
+    "terms": "Terms of Service"
   },
   "about": {
     "hero": {
@@ -497,5 +494,11 @@
       "name": "Consistent Contributor",
       "description": "Active in the last 30 days"
     }
+  },
+  "footerCta": {
+    "title": "Let's Start Our Journey",
+    "description": "Join our global community of storytellers and help preserve cultural heritage.",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
   }
 }

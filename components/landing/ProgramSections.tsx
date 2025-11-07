@@ -4,8 +4,11 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 const ProgramSections: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <>
       {/* English Learning Programs Section */}
@@ -16,7 +19,7 @@ const ProgramSections: React.FC = () => {
             <div className="relative h-[700px]">
               <Image
                 src="/landing/elp-illustration.svg"
-                alt="English Learning Programs"
+                alt={t('programs.englishLearning.title')}
                 fill
                 className="object-contain"
               />
@@ -32,7 +35,7 @@ const ProgramSections: React.FC = () => {
                   lineHeight: '48px'
                 }}
               >
-                English Learning Programs
+                {t('programs.englishLearning.title')}
               </h2>
 
               <p
@@ -44,7 +47,7 @@ const ProgramSections: React.FC = () => {
                   lineHeight: '24px'
                 }}
               >
-                Learn English through stories that inspire. Our program lets children explore language, culture, and imagination while building real communication skills.
+                {t('programs.englishLearning.description')}
               </p>
 
               <Link
@@ -60,7 +63,7 @@ const ProgramSections: React.FC = () => {
                 }}
               >
                 <div className="absolute inset-0 bg-[#D1D5DC] rounded-2xl translate-x-1.5 translate-y-2 -z-10"></div>
-                <span className="text-[#F4F4F4]">Learn More</span>
+                <span className="text-[#F4F4F4]">{t('programs.englishLearning.cta')}</span>
                 <ArrowUpRight className="ml-2 w-6 h-6 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Link>
             </div>
@@ -82,7 +85,7 @@ const ProgramSections: React.FC = () => {
                   lineHeight: '48px'
                 }}
               >
-                Writing Volunteer
+                {t('programs.writingVolunteer.title')}
               </h2>
 
               <p
@@ -94,7 +97,7 @@ const ProgramSections: React.FC = () => {
                   lineHeight: '24px'
                 }}
               >
-                Write a story, make an impact. Through Writing Volunteer, students become young authors while earning a Volunteer Certificate they can proudly share with schools and organizations.
+                {t('programs.writingVolunteer.description')}
               </p>
 
               <Link
@@ -110,7 +113,7 @@ const ProgramSections: React.FC = () => {
                 }}
               >
                 <div className="absolute inset-0 bg-[#D1D5DC] rounded-2xl translate-x-1.5 translate-y-2 -z-10"></div>
-                <span className="text-[#F4F4F4]">Learn More</span>
+                <span className="text-[#F4F4F4]">{t('programs.writingVolunteer.cta')}</span>
                 <ArrowUpRight className="ml-2 w-6 h-6 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Link>
             </div>
@@ -119,7 +122,7 @@ const ProgramSections: React.FC = () => {
             <div className="relative h-[700px] lg:order-2">
               <Image
                 src="/landing/writing-volunteer-illustration.svg"
-                alt="Writing Volunteer"
+                alt={t('programs.writingVolunteer.title')}
                 fill
                 className="object-contain"
               />
@@ -136,7 +139,7 @@ const ProgramSections: React.FC = () => {
             <div className="relative h-[700px]">
               <Image
                 src="/landing/kid-library-illustration.svg"
-                alt="Kid Library"
+                alt={t('programs.kidLibrarySection.title')}
                 fill
                 className="object-contain"
               />
@@ -152,7 +155,7 @@ const ProgramSections: React.FC = () => {
                   lineHeight: '48px'
                 }}
               >
-                Kid Library
+                {t('programs.kidLibrarySection.title')}
               </h2>
 
               <p
@@ -164,7 +167,7 @@ const ProgramSections: React.FC = () => {
                   lineHeight: '24px'
                 }}
               >
-                Kid Library is a global story collection where children can read and listen to stories written by kids from different cultures. It&apos;s a place to discover diverse voices, learn empathy, and explore the world through storytelling.
+                {t('programs.kidLibrarySection.description')}
               </p>
 
               <Link
@@ -180,7 +183,7 @@ const ProgramSections: React.FC = () => {
                 }}
               >
                 <div className="absolute inset-0 bg-[#D1D5DC] rounded-2xl translate-x-1.5 translate-y-2 -z-10"></div>
-                <span className="text-[#F4F4F4]">Explore Library</span>
+                <span className="text-[#F4F4F4]">{t('programs.kidLibrarySection.cta')}</span>
                 <ArrowUpRight className="ml-2 w-6 h-6 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Link>
             </div>

@@ -3,8 +3,10 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 const FooterCTA: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <section className="relative py-24 bg-[#FCF6ED] overflow-hidden">
       {/* Background Pattern */}
@@ -29,7 +31,7 @@ const FooterCTA: React.FC = () => {
               lineHeight: '48px'
             }}
           >
-            Let&apos;s Start Our Journey
+            {t('footerCta.title')}
           </h2>
 
           {/* Description */}
@@ -42,7 +44,7 @@ const FooterCTA: React.FC = () => {
               lineHeight: '19px'
             }}
           >
-            Join our global community of storytellers and help preserve cultural heritage.
+            {t('footerCta.description')}
           </p>
 
           {/* CTA Buttons */}
@@ -60,7 +62,7 @@ const FooterCTA: React.FC = () => {
                 height: '48px'
               }}
             >
-              Sign In
+              {t('footerCta.signIn')}
             </Link>
 
             {/* Sign Up Button */}
@@ -77,7 +79,7 @@ const FooterCTA: React.FC = () => {
               }}
             >
               <div className="absolute inset-0 bg-[#FCC36B] rounded-2xl translate-x-1.5 translate-y-1.5 -z-10"></div>
-              Sign Up
+              {t('footerCta.signUp')}
             </Link>
           </div>
         </div>
