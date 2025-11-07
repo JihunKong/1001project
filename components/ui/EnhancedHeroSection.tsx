@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface HeroSectionProps {
   abTestVariant?: string;
@@ -14,6 +15,8 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
   abTestVariant = 'default',
   onEngagement
 }) => {
+  const { t } = useTranslation();
+
   const handleCTAClick = () => {
     onEngagement?.({
       storyId: 'hero_cta',
@@ -53,7 +56,7 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
                 textShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)'
               }}
             >
-              Empower Young Voices
+              {t('hero.subtitle')}
             </h2>
 
             {/* Large Title */}
@@ -66,7 +69,7 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
                 textShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)'
               }}
             >
-              Inspire the World
+              {t('hero.title')}
             </h1>
 
             {/* Description */}
@@ -80,7 +83,7 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
                 textShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)'
               }}
             >
-              Our mission is to empower children to write, share, and learn through storytelling.
+              {t('hero.description')}
             </p>
 
             {/* CTA Button */}
@@ -98,7 +101,7 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
                   height: '48px'
                 }}
               >
-                <span className="text-[#F4F4F4]">Explore Library</span>
+                <span className="text-[#F4F4F4]">{t('hero.cta')}</span>
                 <ArrowUpRight className="ml-2 w-6 h-6 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </Link>
             </div>
