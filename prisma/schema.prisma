@@ -135,7 +135,12 @@ model Profile {
   dateOfBirth     DateTime?
   language        String           @default("en")
   timezone        String           @default("UTC")
-  
+
+  // Profile display enhancements
+  avatarUrl       String?
+  coverImageUrl   String?
+  tags            String[]
+
   // COPPA Compliance Fields
   isMinor         Boolean          @default(false)
   ageVerificationStatus AgeVerificationStatus @default(PENDING)
@@ -145,27 +150,31 @@ model Profile {
   parentEmail     String?
   parentName      String?
   coppaCompliant  Boolean          @default(false)
-  
+
   // For teachers/institutions
   teachingLevel   String?
   subjects        String[]
   studentCount    Int?
-  
+
   // For volunteers
   skills          String[]
   availability    String?
   experience      String?          @db.Text
-  
+
   // Preferences
   emailNotifications Boolean       @default(true)
   pushNotifications Boolean        @default(true)
   newsletter      Boolean          @default(true)
-  
+
+  // Cached stats for performance
+  cachedStats     Json?
+  statsUpdatedAt  DateTime?
+
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  
+
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@map("profiles")
 }
 

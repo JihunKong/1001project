@@ -1,10 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import {
   SupportedLanguage,
   setLanguagePreferenceClient,
+  getLanguagePreferenceClient,
   isRTLLanguage
 } from './language-cookie';
 
@@ -26,12 +27,30 @@ export function LanguageProvider({ children, initialLanguage }: LanguageProvider
   const [language, setLanguage] = useState<SupportedLanguage>(initialLanguage);
   const [isRTL, setIsRTL] = useState<boolean>(isRTLLanguage(initialLanguage));
 
+  useEffect(() => {
+    const cookieLang = getLanguagePreferenceClient();
+    console.log('[LanguageContext] Mount - cookie:', cookieLang, 'initial:', initialLanguage);
+
+    if (cookieLang !== language) {
+      console.log('[LanguageContext] Syncing language from cookie:', cookieLang);
+      setLanguage(cookieLang);
+      setIsRTL(isRTLLanguage(cookieLang));
+    }
+  }, []);
+
   const changeLanguage = useCallback((newLanguage: SupportedLanguage) => {
+    console.log('[LanguageContext] changeLanguage called:', newLanguage, 'current:', language);
+
     setLanguagePreferenceClient(newLanguage);
     setLanguage(newLanguage);
     setIsRTL(isRTLLanguage(newLanguage));
-    router.refresh();
-  }, [router]);
+
+    console.log('[LanguageContext] Language state updated, forcing page reload...');
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+  }, [language]);
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage, isRTL }}>

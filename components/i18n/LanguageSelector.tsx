@@ -40,8 +40,12 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
   }, []);
 
   const handleLanguageChange = (lang: SupportedLanguage) => {
+    console.log('[LanguageSelector] Language change clicked:', lang);
+    console.log('[LanguageSelector] Current language:', language);
+
     setLanguage(lang);
-    setIsOpen(false);
+
+    console.log('[LanguageSelector] Language change initiated, dropdown will close after reload');
   };
 
   const handleReset = async () => {

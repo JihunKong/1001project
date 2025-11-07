@@ -58,17 +58,28 @@ export function useTranslation(): UseTranslationReturn {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log('[useTranslation] Language changed to:', language);
     setIsLoading(true);
 
-    loadTranslations(language).then(data => {
-      setTranslations({ ...data });
-      setIsLoading(false);
-    });
+    loadTranslations(language)
+      .then(data => {
+        console.log('[useTranslation] Loaded translations for:', language, 'Keys:', Object.keys(data).length);
+        setTranslations({ ...data });
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error('[useTranslation] Failed to load translations for:', language, error);
+        setIsLoading(false);
+      });
   }, [language]);
 
   const t = useCallback((key: string): string => {
-    return getNestedValue(translations, key);
-  }, [translations]);
+    const value = getNestedValue(translations, key);
+    if (!value && value !== '') {
+      console.warn('[useTranslation] Missing translation key:', key, 'for language:', language);
+    }
+    return value;
+  }, [translations, language]);
 
   return {
     t,

@@ -156,6 +156,7 @@ export default withAuth(
           pathname.startsWith('/api/auth') ||
           pathname.startsWith('/api/health') ||
           pathname.startsWith('/api/books') ||
+          pathname.startsWith('/api/translations') ||
           pathname.startsWith('/login') ||
           pathname.startsWith('/signup') ||
           pathname.startsWith('/about') ||

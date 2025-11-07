@@ -24,16 +24,22 @@ export default function WriterLNB() {
       icon: Home
     },
     {
-      id: 'stories',
-      label: t('nav.myStories'),
-      href: '/dashboard/writer/stories',
-      icon: FileText
-    },
-    {
       id: 'library',
       label: t('nav.library'),
       href: '/dashboard/writer/library',
       icon: Bookmark
+    },
+    {
+      id: 'profile',
+      label: 'Profile',
+      href: '/profile',
+      icon: User
+    },
+    {
+      id: 'stories',
+      label: t('nav.myStories'),
+      href: '/dashboard/writer/stories',
+      icon: FileText
     }
   ];
 
