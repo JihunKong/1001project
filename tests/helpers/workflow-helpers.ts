@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, APIResponse } from '@playwright/test';
 
 export type WorkflowAction =
   | 'submit'
@@ -61,7 +61,7 @@ async function performWorkflowAction(
   submissionId: string,
   action: WorkflowAction,
   data?: Partial<WorkflowActionData>
-): Promise<Response> {
+): Promise<APIResponse> {
   const response = await page.request.put(
     `/api/text-submissions/${submissionId}`,
     {
@@ -82,7 +82,7 @@ async function storyManagerApprove(
   page: Page,
   submissionId: string,
   feedback?: string
-): Promise<Response> {
+): Promise<APIResponse> {
   console.log(`📝 STORY_MANAGER approving submission ${submissionId}`);
 
   const response = await performWorkflowAction(page, submissionId, 'story_approve', {
@@ -102,7 +102,7 @@ async function storyManagerRequestRevision(
   page: Page,
   submissionId: string,
   feedback: string
-): Promise<Response> {
+): Promise<APIResponse> {
   console.log(`📝 STORY_MANAGER requesting revision for ${submissionId}`);
 
   const response = await performWorkflowAction(page, submissionId, 'story_needs_revision', {
@@ -122,7 +122,7 @@ async function storyManagerReject(
   page: Page,
   submissionId: string,
   reason: string
-): Promise<Response> {
+): Promise<APIResponse> {
   console.log(`📝 STORY_MANAGER rejecting submission ${submissionId}`);
 
   const response = await performWorkflowAction(page, submissionId, 'reject', {
@@ -143,7 +143,7 @@ async function bookManagerDecideFormat(
   submissionId: string,
   decision: FormatDecision,
   notes?: string
-): Promise<Response> {
+): Promise<APIResponse> {
   console.log(`📚 BOOK_MANAGER deciding format ${decision} for ${submissionId}`);
 
   const response = await performWorkflowAction(page, submissionId, 'format_decision', {
@@ -164,7 +164,7 @@ async function contentAdminPublish(
   page: Page,
   submissionId: string,
   notes?: string
-): Promise<Response> {
+): Promise<APIResponse> {
   console.log(`🎉 CONTENT_ADMIN publishing submission ${submissionId}`);
 
   const response = await performWorkflowAction(page, submissionId, 'final_approve', {
@@ -184,7 +184,7 @@ async function contentAdminReject(
   page: Page,
   submissionId: string,
   reason: string
-): Promise<Response> {
+): Promise<APIResponse> {
   console.log(`❌ CONTENT_ADMIN rejecting submission ${submissionId}`);
 
   const response = await performWorkflowAction(page, submissionId, 'reject', {

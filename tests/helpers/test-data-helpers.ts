@@ -195,7 +195,7 @@ async function createWorkflowHistory(
   fromStatus: TextSubmissionStatus,
   toStatus: TextSubmissionStatus,
   performedById: string,
-  notes?: string
+  comment?: string
 ): Promise<void> {
   await prisma.workflowHistory.create({
     data: {
@@ -203,7 +203,7 @@ async function createWorkflowHistory(
       fromStatus,
       toStatus,
       performedById,
-      notes,
+      comment,
     },
   });
 
