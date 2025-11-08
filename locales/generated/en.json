@@ -51,7 +51,9 @@
     "signup": "Sign Up",
     "english": "English",
     "dashboard": "Dashboard",
-    "logout": "Logout"
+    "logout": "Logout",
+    "home": "Home",
+    "myStories": "My Stories"
   },
   "stories": {
     "title": "My Stories",

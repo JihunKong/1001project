@@ -63,7 +63,11 @@
     "dashboard": "Панель управления",
     "help": "Помощь и поддержка",
     "logout": "Выйти",
-    "language": "Язык"
+    "language": "Язык",
+    "volunteer": "Волонтёр",
+    "login": "Войти",
+    "home": "Главная",
+    "myStories": "Мои истории"
   },
   "stories": {
     "title": "Мои истории",

@@ -63,7 +63,11 @@
     "dashboard": "Panel",
     "help": "Ayuda y soporte",
     "logout": "Cerrar sesión",
-    "language": "Idioma"
+    "language": "Idioma",
+    "volunteer": "Voluntario",
+    "login": "Iniciar sesión",
+    "home": "Inicio",
+    "myStories": "Mis Historias"
   },
   "stories": {
     "title": "Mis Historias",

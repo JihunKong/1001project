@@ -63,7 +63,11 @@
     "dashboard": "لوحة التحكم",
     "help": "المساعدة والدعم",
     "logout": "تسجيل الخروج",
-    "language": "اللغة"
+    "language": "اللغة",
+    "volunteer": "تطوع",
+    "login": "تسجيل الدخول",
+    "home": "الرئيسية",
+    "myStories": "قصصي"
   },
   "stories": {
     "title": "قصصي",

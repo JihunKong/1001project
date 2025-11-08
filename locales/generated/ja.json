@@ -63,7 +63,11 @@
     "dashboard": "ダッシュボード",
     "help": "ヘルプとサポート",
     "logout": "ログアウト",
-    "language": "言語"
+    "language": "言語",
+    "volunteer": "ボランティア",
+    "login": "ログイン",
+    "home": "ホーム",
+    "myStories": "マイストーリー"
   },
   "stories": {
     "title": "マイストーリー",

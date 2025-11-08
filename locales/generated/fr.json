@@ -63,7 +63,11 @@
     "dashboard": "Tableau de bord",
     "help": "Aide et support",
     "logout": "Se déconnecter",
-    "language": "Langue"
+    "language": "Langue",
+    "volunteer": "Bénévole",
+    "login": "Se connecter",
+    "home": "Accueil",
+    "myStories": "Mes Histoires"
   },
   "stories": {
     "title": "Mes Histoires",

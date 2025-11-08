@@ -109,7 +109,6 @@ services:
     command: [
       "redis-server",
       "--appendonly", "yes",
-      "--requirepass", "${REDIS_PASSWORD}",
       "--maxmemory", "256mb",
       "--maxmemory-policy", "allkeys-lru",
       "--save", "900", "1",

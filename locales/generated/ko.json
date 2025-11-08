@@ -51,7 +51,9 @@
     "signup": "회원가입",
     "english": "한국어",
     "dashboard": "대시보드",
-    "logout": "로그아웃"
+    "logout": "로그아웃",
+    "home": "홈",
+    "myStories": "내 스토리"
   },
   "stories": {
     "title": "내 스토리",

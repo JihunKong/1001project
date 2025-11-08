@@ -63,7 +63,11 @@
     "dashboard": "Dashboard",
     "help": "Hilfe & Support",
     "logout": "Abmelden",
-    "language": "Sprache"
+    "language": "Sprache",
+    "volunteer": "Freiwillige",
+    "login": "Anmelden",
+    "home": "Startseite",
+    "myStories": "Meine Geschichten"
   },
   "stories": {
     "title": "Meine Geschichten",
