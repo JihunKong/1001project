@@ -72,6 +72,7 @@ model User {
   
   // System
   notifications   Notification[]
+  notificationPreferences NotificationPreferences?
   activityLogs    ActivityLog[]
   
   // CMS Admin
@@ -98,6 +99,9 @@ model User {
 
   // Comment system relations
   authoredComments        Comment[]        @relation("AuthoredComments")
+
+  // Achievement system relations
+  userAchievements        UserAchievement[]
 
   // Institution management relations
   institutionAdminOf      Institution[]    @relation("InstitutionAdmins")
@@ -1399,6 +1403,33 @@ enum NotificationType {
   ACHIEVEMENT
 }
 
+// User notification preferences
+model NotificationPreferences {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+
+  // Delivery methods
+  emailNotifications   Boolean  @default(true)
+  pushNotifications    Boolean  @default(true)
+
+  // Notification type preferences
+  statusChanges        Boolean  @default(true)
+  feedback             Boolean  @default(true)
+  deadlines            Boolean  @default(true)
+  achievements         Boolean  @default(true)
+  reviewAssignments    Boolean  @default(false)
+
+  // Email digest frequency
+  digestFrequency      String   @default("weekly") // 'never', 'daily', 'weekly'
+
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("notification_preferences")
+}
+
 // Activity logging
 model ActivityLog {
   id              String           @id @default(cuid())
@@ -1970,6 +2001,11 @@ model TextSubmission {
   language        String           @default("en")
   authorAlias     String?          // Author's chosen name/pseudonym
 
+  // Project metadata for profile display
+  coverImageUrl   String?          // Cover image for project card
+  thumbnailUrl    String?          // Thumbnail for project list
+  lastEditedAt    DateTime         @default(now()) @updatedAt
+
   // Content metadata
   summary         String?          @db.Text
   ageRange        String?          // Target age group
@@ -2396,4 +2432,63 @@ model Comment {
   @@index([parentId])
   @@index([status])
   @@map("comments")
+}
+
+// ==================================================================
+// ACHIEVEMENT SYSTEM
+// ==================================================================
+
+// Achievement definitions
+model Achievement {
+  id          String           @id @default(cuid())
+  key         String           @unique // "first_story", "ten_published", etc.
+  nameKey     String           // i18n key for name (e.g. "achievements.first_story.name")
+  descKey     String           // i18n key for description
+  iconUrl     String?          // URL to achievement icon/badge
+  category    AchievementCategory
+  criteria    Json             // Evaluation criteria: { type: "story_count", status: "PUBLISHED", count: 10 }
+  points      Int              @default(0)
+  sortOrder   Int              @default(0)
+  isActive    Boolean          @default(true)
+
+  userAchievements UserAchievement[]
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([category])
+  @@index([isActive])
+  @@map("achievements")
+}
+
+// User achievement progress and awards
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime    @default(now())
+  progress      Json?       // Current progress toward achievement: { current: 5, target: 10 }
+  isUnlocked    Boolean     @default(false)
+  notifiedAt    DateTime?   // When user was notified about achievement
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@index([isUnlocked])
+  @@map("user_achievements")
+}
+
+enum AchievementCategory {
+  WRITING       // Story writing achievements
+  READING       // Reading achievements
+  COMMUNITY     // Community engagement
+  MILESTONE     // Platform milestones
+  TEACHING      // Teaching achievements
+  LEARNING      // Learning achievements
 }

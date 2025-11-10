@@ -5,9 +5,9 @@ import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import NotificationCenter from '@/components/notifications/NotificationCenter';
+import NotificationPreferences from '@/components/notifications/NotificationPreferences';
 
-export default function NotificationsPage() {
+export default function NotificationPreferencesPage() {
   const { data: session, status } = useSession();
 
   // Redirect if not authenticated
@@ -59,22 +59,38 @@ export default function NotificationsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <Link
-              href={getDashboardUrl()}
+              href="/profile/notifications"
               className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-              <p className="text-sm text-gray-600">Stay updated on your activity and submissions</p>
+              <h1 className="text-2xl font-bold text-gray-900">Notification Settings</h1>
+              <p className="text-sm text-gray-600">Manage how and when you receive notifications</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <NotificationCenter />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <NotificationPreferences />
+
+        {/* Help Section */}
+        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
+          <h3 className="text-lg font-semibold text-blue-900 mb-3">Need Help?</h3>
+          <div className="text-sm text-blue-800 space-y-2">
+            <p>
+              <strong>Email notifications:</strong> Receive important updates via email. We recommend keeping this enabled for critical status changes.
+            </p>
+            <p>
+              <strong>Browser notifications:</strong> Get instant alerts while you&apos;re browsing. Your browser may ask for permission first.
+            </p>
+            <p>
+              <strong>Email digest:</strong> Get a summary of your activity. Weekly digests help you stay informed without overwhelming your inbox.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

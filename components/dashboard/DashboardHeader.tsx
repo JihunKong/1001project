@@ -2,6 +2,7 @@
 
 import { LucideIcon } from 'lucide-react';
 import { ReactNode } from 'react';
+import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 
 interface DashboardHeaderProps {
   title: string;
@@ -10,6 +11,7 @@ interface DashboardHeaderProps {
   iconColor?: string;
   userName?: string | null;
   actions?: ReactNode;
+  showNotifications?: boolean;
   className?: string;
 }
 
@@ -20,6 +22,7 @@ export default function DashboardHeader({
   iconColor = 'from-soe-green-400 to-soe-green-500',
   userName,
   actions,
+  showNotifications = true,
   className = ''
 }: DashboardHeaderProps) {
   return (
@@ -41,11 +44,10 @@ export default function DashboardHeader({
               </div>
             </div>
           </div>
-          {actions && (
-            <div className="flex gap-3">
-              {actions}
-            </div>
-          )}
+          <div className="flex gap-3 items-center">
+            {showNotifications && <NotificationDropdown />}
+            {actions}
+          </div>
         </div>
       </div>
     </div>

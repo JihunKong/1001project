@@ -1,6 +1,9 @@
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
+import { Toaster } from 'react-hot-toast';
+import DirectionUpdater from '@/components/i18n/DirectionUpdater';
+import { NotificationProvider } from '@/components/providers/NotificationProvider';
 
 export default function Providers({
   children,
@@ -9,7 +12,11 @@ export default function Providers({
 }) {
   return (
     <SessionProvider>
-      {children}
+      <DirectionUpdater />
+      <NotificationProvider>
+        {children}
+      </NotificationProvider>
+      <Toaster />
     </SessionProvider>
   );
 }
