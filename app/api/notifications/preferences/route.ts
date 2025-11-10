@@ -40,18 +40,19 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Get notification preferences from a dedicated table if exists, otherwise defaults
-    let notificationPrefs: any = {};
-    try {
-      const existingPrefs = await prisma.$queryRaw`
-        SELECT preferences FROM notification_preferences WHERE user_id = ${session.user.id}
-      ` as any[];
-      if (existingPrefs && Array.isArray(existingPrefs) && existingPrefs.length > 0) {
-        notificationPrefs = existingPrefs[0].preferences || {};
-      }
-    } catch (error) {
-      logger.info('Notification preferences table not found, using defaults');
-    }
+    // Get notification preferences from database
+    const existingPrefs = await prisma.notificationPreferences.findUnique({
+      where: { userId: session.user.id }
+    });
+
+    const notificationPrefs: any = existingPrefs ? {
+      statusChanges: existingPrefs.statusChanges,
+      feedback: existingPrefs.feedback,
+      deadlines: existingPrefs.deadlines,
+      achievements: existingPrefs.achievements,
+      reviewAssignments: existingPrefs.reviewAssignments,
+      digestFrequency: existingPrefs.digestFrequency
+    } : {};
 
     const preferences: NotificationPreferences = {
       emailNotifications: profile?.emailNotifications ?? true,
@@ -137,36 +138,24 @@ export async function PUT(request: NextRequest) {
     );
 
     if (Object.keys(extendedPrefs).length > 0) {
-      try {
-        // Try to update existing preferences
-        await prisma.$executeRaw`
-          INSERT INTO notification_preferences (user_id, preferences, updated_at)
-          VALUES (${session.user.id}, ${JSON.stringify(extendedPrefs)}, NOW())
-          ON CONFLICT (user_id)
-          DO UPDATE SET preferences = ${JSON.stringify(extendedPrefs)}, updated_at = NOW()
-        `;
-      } catch (error) {
-        // If table doesn't exist, create it first
-        if ((error as any)?.code === '42P01') { // relation does not exist
-          await prisma.$executeRaw`
-            CREATE TABLE IF NOT EXISTS notification_preferences (
-              id SERIAL PRIMARY KEY,
-              user_id TEXT UNIQUE NOT NULL,
-              preferences JSONB NOT NULL DEFAULT '{}',
-              created_at TIMESTAMP DEFAULT NOW(),
-              updated_at TIMESTAMP DEFAULT NOW()
-            )
-          `;
-
-          // Retry the insert
-          await prisma.$executeRaw`
-            INSERT INTO notification_preferences (user_id, preferences, updated_at)
-            VALUES (${session.user.id}, ${JSON.stringify(extendedPrefs)}, NOW())
-          `;
-        } else {
-          throw error;
+      await prisma.notificationPreferences.upsert({
+        where: { userId: session.user.id },
+        update: {
+          ...extendedPrefs,
+          updatedAt: new Date()
+        },
+        create: {
+          userId: session.user.id,
+          emailNotifications: emailNotifications ?? true,
+          pushNotifications: pushNotifications ?? true,
+          statusChanges: extendedPrefs.statusChanges ?? true,
+          feedback: extendedPrefs.feedback ?? true,
+          deadlines: extendedPrefs.deadlines ?? true,
+          achievements: extendedPrefs.achievements ?? true,
+          reviewAssignments: extendedPrefs.reviewAssignments ?? false,
+          digestFrequency: extendedPrefs.digestFrequency ?? 'weekly'
         }
-      }
+      });
     }
 
     // Return updated preferences
@@ -178,17 +167,18 @@ export async function PUT(request: NextRequest) {
       }
     });
 
-    let updatedExtendedPrefs: any = {};
-    try {
-      const result = await prisma.$queryRaw`
-        SELECT preferences FROM notification_preferences WHERE user_id = ${session.user.id}
-      ` as any[];
-      if (result && Array.isArray(result) && result.length > 0) {
-        updatedExtendedPrefs = result[0].preferences || {};
-      }
-    } catch (error) {
-      logger.error('Error fetching updated preferences', error);
-    }
+    const updatedNotificationPrefs = await prisma.notificationPreferences.findUnique({
+      where: { userId: session.user.id }
+    });
+
+    const updatedExtendedPrefs: any = updatedNotificationPrefs ? {
+      statusChanges: updatedNotificationPrefs.statusChanges,
+      feedback: updatedNotificationPrefs.feedback,
+      deadlines: updatedNotificationPrefs.deadlines,
+      achievements: updatedNotificationPrefs.achievements,
+      reviewAssignments: updatedNotificationPrefs.reviewAssignments,
+      digestFrequency: updatedNotificationPrefs.digestFrequency
+    } : {};
 
     const preferences: NotificationPreferences = {
       emailNotifications: updatedProfile?.emailNotifications ?? true,

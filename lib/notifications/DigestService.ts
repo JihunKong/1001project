@@ -106,13 +106,16 @@ export class DigestService {
     frequency: 'daily' | 'weekly'
   ): Promise<DigestUser[]> {
     try {
-      const prefsQuery = await prisma.$queryRaw<any[]>`
-        SELECT user_id, preferences
-        FROM notification_preferences
-        WHERE preferences->>'digestFrequency' = ${frequency}
-      `;
+      const notificationPreferences = await prisma.notificationPreferences.findMany({
+        where: {
+          digestFrequency: frequency
+        },
+        select: {
+          userId: true
+        }
+      });
 
-      const userIdsWithPreference = prefsQuery.map((p: any) => p.user_id);
+      const userIdsWithPreference = notificationPreferences.map(p => p.userId);
 
       const users = await prisma.user.findMany({
         where: {
