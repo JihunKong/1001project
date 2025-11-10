@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Sparkles, Wand2, ChevronDown, ChevronUp, Loader2, Check, RefreshCw } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
@@ -23,11 +23,11 @@ interface AIReviewCardProps {
 export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
   const { t } = useTranslation();
 
-  const REVIEW_TYPE_LABELS = {
+  const REVIEW_TYPE_LABELS = useMemo(() => ({
     GRAMMAR: t('dashboard.writer.submitText.aiFeedback.grammar'),
     STRUCTURE: t('dashboard.writer.submitText.aiFeedback.structure'),
     WRITING_HELP: t('dashboard.writer.submitText.aiFeedback.writingHelp')
-  };
+  }), [t]);
 
   const [reviews, setReviews] = useState<AIReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
