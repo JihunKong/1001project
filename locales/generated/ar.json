@@ -44,19 +44,24 @@
   },
   "nav": {
     "home": "الرئيسية",
-    "myStories": "قصصي",
     "library": "المكتبة",
+    "aboutUs": "معلومات عنا",
+    "programs": "البرامج",
+    "volunteer": "كن متطوعاً",
+    "dashboard": "لوحة التحكم",
+    "logout": "تسجيل الخروج",
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "myStories": "قصصي",
     "notifications": "الإشعارات",
-    "profile": "ملفي",
-    "skipToMain": "انتقل إلى المحتوى الرئيسي",
     "mainNavigation": "التنقل الرئيسي",
-    "mobileNavigation": "التنقل عبر الهاتف المحمول",
+    "mobileNavigation": "التنقل عبر الموبايل",
+    "skipToMain": "الانتقال إلى المحتوى الرئيسي",
     "currentPage": "الصفحة الحالية",
     "userMenu": "قائمة المستخدم",
     "helpSupport": "المساعدة والدعم",
     "signOut": "تسجيل الخروج",
-    "aboutUs": "معلومات عنا",
-    "programs": "البرامج",
+    "registerBook": "تسجيل كتاب",
     "getInvolved": "شارك",
     "signIn": "تسجيل الدخول",
     "signup": "التسجيل",
@@ -502,4 +507,22 @@
       "description": "نشط في آخر 30 يوماً"
     }
   }
-}
+},
+  "profile": {
+    "tabs": {
+      "overview": "نظرة عامة",
+      "stories": "القصص"
+    },
+    "achievements": {
+      "title": "الإنجازات",
+      "earned": "{count} إنجازات محققة"
+    },
+    "stats": {
+      "published": "منشور",
+      "draft": "مسودة",
+      "submitted": "مقدم"
+    },
+    "sidebar": {
+      "editProfile": "تحرير الملف الشخصي"
+    }
+  }

@@ -44,24 +44,24 @@
   },
   "nav": {
     "home": "Inicio",
-    "myStories": "Mis Historias",
     "library": "Biblioteca",
+    "aboutUs": "Acerca de Nosotros",
+    "programs": "Programas",
+    "volunteer": "Ser Voluntario",
+    "dashboard": "Panel",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "myStories": "Mis Historias",
     "notifications": "Notificaciones",
-    "profile": "Mi perfil",
+    "mainNavigation": "Navegación Principal",
+    "mobileNavigation": "Navegación Móvil",
     "skipToMain": "Saltar al contenido principal",
-    "mainNavigation": "Navegación principal",
-    "mobileNavigation": "Navegación móvil",
-    "currentPage": "página actual",
+    "currentPage": "Página actual",
     "userMenu": "Menú de usuario",
     "helpSupport": "Ayuda y Soporte",
     "signOut": "Cerrar Sesión",
-    "aboutUs": "Acerca de",
-    "programs": "Programas",
-    "getInvolved": "Participar",
-    "signIn": "Iniciar sesión",
-    "signup": "Registrarse",
-    "dashboard": "Panel",
-    "help": "Ayuda y soporte",
+    "registerBook": "Registrar Libro",
     "logout": "Cerrar sesión",
     "language": "Idioma",
     "volunteer": "Voluntario",
@@ -500,6 +500,46 @@
     "consistentContributor": {
       "name": "Contribuidor Constante",
       "description": "Activo en los últimos 30 días"
+    }
+  },
+  "profile": {
+    "tabs": {
+      "overview": "Vista General",
+      "stories": "Historias"
+    },
+    "achievements": {
+      "title": "Logros",
+      "earned": "{count} logros obtenidos",
+      "locked": "Bloqueado",
+      "unlocked": "Desbloqueado",
+      "viewAll": "Ver Todos los Logros"
+    },
+    "monthly": {
+      "title": "Mensual",
+      "dateRange": "{start} - {end} (UTC)",
+      "selectMonth": "Seleccionar Mes",
+      "thisMonth": "Este Mes",
+      "lastMonth": "Mes Pasado"
+    },
+    "stats": {
+      "published": "Publicado",
+      "draft": "Borrador",
+      "submitted": "Enviado",
+      "underReview": "En Revisión",
+      "feedback": "Comentarios"
+    },
+    "currentProjects": {
+      "title": "Proyectos Actuales",
+      "startNew": "Iniciar Nuevo Libro",
+      "noProjects": "No hay proyectos aún"
+    },
+    "chart": {
+      "submissionTrends": "Tendencias de Envío",
+      "readingAnalytics": "Análisis de Lectura"
+    },
+    "sidebar": {
+      "editProfile": "Editar perfil",
+      "noBio": "No hay biografía aún"
     }
   }
 }

@@ -43,20 +43,25 @@
     }
   },
   "nav": {
-    "home": "होम",
-    "myStories": "मेरी कहानियाँ",
+    "home": "मुख्य पृष्ठ",
     "library": "पुस्तकालय",
-    "notifications": "सूचनाएं",
-    "profile": "मेरी प्रोफ़ाइल",
-    "skipToMain": "मुख्य सामग्री पर जाएं",
-    "mainNavigation": "मुख्य नेविगेशन",
-    "mobileNavigation": "मोबाइल नेविगेशन",
-    "currentPage": "वर्तमान पृष्ठ",
-    "userMenu": "उपयोगकर्ता मेनू",
-    "helpSupport": "सहायता और समर्थन",
-    "signOut": "साइन आउट",
     "aboutUs": "हमारे बारे में",
     "programs": "कार्यक्रम",
+    "volunteer": "स्वयंसेवक बनें",
+    "dashboard": "डैशबोर्ड",
+    "logout": "लॉग आउट",
+    "login": "लॉग इन",
+    "signup": "साइन अप",
+    "myStories": "मेरी कहानियां",
+    "notifications": "सूचनाएं",
+    "mainNavigation": "मुख्य नेविगेशन",
+    "mobileNavigation": "मोबाइल नेविगेशन",
+    "skipToMain": "मुख्य सामग्री पर जाएं",
+    "currentPage": "वर्तमान पृष्ठ",
+    "userMenu": "उपयोगकर्ता मेनू",
+    "helpSupport": "मदद और सहायता",
+    "signOut": "साइन आउट",
+    "registerBook": "पुस्तक पंजीकृत करें",
     "getInvolved": "शामिल हों",
     "signIn": "साइन इन करें",
     "signup": "साइन अप",
@@ -502,4 +507,22 @@
       "description": "पिछले 30 दिनों में सक्रिय"
     }
   }
-}
+},
+  "profile": {
+    "tabs": {
+      "overview": "अवलोकन",
+      "stories": "कहानियाँ"
+    },
+    "achievements": {
+      "title": "उपलब्धियाँ",
+      "earned": "{count} उपलब्धियाँ अर्जित की"
+    },
+    "stats": {
+      "published": "प्रकाशित",
+      "draft": "ड्राफ्ट",
+      "submitted": "सबमिट किया गया"
+    },
+    "sidebar": {
+      "editProfile": "प्रोफ़ाइल संपादित करें"
+    }
+  }

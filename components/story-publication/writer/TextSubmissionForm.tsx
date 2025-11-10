@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Loader2, Save, Send } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import TermsAndDisclosuresModal from './TermsAndDisclosuresModal';
 import StorySubmittedModal from './StorySubmittedModal';
 
@@ -45,6 +46,7 @@ export default function TextSubmissionForm({
   onFormChange
 }: TextSubmissionFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDraft, setIsDraft] = useState(false);
   const [charCount, setCharCount] = useState(0);
@@ -157,11 +159,18 @@ export default function TextSubmissionForm({
 
       toast.success(
         saveAsDraft
-          ? 'Draft saved successfully!'
+          ? t('dashboard.writer.submitText.draftSavedSuccess')
           : mode === 'edit'
-            ? 'Submission updated successfully!'
-            : 'Submission created and sent for review!'
+            ? t('dashboard.writer.submitText.submissionUpdatedSuccess')
+            : t('dashboard.writer.submitText.submissionCreatedSuccess')
       );
+
+      // Redirect to annotation view when saving draft
+      if (saveAsDraft) {
+        const targetId = mode === 'edit' ? submissionId : result.submission.id;
+        router.push(`/dashboard/writer/story/${targetId}`);
+        return;
+      }
 
       // Only redirect if it's not a draft save
       if (!saveAsDraft) {
@@ -186,7 +195,7 @@ export default function TextSubmissionForm({
         onSubmit(data, true);
       },
       (errors) => {
-        toast.error('Please fill in all required fields before saving');
+        toast.error(t('dashboard.writer.submitText.fillRequiredFields'));
       }
     )();
   };
@@ -197,7 +206,7 @@ export default function TextSubmissionForm({
         setShowTermsModal(true);
       },
       (errors) => {
-        toast.error('Please fill in all required fields before submitting');
+        toast.error(t('dashboard.writer.submitText.fillRequiredFields'));
       }
     )();
   };
@@ -210,7 +219,7 @@ export default function TextSubmissionForm({
         setShowSuccessModal(true);
       },
       (errors) => {
-        toast.error('Please fill in all required fields before submitting');
+        toast.error(t('dashboard.writer.submitText.fillRequiredFields'));
       }
     )();
   };
@@ -257,7 +266,7 @@ export default function TextSubmissionForm({
           <RichTextEditor
             content={watchedContent}
             onChange={handleContentChange}
-            placeholder="Tell your story..."
+            placeholder={t('dashboard.writer.submitText.placeholder')}
             className="min-h-[400px]"
           />
           {errors.content && (
@@ -275,7 +284,7 @@ export default function TextSubmissionForm({
                 lineHeight: '1.193'
               }}
             >
-              {charCount} characters &nbsp;&nbsp; {wordCount} words
+              {charCount} {t('dashboard.writer.submitText.characters')} &nbsp;&nbsp; {wordCount} {t('dashboard.writer.submitText.words')}
             </span>
           </div>
         </div>
@@ -284,7 +293,7 @@ export default function TextSubmissionForm({
         {/* Action Buttons */}
         <div className="flex justify-between items-center">
           <div className="text-sm text-[#8E8E93]">
-            {isDirty && '• Unsaved changes'}
+            {isDirty && `• ${t('dashboard.writer.submitText.unsavedChanges')}`}
           </div>
 
           <div className="flex gap-3">
@@ -305,7 +314,7 @@ export default function TextSubmissionForm({
               ) : (
                 <Save className="h-4 w-4" stroke="#141414" aria-hidden="true" />
               )}
-              Save as Draft
+              {t('dashboard.writer.submitText.saveAsDraft')}
             </button>
 
             <button
@@ -325,7 +334,7 @@ export default function TextSubmissionForm({
               ) : (
                 <Send className="h-4 w-4" stroke="#ffffff" aria-hidden="true" />
               )}
-              {mode === 'edit' ? 'Update Submission' : 'Submit for Review'}
+              {mode === 'edit' ? t('dashboard.writer.submitText.updateSubmission') : t('dashboard.writer.submitText.submitForReview')}
             </button>
           </div>
         </div>

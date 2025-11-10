@@ -111,7 +111,7 @@ function SubmitTextPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <nav aria-label={t('common.breadcrumb')} className="flex items-center gap-2 text-sm text-[#8E8E93]">
           <Link href="/dashboard" className="hover:text-[#141414] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soe-green-300">
-            Dashboard
+            {t('nav.dashboard')}
           </Link>
           <span aria-hidden="true">/</span>
           <Link href="/dashboard/writer" className="hover:text-[#141414] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soe-green-300">
@@ -119,7 +119,7 @@ function SubmitTextPage() {
           </Link>
           <span aria-hidden="true">/</span>
           <span className="font-medium text-[#141414]">
-            {isEditing ? 'Edit story' : 'Submit story'}
+            {isEditing ? t('dashboard.writer.submitText.editTitle') : t('dashboard.writer.submitText.title')}
           </span>
         </nav>
         <Link
@@ -127,16 +127,16 @@ function SubmitTextPage() {
           className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-soe-green-600 transition-colors hover:text-soe-green-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soe-green-300"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to writer dashboard
+          {t('dashboard.writer.submitText.backToDashboard')}
         </Link>
       </div>
 
       <header className="mt-6 max-w-3xl space-y-3">
         <h1 className="text-4xl font-medium leading-tight text-[#141414] sm:text-5xl">
-          {isEditing ? 'Edit your story' : 'Upload a story'}
+          {isEditing ? t('dashboard.writer.submitText.editTitle') : t('dashboard.writer.submitText.title')}
         </h1>
         <p className="text-base leading-relaxed text-[#8E8E93] sm:text-lg">
-          Share your story with children around the world. Our editorial team will review it for publication.
+          {t('dashboard.writer.submitText.subtitle')}
         </p>
       </header>
 
