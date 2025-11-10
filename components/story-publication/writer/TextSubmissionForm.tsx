@@ -126,6 +126,9 @@ export default function TextSubmissionForm({
     // Create new abort controller for this request
     abortControllerRef.current = new AbortController();
 
+    let redirectTarget: string | null = null;
+    let shouldRedirectToStories = false;
+
     try {
       const url = mode === 'edit' && submissionId
         ? `/api/text-submissions/${submissionId}`
@@ -155,6 +158,9 @@ export default function TextSubmissionForm({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'submit' }),
         });
+      } else {
+        // Prepare redirect target for draft save
+        redirectTarget = mode === 'edit' ? submissionId : result.submission.id;
       }
 
       toast.success(
@@ -165,19 +171,12 @@ export default function TextSubmissionForm({
             : t('dashboard.writer.submitText.submissionCreatedSuccess')
       );
 
-      // Redirect to annotation view when saving draft
-      if (saveAsDraft) {
-        const targetId = mode === 'edit' ? submissionId : result.submission.id;
-        router.push(`/dashboard/writer/story/${targetId}`);
-        return;
-      }
-
-      // Only redirect if it's not a draft save
+      // Handle non-draft redirect
       if (!saveAsDraft) {
         onSuccess?.();
 
         if (!onSuccess) {
-          router.push('/dashboard/writer/stories');
+          shouldRedirectToStories = true;
         }
       }
 
@@ -186,6 +185,16 @@ export default function TextSubmissionForm({
     } finally {
       setIsSubmitting(false);
       setIsDraft(false);
+    }
+
+    // Handle redirects after state cleanup
+    if (redirectTarget) {
+      // Wait for toast to render before redirect
+      setTimeout(() => {
+        router.push(`/dashboard/writer/story/${redirectTarget}`);
+      }, 500);
+    } else if (shouldRedirectToStories) {
+      router.push('/dashboard/writer/stories');
     }
   };
 

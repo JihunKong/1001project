@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { enqueueAIReview, getJobStatus } from '@/lib/queue';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
 
 const AI_REVIEW_RATE_LIMIT = {
   windowMs: 15 * 60 * 1000,
@@ -77,11 +78,15 @@ export async function POST(
       );
     }
 
+    const cookieHeader = request.headers.get('cookie');
+    const language = getLanguagePreferenceFromHeaders(cookieHeader);
+
     const jobId = await enqueueAIReview({
       submissionId: submission.id,
       content: submission.content,
       userId: session.user.id,
       triggerType: 'manual',
+      language,
     });
 
     return NextResponse.json(
