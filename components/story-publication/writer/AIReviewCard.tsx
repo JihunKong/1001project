@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Sparkles, Wand2, ChevronDown, ChevronUp, Loader2, Check, RefreshCw } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface AIReview {
   id: string;

@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { Loader2, Save, Send } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import TermsAndDisclosuresModal from './TermsAndDisclosuresModal';
 import StorySubmittedModal from './StorySubmittedModal';
 
