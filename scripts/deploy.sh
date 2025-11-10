@@ -278,21 +278,7 @@ deploy() {
             echo "If automatic generation fails, manually run: ./scripts/setup-ssl.sh"
         fi
 
-        # nginx 설정 검증
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Validating nginx configuration..."
-
-        if docker run --rm \
-            -v "$(pwd)/nginx-current.conf:/etc/nginx/nginx.conf:ro" \
-            nginx:alpine nginx -t 2>&1; then
-            echo "✅ nginx configuration valid"
-        else
-            echo "❌ nginx configuration test failed!"
-            echo "Please check nginx-current.conf for syntax errors"
-            exit 1
-        fi
-
-        # 컨테이너 시작
+        # 컨테이너 시작 (nginx 검증은 docker-compose의 depends_on: service_healthy에 맡김)
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         echo "Starting containers from uploaded image..."
         docker compose up -d
