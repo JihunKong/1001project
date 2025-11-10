@@ -169,11 +169,11 @@ services:
           cpus: '0.1'
           memory: 64M
     healthcheck:
-      test: ["CMD", "curl", "-k", "-f", "https://localhost/api/health"]
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:80/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 15s
     logging:
       driver: "json-file"
       options:
@@ -209,12 +209,20 @@ services:
         # Check if SSL certificates exist
         if [ ! -d "/etc/letsencrypt/live/1001stories.seedsofempowerment.org" ]; then
           echo "⚠️  No SSL certificates found!"
-          echo ""
-          echo "Initial certificate generation required. Please run:"
-          echo "  docker compose run --rm --entrypoint /bin/sh certbot -c \"certbot certonly --webroot -w /var/www/certbot -d 1001stories.seedsofempowerment.org --email noreply@1001stories.org --agree-tos --non-interactive\""
-          echo ""
-          echo "Or use the SSL setup script: ./scripts/setup-ssl.sh"
-          exit 1
+          echo "Attempting automatic certificate generation..."
+
+          certbot certonly \
+            --webroot -w /var/www/certbot \
+            -d 1001stories.seedsofempowerment.org \
+            --email noreply@1001stories.org \
+            --agree-tos --non-interactive || {
+              echo "❌ Certificate generation failed!"
+              echo "Manual intervention required."
+              echo "Please run: ./scripts/setup-ssl.sh"
+              exit 1
+            }
+
+          echo "✅ Certificates generated successfully!"
         fi
 
         echo "✅ SSL certificates found. Starting renewal daemon..."
