@@ -73,6 +73,31 @@
           "structure": "Structure",
           "writingHelp": "Writing Help"
         }
+      },
+      "story": {
+        "loading": "Loading story...",
+        "backToStories": "Back to stories",
+        "title": "Story Tracking",
+        "editButton": "Edit Story",
+        "submissionDate": "Submission Date",
+        "targetAgeGroup": "Target Age Group",
+        "wordCount": "Word Count",
+        "notFound": {
+          "title": "Story Not Found",
+          "message": "The story you're looking for could not be found.",
+          "returnButton": "Return to Dashboard"
+        },
+        "status": {
+          "draft": "Draft",
+          "needsRevision": "Needs Revision",
+          "underReview": "Under Review",
+          "finalReview": "Final Review",
+          "approved": "Approved"
+        },
+        "reviewerFeedback": {
+          "title": "Reviewer Feedback",
+          "empty": "No feedback yet. Feedback will appear here when your story is reviewed."
+        }
       }
     }
   },

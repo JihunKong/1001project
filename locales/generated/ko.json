@@ -73,6 +73,31 @@
           "structure": "구조",
           "writingHelp": "작문 도움말"
         }
+      },
+      "story": {
+        "loading": "스토리 로딩 중...",
+        "backToStories": "스토리로 돌아가기",
+        "title": "스토리 추적",
+        "editButton": "스토리 편집",
+        "submissionDate": "제출일",
+        "targetAgeGroup": "대상 연령",
+        "wordCount": "단어 수",
+        "notFound": {
+          "title": "스토리를 찾을 수 없습니다",
+          "message": "찾으시는 스토리를 찾을 수 없습니다.",
+          "returnButton": "대시보드로 돌아가기"
+        },
+        "status": {
+          "draft": "초안",
+          "needsRevision": "수정 필요",
+          "underReview": "검토 중",
+          "finalReview": "최종 검토",
+          "approved": "승인됨"
+        },
+        "reviewerFeedback": {
+          "title": "검토자 피드백",
+          "empty": "아직 피드백이 없습니다. 스토리가 검토되면 피드백이 여기에 표시됩니다."
+        }
       }
     }
   },
