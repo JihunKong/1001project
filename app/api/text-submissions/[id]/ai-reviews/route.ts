@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
+import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
 
 export async function GET(
   request: NextRequest,
@@ -84,7 +85,8 @@ export async function POST(
       where: { submissionId: id }
     });
 
-    await triggerAutoAIReviews(id);
+    const language = getLanguagePreferenceFromHeaders(request.headers.get('cookie'));
+    await triggerAutoAIReviews(id, language);
 
     return NextResponse.json({
       success: true,

@@ -10,6 +10,9 @@ import { JSDOM } from 'jsdom';
 import { notifyNewSubmission } from '@/lib/sse-notifications';
 import { logger } from '@/lib/logger';
 import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
+import { NotificationService } from '@/lib/notifications/NotificationService';
+import { NotificationType } from '@prisma/client';
+import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -265,6 +268,27 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Create notification for author
+    const notificationService = new NotificationService();
+    try {
+      await notificationService.createNotification(
+        session.user.id,
+        NotificationType.WRITER,
+        'Story Draft Created',
+        `Your story "${submission.title}" has been saved as a draft. You can continue editing or submit it for review when ready.`,
+        {
+          submissionId: submission.id,
+          submissionTitle: submission.title,
+          action: 'view',
+          actionUrl: `/dashboard/writer/story/${submission.id}`
+        }
+      );
+    } catch (notificationError) {
+      logger.error('Error creating author notification', notificationError, {
+        submissionId: submission.id
+      });
+    }
+
     // Send real-time notification for new submission
     try {
       await notifyNewSubmission(submission.id);
@@ -276,7 +300,8 @@ export async function POST(request: NextRequest) {
 
     // Trigger auto AI reviews for draft (non-blocking)
     if (submission.status === TextSubmissionStatus.DRAFT) {
-      triggerAutoAIReviews(submission.id).catch((error) => {
+      const language = getLanguagePreferenceFromHeaders(request.headers.get('cookie'));
+      triggerAutoAIReviews(submission.id, language).catch((error) => {
         logger.error('Error triggering auto AI reviews', error, {
           submissionId: submission.id
         });

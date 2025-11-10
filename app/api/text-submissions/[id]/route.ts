@@ -10,6 +10,7 @@ import { notifySubmissionStatusChange, notifyFeedbackReceived } from '@/lib/sse-
 import { logger } from '@/lib/logger';
 import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
 import { triggerImageGeneration } from '@/lib/auto-image-generation';
+import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -177,7 +178,8 @@ export async function PUT(
       });
 
       if (existingReviews === 0) {
-        triggerAutoAIReviews(updatedSubmission.id).catch((error) => {
+        const language = getLanguagePreferenceFromHeaders(request.headers.get('cookie'));
+        triggerAutoAIReviews(updatedSubmission.id, language).catch((error) => {
           logger.error('Error triggering auto AI reviews', error, {
             submissionId: updatedSubmission.id
           });
