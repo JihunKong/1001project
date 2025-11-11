@@ -6,15 +6,15 @@ import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
 
 async function processAIReview(job: Job<AIReviewJobData>) {
-  const { submissionId, content, userId } = job.data;
+  const { submissionId, content, userId, language } = job.data;
   const startTime = Date.now();
 
   try {
     await job.updateProgress(10);
 
     const [grammarResult, structureResult] = await Promise.all([
-      checkGrammar(content),
-      analyzeStructure(content),
+      checkGrammar(content, language),
+      analyzeStructure(content, language),
     ]);
 
     await job.updateProgress(70);

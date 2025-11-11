@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { checkGrammar } from '@/lib/ai/openai';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,9 +33,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const cookieHeader = req.headers.get('cookie');
+    const language = getLanguagePreferenceFromHeaders(cookieHeader);
+
     const startTime = Date.now();
 
-    const grammarResult = await checkGrammar(content);
+    const grammarResult = await checkGrammar(content, language);
 
     const processingTime = Date.now() - startTime;
 

@@ -17,6 +17,27 @@
     "logout": "Cerrar Sesión",
     "cart": "Carrito"
   },
+  "nav": {
+    "home": "Inicio",
+    "library": "Biblioteca",
+    "aboutUs": "Acerca de Nosotros",
+    "programs": "Programas",
+    "volunteer": "Ser Voluntario",
+    "dashboard": "Panel",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse",
+    "myStories": "Mis Historias",
+    "notifications": "Notificaciones",
+    "mainNavigation": "Navegación Principal",
+    "mobileNavigation": "Navegación Móvil",
+    "skipToMain": "Saltar al contenido principal",
+    "currentPage": "Página actual",
+    "userMenu": "Menú de usuario",
+    "helpSupport": "Ayuda y Soporte",
+    "signOut": "Cerrar Sesión",
+    "registerBook": "Registrar Libro"
+  },
   "roles": {
     "title": "Elige tu Papel",
     "subtitle": "Selecciona cómo te gustaría participar en nuestra plataforma",

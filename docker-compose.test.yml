@@ -8,6 +8,7 @@ services:
       target: builder  # Use builder stage for testing with dev dependencies
     container_name: 1001-stories-app-test
     restart: unless-stopped
+    command: ["node", ".next/standalone/server.js"]
     ports:
       - "8002:3000"  # Different port to avoid conflicts
     env_file:

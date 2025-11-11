@@ -17,6 +17,27 @@
     "logout": "تسجيل الخروج",
     "cart": "السلة"
   },
+  "nav": {
+    "home": "الرئيسية",
+    "library": "المكتبة",
+    "aboutUs": "معلومات عنا",
+    "programs": "البرامج",
+    "volunteer": "كن متطوعاً",
+    "dashboard": "لوحة التحكم",
+    "logout": "تسجيل الخروج",
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "myStories": "قصصي",
+    "notifications": "الإشعارات",
+    "mainNavigation": "التنقل الرئيسي",
+    "mobileNavigation": "التنقل عبر الموبايل",
+    "skipToMain": "الانتقال إلى المحتوى الرئيسي",
+    "currentPage": "الصفحة الحالية",
+    "userMenu": "قائمة المستخدم",
+    "helpSupport": "المساعدة والدعم",
+    "signOut": "تسجيل الخروج",
+    "registerBook": "تسجيل كتاب"
+  },
   "roles": {
     "title": "اختر دورك",
     "subtitle": "حدد كيف تود المشاركة في منصتنا",

@@ -17,6 +17,27 @@
     "logout": "로그아웃",
     "cart": "장바구니"
   },
+  "nav": {
+    "home": "홈",
+    "library": "도서관",
+    "aboutUs": "소개",
+    "programs": "프로그램",
+    "volunteer": "봉사하기",
+    "dashboard": "대시보드",
+    "logout": "로그아웃",
+    "login": "로그인",
+    "signup": "회원가입",
+    "myStories": "내 이야기",
+    "notifications": "알림",
+    "mainNavigation": "메인 네비게이션",
+    "mobileNavigation": "모바일 네비게이션",
+    "skipToMain": "메인 콘텐츠로 건너뛰기",
+    "currentPage": "현재 페이지",
+    "userMenu": "사용자 메뉴",
+    "helpSupport": "도움말 및 지원",
+    "signOut": "로그아웃",
+    "registerBook": "책 등록"
+  },
   "roles": {
     "title": "역할을 선택하세요",
     "subtitle": "플랫폼과 상호작용할 방식을 선택하세요",

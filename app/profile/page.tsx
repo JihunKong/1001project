@@ -35,7 +35,7 @@ export default async function ProfilePage() {
   return (
     <div className="flex min-h-screen bg-white">
       {/* Main Content Area - starts at 340px from left, ends at 1440px */}
-      <div className="flex-1 ml-[240px] mr-[480px] px-[100px] py-10">
+      <div className="flex-1 ms-[240px] me-[480px] px-[100px] py-10">
         {/* Page Title */}
         <h1
           className="text-center mb-8 text-[#141414] font-medium"
@@ -67,7 +67,7 @@ export default async function ProfilePage() {
 
       {/* Right Sidebar Panel - fixed at 1440px, 480px wide */}
       <div
-        className="fixed right-0 top-0 w-[480px] h-screen border-l border-[#E5E5EA] bg-white p-10 overflow-y-auto"
+        className="fixed end-0 top-0 w-[480px] h-screen border-s border-[#E5E5EA] bg-white p-10 overflow-y-auto"
       >
         <ProfileCard user={user} stats={stats} />
       </div>

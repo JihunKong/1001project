@@ -3,125 +3,15 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { AIReviewType, AIReviewStatus } from '@prisma/client';
-import OpenAI from 'openai';
 import { logger } from '@/lib/logger';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
+import { generateAIReview } from '@/lib/ai-review-trigger';
 
 interface ReviewRequest {
   submissionId: string;
   reviewType: 'GRAMMAR' | 'STRUCTURE' | 'WRITING_HELP';
 }
 
-interface AIFeedback {
-  summary: string;
-  strengths: string[];
-  improvements: string[];
-  details?: any;
-}
-
-const REVIEW_PROMPTS = {
-  GRAMMAR: `Analyze the following story for grammar, spelling, and punctuation errors. Provide:
-1. A brief summary of the overall grammar quality
-2. Specific strengths in the writing
-3. List of improvements needed with examples
-4. A quality score from 0-100
-
-Respond in JSON format with this exact structure:
-{
-  "summary": "string",
-  "strengths": ["string", "string"],
-  "improvements": ["string describing issue and example", "string describing issue and example"],
-  "score": number (0-100)
-}`,
-
-  STRUCTURE: `Analyze the following story's structure and organization. Evaluate:
-1. Story flow and pacing
-2. Character development (if applicable)
-3. Plot structure and coherence
-4. Beginning, middle, and end effectiveness
-5. Overall structure quality score from 0-100
-
-Respond in JSON format with this exact structure:
-{
-  "summary": "string",
-  "strengths": ["string", "string"],
-  "improvements": ["string describing issue and suggestion", "string describing issue and suggestion"],
-  "score": number (0-100)
-}`,
-
-  WRITING_HELP: `Provide constructive feedback on this story to help improve the writing. Focus on:
-1. Writing style and voice
-2. Word choice and vocabulary
-3. Engagement and readability
-4. Areas for development
-5. Specific actionable suggestions
-
-Respond in JSON format with this exact structure:
-{
-  "summary": "string",
-  "strengths": ["string", "string"],
-  "improvements": ["string with specific actionable suggestion", "string with specific actionable suggestion"]
-}`
-};
-
-async function generateAIReview(content: string, reviewType: AIReviewType): Promise<{ feedback: AIFeedback; score: number | null; suggestions: string[] }> {
-  const startTime = Date.now();
-
-  try {
-    const prompt = REVIEW_PROMPTS[reviewType];
-    const systemMessage = 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.';
-
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        { role: 'system', content: systemMessage },
-        { role: 'user', content: `${prompt}\n\nStory:\n${content}` }
-      ],
-      response_format: { type: 'json_object' },
-      temperature: 0.7,
-    });
-
-    const processingTime = Date.now() - startTime;
-
-    let responseContent = response.choices[0]?.message?.content || '{}';
-
-    responseContent = responseContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-    const feedback = JSON.parse(responseContent) as AIFeedback;
-
-    const score = (feedback as any).score || null;
-    const suggestions = (feedback.improvements || [])
-      .map((item: any) => {
-        if (typeof item === 'string') {
-          return item;
-        }
-        if (typeof item === 'object' && item !== null) {
-          if (item.issue && item.example) {
-            return `${item.issue}: ${item.example}`;
-          }
-          if (item.suggestion) {
-            return item.suggestion;
-          }
-          return JSON.stringify(item);
-        }
-        return String(item);
-      })
-      .filter(Boolean)
-      .slice(0, 5);
-
-    return {
-      feedback,
-      score,
-      suggestions
-    };
-  } catch (error) {
-    logger.error('OpenAI API error', error);
-    throw new Error('Failed to generate AI review');
-  }
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -169,7 +59,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const plainTextContent = submission.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const htmlContent = submission.content;
+    const plainTextContent = htmlContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
     if (plainTextContent.length < 50) {
       return NextResponse.json(
@@ -178,10 +69,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const cookieHeader = request.headers.get('cookie');
+    const language = getLanguagePreferenceFromHeaders(cookieHeader);
+
     const startTime = Date.now();
-    const { feedback, score, suggestions } = await generateAIReview(
+    const { feedback, score, suggestions, annotations, tokensUsed } = await generateAIReview(
       plainTextContent,
-      reviewType as AIReviewType
+      htmlContent,
+      reviewType as AIReviewType,
+      language
     );
     const processingTime = Date.now() - startTime;
 
@@ -192,9 +88,10 @@ export async function POST(request: NextRequest) {
         feedback: feedback as any,
         score,
         suggestions,
+        annotationData: annotations as any,
         status: AIReviewStatus.COMPLETED,
         modelUsed: 'gpt-4o-mini',
-        tokensUsed: null,
+        tokensUsed,
         processingTime,
       }
     });

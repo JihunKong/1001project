@@ -3,10 +3,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { SupportedLanguage, isRTLLanguage } from './language-cookie';
 import { useLanguage } from './LanguageContext';
+import enTranslations from '@/locales/generated/en.json';
 
 type TranslationData = Record<string, any>;
 
 const translationsCache: Map<SupportedLanguage, TranslationData> = new Map();
+
+translationsCache.set('en', enTranslations);
 
 async function loadTranslations(lang: SupportedLanguage): Promise<TranslationData> {
   if (translationsCache.has(lang)) {
@@ -54,7 +57,7 @@ export interface UseTranslationReturn {
 
 export function useTranslation(): UseTranslationReturn {
   const { language, changeLanguage, isRTL } = useLanguage();
-  const [translations, setTranslations] = useState<TranslationData>({});
+  const [translations, setTranslations] = useState<TranslationData>(enTranslations);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

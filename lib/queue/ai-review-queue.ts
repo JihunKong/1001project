@@ -1,11 +1,13 @@
 import { Queue } from 'bullmq';
 import { queueOptions } from './config';
+import { SupportedLanguage } from '@/lib/i18n/language-cookie';
 
 export interface AIReviewJobData {
   submissionId: string;
   content: string;
   userId: string;
   triggerType: 'manual' | 'auto';
+  language?: SupportedLanguage;
 }
 
 export const aiReviewQueue = new Queue<AIReviewJobData>('ai-review', queueOptions);

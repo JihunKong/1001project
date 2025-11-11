@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { AIReviewType, AIReviewStatus } from '@prisma/client';
 import OpenAI from 'openai';
 import { logger } from '@/lib/logger';
+import { getPrompts } from '@/lib/ai/prompts';
+import { SupportedLanguage } from '@/lib/i18n/language-cookie';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -14,90 +16,7 @@ interface AIFeedback {
   details?: any;
 }
 
-const REVIEW_PROMPTS = {
-  GRAMMAR: `Analyze the following story for grammar, spelling, and punctuation errors.
-
-IMPORTANT: You MUST respond with valid JSON only. Do not include any markdown formatting or code blocks.
-
-Provide:
-1. A brief summary of the overall grammar quality
-2. Specific strengths in the writing
-3. List of improvements - FOR EACH improvement, you MUST include:
-   - "text": The EXACT text snippet from the story (3-8 words, copied character-by-character)
-   - "suggestion": How to fix the issue
-
-Example format:
-{
-  "summary": "The story has good grammar with a few minor errors.",
-  "strengths": ["Clear sentence structure", "Proper punctuation"],
-  "improvements": [
-    {"text": "The boy run", "suggestion": "Change 'run' to 'runs' for subject-verb agreement"},
-    {"text": "alot of fun", "suggestion": "Write as two words: 'a lot of fun'"}
-  ],
-  "score": 85
-}
-
-CRITICAL RULES:
-1. The "text" field MUST contain EXACT words from the story (copy-paste, no modifications)
-2. Each improvement MUST have both "text" and "suggestion" fields
-3. Choose text snippets that are 3-8 words long
-4. Include a score from 0-100`,
-
-  STRUCTURE: `Analyze the following story's structure and organization.
-
-IMPORTANT: You MUST respond with valid JSON only. Do not include any markdown formatting or code blocks.
-
-Evaluate:
-1. Story flow and pacing
-2. Character development (if applicable)
-3. Plot structure and coherence
-4. Beginning, middle, and end effectiveness
-
-Example format:
-{
-  "summary": "The story has a clear structure with good pacing.",
-  "strengths": ["Strong opening", "Clear progression"],
-  "improvements": [
-    {"text": "Once upon a time there lived", "suggestion": "Consider a more engaging opening hook"},
-    {"text": "The end was very sudden", "suggestion": "Add more resolution and closure"}
-  ],
-  "score": 75
-}
-
-CRITICAL RULES:
-1. The "text" field MUST contain EXACT words from the story (5-12 words)
-2. Each improvement MUST have both "text" and "suggestion" fields
-3. Focus on structural issues (pacing, organization, flow)
-4. Include a score from 0-100`,
-
-  WRITING_HELP: `Provide constructive feedback on this story to help improve the writing.
-
-IMPORTANT: You MUST respond with valid JSON only. Do not include any markdown formatting or code blocks.
-
-Focus on:
-1. Writing style and voice
-2. Word choice and vocabulary
-3. Engagement and readability
-4. Specific actionable suggestions
-
-Example format:
-{
-  "summary": "The writing is clear but could be more engaging.",
-  "strengths": ["Simple language", "Easy to follow"],
-  "improvements": [
-    {"text": "He was happy", "suggestion": "Use more descriptive words: 'He beamed with joy'"},
-    {"text": "It was nice", "suggestion": "Replace vague words: 'It was delightful'"}
-  ]
-}
-
-CRITICAL RULES:
-1. The "text" field MUST contain EXACT words from the story (3-10 words)
-2. Each improvement MUST have both "text" and "suggestion" fields
-3. Focus on style, word choice, and engagement
-4. No score needed for this review type`
-};
-
-interface AIAnnotation {
+export interface AIAnnotation {
   suggestionIndex: number;
   highlightedText: string;
   startOffset: number;
@@ -254,21 +173,21 @@ function createAnnotations(
   return annotations;
 }
 
-async function generateAIReview(
+export async function generateAIReview(
   plainTextContent: string,
   htmlContent: string,
-  reviewType: AIReviewType
+  reviewType: AIReviewType,
+  language?: SupportedLanguage
 ): Promise<{ feedback: AIFeedback; score: number | null; suggestions: string[]; annotations: AIAnnotation[]; tokensUsed: number }> {
   const startTime = Date.now();
 
   try {
-    const prompt = REVIEW_PROMPTS[reviewType];
-    const systemMessage = 'You are a helpful writing coach for children\'s stories. Provide constructive, encouraging feedback that helps authors improve their work.';
+    const prompts = getPrompts(language);
+    const prompt = prompts.review[reviewType];
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: systemMessage },
         { role: 'user', content: `${prompt}\n\nStory:\n${plainTextContent}` }
       ],
       temperature: 0.7,
@@ -308,7 +227,10 @@ async function generateAIReview(
   }
 }
 
-export async function triggerAutoAIReviews(submissionId: string): Promise<void> {
+export async function triggerAutoAIReviews(
+  submissionId: string,
+  language?: SupportedLanguage
+): Promise<void> {
   const submission = await prisma.textSubmission.findUnique({
     where: { id: submissionId }
   });
@@ -334,7 +256,8 @@ export async function triggerAutoAIReviews(submissionId: string): Promise<void> 
       const { feedback, score, suggestions, annotations, tokensUsed } = await generateAIReview(
         plainTextContent,
         htmlContent,
-        reviewType
+        reviewType,
+        language
       );
 
       const processingTime = Date.now() - startTime;

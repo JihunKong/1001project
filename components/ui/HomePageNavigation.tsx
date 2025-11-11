@@ -36,7 +36,7 @@ export default function HomePageNavigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <BookOpen className="h-7 w-7 text-[#91C549]" />
-            <span className="ml-2 text-2xl font-semibold text-[#91C549]" style={{ fontFamily: 'Poppins' }}>
+            <span className="ms-2 text-2xl font-semibold text-[#91C549]" style={{ fontFamily: 'Poppins' }}>
               1001 Stories
             </span>
           </Link>
@@ -61,11 +61,11 @@ export default function HomePageNavigation() {
                 style={{ fontFamily: 'Poppins', fontSize: '16px' }}
               >
                 {t('nav.programs')}
-                <ChevronDown className="ml-1 w-4 h-4" />
+                <ChevronDown className="ms-1 w-4 h-4" />
               </button>
 
               {showProgramsMenu && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-2">
+                <div className="absolute top-full start-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg py-2">
                   <Link
                     href="/programs/english-learning"
                     className="block px-4 py-2 text-[#2B2B2B] hover:bg-gray-50 hover:text-[#91C549] transition-colors"
@@ -123,7 +123,7 @@ export default function HomePageNavigation() {
                   className="inline-flex items-center text-[#2B2B2B] hover:text-[#91C549] px-4 py-2 rounded-full font-medium transition-colors"
                   style={{ fontFamily: 'Poppins', fontSize: '16px' }}
                 >
-                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  <LayoutDashboard className="h-4 w-4 me-2" />
                   {t('nav.dashboard')}
                 </button>
                 <button
@@ -131,7 +131,7 @@ export default function HomePageNavigation() {
                   className="inline-flex items-center border border-gray-300 text-[#2B2B2B] hover:bg-gray-50 px-4 py-2 rounded-full font-medium transition-colors"
                   style={{ fontFamily: 'Poppins', fontSize: '16px' }}
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
+                  <LogOut className="h-4 w-4 me-2" />
                   {t('nav.logout')}
                 </button>
               </div>

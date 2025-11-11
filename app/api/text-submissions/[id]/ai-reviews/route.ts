@@ -86,12 +86,15 @@ export async function POST(
     });
 
     const language = getLanguagePreferenceFromHeaders(request.headers.get('cookie'));
-    await triggerAutoAIReviews(id, language);
+
+    triggerAutoAIReviews(id, language).catch(error => {
+      logger.error('Error in background AI review generation', error);
+    });
 
     return NextResponse.json({
       success: true,
       message: 'AI reviews are being regenerated'
-    });
+    }, { status: 202 });
 
   } catch (error) {
     logger.error('Error regenerating AI reviews', error);

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { analyzeStructure } from '@/lib/ai/openai';
 import { prisma } from '@/lib/prisma';
 import { logger } from '@/lib/logger';
+import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,9 +33,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const cookieHeader = req.headers.get('cookie');
+    const language = getLanguagePreferenceFromHeaders(cookieHeader);
+
     const startTime = Date.now();
 
-    const structureResult = await analyzeStructure(content);
+    const structureResult = await analyzeStructure(content, language);
 
     const processingTime = Date.now() - startTime;
 

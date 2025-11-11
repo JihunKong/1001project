@@ -17,6 +17,27 @@
     "logout": "Logout",
     "cart": "Cart"
   },
+  "nav": {
+    "home": "Home",
+    "library": "Library",
+    "aboutUs": "About Us",
+    "programs": "Programs",
+    "volunteer": "Volunteer",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "myStories": "My Stories",
+    "notifications": "Notifications",
+    "mainNavigation": "Main Navigation",
+    "mobileNavigation": "Mobile Navigation",
+    "skipToMain": "Skip to main content",
+    "currentPage": "Current page",
+    "userMenu": "User menu",
+    "helpSupport": "Help & Support",
+    "signOut": "Sign Out",
+    "registerBook": "Register Book"
+  },
   "roles": {
     "title": "Choose Your Role",
     "subtitle": "Select how you'd like to engage with our platform",

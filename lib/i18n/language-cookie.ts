@@ -17,7 +17,7 @@ export function isSupportedLanguage(lang: string): lang is SupportedLanguage {
   return SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage);
 }
 
-export function getLanguagePreferenceFromHeaders(cookieHeader?: string): SupportedLanguage {
+export function getLanguagePreferenceFromHeaders(cookieHeader?: string | null): SupportedLanguage {
   if (!cookieHeader) {
     return 'en';
   }

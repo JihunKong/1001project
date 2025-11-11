@@ -4,23 +4,12 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Creating role-based test accounts...');
+  console.log('🌱 Creating/updating role-based test accounts...');
 
   // Hash password for all test accounts
   const testPassword = await bcrypt.hash('test1234', 12);
 
-  // Delete existing test accounts if they exist
-  console.log('🧹 Cleaning existing test accounts...');
-  await prisma.user.deleteMany({
-    where: {
-      email: {
-        endsWith: '@test.1001stories.org'
-      }
-    }
-  });
-
-  // Create role-based test accounts
-  console.log('👥 Creating test accounts for each role...');
+  console.log('👥 Upserting test accounts for each role...');
 
   const users = await Promise.all([
     // 1. ADMIN - System Administrator

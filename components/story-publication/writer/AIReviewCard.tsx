@@ -99,9 +99,13 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
             setExpandedReview(data.reviews[0].id);
 
             const completedCount = data.reviews.filter((r: AIReview) => r.status === 'COMPLETED').length;
-            if (completedCount < 3 && completedCount >= 0) {
+            if (completedCount < 3) {
+              setIsGenerating(true);
               startPolling();
             }
+          } else {
+            setIsGenerating(true);
+            startPolling();
           }
         } else {
           setIsLoading(false);
