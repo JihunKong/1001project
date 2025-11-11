@@ -72,60 +72,105 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
       return null;
     }
 
-    const normalizedPlainText = plainText.normalize('NFC');
-    const normalizedSearchText = searchText.normalize('NFC');
+    // Strategy 1: Try multiple normalization forms (NFC and NFD)
+    const normalizationStrategies = [
+      { plain: plainText.normalize('NFC'), search: searchText.normalize('NFC'), name: 'NFC' },
+      { plain: plainText.normalize('NFD'), search: searchText.normalize('NFD'), name: 'NFD' },
+      { plain: plainText, search: searchText, name: 'unnormalized' }
+    ];
 
-    const indexInPlain = normalizedPlainText.toLowerCase().indexOf(normalizedSearchText.toLowerCase());
+    for (const strategy of normalizationStrategies) {
+      // Use toLocaleLowerCase() for better non-English support (handles Turkish İ/i, etc.)
+      const indexInPlain = strategy.plain.toLocaleLowerCase().indexOf(strategy.search.toLocaleLowerCase());
 
-    if (indexInPlain === -1) {
-      const cleanSearch = normalizedSearchText.trim().replace(/\s+/g, ' ');
-      const cleanPlain = normalizedPlainText.replace(/\s+/g, ' ');
+      if (indexInPlain !== -1) {
+        logger.debug(`[AI Review] Found text match using ${strategy.name} normalization`);
 
-      const cleanIndex = cleanPlain.toLowerCase().indexOf(cleanSearch.toLowerCase());
+        const startPlainIndex = indexInPlain;
+        const endPlainIndex = indexInPlain + searchText.length;
 
-      if (cleanIndex === -1) {
-        return null;
+        const start = mapping[startPlainIndex] || 0;
+        const end = endPlainIndex < mapping.length
+          ? mapping[endPlainIndex]
+          : htmlContent.length;
+
+        return { start, end };
       }
-
-      const cleanToPlainMap: number[] = [];
-      let plainPos = 0;
-      let cleanPos = 0;
-
-      while (plainPos < plainText.length) {
-        cleanToPlainMap[cleanPos] = plainPos;
-
-        if (plainText[plainPos].match(/\s/)) {
-          while (plainPos < plainText.length && plainText[plainPos].match(/\s/)) {
-            plainPos++;
-          }
-          cleanPos++;
-        } else {
-          plainPos++;
-          cleanPos++;
-        }
-      }
-      cleanToPlainMap[cleanPos] = plainPos;
-
-      const startPlainIndex = cleanToPlainMap[cleanIndex] || 0;
-      const endPlainIndex = cleanToPlainMap[cleanIndex + cleanSearch.length] || plainText.length;
-
-      const start = mapping[startPlainIndex] || 0;
-      const end = endPlainIndex < mapping.length
-        ? mapping[endPlainIndex]
-        : htmlContent.length;
-
-      return { start, end };
     }
 
-    const startPlainIndex = indexInPlain;
-    const endPlainIndex = indexInPlain + searchText.length;
+    // Strategy 2: Try whitespace normalization with each normalization form
+    for (const strategy of normalizationStrategies) {
+      const cleanSearch = strategy.search.trim().replace(/\s+/g, ' ');
+      const cleanPlain = strategy.plain.replace(/\s+/g, ' ');
 
-    const start = mapping[startPlainIndex] || 0;
-    const end = endPlainIndex < mapping.length
-      ? mapping[endPlainIndex]
-      : htmlContent.length;
+      const cleanIndex = cleanPlain.toLocaleLowerCase().indexOf(cleanSearch.toLocaleLowerCase());
 
-    return { start, end };
+      if (cleanIndex !== -1) {
+        logger.debug(`[AI Review] Found text match using ${strategy.name} with whitespace normalization`);
+
+        const cleanToPlainMap: number[] = [];
+        let plainPos = 0;
+        let cleanPos = 0;
+
+        while (plainPos < plainText.length) {
+          cleanToPlainMap[cleanPos] = plainPos;
+
+          if (plainText[plainPos].match(/\s/)) {
+            while (plainPos < plainText.length && plainText[plainPos].match(/\s/)) {
+              plainPos++;
+            }
+            cleanPos++;
+          } else {
+            plainPos++;
+            cleanPos++;
+          }
+        }
+        cleanToPlainMap[cleanPos] = plainPos;
+
+        const startPlainIndex = cleanToPlainMap[cleanIndex] || 0;
+        const endPlainIndex = cleanToPlainMap[cleanIndex + cleanSearch.length] || plainText.length;
+
+        const start = mapping[startPlainIndex] || 0;
+        const end = endPlainIndex < mapping.length
+          ? mapping[endPlainIndex]
+          : htmlContent.length;
+
+        return { start, end };
+      }
+    }
+
+    // Strategy 3: Try partial/fuzzy matching as last resort
+    const searchWords = searchText.trim().toLowerCase().split(/\s+/);
+    if (searchWords.length >= 3) {
+      // Try matching first 3 words for partial match
+      const partialSearch = searchWords.slice(0, 3).join(' ');
+      const partialIndex = plainText.toLocaleLowerCase().indexOf(partialSearch);
+
+      if (partialIndex !== -1) {
+        logger.warn(`[AI Review] Using partial match (first 3 words) for: "${searchText.substring(0, 50)}..."`);
+
+        const startPlainIndex = partialIndex;
+        const endPlainIndex = partialIndex + searchText.length;
+
+        const start = mapping[startPlainIndex] || 0;
+        const end = endPlainIndex < mapping.length
+          ? mapping[endPlainIndex]
+          : htmlContent.length;
+
+        return { start, end };
+      }
+    }
+
+    // All strategies failed - log detailed debugging info
+    logger.warn('[AI Review] Text match failed for all strategies', {
+      searchTextLength: searchText.length,
+      searchTextPreview: searchText.substring(0, 100),
+      plainTextLength: plainText.length,
+      plainTextPreview: plainText.substring(0, 100),
+      triedStrategies: ['NFC', 'NFD', 'unnormalized', 'whitespace-normalized', 'partial-match']
+    });
+
+    return null;
   } catch (error) {
     logger.error('[AI Review] Error in findTextPosition', error);
     return null;
@@ -145,9 +190,11 @@ function createAnnotations(
   const annotations: AIAnnotation[] = [];
   let successCount = 0;
   let failCount = 0;
+  let skippedCount = 0;
   let annotationIndex = 0;
 
   improvements.forEach((improvement, improvementIndex) => {
+    // Strategy 1: Handle object with both text and suggestion (ideal format)
     if (typeof improvement === 'object' && improvement !== null && improvement.text && improvement.suggestion) {
       const position = findTextPosition(htmlContent, improvement.text);
 
@@ -162,12 +209,81 @@ function createAnnotations(
         });
         annotationIndex++;
         successCount++;
+        logger.debug(`[AI Review] Created annotation #${annotationIndex} for improvement #${improvementIndex}`);
+      } else {
+        failCount++;
+        logger.warn(`[AI Review] Failed to find text position for improvement #${improvementIndex}`, {
+          text: improvement.text?.substring(0, 100)
+        });
+      }
+      return;
+    }
+
+    // Strategy 2: Handle object with only text field (try to extract suggestion)
+    if (typeof improvement === 'object' && improvement !== null && improvement.text) {
+      const suggestion = improvement.suggestion || improvement.advice || improvement.recommendation || 'Improvement suggested';
+
+      const position = findTextPosition(htmlContent, improvement.text);
+
+      if (position) {
+        annotations.push({
+          suggestionIndex: annotationIndex,
+          highlightedText: improvement.text,
+          startOffset: position.start,
+          endOffset: position.end,
+          suggestionType: reviewType,
+          color: SUGGESTION_COLORS[reviewType] || '#fbbf24'
+        });
+        annotationIndex++;
+        successCount++;
+        logger.debug(`[AI Review] Created annotation #${annotationIndex} with fallback suggestion`);
       } else {
         failCount++;
       }
-    } else {
-      logger.warn(`[AI Review] Skipping invalid improvement #${improvementIndex}`, { improvement: typeof improvement === 'object' ? JSON.stringify(improvement) : improvement });
+      return;
     }
+
+    // Strategy 3: Handle plain string (try to use as text, generate generic suggestion)
+    if (typeof improvement === 'string' && improvement.trim().length > 10) {
+      const position = findTextPosition(htmlContent, improvement);
+
+      if (position) {
+        annotations.push({
+          suggestionIndex: annotationIndex,
+          highlightedText: improvement,
+          startOffset: position.start,
+          endOffset: position.end,
+          suggestionType: reviewType,
+          color: SUGGESTION_COLORS[reviewType] || '#fbbf24'
+        });
+        annotationIndex++;
+        successCount++;
+        logger.debug(`[AI Review] Created annotation #${annotationIndex} from plain string`);
+      } else {
+        failCount++;
+        logger.warn(`[AI Review] Failed to find position for string improvement #${improvementIndex}`, {
+          stringPreview: improvement.substring(0, 100)
+        });
+      }
+      return;
+    }
+
+    // All strategies failed - log and skip
+    skippedCount++;
+    logger.warn(`[AI Review] Skipped invalid improvement #${improvementIndex}`, {
+      improvementType: typeof improvement,
+      hasText: improvement?.text !== undefined,
+      hasSuggestion: improvement?.suggestion !== undefined,
+      improvementPreview: typeof improvement === 'object' ? JSON.stringify(improvement).substring(0, 200) : improvement
+    });
+  });
+
+  logger.info(`[AI Review] Annotation creation complete`, {
+    total: improvements.length,
+    successful: successCount,
+    failed: failCount,
+    skipped: skippedCount,
+    reviewType
   });
 
   return annotations;
