@@ -59,21 +59,53 @@ Format your response as JSON:
 }`,
       STRUCTURE: `Analyze the following story's structure, including beginning, middle, end, character development, and plot coherence. Provide constructive feedback that helps young writers improve their storytelling.
 
+CRITICAL: For improvements, you MUST include the exact sentence from the story that needs improvement, plus your suggestion.
+
 Format your response as JSON:
 {
   "structureAnalysis": "overall analysis",
   "strengths": ["strength 1", "strength 2"],
-  "improvements": ["improvement 1", "improvement 2"],
+  "improvements": [
+    {"text": "exact sentence from the story that needs work", "suggestion": "how to improve this specific sentence"},
+    {"text": "another exact sentence", "suggestion": "another specific improvement"}
+  ],
   "structureScore": 0-100
+}
+
+Example:
+{
+  "structureAnalysis": "The story has a clear beginning but rushes through the middle section.",
+  "strengths": ["Strong opening that hooks the reader", "Vivid character descriptions"],
+  "improvements": [
+    {"text": "Then everything happened very fast.", "suggestion": "Expand this moment - describe what happened step by step to build tension."},
+    {"text": "The hero won.", "suggestion": "Show how the hero won instead of just telling us - what actions did they take?"}
+  ],
+  "structureScore": 75
 }`,
       WRITING_HELP: `Provide constructive feedback and encouragement for this story. Highlight what works well and offer specific suggestions for improvement. Keep your tone positive and supportive.
+
+CRITICAL: For suggestions, you MUST include the exact sentence from the story that could be improved, plus your suggestion.
 
 Format your response as JSON:
 {
   "feedback": "main feedback",
   "strengths": ["strength 1", "strength 2"],
-  "suggestions": ["suggestion 1", "suggestion 2"],
+  "suggestions": [
+    {"text": "exact sentence from the story", "suggestion": "how to make it even better"},
+    {"text": "another exact sentence", "suggestion": "another way to enhance it"}
+  ],
   "encouragement": "positive message"
+}
+
+Example:
+{
+  "feedback": "You've created an imaginative world with interesting characters!",
+  "strengths": ["Creative setting", "Good dialogue"],
+  "suggestions": [
+    {"text": "The dragon was big.", "suggestion": "Try describing exactly how big - was it as tall as a house? Did its wings block out the sun?"},
+    {"text": "She felt scared.", "suggestion": "Show us she's scared through her actions - maybe her hands trembled or her voice shook?"}
+  ],
+  "encouragement": "Keep writing - your storytelling is getting stronger with each story!"
 }`
     }
   },
@@ -105,21 +137,53 @@ Format your response as JSON:
 }`,
       STRUCTURE: `다음 이야기의 구조를 분석해주세요. 시작, 중간, 끝, 캐릭터 발전, 플롯 일관성을 포함합니다. 어린 작가들이 스토리텔링을 개선하는 데 도움이 되는 건설적인 피드백을 제공하세요.
 
+중요: improvements에는 반드시 이야기에서 개선이 필요한 정확한 문장과 개선 제안을 함께 포함해야 합니다. 필드명은 영어로 유지하세요(text, suggestion).
+
 응답을 JSON 형식으로 작성:
 {
   "structureAnalysis": "전체 분석",
   "strengths": ["강점 1", "강점 2"],
-  "improvements": ["개선점 1", "개선점 2"],
+  "improvements": [
+    {"text": "이야기에서 개선이 필요한 정확한 문장", "suggestion": "이 문장을 개선하는 방법"},
+    {"text": "또 다른 정확한 문장", "suggestion": "또 다른 구체적인 개선 방법"}
+  ],
   "structureScore": 0-100
+}
+
+예시:
+{
+  "structureAnalysis": "이야기는 명확한 시작이 있지만 중간 부분이 급하게 진행됩니다.",
+  "strengths": ["독자의 관심을 끄는 강력한 오프닝", "생생한 캐릭터 묘사"],
+  "improvements": [
+    {"text": "그리고 모든 일이 매우 빠르게 일어났습니다.", "suggestion": "이 순간을 확장하세요 - 긴장감을 조성하기 위해 무슨 일이 일어났는지 단계별로 설명하세요."},
+    {"text": "주인공이 이겼습니다.", "suggestion": "주인공이 어떻게 이겼는지 보여주세요 - 어떤 행동을 취했나요?"}
+  ],
+  "structureScore": 75
 }`,
       WRITING_HELP: `이 이야기에 대한 건설적인 피드백과 격려를 제공하세요. 잘된 부분을 강조하고 개선을 위한 구체적인 제안을 제공하세요. 긍정적이고 지지하는 톤을 유지하세요.
+
+중요: suggestions에는 반드시 이야기에서 개선할 수 있는 정확한 문장과 개선 제안을 함께 포함해야 합니다. 필드명은 영어로 유지하세요(text, suggestion).
 
 응답을 JSON 형식으로 작성:
 {
   "feedback": "주요 피드백",
   "strengths": ["강점 1", "강점 2"],
-  "suggestions": ["제안 1", "제안 2"],
+  "suggestions": [
+    {"text": "이야기에서 가져온 정확한 문장", "suggestion": "이를 더 좋게 만드는 방법"},
+    {"text": "또 다른 정확한 문장", "suggestion": "이를 향상시키는 또 다른 방법"}
+  ],
   "encouragement": "긍정적인 메시지"
+}
+
+예시:
+{
+  "feedback": "흥미로운 캐릭터들과 상상력 넘치는 세계를 만들었어요!",
+  "strengths": ["창의적인 배경", "좋은 대화"],
+  "suggestions": [
+    {"text": "용은 컸습니다.", "suggestion": "정확히 얼마나 큰지 설명해보세요 - 집만큼 컸나요? 날개가 태양을 가렸나요?"},
+    {"text": "그녀는 무서웠습니다.", "suggestion": "그녀가 무서워하는 모습을 행동으로 보여주세요 - 손이 떨렸나요? 목소리가 떨렸나요?"}
+  ],
+  "encouragement": "계속 글을 쓰세요 - 이야기마다 당신의 스토리텔링이 더 강해지고 있어요!"
 }`
     }
   },
@@ -151,20 +215,30 @@ Formato de respuesta JSON:
 }`,
       STRUCTURE: `Analiza la estructura de la siguiente historia, incluyendo inicio, medio, final, desarrollo de personajes y coherencia de la trama. Proporciona comentarios constructivos que ayuden a los jóvenes escritores a mejorar su narración.
 
+CRÍTICO: Para improvements, DEBES incluir la oración exacta de la historia que necesita mejora, más tu sugerencia. Mantén los nombres de campos en inglés (text, suggestion).
+
 Formato de respuesta JSON:
 {
   "structureAnalysis": "análisis general",
   "strengths": ["fortaleza 1", "fortaleza 2"],
-  "improvements": ["mejora 1", "mejora 2"],
+  "improvements": [
+    {"text": "oración exacta de la historia", "suggestion": "cómo mejorar esta oración"},
+    {"text": "otra oración exacta", "suggestion": "otra mejora específica"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `Proporciona comentarios constructivos y aliento para esta historia. Destaca lo que funciona bien y ofrece sugerencias específicas para mejorar. Mantén un tono positivo y de apoyo.
+
+CRÍTICO: Para suggestions, DEBES incluir la oración exacta de la historia, más tu sugerencia. Mantén los nombres de campos en inglés (text, suggestion).
 
 Formato de respuesta JSON:
 {
   "feedback": "comentario principal",
   "strengths": ["fortaleza 1", "fortaleza 2"],
-  "suggestions": ["sugerencia 1", "sugerencia 2"],
+  "suggestions": [
+    {"text": "oración exacta de la historia", "suggestion": "cómo mejorarla"},
+    {"text": "otra oración exacta", "suggestion": "otra mejora"}
+  ],
   "encouragement": "mensaje positivo"
 }`
     }
@@ -197,20 +271,30 @@ Formato de respuesta JSON:
 }`,
       STRUCTURE: `قم بتحليل بنية القصة التالية، بما في ذلك البداية والوسط والنهاية وتطوير الشخصية وتماسك الحبكة. قدم ملاحظات بناءة تساعد الكتاب الصغار على تحسين سردهم للقصص.
 
+مهم: يجب أن تتضمن improvements الجملة الدقيقة من القصة التي تحتاج إلى تحسين، بالإضافة إلى اقتراحك. احتفظ بأسماء الحقول باللغة الإنجليزية (text, suggestion).
+
 تنسيق الاستجابة JSON:
 {
   "structureAnalysis": "تحليل شامل",
   "strengths": ["نقطة قوة 1", "نقطة قوة 2"],
-  "improvements": ["تحسين 1", "تحسين 2"],
+  "improvements": [
+    {"text": "الجملة الدقيقة من القصة", "suggestion": "كيفية تحسين هذه الجملة"},
+    {"text": "جملة دقيقة أخرى", "suggestion": "تحسين محدد آخر"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `قدم ملاحظات بناءة وتشجيع لهذه القصة. سلط الضوء على ما ينجح جيدًا وقدم اقتراحات محددة للتحسين. حافظ على نبرة إيجابية وداعمة.
+
+مهم: يجب أن تتضمن suggestions الجملة الدقيقة من القصة، بالإضافة إلى اقتراحك. احتفظ بأسماء الحقول باللغة الإنجليزية (text, suggestion).
 
 تنسيق الاستجابة JSON:
 {
   "feedback": "الملاحظات الرئيسية",
   "strengths": ["نقطة قوة 1", "نقطة قوة 2"],
-  "suggestions": ["اقتراح 1", "اقتراح 2"],
+  "suggestions": [
+    {"text": "الجملة الدقيقة من القصة", "suggestion": "كيفية تحسينها"},
+    {"text": "جملة دقيقة أخرى", "suggestion": "تحسين آخر"}
+  ],
   "encouragement": "رسالة إيجابية"
 }`
     }
@@ -243,20 +327,30 @@ JSON प्रारूप में प्रतिक्रिया:
 }`,
       STRUCTURE: `निम्नलिखित कहानी की संरचना का विश्लेषण करें, जिसमें शुरुआत, मध्य, अंत, चरित्र विकास और कथानक सुसंगतता शामिल है। रचनात्मक प्रतिक्रिया प्रदान करें जो युवा लेखकों को उनकी कहानी कहने में सुधार करने में मदद करे।
 
+महत्वपूर्ण: improvements में कहानी से सटीक वाक्य और आपका सुझाव शामिल होना चाहिए। फ़ील्ड नाम अंग्रेज़ी में रखें (text, suggestion).
+
 JSON प्रारूप में प्रतिक्रिया:
 {
   "structureAnalysis": "समग्र विश्लेषण",
   "strengths": ["ताकत 1", "ताकत 2"],
-  "improvements": ["सुधार 1", "सुधार 2"],
+  "improvements": [
+    {"text": "कहानी से सटीक वाक्य", "suggestion": "इस वाक्य को कैसे सुधारें"},
+    {"text": "एक और सटीक वाक्य", "suggestion": "एक और विशिष्ट सुधार"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `इस कहानी के लिए रचनात्मक प्रतिक्रिया और प्रोत्साहन प्रदान करें। जो अच्छा काम करता है उसे उजागर करें और सुधार के लिए विशिष्ट सुझाव दें। सकारात्मक और सहायक स्वर बनाए रखें।
+
+महत्वपूर्ण: suggestions में कहानी से सटीक वाक्य और आपका सुझाव शामिल होना चाहिए। फ़ील्ड नाम अंग्रेज़ी में रखें (text, suggestion).
 
 JSON प्रारूप में प्रतिक्रिया:
 {
   "feedback": "मुख्य प्रतिक्रिया",
   "strengths": ["ताकत 1", "ताकत 2"],
-  "suggestions": ["सुझाव 1", "सुझाव 2"],
+  "suggestions": [
+    {"text": "कहानी से सटीक वाक्य", "suggestion": "इसे कैसे बेहतर बनाएं"},
+    {"text": "एक और सटीक वाक्य", "suggestion": "एक और सुधार"}
+  ],
   "encouragement": "सकारात्मक संदेश"
 }`
     }
@@ -289,20 +383,30 @@ Format de réponse JSON:
 }`,
       STRUCTURE: `Analysez la structure de l'histoire suivante, y compris le début, le milieu, la fin, le développement des personnages et la cohérence de l'intrigue. Fournissez des commentaires constructifs qui aident les jeunes écrivains à améliorer leur narration.
 
+CRITIQUE: Pour improvements, vous DEVEZ inclure la phrase exacte de l'histoire et votre suggestion. Gardez les noms de champs en anglais (text, suggestion).
+
 Format de réponse JSON:
 {
   "structureAnalysis": "analyse globale",
   "strengths": ["force 1", "force 2"],
-  "improvements": ["amélioration 1", "amélioration 2"],
+  "improvements": [
+    {"text": "phrase exacte de l'histoire", "suggestion": "comment l'améliorer"},
+    {"text": "autre phrase exacte", "suggestion": "autre amélioration"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `Fournissez des commentaires constructifs et des encouragements pour cette histoire. Mettez en évidence ce qui fonctionne bien et offrez des suggestions spécifiques d'amélioration. Maintenez un ton positif et encourageant.
+
+CRITIQUE: Pour suggestions, vous DEVEZ inclure la phrase exacte de l'histoire et votre suggestion. Gardez les noms de champs en anglais (text, suggestion).
 
 Format de réponse JSON:
 {
   "feedback": "commentaire principal",
   "strengths": ["force 1", "force 2"],
-  "suggestions": ["suggestion 1", "suggestion 2"],
+  "suggestions": [
+    {"text": "phrase exacte de l'histoire", "suggestion": "comment l'améliorer"},
+    {"text": "autre phrase exacte", "suggestion": "autre amélioration"}
+  ],
   "encouragement": "message positif"
 }`
     }
@@ -335,20 +439,30 @@ JSON-Antwortformat:
 }`,
       STRUCTURE: `Analysieren Sie die Struktur der folgenden Geschichte, einschließlich Anfang, Mitte, Ende, Charakterentwicklung und Handlungskohärenz. Geben Sie konstruktives Feedback, das jungen Autoren hilft, ihr Geschichtenerzählen zu verbessern.
 
+KRITISCH: Für improvements MÜSSEN Sie den exakten Satz aus der Geschichte und Ihren Vorschlag einschließen. Behalten Sie Feldnamen auf Englisch (text, suggestion).
+
 JSON-Antwortformat:
 {
   "structureAnalysis": "Gesamtanalyse",
   "strengths": ["Stärke 1", "Stärke 2"],
-  "improvements": ["Verbesserung 1", "Verbesserung 2"],
+  "improvements": [
+    {"text": "exakter Satz aus der Geschichte", "suggestion": "wie man ihn verbessert"},
+    {"text": "ein anderer exakter Satz", "suggestion": "eine andere Verbesserung"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `Geben Sie konstruktives Feedback und Ermutigung für diese Geschichte. Heben Sie hervor, was gut funktioniert, und bieten Sie spezifische Verbesserungsvorschläge. Behalten Sie einen positiven und unterstützenden Ton bei.
+
+KRITISCH: Für suggestions MÜSSEN Sie den exakten Satz aus der Geschichte und Ihren Vorschlag einschließen. Behalten Sie Feldnamen auf Englisch (text, suggestion).
 
 JSON-Antwortformat:
 {
   "feedback": "Hauptfeedback",
   "strengths": ["Stärke 1", "Stärke 2"],
-  "suggestions": ["Vorschlag 1", "Vorschlag 2"],
+  "suggestions": [
+    {"text": "exakter Satz aus der Geschichte", "suggestion": "wie man ihn verbessert"},
+    {"text": "ein anderer exakter Satz", "suggestion": "eine andere Verbesserung"}
+  ],
   "encouragement": "positive Nachricht"
 }`
     }
@@ -381,20 +495,30 @@ JSON形式の応答:
 }`,
       STRUCTURE: `以下の物語の構造を分析してください。始まり、中間、終わり、キャラクター開発、プロットの一貫性を含みます。若い作家がストーリーテリングを改善するのに役立つ建設的なフィードバックを提供してください。
 
+重要: improvementsには物語から正確な文と提案を含める必要があります。フィールド名は英語のままにしてください (text, suggestion).
+
 JSON形式の応答:
 {
   "structureAnalysis": "全体的な分析",
   "strengths": ["強み1", "強み2"],
-  "improvements": ["改善点1", "改善点2"],
+  "improvements": [
+    {"text": "物語から正確な文", "suggestion": "この文を改善する方法"},
+    {"text": "別の正確な文", "suggestion": "別の具体的な改善"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `この物語に対して建設的なフィードバックと励ましを提供してください。うまくいっている点を強調し、改善のための具体的な提案を提供してください。ポジティブでサポート的な口調を保ってください。
+
+重要: suggestionsには物語から正確な文と提案を含める必要があります。フィールド名は英語のままにしてください (text, suggestion).
 
 JSON形式の応答:
 {
   "feedback": "主なフィードバック",
   "strengths": ["強み1", "強み2"],
-  "suggestions": ["提案1", "提案2"],
+  "suggestions": [
+    {"text": "物語から正確な文", "suggestion": "それをより良くする方法"},
+    {"text": "別の正確な文", "suggestion": "別の改善"}
+  ],
   "encouragement": "ポジティブなメッセージ"
 }`
     }
@@ -427,20 +551,30 @@ Formato de resposta JSON:
 }`,
       STRUCTURE: `Analise a estrutura da seguinte história, incluindo início, meio, fim, desenvolvimento de personagens e coerência do enredo. Forneça feedback construtivo que ajude jovens escritores a melhorar sua narrativa.
 
+CRÍTICO: Para improvements, você DEVE incluir a frase exata da história e sua sugestão. Mantenha os nomes dos campos em inglês (text, suggestion).
+
 Formato de resposta JSON:
 {
   "structureAnalysis": "análise geral",
   "strengths": ["ponto forte 1", "ponto forte 2"],
-  "improvements": ["melhoria 1", "melhoria 2"],
+  "improvements": [
+    {"text": "frase exata da história", "suggestion": "como melhorá-la"},
+    {"text": "outra frase exata", "suggestion": "outra melhoria"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `Forneça feedback construtivo e incentivo para esta história. Destaque o que funciona bem e ofereça sugestões específicas de melhoria. Mantenha um tom positivo e de apoio.
+
+CRÍTICO: Para suggestions, você DEVE incluir a frase exata da história e sua sugestão. Mantenha os nomes dos campos em inglês (text, suggestion).
 
 Formato de resposta JSON:
 {
   "feedback": "feedback principal",
   "strengths": ["ponto forte 1", "ponto forte 2"],
-  "suggestions": ["sugestão 1", "sugestão 2"],
+  "suggestions": [
+    {"text": "frase exata da história", "suggestion": "como melhorá-la"},
+    {"text": "outra frase exata", "suggestion": "outra melhoria"}
+  ],
   "encouragement": "mensagem positiva"
 }`
     }
@@ -473,20 +607,30 @@ Formato de resposta JSON:
 }`,
       STRUCTURE: `Проанализируйте структуру следующей истории, включая начало, середину, конец, развитие персонажей и согласованность сюжета. Предоставьте конструктивную обратную связь, которая поможет молодым писателям улучшить их повествование.
 
+КРИТИЧНО: Для improvements вы ДОЛЖНЫ включить точное предложение из истории и свое предложение. Сохраняйте имена полей на английском (text, suggestion).
+
 Формат ответа JSON:
 {
   "structureAnalysis": "общий анализ",
   "strengths": ["сильная сторона 1", "сильная сторона 2"],
-  "improvements": ["улучшение 1", "улучшение 2"],
+  "improvements": [
+    {"text": "точное предложение из истории", "suggestion": "как его улучшить"},
+    {"text": "другое точное предложение", "suggestion": "другое улучшение"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `Предоставьте конструктивную обратную связь и поддержку для этой истории. Выделите то, что работает хорошо, и предложите конкретные предложения по улучшению. Поддерживайте позитивный и поддерживающий тон.
+
+КРИТИЧНО: Для suggestions вы ДОЛЖНЫ включить точное предложение из истории и свое предложение. Сохраняйте имена полей на английском (text, suggestion).
 
 Формат ответа JSON:
 {
   "feedback": "основная обратная связь",
   "strengths": ["сильная сторона 1", "сильная сторона 2"],
-  "suggestions": ["предложение 1", "предложение 2"],
+  "suggestions": [
+    {"text": "точное предложение из истории", "suggestion": "как его улучшить"},
+    {"text": "другое точное предложение", "suggestion": "другое улучшение"}
+  ],
   "encouragement": "позитивное сообщение"
 }`
     }
@@ -519,20 +663,30 @@ Formato risposta JSON:
 }`,
       STRUCTURE: `Analizza la struttura della seguente storia, inclusi inizio, metà, fine, sviluppo dei personaggi e coerenza della trama. Fornisci feedback costruttivo che aiuti i giovani scrittori a migliorare la loro narrazione.
 
+CRITICO: Per improvements, DEVI includere la frase esatta dalla storia e il tuo suggerimento. Mantieni i nomi dei campi in inglese (text, suggestion).
+
 Formato risposta JSON:
 {
   "structureAnalysis": "analisi complessiva",
   "strengths": ["punto di forza 1", "punto di forza 2"],
-  "improvements": ["miglioramento 1", "miglioramento 2"],
+  "improvements": [
+    {"text": "frase esatta dalla storia", "suggestion": "come migliorarla"},
+    {"text": "un'altra frase esatta", "suggestion": "un altro miglioramento"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `Fornisci feedback costruttivo e incoraggiamento per questa storia. Evidenzia ciò che funziona bene e offri suggerimenti specifici per il miglioramento. Mantieni un tono positivo e di supporto.
+
+CRITICO: Per suggestions, DEVI includere la frase esatta dalla storia e il tuo suggerimento. Mantieni i nomi dei campi in inglese (text, suggestion).
 
 Formato risposta JSON:
 {
   "feedback": "feedback principale",
   "strengths": ["punto di forza 1", "punto di forza 2"],
-  "suggestions": ["suggerimento 1", "suggerimento 2"],
+  "suggestions": [
+    {"text": "frase esatta dalla storia", "suggestion": "come migliorarla"},
+    {"text": "un'altra frase esatta", "suggestion": "un altro miglioramento"}
+  ],
   "encouragement": "messaggio positivo"
 }`
     }
@@ -565,20 +719,30 @@ JSON响应格式:
 }`,
       STRUCTURE: `分析以下故事的结构，包括开头、中间、结尾、人物发展和情节连贯性。提供有助于年轻作家改进叙事的建设性反馈。
 
+重要: 对于improvements，您必须包含故事中的确切句子和您的建议。保持字段名称为英文(text, suggestion)。
+
 JSON响应格式:
 {
   "structureAnalysis": "整体分析",
   "strengths": ["优点1", "优点2"],
-  "improvements": ["改进1", "改进2"],
+  "improvements": [
+    {"text": "故事中的确切句子", "suggestion": "如何改进"},
+    {"text": "另一个确切句子", "suggestion": "另一个改进"}
+  ],
   "structureScore": 0-100
 }`,
       WRITING_HELP: `为这个故事提供建设性反馈和鼓励。突出好的方面并提供具体的改进建议。保持积极和支持的语气。
+
+重要: 对于suggestions，您必须包含故事中的确切句子和您的建议。保持字段名称为英文(text, suggestion)。
 
 JSON响应格式:
 {
   "feedback": "主要反馈",
   "strengths": ["优点1", "优点2"],
-  "suggestions": ["建议1", "建议2"],
+  "suggestions": [
+    {"text": "故事中的确切句子", "suggestion": "如何改进"},
+    {"text": "另一个确切句子", "suggestion": "另一个改进"}
+  ],
   "encouragement": "积极信息"
 }`
     }

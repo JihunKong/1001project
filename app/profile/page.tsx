@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { ProfileOverview } from '@/components/profile/ProfileOverview';
 import { ProfileTabs } from '@/components/profile/ProfileTabs';
+import { calculateStats } from '@/lib/profile-stats';
+import { UserRole } from '@prisma/client';
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -25,13 +27,7 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  const statsResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/profile/stats`, {
-    headers: {
-      cookie: `next-auth.session-token=${session.user.id}`
-    }
-  });
-
-  const stats = statsResponse.ok ? await statsResponse.json() : {};
+  const stats = await calculateStats(session.user.id, session.user.role as UserRole);
 
   return (
     <div className="flex min-h-screen bg-white">
