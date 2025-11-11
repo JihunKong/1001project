@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { useRouter } from 'next/navigation';
+import { Plus, MoreHorizontal } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -10,6 +11,7 @@ interface Project {
   status: string;
   lastEditedAt: Date;
   thumbnailUrl?: string;
+  coverImageUrl?: string;
   summary?: string;
   wordCount?: number;
 }
@@ -23,11 +25,55 @@ export default function ProfileCurrentProjects({ projects, userRole }: ProfileCu
   const { t } = useTranslation();
   const router = useRouter();
 
-  const statusColors: Record<string, string> = {
-    DRAFT: 'bg-gray-100 text-gray-800',
-    PENDING: 'bg-purple-100 text-purple-800',
-    STORY_REVIEW: 'bg-yellow-100 text-yellow-800',
-    NEEDS_REVISION: 'bg-red-100 text-red-800',
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case 'DRAFT':
+        return { backgroundColor: '#F2F2F7', color: '#141414' };
+      case 'NEEDS_REVISION':
+        return { backgroundColor: '#FEF2F2', color: '#C2410C' };
+      case 'PUBLISHED':
+        return { backgroundColor: '#DBEAFE', color: '#1E3A8A' };
+      case 'PENDING':
+      case 'STORY_REVIEW':
+      case 'FORMAT_REVIEW':
+      case 'CONTENT_REVIEW':
+        return { backgroundColor: '#E0E7FF', color: '#3730A3' };
+      case 'APPROVED':
+      case 'STORY_APPROVED':
+        return { backgroundColor: '#DCFCE7', color: '#166534' };
+      default:
+        return { backgroundColor: '#F2F2F7', color: '#141414' };
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'DRAFT': return t('profile.stats.draft');
+      case 'NEEDS_REVISION': return t('profile.stats.needRevision');
+      case 'PUBLISHED': return t('profile.stats.published');
+      case 'PENDING': return t('profile.stats.submitted');
+      case 'STORY_REVIEW':
+      case 'FORMAT_REVIEW':
+      case 'CONTENT_REVIEW':
+        return t('profile.stats.underReview');
+      case 'APPROVED':
+      case 'STORY_APPROVED':
+        return t('profile.stats.approved');
+      default: return status;
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    const d = new Date(date);
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const year = d.getFullYear();
+    const hours = d.getHours();
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12;
+
+    return `${month}.${day}.${year} ${hour12}:${minutes} ${ampm}`;
   };
 
   const handleStartNew = () => {
@@ -35,28 +81,49 @@ export default function ProfileCurrentProjects({ projects, userRole }: ProfileCu
       alert(t('Students cannot create stories'));
       return;
     }
-    router.push('/submit/text');
+    router.push('/dashboard/writer/submit-text');
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="mb-8">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">{t('profile.currentProjects.title')}</h2>
+        <h2 style={{
+          fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+          fontSize: '32px',
+          fontWeight: 500,
+          lineHeight: '1.221',
+          color: '#141414'
+        }}>
+          {t('profile.currentProjects.title')}
+        </h2>
         <button
           onClick={handleStartNew}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+          style={{
+            fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+            fontSize: '16px',
+            fontWeight: 500,
+            color: '#141414',
+            border: '1px solid #E5E5EA'
+          }}
           disabled={userRole === 'LEARNER'}
         >
-          + {t('profile.currentProjects.startNew')}
+          <Plus size={20} />
+          {t('profile.currentProjects.startNew')}
         </button>
       </div>
 
       {projects.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-600 mb-4">{t('profile.currentProjects.noProjects')}</p>
+        <div className="text-center py-12" style={{
+          fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+          fontSize: '16px',
+          color: '#8E8E93'
+        }}>
+          <p className="mb-4">{t('profile.currentProjects.noProjects')}</p>
           <button
             onClick={handleStartNew}
-            className="text-blue-600 hover:underline"
+            className="hover:underline"
+            style={{ color: '#16A34A', fontWeight: 500 }}
           >
             {t('profile.currentProjects.createFirst')}
           </button>
@@ -66,14 +133,16 @@ export default function ProfileCurrentProjects({ projects, userRole }: ProfileCu
           {projects.map((project) => (
             <div
               key={project.id}
-              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => router.push(`/submit/text/${project.id}`)}
+              className="border border-[#E5E5EA] rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => router.push(`/dashboard/writer/story/${project.id}`)}
             >
               <div className="flex items-start gap-4">
-                {project.thumbnailUrl && (
-                  <div className="relative w-24 h-16 rounded overflow-hidden flex-shrink-0">
+                {(project.thumbnailUrl || project.coverImageUrl) && (
+                  <div className="relative rounded overflow-hidden flex-shrink-0"
+                    style={{ width: '100px', height: '60px' }}
+                  >
                     <Image
-                      src={project.thumbnailUrl}
+                      src={project.thumbnailUrl || project.coverImageUrl || ''}
                       alt={project.title}
                       fill
                       className="object-cover"
@@ -81,18 +150,43 @@ export default function ProfileCurrentProjects({ projects, userRole }: ProfileCu
                   </div>
                 )}
                 <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-semibold text-gray-900">{project.title}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[project.status] || 'bg-gray-100 text-gray-800'}`}>
-                      {t(`profile.stats.${project.status.toLowerCase()}`)}
-                    </span>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '18px',
+                      fontWeight: 500,
+                      color: '#141414'
+                    }}>
+                      {project.title}
+                    </h3>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      className="p-1 hover:bg-gray-100 rounded"
+                    >
+                      <MoreHorizontal size={24} color="#8E8E93" />
+                    </button>
                   </div>
-                  {project.summary && (
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{project.summary}</p>
-                  )}
-                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                    <span>{t('profile.currentProjects.lastEdited').replace('{date}', new Date(project.lastEditedAt).toLocaleDateString())}</span>
-                    {project.wordCount && <span>{project.wordCount} words</span>}
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="px-3 py-1 rounded"
+                      style={{
+                        ...getStatusStyle(project.status),
+                        fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                        fontSize: '14px',
+                        fontWeight: 500
+                      }}
+                    >
+                      {getStatusLabel(project.status)}
+                    </span>
+                    <span style={{
+                      fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                      fontSize: '14px',
+                      color: '#8E8E93'
+                    }}>
+                      {t('profile.currentProjects.lastEdited').replace('{date}', formatDate(project.lastEditedAt))}
+                    </span>
                   </div>
                 </div>
               </div>

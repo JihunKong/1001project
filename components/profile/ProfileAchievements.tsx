@@ -26,27 +26,37 @@ export default function ProfileAchievements({ achievements }: ProfileAchievement
   const unlockedCount = achievements.filter(a => a.isUnlocked).length;
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-900">
+    <div className="mb-8">
+      <div className="flex justify-between items-center mb-6">
+        <h2 style={{
+          fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+          fontSize: '32px',
+          fontWeight: 500,
+          lineHeight: '1.221',
+          color: '#141414'
+        }}>
           {t('profile.achievements.title')}
         </h2>
-        <span className="text-sm text-gray-600">
+        <span style={{
+          fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+          fontSize: '16px',
+          fontWeight: 400,
+          color: '#8E8E93'
+        }}>
           {t('profile.achievements.earned').replace('{count}', unlockedCount.toString())}
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {achievements.map((achievement) => (
           <div
             key={achievement.id}
-            className={`
-              relative rounded-lg border-2 p-4 transition-all
-              ${achievement.isUnlocked
-                ? 'border-green-500 bg-green-50'
-                : 'border-gray-200 bg-gray-50 opacity-60'
-              }
-            `}
+            className="relative rounded-lg transition-all p-4"
+            style={{
+              border: `2px solid ${achievement.isUnlocked ? '#16A34A' : '#E5E5EA'}`,
+              backgroundColor: achievement.isUnlocked ? '#DCFCE7' : '#F2F2F7',
+              opacity: achievement.isUnlocked ? 1 : 0.6
+            }}
           >
             {achievement.iconUrl && (
               <div className="mb-3 relative w-12 h-12 mx-auto">
@@ -60,24 +70,43 @@ export default function ProfileAchievements({ achievements }: ProfileAchievement
             )}
 
             <div className="text-center">
-              <h3 className="font-semibold text-gray-900 mb-1">
+              <h3 style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '16px',
+                fontWeight: 500,
+                color: '#141414',
+                marginBottom: '4px'
+              }}>
                 {t(achievement.nameKey)}
               </h3>
-              <p className="text-xs text-gray-600 mb-2">
+              <p style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                color: '#8E8E93',
+                marginBottom: '8px'
+              }}>
                 {t(achievement.descKey)}
               </p>
 
               {achievement.progress && !achievement.isUnlocked && (
                 <div className="mt-2">
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-full rounded-full h-2" style={{ backgroundColor: '#E5E5EA' }}>
                     <div
-                      className="bg-blue-600 h-2 rounded-full transition-all"
+                      className="h-2 rounded-full transition-all"
                       style={{
+                        backgroundColor: '#3730A3',
                         width: `${Math.min(100, (achievement.progress.current / achievement.progress.target) * 100)}%`
                       }}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p style={{
+                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 400,
+                    color: '#8E8E93',
+                    marginTop: '4px'
+                  }}>
                     {achievement.progress.current} / {achievement.progress.target}
                   </p>
                 </div>
@@ -85,17 +114,34 @@ export default function ProfileAchievements({ achievements }: ProfileAchievement
 
               <div className="mt-2">
                 {achievement.isUnlocked ? (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full" style={{
+                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    backgroundColor: '#DCFCE7',
+                    color: '#166534'
+                  }}>
                     {t('profile.achievements.unlocked')}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full" style={{
+                    fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    backgroundColor: '#F2F2F7',
+                    color: '#8E8E93'
+                  }}>
                     {t('profile.achievements.locked')}
                   </span>
                 )}
               </div>
 
-              <div className="mt-2 text-xs text-gray-500">
+              <div className="mt-2" style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '12px',
+                fontWeight: 400,
+                color: '#8E8E93'
+              }}>
                 {achievement.points} points
               </div>
             </div>

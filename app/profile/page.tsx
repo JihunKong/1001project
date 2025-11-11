@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { ProfileCard } from '@/components/profile/ProfileCard';
 import { ProfileOverview } from '@/components/profile/ProfileOverview';
+import { ProfileTabs } from '@/components/profile/ProfileTabs';
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -45,21 +46,7 @@ export default async function ProfilePage() {
         </h1>
 
         {/* Tab Navigation */}
-        <div className="flex gap-6 border-b border-[#E5E5EA] mb-8">
-          <button
-            className="pb-3 px-1 border-b-2 border-[#141414] font-medium text-[#141414]"
-            style={{ fontSize: '18px' }}
-          >
-            Overview
-          </button>
-          <Link
-            href="/profile/stories"
-            className="pb-3 px-1 border-b-2 border-transparent hover:border-[#8E8E93] text-[#8E8E93] hover:text-[#141414] transition-colors"
-            style={{ fontSize: '18px' }}
-          >
-            Stories
-          </Link>
-        </div>
+        <ProfileTabs activeTab="overview" />
 
         {/* Overview Content */}
         <ProfileOverview user={user} role={session.user.role} />

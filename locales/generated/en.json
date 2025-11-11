@@ -630,6 +630,23 @@
       "tags": "Tags",
       "addTag": "Add tag"
     },
+    "edit": {
+      "title": "Edit Profile",
+      "backToProfile": "Back to profile",
+      "avatar": "Profile Picture",
+      "avatarUrlPlaceholder": "Enter image URL",
+      "name": "Name",
+      "bio": "Bio",
+      "tags": "Tags",
+      "tagPlaceholder": "Enter a tag (e.g., #Fantasy)",
+      "addTag": "Add Tag",
+      "maxTags": "Maximum 10 tags allowed",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile"
+    },
     "achievementDetails": {
       "firstStory": {
         "name": "First Story",

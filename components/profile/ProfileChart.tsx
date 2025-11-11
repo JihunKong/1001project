@@ -1,70 +1,242 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
+
+interface ChartDataPoint {
+  month: string;
+  draft: number;
+  submitted: number;
+  published: number;
+  total?: number;
+}
 
 interface ChartData {
-  submissionTrends?: Array<{ month: string; draft: number; submitted: number; published: number }>;
+  submissionTrends?: ChartDataPoint[];
   readingAnalytics?: Array<{ month: string; booksCompleted: number; hoursRead: number }>;
   engagement?: Array<{ month: string; comments: number; activities: number }>;
 }
 
 interface ProfileChartProps {
   data: ChartData;
-  role: string;
+  role?: string;
 }
 
 export default function ProfileChart({ data, role }: ProfileChartProps) {
   const { t } = useTranslation();
+  const chartRef = useRef<ChartJS<"line">>(null);
 
-  const showSubmissions = ['WRITER', 'TEACHER', 'STORY_MANAGER', 'BOOK_MANAGER', 'CONTENT_ADMIN', 'ADMIN'].includes(role);
-  const showReading = ['LEARNER', 'TEACHER', 'ADMIN'].includes(role);
+  const formatMonth = (monthStr: string) => {
+    const [year, month] = monthStr.split('-');
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return `${monthNames[parseInt(month) - 1]} ${year}`;
+  };
+
+  const submissionData = data.submissionTrends || [];
+
+  const chartData = {
+    labels: submissionData.map(d => formatMonth(d.month)),
+    datasets: [
+      {
+        label: t('profile.stats.published'),
+        data: submissionData.map(d => d.published),
+        borderColor: '#1E3A8A',
+        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+        tension: 0.4,
+        fill: false,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2
+      },
+      {
+        label: t('profile.stats.submitted'),
+        data: submissionData.map(d => d.submitted),
+        borderColor: '#3730A3',
+        backgroundColor: 'rgba(55, 48, 163, 0.1)',
+        tension: 0.4,
+        fill: false,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2
+      },
+      {
+        label: t('profile.stats.draft'),
+        data: submissionData.map(d => d.draft),
+        borderColor: '#8E8E93',
+        backgroundColor: 'rgba(142, 142, 147, 0.1)',
+        tension: 0.4,
+        fill: false,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2
+      }
+    ]
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+        align: 'end' as const,
+        labels: {
+          font: {
+            family: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+            size: 14,
+            weight: 'normal' as const
+          },
+          color: '#141414',
+          usePointStyle: true,
+          pointStyle: 'circle',
+          padding: 16,
+          boxWidth: 8,
+          boxHeight: 8
+        }
+      },
+      tooltip: {
+        backgroundColor: '#FFFFFF',
+        titleColor: '#141414',
+        bodyColor: '#141414',
+        borderColor: '#E5E5EA',
+        borderWidth: 1,
+        padding: 12,
+        titleFont: {
+          family: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+          size: 14,
+          weight: 'bold' as const
+        },
+        bodyFont: {
+          family: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+          size: 14,
+          weight: 'normal' as const
+        },
+        displayColors: true,
+        boxWidth: 8,
+        boxHeight: 8,
+        boxPadding: 6
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          font: {
+            family: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+            size: 14,
+            weight: 'normal' as const
+          },
+          color: '#8E8E93'
+        },
+        border: {
+          color: '#E5E5EA'
+        }
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: '#F2F2F7',
+          drawTicks: false
+        },
+        ticks: {
+          font: {
+            family: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+            size: 14,
+            weight: 'normal' as const
+          },
+          color: '#8E8E93',
+          padding: 8,
+          stepSize: 1
+        },
+        border: {
+          display: false
+        }
+      }
+    },
+    interaction: {
+      mode: 'index' as const,
+      intersect: false
+    }
+  };
+
+  useEffect(() => {
+    const chartInstance = chartRef.current;
+    return () => {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+    };
+  }, []);
+
+  if (!submissionData || submissionData.length === 0) {
+    return (
+      <div className="mb-8">
+        <h2 style={{
+          fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+          fontSize: '32px',
+          fontWeight: 500,
+          lineHeight: '1.221',
+          color: '#141414',
+          marginBottom: '24px'
+        }}>
+          {t('profile.chart.submissionTrends')}
+        </h2>
+        <div className="flex items-center justify-center border border-[#E5E5EA] rounded-lg" style={{ height: '350px' }}>
+          <p style={{
+            fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+            fontSize: '16px',
+            color: '#8E8E93'
+          }}>
+            {t('profile.chart.noData')}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('profile.chart.submissionTrends')}</h2>
-
-      {showSubmissions && data.submissionTrends && data.submissionTrends.length > 0 ? (
-        <div className="space-y-4">
-          <div className="flex items-end justify-between gap-2 h-64">
-            {data.submissionTrends.map((item, index) => {
-              const total = item.draft + item.submitted + item.published;
-              const maxHeight = Math.max(...data.submissionTrends!.map(d => d.draft + d.submitted + d.published));
-              const height = total > 0 ? (total / maxHeight) * 100 : 0;
-
-              return (
-                <div key={index} className="flex-1 flex flex-col items-center">
-                  <div className="w-full bg-gray-200 rounded-t" style={{ height: `${height}%`, minHeight: '20px' }}>
-                    <div className="bg-blue-500 rounded-t" style={{ height: `${total > 0 ? (item.published / total) * 100 : 0}%` }} />
-                    <div className="bg-yellow-500" style={{ height: `${total > 0 ? (item.submitted / total) * 100 : 0}%` }} />
-                    <div className="bg-gray-400" style={{ height: `${total > 0 ? (item.draft / total) * 100 : 0}%` }} />
-                  </div>
-                  <span className="text-xs text-gray-600 mt-2">{item.month.slice(5)}</span>
-                </div>
-              );
-            })}
-          </div>
-          <div className="flex justify-center gap-6 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-500 rounded" />
-              <span>{t('profile.stats.published')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-yellow-500 rounded" />
-              <span>{t('profile.stats.submitted')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-gray-400 rounded" />
-              <span>{t('profile.stats.draft')}</span>
-            </div>
-          </div>
-        </div>
-      ) : showReading && data.readingAnalytics && data.readingAnalytics.length > 0 ? (
-        <div className="space-y-4">
-          <p className="text-center text-gray-600">{t('profile.chart.readingAnalytics')}</p>
-        </div>
-      ) : (
-        <p className="text-center text-gray-600 py-12">{t('profile.chart.noData')}</p>
-      )}
+    <div className="mb-8">
+      <h2 style={{
+        fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+        fontSize: '32px',
+        fontWeight: 500,
+        lineHeight: '1.221',
+        color: '#141414',
+        marginBottom: '24px'
+      }}>
+        {t('profile.chart.submissionTrends')}
+      </h2>
+      <div className="bg-white border border-[#E5E5EA] rounded-lg p-6" style={{ height: '350px' }}>
+        <Line ref={chartRef} data={chartData} options={options} />
+      </div>
     </div>
   );
 }
