@@ -601,6 +601,199 @@ When working with books and PDFs:
 
 **Recent incident**: Replacing dummy data with real PDFs broke PDF reading and parsing functionality. Always test thoroughly after data changes.
 
+## ⚠️ CRITICAL DEPLOYMENT FAILURE PATTERNS (2025-11-11)
+
+**🔴 MANDATORY READING: These are ACTUAL failures that occurred and MUST be prevented.**
+
+### The Git Pull Deployment Failure (2025-11-11)
+
+**What Happened**: Complete deployment failure where NO code changes were reflected in production, despite successful Docker image deployment.
+
+**Root Causes**:
+1. ❌ **deploy.sh was missing git pull step** - Server source code NEVER updated
+2. ❌ **No pre-deployment git state validation** - Allowed deploying wrong code
+3. ❌ **No post-deployment completeness check** - Didn't catch git mismatch
+4. ❌ **Overly strict error handling** - Script died prematurely on warnings
+
+**Symptoms**:
+- Docker containers running and healthy ✅
+- Build timestamp updated ✅
+- **BUT**: Server git at old commit (f733c68) ❌
+- **BUT**: New features not accessible (profile pages missing) ❌
+- **BUT**: Wrong code deployed ❌
+
+**Impact**: User correctly reported "수정사항이 전혀 반영되지 않았습니다" (NO changes reflected)
+
+**The Fix** (Now implemented in deploy.sh):
+
+```bash
+# CRITICAL: Must pull git BEFORE loading Docker image
+echo "🔴 CRITICAL: Updating source code from git repository..."
+git fetch origin main
+git reset --hard origin/main
+
+# Then proceed with Docker operations
+docker system prune -af --volumes  # Cache clean
+gunzip -c /tmp/app-image.tar.gz | docker load  # Image load
+docker compose up -d  # Start containers
+```
+
+### MANDATORY Pre-Deployment Checklist
+
+**Before running `./scripts/deploy.sh deploy`, you MUST verify:**
+
+1. ✅ **Git Status Clean**
+   ```bash
+   git status
+   # Should show: "nothing to commit, working tree clean"
+   ```
+
+2. ✅ **All Commits Pushed**
+   ```bash
+   git log origin/main..HEAD
+   # Should show: nothing (no unpushed commits)
+   ```
+
+3. ✅ **Local Build Successful**
+   ```bash
+   docker compose build app
+   # OR
+   npm run build
+   ```
+
+4. ✅ **Docker Daemon Running**
+   ```bash
+   docker info
+   # Should not error
+   ```
+
+**If ANY check fails**: Fix it BEFORE deploying. The deploy script now enforces these checks automatically.
+
+### FORBIDDEN Deployment Anti-Patterns
+
+❌ **NEVER deploy with uncommitted changes**
+   - deploy.sh now BLOCKS this
+   - Error message: "DEPLOYMENT BLOCKED: Uncommitted changes detected!"
+
+❌ **NEVER deploy with unpushed commits**
+   - deploy.sh now BLOCKS this
+   - Error message: "DEPLOYMENT BLOCKED: Unpushed commits detected!"
+
+❌ **NEVER skip local Docker build**
+   - deploy.sh now BLOCKS this
+   - Error message: "DEPLOYMENT BLOCKED: No local build found!"
+
+❌ **NEVER assume containers running = deployment succeeded**
+   - deploy.sh now validates git commit match
+   - deploy.sh now validates build timestamp match
+   - deploy.sh now validates critical files exist
+
+### Deployment Script Improvements (2025-11-11)
+
+**New deploy.sh workflow**:
+```
+Step 0: Pre-deployment validation (NEW)
+  ↓ Check: Git uncommitted changes
+  ↓ Check: Git unpushed commits
+  ↓ Check: Local build exists
+  ↓ Check: Docker daemon running
+
+Step 1: Local Docker build
+  ↓ Build with error messages
+
+Step 2: Save image to tar.gz
+  ↓ With disk space checks
+
+Step 3: Upload to server
+  ↓ With retry logic
+
+Step 4: Server deployment (COMPLETELY REWRITTEN)
+  ↓ 🔴 Git pull (NEW - was missing!)
+  ↓ Docker cache clean (mandatory)
+  ↓ nginx cache clean (NEW)
+  ↓ Backup current image
+  ↓ Load new image (improved error handling)
+  ↓ Verify image loaded correctly (NEW)
+  ↓ Start containers
+  ↓ Verify containers started (NEW)
+  ↓ Reload nginx config (NEW)
+
+Step 5: Deployment verification (ENHANCED)
+  ↓ Health check (containers, HTTPS)
+  ↓ Completeness check (NEW):
+     - Git commit match (local vs server)
+     - Build timestamp match
+     - Critical files exist
+```
+
+### Error Messages to Watch For
+
+**If you see these, deployment is BLOCKED (intentionally)**:
+```
+DEPLOYMENT BLOCKED: Uncommitted changes detected!
+DEPLOYMENT BLOCKED: Unpushed commits detected!
+DEPLOYMENT BLOCKED: No local build found!
+DEPLOYMENT BLOCKED: Docker not running!
+```
+
+**If you see these, deployment FAILED (investigate)**:
+```
+DEPLOYMENT INCOMPLETE: Git commit mismatch!
+ERROR: Image load completed but 1001-stories-app:latest not found!
+ERROR: Required containers not running: [list]
+```
+
+### Recovery from Failed Deployment
+
+The deploy script now has **automatic rollback**:
+1. Detects deployment failure
+2. Finds most recent backup image
+3. Restores backup as latest
+4. Restarts app container
+5. Verifies HTTPS returns 200
+
+**Manual recovery** (if automatic rollback fails):
+```bash
+# 1. Check container status
+ssh ubuntu@3.128.143.122 "docker ps -a"
+
+# 2. Check git state
+ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && git status && git log -1"
+
+# 3. Manually restore backup
+ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker images | grep backup"
+ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker tag 1001-stories-app:backup-XXXXX 1001-stories-app:latest"
+ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker compose up -d"
+
+# 4. Verify recovery
+curl https://1001stories.seedsofempowerment.org/api/health
+```
+
+### Why This Matters
+
+**User's Exact Words**: "디플로이에 실패했습니다. 수정사항이 전혀 반영되지 않았습니다."
+Translation: "Deployment failed. NO changes were reflected at all."
+
+**User was 100% correct**. The deployment technically succeeded (containers running) but deployed the WRONG code (old git commit).
+
+### Key Lessons Learned
+
+1. **Container Status ≠ Correct Deployment**
+   - Containers can be healthy but running old code
+   - MUST verify git commits match (local vs server)
+
+2. **Docker Image ≠ Source Code**
+   - Docker image can be new but filesystem has old code
+   - MUST git pull on server BEFORE loading image
+
+3. **Build Timestamp ≠ Deployment Success**
+   - Timestamp can update but features still missing
+   - MUST verify critical files exist
+
+4. **Automated Checks > Manual Verification**
+   - Humans forget steps (proven by this incident)
+   - Scripts enforce mandatory procedures
+
 ## CRITICAL MISTAKES TO AVOID (2025-09-19)
 
 **⚠️ These mistakes have been repeatedly made. Each repetition wastes significant time and damages the project.**
