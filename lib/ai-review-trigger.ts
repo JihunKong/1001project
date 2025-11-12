@@ -61,7 +61,8 @@ function convertHTMLToPlainText(html: string): { text: string; mapping: number[]
 function findTextPosition(
   htmlContent: string,
   searchText: string,
-  startAfterPosition: number = 0
+  startAfterPosition: number = 0,
+  normalization: 'NFC' | 'NFD' | 'none' = 'NFC'
 ): { start: number; end: number } | null {
   try {
     if (!htmlContent || !searchText) {
@@ -69,7 +70,25 @@ function findTextPosition(
       return null;
     }
 
-    const { text: plainText, mapping } = convertHTMLToPlainText(htmlContent);
+    // CRITICAL FIX: Normalize HTML content BEFORE creating mapping
+    // This ensures mapping indices match the normalized text length
+    let normalizedHTML = htmlContent;
+    let normalizedSearch = searchText;
+
+    if (normalization === 'NFC') {
+      normalizedHTML = htmlContent.normalize('NFC');
+      normalizedSearch = searchText.normalize('NFC');
+      logger.debug('[AI Review] Using NFC normalization');
+    } else if (normalization === 'NFD') {
+      normalizedHTML = htmlContent.normalize('NFD');
+      normalizedSearch = searchText.normalize('NFD');
+      logger.debug('[AI Review] Using NFD normalization');
+    } else {
+      logger.debug('[AI Review] Using no normalization');
+    }
+
+    // NOW create mapping from normalized HTML - mapping indices will match!
+    const { text: plainText, mapping } = convertHTMLToPlainText(normalizedHTML);
 
     if (!plainText || plainText.length === 0) {
       logger.error('[AI Review] Failed to extract plain text from HTML');
@@ -85,112 +104,79 @@ function findTextPosition(
       }
     }
 
-    // Strategy 1: Try multiple normalization forms (NFC and NFD)
-    const normalizationStrategies = [
-      { plain: plainText.normalize('NFC'), search: searchText.normalize('NFC'), name: 'NFC' },
-      { plain: plainText.normalize('NFD'), search: searchText.normalize('NFD'), name: 'NFD' },
-      { plain: plainText, search: searchText, name: 'unnormalized' }
-    ];
+    // Search in the plain text (already normalized via normalizedHTML)
+    // Use toLocaleLowerCase() for better non-English support (handles Turkish İ/i, etc.)
+    const indexInPlain = plainText.toLocaleLowerCase().indexOf(
+      normalizedSearch.toLocaleLowerCase(),
+      plainTextStartIndex
+    );
 
-    for (const strategy of normalizationStrategies) {
-      // Use toLocaleLowerCase() for better non-English support (handles Turkish İ/i, etc.)
-      // Search starting from plainTextStartIndex to avoid matching previous annotations
-      const indexInPlain = strategy.plain.toLocaleLowerCase().indexOf(
-        strategy.search.toLocaleLowerCase(),
-        plainTextStartIndex
-      );
+    if (indexInPlain !== -1) {
+      logger.debug(`[AI Review] Found text match at position ${indexInPlain} using ${normalization} normalization`);
 
-      if (indexInPlain !== -1) {
-        logger.debug(`[AI Review] Found text match using ${strategy.name} normalization`);
+      const startPlainIndex = indexInPlain;
+      const endPlainIndex = indexInPlain + normalizedSearch.length;
 
-        const startPlainIndex = indexInPlain;
-        const endPlainIndex = indexInPlain + searchText.length;
+      const start = mapping[startPlainIndex] || 0;
+      const end = endPlainIndex < mapping.length
+        ? mapping[endPlainIndex]
+        : normalizedHTML.length;
 
-        const start = mapping[startPlainIndex] || 0;
-        const end = endPlainIndex < mapping.length
-          ? mapping[endPlainIndex]
-          : htmlContent.length;
-
-        return { start, end };
-      }
+      return { start, end };
     }
 
-    // Strategy 2: Try whitespace normalization with each normalization form
-    for (const strategy of normalizationStrategies) {
-      const cleanSearch = strategy.search.trim().replace(/\s+/g, ' ');
-      const cleanPlain = strategy.plain.replace(/\s+/g, ' ');
+    // If exact match failed, try whitespace normalization as fallback
+    const cleanSearch = normalizedSearch.trim().replace(/\s+/g, ' ');
+    const cleanPlain = plainText.replace(/\s+/g, ' ');
 
-      // Calculate corresponding clean text start index
-      const cleanStartIndex = strategy.plain.substring(0, plainTextStartIndex).replace(/\s+/g, ' ').length;
+    // Calculate corresponding clean text start index
+    const cleanStartIndex = plainText.substring(0, plainTextStartIndex).replace(/\s+/g, ' ').length;
 
-      const cleanIndex = cleanPlain.toLocaleLowerCase().indexOf(
-        cleanSearch.toLocaleLowerCase(),
-        cleanStartIndex
-      );
+    const cleanIndex = cleanPlain.toLocaleLowerCase().indexOf(
+      cleanSearch.toLocaleLowerCase(),
+      cleanStartIndex
+    );
 
-      if (cleanIndex !== -1) {
-        logger.debug(`[AI Review] Found text match using ${strategy.name} with whitespace normalization`);
+    if (cleanIndex !== -1) {
+      logger.debug(`[AI Review] Found text match using ${normalization} with whitespace normalization`);
 
-        const cleanToPlainMap: number[] = [];
-        let plainPos = 0;
-        let cleanPos = 0;
+      // Map clean position back to plain position
+      const cleanToPlainMap: number[] = [];
+      let plainPos = 0;
+      let cleanPos = 0;
 
-        while (plainPos < plainText.length) {
-          cleanToPlainMap[cleanPos] = plainPos;
-
-          if (plainText[plainPos].match(/\s/)) {
-            while (plainPos < plainText.length && plainText[plainPos].match(/\s/)) {
-              plainPos++;
-            }
-            cleanPos++;
-          } else {
-            plainPos++;
-            cleanPos++;
-          }
-        }
+      while (plainPos < plainText.length) {
         cleanToPlainMap[cleanPos] = plainPos;
 
-        const startPlainIndex = cleanToPlainMap[cleanIndex] || 0;
-        const endPlainIndex = cleanToPlainMap[cleanIndex + cleanSearch.length] || plainText.length;
-
-        const start = mapping[startPlainIndex] || 0;
-        const end = endPlainIndex < mapping.length
-          ? mapping[endPlainIndex]
-          : htmlContent.length;
-
-        return { start, end };
+        if (plainText[plainPos].match(/\s/)) {
+          while (plainPos < plainText.length && plainText[plainPos].match(/\s/)) {
+            plainPos++;
+          }
+          cleanPos++;
+        } else {
+          plainPos++;
+          cleanPos++;
+        }
       }
+      cleanToPlainMap[cleanPos] = plainPos;
+
+      const startPlainIndex = cleanToPlainMap[cleanIndex] || 0;
+      const endPlainIndex = cleanToPlainMap[cleanIndex + cleanSearch.length] || plainText.length;
+
+      const start = mapping[startPlainIndex] || 0;
+      const end = endPlainIndex < mapping.length
+        ? mapping[endPlainIndex]
+        : normalizedHTML.length;
+
+      return { start, end };
     }
 
-    // Strategy 3: Try partial/fuzzy matching as last resort
-    const searchWords = searchText.trim().toLowerCase().split(/\s+/);
-    if (searchWords.length >= 3) {
-      // Try matching first 3 words for partial match
-      const partialSearch = searchWords.slice(0, 3).join(' ');
-      const partialIndex = plainText.toLocaleLowerCase().indexOf(partialSearch, plainTextStartIndex);
-
-      if (partialIndex !== -1) {
-        logger.warn(`[AI Review] Using partial match (first 3 words) for: "${searchText.substring(0, 50)}..."`);
-
-        const startPlainIndex = partialIndex;
-        const endPlainIndex = partialIndex + searchText.length;
-
-        const start = mapping[startPlainIndex] || 0;
-        const end = endPlainIndex < mapping.length
-          ? mapping[endPlainIndex]
-          : htmlContent.length;
-
-        return { start, end };
-      }
-    }
-
-    // All strategies failed - log detailed debugging info
-    logger.warn('[AI Review] Text match failed for all strategies', {
-      searchTextLength: searchText.length,
-      searchTextPreview: searchText.substring(0, 100),
+    // No match found
+    logger.warn(`[AI Review] Text match failed for ${normalization} normalization`, {
+      searchTextLength: normalizedSearch.length,
+      searchTextPreview: normalizedSearch.substring(0, 100),
       plainTextLength: plainText.length,
-      plainTextPreview: plainText.substring(0, 100),
-      triedStrategies: ['NFC', 'NFD', 'unnormalized', 'whitespace-normalized', 'partial-match']
+      plainTextPreview: plainText.substring(0, 100)
     });
 
     return null;
@@ -220,7 +206,17 @@ function createAnnotations(
   improvements.forEach((improvement, improvementIndex) => {
     // Strategy 1: Handle object with both text and suggestion (ideal format)
     if (typeof improvement === 'object' && improvement !== null && improvement.text && improvement.suggestion) {
-      const position = findTextPosition(htmlContent, improvement.text, lastEndPosition);
+      // Try multiple normalization forms: NFC (best for Korean) → NFD → none
+      let position: { start: number; end: number } | null = null;
+      const normalizations: Array<'NFC' | 'NFD' | 'none'> = ['NFC', 'NFD', 'none'];
+
+      for (const norm of normalizations) {
+        position = findTextPosition(htmlContent, improvement.text, lastEndPosition, norm);
+        if (position) {
+          logger.debug(`[AI Review] Found improvement #${improvementIndex} using ${norm} normalization`);
+          break;
+        }
+      }
 
       if (position) {
         annotations.push({
@@ -248,7 +244,17 @@ function createAnnotations(
     if (typeof improvement === 'object' && improvement !== null && improvement.text) {
       const suggestion = improvement.suggestion || improvement.advice || improvement.recommendation || 'Improvement suggested';
 
-      const position = findTextPosition(htmlContent, improvement.text, lastEndPosition);
+      // Try multiple normalization forms
+      let position: { start: number; end: number } | null = null;
+      const normalizations: Array<'NFC' | 'NFD' | 'none'> = ['NFC', 'NFD', 'none'];
+
+      for (const norm of normalizations) {
+        position = findTextPosition(htmlContent, improvement.text, lastEndPosition, norm);
+        if (position) {
+          logger.debug(`[AI Review] Found improvement #${improvementIndex} using ${norm} normalization (fallback)`);
+          break;
+        }
+      }
 
       if (position) {
         annotations.push({
@@ -271,7 +277,17 @@ function createAnnotations(
 
     // Strategy 3: Handle plain string (try to use as text, generate generic suggestion)
     if (typeof improvement === 'string' && improvement.trim().length > 10) {
-      const position = findTextPosition(htmlContent, improvement, lastEndPosition);
+      // Try multiple normalization forms
+      let position: { start: number; end: number } | null = null;
+      const normalizations: Array<'NFC' | 'NFD' | 'none'> = ['NFC', 'NFD', 'none'];
+
+      for (const norm of normalizations) {
+        position = findTextPosition(htmlContent, improvement, lastEndPosition, norm);
+        if (position) {
+          logger.debug(`[AI Review] Found improvement #${improvementIndex} using ${norm} normalization (string)`);
+          break;
+        }
+      }
 
       if (position) {
         annotations.push({
