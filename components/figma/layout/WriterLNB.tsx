@@ -32,7 +32,7 @@ export default function WriterLNB() {
     {
       id: 'profile',
       label: 'Profile',
-      href: '/profile',
+      href: '/dashboard/writer/profile',
       icon: User
     },
     {

@@ -15,6 +15,7 @@ export function ProfileCard({ user, stats }: ProfileCardProps) {
   const avatarUrl = profile?.avatarUrl || user.image;
   const tags = profile?.tags || [];
   const bio = profile?.bio || 'No bio provided';
+  const role = user.role?.toLowerCase() || 'writer';
 
   return (
     <div className="flex flex-col gap-6">
@@ -57,9 +58,13 @@ export function ProfileCard({ user, stats }: ProfileCardProps) {
 
       {/* Edit Button */}
       <Link
-        href="/profile/edit"
+        href={`/dashboard/${role}/profile`}
         className="text-[#16A34A] font-medium transition-opacity hover:opacity-80"
         style={{ fontSize: '14px' }}
+        onClick={(e) => {
+          e.preventDefault();
+          alert('Profile editing feature coming soon!');
+        }}
       >
         Edit profile
       </Link>
