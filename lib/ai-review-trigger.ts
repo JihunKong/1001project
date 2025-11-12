@@ -58,7 +58,11 @@ function convertHTMLToPlainText(html: string): { text: string; mapping: number[]
   return { text: plainText, mapping };
 }
 
-function findTextPosition(htmlContent: string, searchText: string): { start: number; end: number } | null {
+function findTextPosition(
+  htmlContent: string,
+  searchText: string,
+  startAfterPosition: number = 0
+): { start: number; end: number } | null {
   try {
     if (!htmlContent || !searchText) {
       logger.warn('[AI Review] Empty htmlContent or searchText');
@@ -72,6 +76,15 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
       return null;
     }
 
+    // Find the plain text index corresponding to startAfterPosition in HTML
+    let plainTextStartIndex = 0;
+    for (let i = 0; i < mapping.length; i++) {
+      if (mapping[i] >= startAfterPosition) {
+        plainTextStartIndex = i;
+        break;
+      }
+    }
+
     // Strategy 1: Try multiple normalization forms (NFC and NFD)
     const normalizationStrategies = [
       { plain: plainText.normalize('NFC'), search: searchText.normalize('NFC'), name: 'NFC' },
@@ -81,7 +94,11 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
 
     for (const strategy of normalizationStrategies) {
       // Use toLocaleLowerCase() for better non-English support (handles Turkish İ/i, etc.)
-      const indexInPlain = strategy.plain.toLocaleLowerCase().indexOf(strategy.search.toLocaleLowerCase());
+      // Search starting from plainTextStartIndex to avoid matching previous annotations
+      const indexInPlain = strategy.plain.toLocaleLowerCase().indexOf(
+        strategy.search.toLocaleLowerCase(),
+        plainTextStartIndex
+      );
 
       if (indexInPlain !== -1) {
         logger.debug(`[AI Review] Found text match using ${strategy.name} normalization`);
@@ -103,7 +120,13 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
       const cleanSearch = strategy.search.trim().replace(/\s+/g, ' ');
       const cleanPlain = strategy.plain.replace(/\s+/g, ' ');
 
-      const cleanIndex = cleanPlain.toLocaleLowerCase().indexOf(cleanSearch.toLocaleLowerCase());
+      // Calculate corresponding clean text start index
+      const cleanStartIndex = strategy.plain.substring(0, plainTextStartIndex).replace(/\s+/g, ' ').length;
+
+      const cleanIndex = cleanPlain.toLocaleLowerCase().indexOf(
+        cleanSearch.toLocaleLowerCase(),
+        cleanStartIndex
+      );
 
       if (cleanIndex !== -1) {
         logger.debug(`[AI Review] Found text match using ${strategy.name} with whitespace normalization`);
@@ -144,7 +167,7 @@ function findTextPosition(htmlContent: string, searchText: string): { start: num
     if (searchWords.length >= 3) {
       // Try matching first 3 words for partial match
       const partialSearch = searchWords.slice(0, 3).join(' ');
-      const partialIndex = plainText.toLocaleLowerCase().indexOf(partialSearch);
+      const partialIndex = plainText.toLocaleLowerCase().indexOf(partialSearch, plainTextStartIndex);
 
       if (partialIndex !== -1) {
         logger.warn(`[AI Review] Using partial match (first 3 words) for: "${searchText.substring(0, 50)}..."`);
@@ -192,11 +215,12 @@ function createAnnotations(
   let failCount = 0;
   let skippedCount = 0;
   let annotationIndex = 0;
+  let lastEndPosition = 0; // Track the end position of the last successful annotation
 
   improvements.forEach((improvement, improvementIndex) => {
     // Strategy 1: Handle object with both text and suggestion (ideal format)
     if (typeof improvement === 'object' && improvement !== null && improvement.text && improvement.suggestion) {
-      const position = findTextPosition(htmlContent, improvement.text);
+      const position = findTextPosition(htmlContent, improvement.text, lastEndPosition);
 
       if (position) {
         annotations.push({
@@ -207,9 +231,10 @@ function createAnnotations(
           suggestionType: reviewType,
           color: SUGGESTION_COLORS[reviewType] || '#fbbf24'
         });
+        lastEndPosition = position.end; // Update last position for next search
         annotationIndex++;
         successCount++;
-        logger.debug(`[AI Review] Created annotation #${annotationIndex} for improvement #${improvementIndex}`);
+        logger.debug(`[AI Review] Created annotation #${annotationIndex} at position ${position.start}-${position.end}`);
       } else {
         failCount++;
         logger.warn(`[AI Review] Failed to find text position for improvement #${improvementIndex}`, {
@@ -223,7 +248,7 @@ function createAnnotations(
     if (typeof improvement === 'object' && improvement !== null && improvement.text) {
       const suggestion = improvement.suggestion || improvement.advice || improvement.recommendation || 'Improvement suggested';
 
-      const position = findTextPosition(htmlContent, improvement.text);
+      const position = findTextPosition(htmlContent, improvement.text, lastEndPosition);
 
       if (position) {
         annotations.push({
@@ -234,9 +259,10 @@ function createAnnotations(
           suggestionType: reviewType,
           color: SUGGESTION_COLORS[reviewType] || '#fbbf24'
         });
+        lastEndPosition = position.end; // Update last position for next search
         annotationIndex++;
         successCount++;
-        logger.debug(`[AI Review] Created annotation #${annotationIndex} with fallback suggestion`);
+        logger.debug(`[AI Review] Created annotation #${annotationIndex} at position ${position.start}-${position.end} with fallback suggestion`);
       } else {
         failCount++;
       }
@@ -245,7 +271,7 @@ function createAnnotations(
 
     // Strategy 3: Handle plain string (try to use as text, generate generic suggestion)
     if (typeof improvement === 'string' && improvement.trim().length > 10) {
-      const position = findTextPosition(htmlContent, improvement);
+      const position = findTextPosition(htmlContent, improvement, lastEndPosition);
 
       if (position) {
         annotations.push({
@@ -256,9 +282,10 @@ function createAnnotations(
           suggestionType: reviewType,
           color: SUGGESTION_COLORS[reviewType] || '#fbbf24'
         });
+        lastEndPosition = position.end; // Update last position for next search
         annotationIndex++;
         successCount++;
-        logger.debug(`[AI Review] Created annotation #${annotationIndex} from plain string`);
+        logger.debug(`[AI Review] Created annotation #${annotationIndex} at position ${position.start}-${position.end} from plain string`);
       } else {
         failCount++;
         logger.warn(`[AI Review] Failed to find position for string improvement #${improvementIndex}`, {
