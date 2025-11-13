@@ -36,15 +36,21 @@ export function LanguageProvider({ children, initialLanguage }: LanguageProvider
     }
   }, [initialLanguage, language]);
 
-  const changeLanguage = useCallback((newLanguage: SupportedLanguage) => {
+  const changeLanguage = useCallback(async (newLanguage: SupportedLanguage) => {
     setLanguagePreferenceClient(newLanguage);
     setLanguage(newLanguage);
     setIsRTL(isRTLLanguage(newLanguage));
 
+    try {
+      await fetch(`/api/translations/${newLanguage}`);
+    } catch (error) {
+      console.error('[LanguageContext] Failed to preload translations:', error);
+    }
+
     setTimeout(() => {
       window.location.reload();
     }, 100);
-  }, [language]);
+  }, []);
 
   return (
     <LanguageContext.Provider value={{ language, changeLanguage, isRTL }}>

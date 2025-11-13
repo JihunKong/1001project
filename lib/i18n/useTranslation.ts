@@ -32,7 +32,7 @@ async function loadTranslations(lang: SupportedLanguage): Promise<TranslationDat
   }
 }
 
-function getNestedValue(obj: any, path: string): string {
+function getNestedValue(obj: any, path: string, fallbackObj?: any): string {
   const keys = path.split('.');
   let current = obj;
 
@@ -40,6 +40,9 @@ function getNestedValue(obj: any, path: string): string {
     if (current && typeof current === 'object' && key in current) {
       current = current[key];
     } else {
+      if (fallbackObj) {
+        return getNestedValue(fallbackObj, path);
+      }
       return path;
     }
   }
@@ -75,7 +78,7 @@ export function useTranslation(): UseTranslationReturn {
   }, [language]);
 
   const t = useCallback((key: string): string => {
-    const value = getNestedValue(translations, key);
+    const value = getNestedValue(translations, key, enTranslations);
     if (!value && value !== '') {
       console.warn('[useTranslation] Missing translation key:', key, 'for language:', language);
     }

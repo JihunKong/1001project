@@ -37,8 +37,8 @@ services:
     image: postgres:15-alpine
     container_name: 1001-stories-postgres-local
     restart: unless-stopped
-    # ports:
-      # - "5434:5432"  # SECURITY: Database port removed - use container networking
+    ports:
+      - "5434:5432"  # Exposed for local development
     environment:
       - POSTGRES_USER=stories_user
       - POSTGRES_PASSWORD=${DB_PASSWORD:-jsIAqnRygzHf1+9m46zSob/lhg52huI6UNiy9rQzuFc=}
@@ -61,8 +61,8 @@ services:
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-5DlvWlSxaxHNQbrHawza9EnhCDYMIfvIc55kkGpb1SM=}
     volumes:
       - redis_data_local:/data
-    # ports:
-      # - "6381:6379"  # SECURITY: Redis port removed - use container networking
+    ports:
+      - "6380:6379"  # Exposed for local development
     networks:
       - local-network
     healthcheck:
