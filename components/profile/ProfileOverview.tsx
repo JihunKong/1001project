@@ -5,6 +5,7 @@ import { ProfileActivityFeed } from './ProfileActivityFeed';
 import ProfileAchievements from './ProfileAchievements';
 import ProfileMonthlyStats from './ProfileMonthlyStats';
 import ProfileCurrentProjects from './ProfileCurrentProjects';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface ProfileOverviewProps {
   user: any;
@@ -27,6 +28,7 @@ interface ProfileData {
 }
 
 export function ProfileOverview({ user, role }: ProfileOverviewProps) {
+  const { t } = useTranslation();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -58,7 +60,7 @@ export function ProfileOverview({ user, role }: ProfileOverviewProps) {
   if (!profileData) {
     return (
       <div className="text-center py-12 text-gray-600">
-        Failed to load profile data. Please try refreshing the page.
+        {t('profile.overview.loadError')}
       </div>
     );
   }

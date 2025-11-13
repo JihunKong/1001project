@@ -41,10 +41,15 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
     }
   ];
 
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+  const getMonthName = (monthIndex: number) => {
+    const monthKeys = [
+      'profile.monthly.months.january', 'profile.monthly.months.february', 'profile.monthly.months.march',
+      'profile.monthly.months.april', 'profile.monthly.months.may', 'profile.monthly.months.june',
+      'profile.monthly.months.july', 'profile.monthly.months.august', 'profile.monthly.months.september',
+      'profile.monthly.months.october', 'profile.monthly.months.november', 'profile.monthly.months.december'
+    ];
+    return t(monthKeys[monthIndex]);
+  };
 
   const generateMonthOptions = () => {
     const options = [];
@@ -54,7 +59,7 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
       const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
       options.push({
         value: date.toISOString(),
-        label: `${monthNames[date.getMonth()]} ${date.getFullYear()}`
+        label: `${getMonthName(date.getMonth())} ${date.getFullYear()}`
       });
     }
 

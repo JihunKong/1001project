@@ -322,7 +322,99 @@
     "email": "ईमेल",
     "bio": "परिचय",
     "location": "स्थान",
-    "joinedDate": "शामिल हुए"
+    "joinedDate": "शामिल हुए",
+    "card": {
+      "noBio": "No bio provided",
+      "editProfile": "Edit profile",
+      "editComingSoon": "Profile editing feature coming soon!"
+    },
+    "stats": {
+      "writer": {
+        "published": "Published",
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "underReview": "Under Review",
+        "feedback": "Feedback"
+      },
+      "teacher": {
+        "classes": "Classes",
+        "students": "Students",
+        "assignedBooks": "Assigned Books",
+        "active": "Active"
+      },
+      "learner": {
+        "booksRead": "Books Read",
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "classes": "Classes"
+      },
+      "storyManager": {
+        "reviewed": "Reviewed",
+        "pending": "Pending",
+        "approved": "Approved",
+        "revisions": "Revisions"
+      },
+      "bookManager": {
+        "decisions": "Decisions",
+        "pending": "Pending",
+        "approved": "Approved"
+      },
+      "contentAdmin": {
+        "approvals": "Approvals",
+        "pending": "Pending",
+        "published": "Published"
+      },
+      "institution": {
+        "teachers": "Teachers",
+        "students": "Students",
+        "classes": "Classes",
+        "active": "Active"
+      },
+      "admin": {
+        "users": "Users",
+        "stories": "Stories",
+        "classes": "Classes",
+        "pending": "Pending"
+      }
+    },
+    "overview": {
+      "loadError": "Failed to load profile data. Please try refreshing the page."
+    },
+    "monthly": {
+      "title": "Monthly Statistics",
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "am": "AM",
+      "pm": "PM"
+    },
+    "activity": {
+      "noActivity": "No recent activity",
+      "title": "Recent Activity",
+      "commented": "commented",
+      "viewStory": "View story:",
+      "statusChanged": "Status changed to",
+      "achievementUnlocked": "Achievement unlocked:"
+    },
+    "currentProjects": {
+      "title": "Current Projects",
+      "startNew": "Start New",
+      "noProjects": "No projects yet",
+      "createFirst": "Create your first project",
+      "cannotCreate": "Students cannot create stories",
+      "lastEdited": "Last edited: {date}"
+    }
   },
   "hero": {
     "title": "दुनिया भर की कहानियों को खोजें, प्रकाशित करें और साझा करें",

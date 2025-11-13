@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ProfileStats } from './ProfileStats';
 import { ProfileTags } from './ProfileTags';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface ProfileCardProps {
   user: any;
@@ -11,10 +12,11 @@ interface ProfileCardProps {
 }
 
 export function ProfileCard({ user, stats }: ProfileCardProps) {
+  const { t } = useTranslation();
   const profile = user.profile;
   const avatarUrl = profile?.avatarUrl || user.image;
   const tags = profile?.tags || [];
-  const bio = profile?.bio || 'No bio provided';
+  const bio = profile?.bio || t('profile.card.noBio');
   const role = user.role?.toLowerCase() || 'writer';
 
   return (
@@ -63,10 +65,10 @@ export function ProfileCard({ user, stats }: ProfileCardProps) {
         style={{ fontSize: '14px' }}
         onClick={(e) => {
           e.preventDefault();
-          alert('Profile editing feature coming soon!');
+          alert(t('profile.card.editComingSoon'));
         }}
       >
-        Edit profile
+        {t('profile.card.editProfile')}
       </Link>
 
       {/* Stats */}

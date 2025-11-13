@@ -1,63 +1,65 @@
 'use client';
 
 import { UserRole } from '@prisma/client';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface ProfileStatsProps {
   stats: Record<string, number>;
   role: string;
 }
 
-const ROLE_STAT_LABELS: Record<string, Array<{ key: string; label: string }>> = {
+const ROLE_STAT_LABELS: Record<string, Array<{ key: string; labelKey: string }>> = {
   WRITER: [
-    { key: 'published', label: 'Published' },
-    { key: 'draft', label: 'Draft' },
-    { key: 'submitted', label: 'Submitted' },
-    { key: 'underReview', label: 'Under Review' },
-    { key: 'feedback', label: 'Feedback' }
+    { key: 'published', labelKey: 'profile.stats.writer.published' },
+    { key: 'draft', labelKey: 'profile.stats.writer.draft' },
+    { key: 'submitted', labelKey: 'profile.stats.writer.submitted' },
+    { key: 'underReview', labelKey: 'profile.stats.writer.underReview' },
+    { key: 'feedback', labelKey: 'profile.stats.writer.feedback' }
   ],
   TEACHER: [
-    { key: 'classes', label: 'Classes' },
-    { key: 'students', label: 'Students' },
-    { key: 'assignedBooks', label: 'Assigned Books' },
-    { key: 'activeStudents', label: 'Active' }
+    { key: 'classes', labelKey: 'profile.stats.teacher.classes' },
+    { key: 'students', labelKey: 'profile.stats.teacher.students' },
+    { key: 'assignedBooks', labelKey: 'profile.stats.teacher.assignedBooks' },
+    { key: 'activeStudents', labelKey: 'profile.stats.teacher.active' }
   ],
   LEARNER: [
-    { key: 'booksRead', label: 'Books Read' },
-    { key: 'inProgress', label: 'In Progress' },
-    { key: 'completedAssignments', label: 'Completed' },
-    { key: 'enrolledClasses', label: 'Classes' }
+    { key: 'booksRead', labelKey: 'profile.stats.learner.booksRead' },
+    { key: 'inProgress', labelKey: 'profile.stats.learner.inProgress' },
+    { key: 'completedAssignments', labelKey: 'profile.stats.learner.completed' },
+    { key: 'enrolledClasses', labelKey: 'profile.stats.learner.classes' }
   ],
   STORY_MANAGER: [
-    { key: 'reviewedStories', label: 'Reviewed' },
-    { key: 'pendingReviews', label: 'Pending' },
-    { key: 'approvedStories', label: 'Approved' },
-    { key: 'needsRevision', label: 'Revisions' }
+    { key: 'reviewedStories', labelKey: 'profile.stats.storyManager.reviewed' },
+    { key: 'pendingReviews', labelKey: 'profile.stats.storyManager.pending' },
+    { key: 'approvedStories', labelKey: 'profile.stats.storyManager.approved' },
+    { key: 'needsRevision', labelKey: 'profile.stats.storyManager.revisions' }
   ],
   BOOK_MANAGER: [
-    { key: 'formatDecisions', label: 'Decisions' },
-    { key: 'pendingDecisions', label: 'Pending' },
-    { key: 'approvedFormats', label: 'Approved' }
+    { key: 'formatDecisions', labelKey: 'profile.stats.bookManager.decisions' },
+    { key: 'pendingDecisions', labelKey: 'profile.stats.bookManager.pending' },
+    { key: 'approvedFormats', labelKey: 'profile.stats.bookManager.approved' }
   ],
   CONTENT_ADMIN: [
-    { key: 'finalApprovals', label: 'Approvals' },
-    { key: 'pendingApprovals', label: 'Pending' },
-    { key: 'publishedContent', label: 'Published' }
+    { key: 'finalApprovals', labelKey: 'profile.stats.contentAdmin.approvals' },
+    { key: 'pendingApprovals', labelKey: 'profile.stats.contentAdmin.pending' },
+    { key: 'publishedContent', labelKey: 'profile.stats.contentAdmin.published' }
   ],
   INSTITUTION: [
-    { key: 'totalTeachers', label: 'Teachers' },
-    { key: 'totalStudents', label: 'Students' },
-    { key: 'totalClasses', label: 'Classes' },
-    { key: 'activeClasses', label: 'Active' }
+    { key: 'totalTeachers', labelKey: 'profile.stats.institution.teachers' },
+    { key: 'totalStudents', labelKey: 'profile.stats.institution.students' },
+    { key: 'totalClasses', labelKey: 'profile.stats.institution.classes' },
+    { key: 'activeClasses', labelKey: 'profile.stats.institution.active' }
   ],
   ADMIN: [
-    { key: 'totalUsers', label: 'Users' },
-    { key: 'totalStories', label: 'Stories' },
-    { key: 'totalClasses', label: 'Classes' },
-    { key: 'pendingReviews', label: 'Pending' }
+    { key: 'totalUsers', labelKey: 'profile.stats.admin.users' },
+    { key: 'totalStories', labelKey: 'profile.stats.admin.stories' },
+    { key: 'totalClasses', labelKey: 'profile.stats.admin.classes' },
+    { key: 'pendingReviews', labelKey: 'profile.stats.admin.pending' }
   ]
 };
 
 export function ProfileStats({ stats, role }: ProfileStatsProps) {
+  const { t } = useTranslation();
   const statItems = ROLE_STAT_LABELS[role] || [];
 
   if (statItems.length === 0) {
@@ -67,7 +69,7 @@ export function ProfileStats({ stats, role }: ProfileStatsProps) {
   return (
     <div className="border-t border-[#E5E5EA] pt-4">
       <div className="grid grid-cols-2 gap-3">
-        {statItems.map(({ key, label }) => (
+        {statItems.map(({ key, labelKey }) => (
           <div
             key={key}
             className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-[#E5E5EA]"
@@ -92,7 +94,7 @@ export function ProfileStats({ stats, role }: ProfileStatsProps) {
                 fontWeight: 400
               }}
             >
-              {label}
+              {t(labelKey)}
             </span>
           </div>
         ))}

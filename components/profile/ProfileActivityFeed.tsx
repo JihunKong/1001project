@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Activity {
   id: string;
@@ -26,6 +27,7 @@ interface ProfileActivityFeedProps {
 }
 
 export function ProfileActivityFeed({ userId }: ProfileActivityFeedProps) {
+  const { t } = useTranslation();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,7 +69,7 @@ export function ProfileActivityFeed({ userId }: ProfileActivityFeedProps) {
   if (activities.length === 0) {
     return (
       <div className="text-center py-8 text-[#8E8E93]" style={{ fontSize: '18px' }}>
-        No recent activity
+        {t('profile.activity.noActivity')}
       </div>
     );
   }
@@ -75,7 +77,7 @@ export function ProfileActivityFeed({ userId }: ProfileActivityFeedProps) {
   return (
     <div className="space-y-6">
       <h2 className="text-[#141414] font-medium" style={{ fontSize: '24px' }}>
-        Recent Activity
+        {t('profile.activity.title')}
       </h2>
 
       <div className="space-y-4">
@@ -104,7 +106,7 @@ export function ProfileActivityFeed({ userId }: ProfileActivityFeedProps) {
                     {activity.author?.name}
                   </span>
                   <span className="text-[#8E8E93]" style={{ fontSize: '14px' }}>
-                    commented
+                    {t('profile.activity.commented')}
                   </span>
                 </div>
 
@@ -120,7 +122,7 @@ export function ProfileActivityFeed({ userId }: ProfileActivityFeedProps) {
                     className="text-[#16A34A] hover:underline inline-flex items-center gap-1"
                     style={{ fontSize: '14px' }}
                   >
-                    View story: {activity.submissionTitle}
+                    {t('profile.activity.viewStory')} {activity.submissionTitle}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -136,7 +138,7 @@ export function ProfileActivityFeed({ userId }: ProfileActivityFeedProps) {
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   <span className="text-[#484C56]" style={{ fontSize: '16px' }}>
-                    Status changed to{' '}
+                    {t('profile.activity.statusChanged')}{' '}
                     <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 text-sm font-medium">
                       {activity.newStatus}
                     </span>
@@ -157,7 +159,7 @@ export function ProfileActivityFeed({ userId }: ProfileActivityFeedProps) {
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
                 <span className="text-[#141414] font-medium" style={{ fontSize: '16px' }}>
-                  Achievement unlocked: {activity.achievementName}
+                  {t('profile.activity.achievementUnlocked')} {activity.achievementName}
                 </span>
               </div>
             )}

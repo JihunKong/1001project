@@ -78,7 +78,7 @@ export default function ProfileCurrentProjects({ projects, userRole }: ProfileCu
 
   const handleStartNew = () => {
     if (userRole === 'LEARNER') {
-      alert(t('Students cannot create stories'));
+      alert(t('profile.currentProjects.cannotCreate'));
       return;
     }
     router.push('/dashboard/writer/submit-text');
