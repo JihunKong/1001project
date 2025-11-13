@@ -18,28 +18,28 @@ export function ProfileCard({ user, stats }: ProfileCardProps) {
   const role = user.role?.toLowerCase() || 'writer';
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 overflow-hidden">
       {/* Avatar and Name */}
       <div className="flex flex-col items-center gap-3">
-        <div className="w-[100px] h-[100px] rounded-full bg-[#E5E5EA] flex items-center justify-center overflow-hidden">
+        <div className="w-[80px] h-[80px] rounded-full bg-[#E5E5EA] flex items-center justify-center overflow-hidden">
           {avatarUrl ? (
             <Image
               src={avatarUrl}
               alt={user.name || 'Profile'}
-              width={100}
-              height={100}
+              width={80}
+              height={80}
               className="object-cover"
             />
           ) : (
-            <span className="text-4xl text-[#8E8E93]">
+            <span className="text-3xl text-[#8E8E93]">
               {user.name?.[0]?.toUpperCase() || 'U'}
             </span>
           )}
         </div>
 
         <h2
-          className="text-[#141414] font-medium"
-          style={{ fontSize: '20px' }}
+          className="text-[#141414] font-medium break-words text-center max-w-full px-2"
+          style={{ fontSize: '17px' }}
         >
           {user.name}
         </h2>
@@ -50,8 +50,8 @@ export function ProfileCard({ user, stats }: ProfileCardProps) {
 
       {/* Bio */}
       <p
-        className="text-[#484C56]"
-        style={{ fontSize: '18px', lineHeight: 1.193 }}
+        className="text-[#484C56] break-words"
+        style={{ fontSize: '15px', lineHeight: 1.4 }}
       >
         {bio}
       </p>

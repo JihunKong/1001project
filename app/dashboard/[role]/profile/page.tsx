@@ -30,7 +30,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="flex min-h-screen bg-white">
-      <div className="flex-1 me-[480px] px-[100px] py-10">
+      <div className="flex-1 lg:me-[350px] px-4 lg:px-[100px] py-10">
         <h1
           className="text-center mb-8 text-[#141414] font-medium"
           style={{ fontSize: '48px' }}
@@ -44,7 +44,7 @@ export default async function ProfilePage() {
       </div>
 
       <div
-        className="fixed end-0 top-0 w-[480px] h-screen border-s border-[#E5E5EA] bg-white p-10 overflow-y-auto"
+        className="hidden lg:block fixed end-0 top-[73px] w-[350px] h-[calc(100vh-73px)] border-s border-[#E5E5EA] bg-white p-8 overflow-y-auto"
       >
         <ProfileCard user={user} stats={stats} />
       </div>

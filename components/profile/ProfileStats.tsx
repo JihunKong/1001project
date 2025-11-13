@@ -65,19 +65,32 @@ export function ProfileStats({ stats, role }: ProfileStatsProps) {
   }
 
   return (
-    <div className="border-t border-[#E5E5EA] pt-6">
-      <div className="grid grid-cols-2 gap-6">
+    <div className="border-t border-[#E5E5EA] pt-4">
+      <div className="grid grid-cols-2 gap-3">
         {statItems.map(({ key, label }) => (
-          <div key={key} className="flex flex-col items-center gap-2">
+          <div
+            key={key}
+            className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-[#E5E5EA]"
+            style={{ backgroundColor: '#F9FAFB' }}
+          >
             <span
-              className="text-[#141414] font-medium"
-              style={{ fontSize: '48px', lineHeight: 1 }}
+              className="font-medium"
+              style={{
+                fontSize: '22px',
+                lineHeight: 1,
+                color: '#141414',
+                fontWeight: 400
+              }}
             >
               {stats[key] ?? 0}
             </span>
             <span
-              className="text-[#484C56] text-center"
-              style={{ fontSize: '18px' }}
+              className="text-center"
+              style={{
+                fontSize: '12px',
+                color: '#636366',
+                fontWeight: 400
+              }}
             >
               {label}
             </span>

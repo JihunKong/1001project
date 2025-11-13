@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { ProfileActivityFeed } from './ProfileActivityFeed';
 import ProfileAchievements from './ProfileAchievements';
 import ProfileMonthlyStats from './ProfileMonthlyStats';
-import ProfileChart from './ProfileChart';
 import ProfileCurrentProjects from './ProfileCurrentProjects';
 
 interface ProfileOverviewProps {
@@ -71,9 +70,6 @@ export function ProfileOverview({ user, role }: ProfileOverviewProps) {
 
       {/* Monthly Statistics */}
       <ProfileMonthlyStats stats={profileData.stats} />
-
-      {/* Chart Visualization */}
-      <ProfileChart data={profileData.chartData} role={role} />
 
       {/* Current Projects */}
       <ProfileCurrentProjects projects={profileData.currentProjects} userRole={role} />
