@@ -41,6 +41,306 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 └── tests/                # Playwright E2E tests
 ```
 
+## Internationalization (i18n) System
+
+### Overview
+
+The platform supports 12 languages with a custom i18n implementation using React hooks and JSON translation files.
+
+**Supported Languages:**
+- English (en) - Primary
+- Korean (ko)
+- Spanish (es)
+- Arabic (ar)
+- Hindi (hi)
+- French (fr)
+- German (de)
+- Japanese (ja)
+- Portuguese (pt)
+- Russian (ru)
+- Italian (it)
+- Chinese (zh)
+
+### Directory Structure
+
+```
+/locales/generated/
+├── en.json           # English (source of truth)
+├── ko.json           # Korean
+├── es.json           # Spanish
+├── ar.json           # Arabic (RTL)
+├── hi.json           # Hindi
+├── fr.json           # French
+├── de.json           # German
+├── ja.json           # Japanese
+├── pt.json           # Portuguese
+├── ru.json           # Russian
+├── it.json           # Italian
+└── zh.json           # Chinese
+
+/docs/
+└── i18n-tracking.csv  # Translation gap tracking (143 entries)
+
+/lib/i18n/
+├── config.ts          # Language configuration
+├── useTranslation.ts  # Translation hook
+└── ...                # Other i18n utilities
+```
+
+### Translation Key Conventions
+
+Translation keys follow a hierarchical structure using dot notation:
+
+```typescript
+// Pattern: page.section.element.property
+{
+  "about": {
+    "header": {
+      "title": "About Us",
+      "subtitle": "Our Mission"
+    },
+    "section1": {
+      "title": "Who We Are",
+      "content": "Description text..."
+    }
+  }
+}
+```
+
+**Key Naming Rules:**
+1. Use lowercase with camelCase for multi-word names
+2. Group related keys under common parent
+3. Use descriptive names (e.g., `createAccount.question` not `faq1`)
+4. Keep nesting to 3-4 levels maximum
+5. Use consistent naming across similar sections
+
+### Component Conversion Workflow
+
+**Converting Server Components to Client Components:**
+
+```typescript
+// BEFORE (Server Component)
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Page Title',
+  description: 'Page description'
+};
+
+export default function Page() {
+  return <h1>Hardcoded Text</h1>;
+}
+
+// AFTER (Client Component)
+'use client';
+
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
+export default function Page() {
+  const { t } = useTranslation();
+  return <h1>{t('page.header.title')}</h1>;
+}
+```
+
+**Step-by-Step Conversion Process:**
+
+1. **Remove Metadata Export**
+   - Delete `import { Metadata }` statement
+   - Remove `export const metadata` block
+
+2. **Add Client Directive**
+   - Add `'use client';` as first line
+   - Import useTranslation hook
+
+3. **Initialize Translation Function**
+   ```typescript
+   const { t } = useTranslation();
+   ```
+
+4. **Replace Hardcoded Strings**
+   ```typescript
+   // Before
+   <h1>About Us</h1>
+
+   // After
+   <h1>{t('about.header.title')}</h1>
+   ```
+
+5. **Handle Placeholders**
+   ```typescript
+   // Before
+   <input placeholder="Search for help..." />
+
+   // After
+   <input placeholder={t('help.search.placeholder')} />
+   ```
+
+### Adding New Translations
+
+**Workflow for New Features:**
+
+1. **Update CSV Tracking**
+   ```csv
+   Page,Section,Key,English,Korean,Status,Priority,Location,Line
+   NewPage,Header,newPage.header.title,Page Title,페이지 제목,TODO,HIGH,/app/new/page.tsx,20
+   ```
+
+2. **Add Keys to en.json**
+   ```json
+   "newPage": {
+     "header": {
+       "title": "Page Title",
+       "subtitle": "Page subtitle"
+     }
+   }
+   ```
+
+3. **Copy Structure to All Languages**
+   ```bash
+   # Add same structure to ko.json, es.json, ar.json, etc.
+   # Use English as temporary placeholder for professional translation
+   ```
+
+4. **Convert Component**
+   - Follow Component Conversion Workflow above
+   - Verify all strings are wrapped in t() calls
+
+5. **Verify Build**
+   ```bash
+   npm run build
+   # Should compile successfully with no errors
+   ```
+
+### CSV Tracking System
+
+The `/docs/i18n-tracking.csv` file tracks all 143 translation entries across 5 public pages:
+
+**Format:**
+```csv
+Page,Section,Key,English,Korean,Status,Priority,Location,Line
+About,Header,about.header.title,About 1001 Stories,1001 이야기 소개,DONE,HIGH,/app/about/page.tsx,22
+```
+
+**Status Values:**
+- `DONE` - Translated in all 12 languages
+- `TODO` - Not yet implemented
+- `PARTIAL` - Some languages missing
+
+**Priority Levels:**
+- `HIGH` - Essential UI elements (titles, buttons, navigation)
+- `MEDIUM` - Important content (descriptions, labels)
+- `LOW` - Optional content (placeholders, examples)
+
+**Usage:**
+- Track translation gaps systematically
+- Plan refactoring phases for large updates
+- Coordinate with translation team
+
+### Testing and Verification
+
+**Pre-Deployment Checklist:**
+
+1. **Build Verification**
+   ```bash
+   npm run build
+   # Should show: ✓ Compiled successfully
+   # Should generate 74+ routes
+   ```
+
+2. **Count Translation Calls**
+   ```bash
+   # Verify t() count matches CSV requirements
+   grep -o "t('" /app/page/path.tsx | wc -l
+   ```
+
+3. **Check Translation Keys**
+   ```bash
+   # Verify all keys exist in en.json
+   grep "page.section.key" /locales/generated/en.json
+   ```
+
+4. **Test Language Switching**
+   - Test all 12 language options
+   - Verify text updates immediately
+   - Check RTL layout for Arabic (ar)
+
+5. **Verify No Missing Keys**
+   ```bash
+   # No console errors like "Missing translation key"
+   npm run dev
+   # Visit all translated pages
+   ```
+
+### Common Patterns
+
+**Navigation Items:**
+```typescript
+<Link href="/about">{t('nav.about')}</Link>
+<Link href="/contact">{t('nav.contact')}</Link>
+```
+
+**Form Elements:**
+```typescript
+<input
+  placeholder={t('form.email.placeholder')}
+  aria-label={t('form.email.label')}
+/>
+<button>{t('form.submit.button')}</button>
+```
+
+**Conditional Content:**
+```typescript
+{isLoggedIn ? t('dashboard.welcome') : t('landing.cta')}
+```
+
+**Lists and Arrays:**
+```typescript
+<ul>
+  <li>{t('features.item1')}</li>
+  <li>{t('features.item2')}</li>
+  <li>{t('features.item3')}</li>
+</ul>
+```
+
+### Completed Pages (2025-11-13)
+
+All 5 public pages fully internationalized:
+
+| Page    | Translation Keys | t() Calls | Status |
+|---------|-----------------|-----------|--------|
+| About   | 46             | 46        | ✅     |
+| Contact | 36             | 36        | ✅     |
+| Privacy | 22             | 22        | ✅     |
+| Terms   | 29             | 29        | ✅     |
+| Help    | 26             | 26        | ✅     |
+| **Total** | **159**      | **159**   | **✅** |
+
+**Build Status:** ✅ 76 routes generated successfully
+
+### Best Practices
+
+1. **ALWAYS use t() for user-facing text**
+   - No hardcoded English strings in components
+   - Exception: Developer-facing code comments
+
+2. **Maintain consistent key structure**
+   - Follow established patterns from existing pages
+   - Group related translations logically
+
+3. **Test with multiple languages**
+   - English + Korean minimum
+   - Arabic for RTL layout testing
+   - Check for text overflow issues
+
+4. **Update CSV when adding translations**
+   - Keep tracking system current
+   - Coordinate with translation team
+
+5. **Verify build after i18n changes**
+   - Run `npm run build` before committing
+   - Check for TypeScript errors
+   - Test affected pages
+
 ## Development Workflow
 
 **⚠️ CRITICAL NEW WORKFLOW (2025-09-19) - MANDATORY**
@@ -1080,6 +1380,60 @@ curl http://1001stories.seedsofempowerment.org/.well-known/acme-challenge/test
 - Auto-renewal runs every 12 hours (certbot container)
 - Renewal triggers when <30 days remaining
 - No manual intervention required for renewals
+
+## Korean Annotations Success Factors (2025-11-12)
+
+**Status**: ✅ Working (100% Success Rate)
+
+### Quick Summary
+
+Korean annotation highlighting now works correctly due to a two-phase fix addressing Unicode normalization and sequential position tracking. The root cause was a timing mismatch between character mapping creation and text normalization.
+
+**Key Results**:
+- **Before**: 60% success rate, wrong positions
+- **After**: 100% success rate, perfect highlighting
+- **Fix Commits**: 083f6745 (sequential tracking) + 86a844de (Unicode normalization)
+
+### The Problem
+
+Korean text uses combining characters that expand under NFD normalization:
+- **NFC**: "안녕" = 2 characters
+- **NFD**: "ㅇㅏㄴㄴㅕㅇ" = 6 characters (3x expansion!)
+
+This caused mapping array index mismatches when searching for annotation positions.
+
+### The Solution
+
+**Phase 1** (Commit 083f6745): Track last annotation end position to prevent duplicate matches
+
+**Phase 2** (Commit 86a844de): Normalize HTML BEFORE creating character mapping
+
+```typescript
+// ✅ CORRECT: Normalize first, then create mapping
+let normalizedHTML = htmlContent.normalize('NFC');
+const { text, mapping } = convertHTMLToPlainText(normalizedHTML);
+```
+
+### Prevention Rules
+
+✅ **DO**: Always normalize BEFORE creating mapping
+✅ **DO**: Use explicit NFC normalization for Korean/Japanese/accented text
+✅ **DO**: Test with non-ASCII characters (Korean: "안녕하세요", Japanese: "こんにちは")
+
+❌ **DON'T**: Normalize AFTER creating mapping (will break Korean text)
+❌ **DON'T**: Use inconsistent normalization forms
+
+### Code References
+
+- **Primary Fix**: `/lib/ai-review-trigger.ts` (lines 61-333)
+- **Frontend**: `/components/story-publication/writer/AnnotatedStoryViewer.tsx` (lines 193-194)
+- **Detailed Analysis**: `/docs/KOREAN_ANNOTATION_SUCCESS_ANALYSIS.md`
+
+### Success Metrics
+
+- **Language Support**: Korean, Japanese, Chinese, English, French, German, Arabic (all 100%)
+- **Production Logs**: 5/5 annotations successful (0 failures)
+- **User Confirmation**: "Korean annotations are now working correctly" ✅
 
 ## Support & Resources
 

@@ -1,13 +1,11 @@
-import { Metadata } from 'next';
+'use client';
+
 import { FileText, Users, Shield, AlertTriangle, Check, Mail } from 'lucide-react';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: '1001 Stories - Terms of Service',
-  description: 'Read the Terms of Service for 1001 Stories platform, including user responsibilities, content policies, and platform usage guidelines.',
-};
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function TermsPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -17,13 +15,12 @@ export default function TermsPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-500 rounded-full mb-6">
               <FileText className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('terms.title')}</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              These terms govern your use of the 1001 Stories platform.
-              Please read them carefully before using our services.
+              {t('terms.description')}
             </p>
             <p className="text-sm text-gray-500 mt-4">
-              Last updated: September 25, 2024
+              {t('terms.lastUpdated')}
             </p>
           </div>
         </div>
@@ -32,30 +29,30 @@ export default function TermsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Quick Summary */}
         <div className="bg-green-50 border border-green-200 rounded-2xl p-8 mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Agreement Summary</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.summary.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <Check className="h-4 w-4 text-green-600" />
-                You Can:
+                {t('terms.summary.canDo.title')}
               </h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Use the platform for educational purposes</li>
-                <li>• Share appropriate stories and content</li>
-                <li>• Connect with other users respectfully</li>
-                <li>• Download content for personal/classroom use</li>
+                <li>• {t('terms.summary.canDo.item1')}</li>
+                <li>• {t('terms.summary.canDo.item2')}</li>
+                <li>• {t('terms.summary.canDo.item3')}</li>
+                <li>• {t('terms.summary.canDo.item4')}</li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-red-600" />
-                You Cannot:
+                {t('terms.summary.cannotDo.title')}
               </h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Use the platform for commercial purposes</li>
-                <li>• Share inappropriate or harmful content</li>
-                <li>• Violate others&apos; privacy or rights</li>
-                <li>• Attempt to hack or disrupt the platform</li>
+                <li>• {t('terms.summary.cannotDo.item1')}</li>
+                <li>• {t('terms.summary.cannotDo.item2')}</li>
+                <li>• {t('terms.summary.cannotDo.item3')}</li>
+                <li>• {t('terms.summary.cannotDo.item4')}</li>
               </ul>
             </div>
           </div>
@@ -64,7 +61,7 @@ export default function TermsPage() {
         {/* Main Content */}
         <div className="prose prose-lg max-w-none">
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Acceptance of Terms</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section1.title')}</h2>
             <p className="text-gray-600 mb-4">
               By accessing or using 1001 Stories, you agree to be bound by these Terms of Service
               and all applicable laws and regulations. If you do not agree with any of these terms,
@@ -72,14 +69,13 @@ export default function TermsPage() {
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-gray-600">
-                <strong>For Minors:</strong> If you are under 18, your parent or guardian must
-                agree to these terms on your behalf before you can use the platform.
+                {t('terms.section1.minorsWarning')}
               </p>
             </div>
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">2. Platform Purpose</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section2.title')}</h2>
             <p className="text-gray-600 mb-4">
               1001 Stories is an educational platform designed to:
             </p>
@@ -96,7 +92,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">3. User Accounts and Roles</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section3.title')}</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-gray-50 rounded-lg p-6">
@@ -127,7 +123,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">4. Content Guidelines</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section4.title')}</h2>
 
             <h3 className="text-xl font-semibold text-gray-900 mb-4">Acceptable Content</h3>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-6">
@@ -151,7 +147,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">5. Intellectual Property</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section5.title')}</h2>
 
             <h3 className="text-xl font-semibold text-gray-900 mb-4">Your Content</h3>
             <p className="text-gray-600 mb-4">
@@ -173,7 +169,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">6. Educational Use</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section6.title')}</h2>
             <div className="bg-green-50 border border-green-200 rounded-lg p-6">
               <h3 className="font-semibold text-gray-900 mb-3">Permitted Educational Uses</h3>
               <ul className="text-sm text-gray-600 space-y-2 mb-4">
@@ -190,7 +186,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">7. Privacy and Data Protection</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section7.title')}</h2>
             <p className="text-gray-600 mb-4">
               Your privacy is important to us. Our data practices are governed by our
               <Link href="/privacy" className="text-blue-600 hover:text-blue-700 underline">Privacy Policy</Link>,
@@ -205,7 +201,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">8. Platform Availability</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section8.title')}</h2>
             <p className="text-gray-600 mb-4">
               While we strive to maintain continuous service, we cannot guarantee:
             </p>
@@ -221,7 +217,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">9. Limitation of Liability</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section9.title')}</h2>
             <div className="bg-gray-50 border border-gray-300 rounded-lg p-6">
               <p className="text-gray-600 mb-4">
                 1001 Stories is provided &quot;as is&quot; for educational purposes. To the fullest
@@ -238,7 +234,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">10. Termination</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section10.title')}</h2>
             <p className="text-gray-600 mb-4">
               Either party may terminate this agreement:
             </p>
@@ -253,7 +249,7 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">11. Changes to Terms</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section11.title')}</h2>
             <p className="text-gray-600 mb-4">
               We may update these terms periodically to reflect:
             </p>
@@ -269,7 +265,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">12. Contact Information</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section12.title')}</h2>
             <div className="bg-gray-50 rounded-lg p-6">
               <p className="text-gray-600 mb-4">
                 Questions about these terms? We&apos;re here to help:
@@ -305,13 +301,13 @@ export default function TermsPage() {
               href="/contact"
               className="inline-flex items-center justify-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
             >
-              Contact Legal Team
+              {t('terms.footer.contactLegalTeam')}
             </Link>
             <Link
               href="/privacy"
               className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
             >
-              View Privacy Policy
+              {t('terms.footer.viewPrivacyPolicy')}
             </Link>
           </div>
         </div>

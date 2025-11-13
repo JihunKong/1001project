@@ -1,0 +1,158 @@
+Page,Section,Translation Key,English Text,Korean,Status,Priority,File Path,Line Number
+About,Hero,about.hero.title,"1001 Stories,","1001 스토리,"TODO,HIGH,/app/about/page.tsx,36
+About,Hero,about.hero.subtitle,Empowering Communities through Storytelling,스토리텔링을 통한 커뮤니티 역량 강화,TODO,HIGH,/app/about/page.tsx,46
+About,Hero,about.hero.description,A global citizenship platform for young learners, brining stories from under-resourced communities to the world,전 세계 자원이 부족한 커뮤니티의 이야기를 전하는 글로벌 시민 플랫폼,TODO,HIGH,/app/about/page.tsx,57
+About,Who We Are,about.whoWeAre.title,Who We Are,우리는 누구인가,TODO,HIGH,/app/about/page.tsx,75
+About,Who We Are,about.whoWeAre.subtitle,Seeds of Empowerment and the 1001 Stories Project,시즈 오브 임파워먼트와 1001 스토리 프로젝트,TODO,HIGH,/app/about/page.tsx,85
+About,Who We Are,about.whoWeAre.soe.title,Seeds of Empowerment,시즈 오브 임파워먼트,TODO,HIGH,/app/about/page.tsx,112
+About,Who We Are,about.whoWeAre.soe.description,"SOE is a non-profit organization dedicated to empowering underserved communities through education, storytelling, and technology. By supporting grassroots projects round the world, they help amplify local voices and foster sustainable development.","SOE는 교육, 스토리텔링, 기술을 통해 소외된 커뮤니티에 힘을 실어주는 비영리 단체입니다.",TODO,HIGH,/app/about/page.tsx,123
+About,Who We Are,about.whoWeAre.project.title,1001 Stories Project,1001 스토리 프로젝트,TODO,HIGH,/app/about/page.tsx,137
+About,Who We Are,about.whoWeAre.project.description,"Our mobile storytelling program, 1001 Stories, brings meaningful learning to some of the hardest to reach populations around the world. We aim to facilitate the creation, development, and gathering of 1001 empowering stories from every participating local community.",전 세계에서 가장 도달하기 어려운 인구에게 의미 있는 학습을 제공합니다.,TODO,HIGH,/app/about/page.tsx,148
+About,Benefits,about.benefits.title,Benefits,혜택,TODO,HIGH,/app/about/page.tsx,168
+About,Benefits,about.benefits.subtitle,Why Join 1001 Stories?,왜 1001 스토리에 참여해야 하나요?,TODO,HIGH,/app/about/page.tsx,178
+About,Benefits,about.benefits.benefit1.title,Promote Global Citizenship and Literacy,글로벌 시민의식과 문해력 향상,TODO,HIGH,/app/about/page.tsx,204
+About,Benefits,about.benefits.benefit1.description,"Through storytelling and cultural exchange, 1001 Stories fosters global citizenship education, helping children around the world develop reading and writing skills.",스토리텔링과 문화 교류를 통해 글로벌 시민 교육을 촉진합니다.,TODO,HIGH,/app/about/page.tsx,215
+About,Benefits,about.benefits.benefit2.title,Empower Young Learners Everywhere,모든 청소년 학습자에게 힘을 실어주기,TODO,HIGH,/app/about/page.tsx,241
+About,Benefits,about.benefits.benefit2.description,"We raise awareness about diverse experiences and support children's dreams by offering scholarships and creating accessible educational opportunities.",다양한 경험에 대한 인식을 높이고 장학금을 제공합니다.,TODO,HIGH,/app/about/page.tsx,252
+About,Benefits,about.benefits.benefit3.title,Integrate AI and Personalized Learning,AI와 개인화된 학습 통합,TODO,HIGH,/app/about/page.tsx,278
+About,Benefits,about.benefits.benefit3.description,"By combining storybooks with AI-powered tools, 1001 Stories offers personalized learning experiences tailored to each student's journey.",AI 기반 도구와 스토리북을 결합하여 개인화된 학습 경험을 제공합니다.,TODO,HIGH,/app/about/page.tsx,289
+About,Features,about.features.title,Our Features,우리의 기능,TODO,HIGH,/app/about/page.tsx,309
+About,Features,about.features.subtitle,More exciting features are on the way. Stay tuned!,더 흥미로운 기능이 곧 출시됩니다. 기대해 주세요!,TODO,HIGH,/app/about/page.tsx,319
+About,Features,about.features.library.title,📖 Browse the 1001 Stories Library,📖 1001 스토리 라이브러리 탐색,TODO,MEDIUM,/app/about/page.tsx,344
+About,Features,about.features.library.description,"Discover stories written by young authors around the world. Explore different cultures, perspectives, and dreams through storytelling.",전 세계 젊은 작가들이 쓴 이야기를 발견하세요.,TODO,MEDIUM,/app/about/page.tsx,355
+About,Features,about.features.library.cta,Learn More,더 알아보기,TODO,MEDIUM,/app/about/page.tsx,367
+About,Features,about.features.write.title,📝 Write Your Story,📝 당신의 이야기를 써보세요,TODO,MEDIUM,/app/about/page.tsx,391
+About,Features,about.features.write.description,"Share your voice with the world! Write and submit your own story, inspire others, and become part of our global library.",당신의 목소리를 세상과 공유하세요!,TODO,MEDIUM,/app/about/page.tsx,402
+About,Features,about.features.write.cta,Learn More,더 알아보기,TODO,MEDIUM,/app/about/page.tsx,414
+About,Features,about.features.bookclub.title,📚 Join a Book Club (Coming Soon),📚 북클럽 참여하기 (곧 출시),TODO,MEDIUM,/app/about/page.tsx,438
+About,Features,about.features.bookclub.description,"Find and join book clubs that match your interests. Read together, discuss ideas, and connect with young storytellers across the globe.",관심사에 맞는 북클럽을 찾아 참여하세요.,TODO,MEDIUM,/app/about/page.tsx,449
+About,Features,about.features.bookclub.cta,Learn More,더 알아보기,TODO,MEDIUM,/app/about/page.tsx,461
+About,Features,about.features.goals.title,🎯 Set and Track Your Goals (Coming Soon),🎯 목표 설정 및 추적 (곧 출시),TODO,MEDIUM,/app/about/page.tsx,485
+About,Features,about.features.goals.description,"Start with a quick assessment to personalize your journey. Set learning goals based on your interests and track your progress as you grow.",빠른 평가로 여정을 개인화하세요.,TODO,MEDIUM,/app/about/page.tsx,496
+About,Features,about.features.goals.cta,Learn More,더 알아보기,TODO,MEDIUM,/app/about/page.tsx,508
+About,Testimonials,about.testimonials.title,Our Testimonials,추천사,TODO,HIGH,/app/about/page.tsx,526
+About,Testimonials,about.testimonials.sofia.quote,"Before 1001 Stories, I was too shy to share my writing. Now, my story is published for everyone to read! I feel like my voice matters, and I want to write even more",1001 스토리 이전에는 글쓰기를 공유하기에 너무 수줍었습니다.,TODO,MEDIUM,/app/about/page.tsx,542
+About,Testimonials,about.testimonials.sofia.name,"Sofia, Student (10)","소피아, 학생 (10세)",TODO,MEDIUM,/app/about/page.tsx,563
+About,Testimonials,about.testimonials.ayaan.quote,"I love reading stories from kids in other countries. It feels like I'm making new friends from around the world. 1001 Stories makes learning so much fun!",다른 나라 아이들의 이야기를 읽는 것을 좋아합니다.,TODO,MEDIUM,/app/about/page.tsx,580
+About,Testimonials,about.testimonials.ayaan.name,"Ayaan, Student (11)","아얀, 학생 (11세)",TODO,MEDIUM,/app/about/page.tsx,601
+About,Testimonials,about.testimonials.emilyMom.quote,"1001 Stories gave my daughter the confidence to express herself creatively. Watching her set goals, complete her first story, and proudly share it was an unforgettable moment for our family",1001 스토리는 제 딸에게 창의적으로 자신을 표현할 자신감을 주었습니다.,TODO,MEDIUM,/app/about/page.tsx,618
+About,Testimonials,about.testimonials.emilyMom.name,Emily's Mom,에밀리의 엄마,TODO,MEDIUM,/app/about/page.tsx,639
+About,Testimonials,about.testimonials.davidDad.quote,"As a parent, I wanted something educational but also inspiring. 1001 Stories struck the perfect balance—helping my son develop literacy skills while encouraging him to think globally and dream big.",부모로서 교육적이면서도 영감을 주는 것을 원했습니다.,TODO,MEDIUM,/app/about/page.tsx,656
+About,Testimonials,about.testimonials.davidDad.name,David's Dad,데이비드의 아빠,TODO,MEDIUM,/app/about/page.tsx,677
+About,Footer,about.footer.tagline,Empowering young voices and inspiring the world through stories.,이야기를 통해 젊은 목소리에 힘을 실어주고 세상에 영감을 줍니다.,TODO,HIGH,/app/about/page.tsx,708
+About,Footer,about.footer.contact,Contact,연락처,TODO,HIGH,/app/about/page.tsx,732
+About,Footer,about.footer.contactForm,Contact Form,문의 양식,TODO,HIGH,/app/about/page.tsx,747
+About,Footer,about.footer.copyright,©2024 1001 Stories. All rights reserved,©2024 1001 스토리. 모든 권리 보유.,TODO,HIGH,/app/about/page.tsx,762
+About,Footer,about.footer.privacyPolicy,Privacy Policy,개인정보 처리방침,TODO,HIGH,/app/about/page.tsx,770
+About,Footer,about.footer.termsOfService,Terms of Service,이용약관,TODO,HIGH,/app/about/page.tsx,777
+Contact,Header,contact.title,Contact Us,문의하기,TODO,HIGH,/app/contact/page.tsx,17
+Contact,Header,contact.description,"Have questions about our platform? We'd love to hear from you. Reach out to learn more about joining our global storytelling community.",플랫폼에 대한 질문이 있으신가요? 연락 주세요.,TODO,HIGH,/app/contact/page.tsx,19
+Contact,Contact Info,contact.getInTouch,Get in Touch,연락하기,TODO,HIGH,/app/contact/page.tsx,31
+Contact,Contact Info,contact.email.title,Email Us,이메일 보내기,TODO,MEDIUM,/app/contact/page.tsx,39
+Contact,Contact Info,contact.email.description,General inquiries and support,일반 문의 및 지원,TODO,MEDIUM,/app/contact/page.tsx,40
+Contact,Contact Info,contact.phone.title,Call Us,전화 문의,TODO,MEDIUM,/app/contact/page.tsx,52
+Contact,Contact Info,contact.phone.description,Available during business hours,업무 시간 중 가능,TODO,MEDIUM,/app/contact/page.tsx,53
+Contact,Contact Info,contact.phone.number,+1 (555) 1001-STORY,+1 (555) 1001-STORY,TODO,MEDIUM,/app/contact/page.tsx,55
+Contact,Contact Info,contact.address.title,Visit Us,방문하기,TODO,MEDIUM,/app/contact/page.tsx,65
+Contact,Contact Info,contact.address.name,Seeds of Empowerment,시즈 오브 임파워먼트,TODO,MEDIUM,/app/contact/page.tsx,67
+Contact,Contact Info,contact.address.organization,Global Education Initiative,글로벌 교육 이니셔티브,TODO,MEDIUM,/app/contact/page.tsx,68
+Contact,Contact Info,contact.address.location,"San Francisco, CA 94102","샌프란시스코, CA 94102",TODO,MEDIUM,/app/contact/page.tsx,69
+Contact,Contact Info,contact.hours.title,Office Hours,업무 시간,TODO,MEDIUM,/app/contact/page.tsx,79
+Contact,Contact Info,contact.hours.weekday,Monday - Friday: 9:00 AM - 6:00 PM PST,월요일 - 금요일: 오전 9시 - 오후 6시 (PST),TODO,MEDIUM,/app/contact/page.tsx,81
+Contact,Contact Info,contact.hours.weekend,Weekend: By appointment only,주말: 예약제로만 가능,TODO,MEDIUM,/app/contact/page.tsx,82
+Contact,Quick Actions,contact.actions.title,Quick Actions,빠른 액션,TODO,MEDIUM,/app/contact/page.tsx,91
+Contact,Quick Actions,contact.actions.joinEducator,Join as an Educator,교육자로 참여하기,TODO,MEDIUM,/app/contact/page.tsx,97
+Contact,Quick Actions,contact.actions.becomeWriter,Become a Writer,작가 되기,TODO,MEDIUM,/app/contact/page.tsx,103
+Contact,Quick Actions,contact.actions.exploreStories,Explore Stories,이야기 탐색,TODO,MEDIUM,/app/contact/page.tsx,109
+Contact,Form,contact.form.title,Send us a Message,메시지 보내기,TODO,HIGH,/app/contact/page.tsx,117
+Contact,Form,contact.form.firstName,First Name,이름,TODO,MEDIUM,/app/contact/page.tsx,123
+Contact,Form,contact.form.lastName,Last Name,성,TODO,MEDIUM,/app/contact/page.tsx,135
+Contact,Form,contact.form.email,Email Address,이메일 주소,TODO,MEDIUM,/app/contact/page.tsx,149
+Contact,Form,contact.form.subject,Subject,제목,TODO,MEDIUM,/app/contact/page.tsx,162
+Contact,Form,contact.form.subject.placeholder,Select a topic,주제 선택,TODO,MEDIUM,/app/contact/page.tsx,169
+Contact,Form,contact.form.subject.general,General Inquiry,일반 문의,TODO,MEDIUM,/app/contact/page.tsx,170
+Contact,Form,contact.form.subject.teacher,Teacher Registration,교사 등록,TODO,MEDIUM,/app/contact/page.tsx,171
+Contact,Form,contact.form.subject.writer,Writer Opportunity,작가 기회,TODO,MEDIUM,/app/contact/page.tsx,172
+Contact,Form,contact.form.subject.partnership,Partnership,파트너십,TODO,MEDIUM,/app/contact/page.tsx,173
+Contact,Form,contact.form.subject.technical,Technical Support,기술 지원,TODO,MEDIUM,/app/contact/page.tsx,174
+Contact,Form,contact.form.subject.other,Other,기타,TODO,MEDIUM,/app/contact/page.tsx,175
+Contact,Form,contact.form.message,Message,메시지,TODO,MEDIUM,/app/contact/page.tsx,181
+Contact,Form,contact.form.message.placeholder,Tell us how we can help you...,어떻게 도와드릴 수 있을까요?,TODO,MEDIUM,/app/contact/page.tsx,188
+Contact,Form,contact.form.submit,Send Message,메시지 보내기,TODO,HIGH,/app/contact/page.tsx,197
+Privacy,Header,privacy.title,Privacy Policy,개인정보 처리방침,TODO,HIGH,/app/privacy/page.tsx,20
+Privacy,Header,privacy.description,"Your privacy is important to us. This policy explains how we collect, use, and protect your personal information.",귀하의 개인정보는 중요합니다. 이 정책은 우리가 어떻게 개인정보를 수집하고 사용하는지 설명합니다.,TODO,HIGH,/app/privacy/page.tsx,22
+Privacy,Header,privacy.lastUpdated,Last updated: September 25, 2024,최종 업데이트: 2024년 9월 25일,TODO,MEDIUM,/app/privacy/page.tsx,26
+Privacy,Overview,privacy.overview.title,Privacy at a Glance,개인정보 보호 개요,TODO,HIGH,/app/privacy/page.tsx,35
+Privacy,Overview,privacy.overview.secure.title,Secure by Design,설계부터 안전함,TODO,MEDIUM,/app/privacy/page.tsx,40
+Privacy,Overview,privacy.overview.secure.description,We protect your data with industry-standard encryption.,업계 표준 암호화로 데이터를 보호합니다.,TODO,MEDIUM,/app/privacy/page.tsx,41
+Privacy,Overview,privacy.overview.transparent.title,Transparent,투명함,TODO,MEDIUM,/app/privacy/page.tsx,47
+Privacy,Overview,privacy.overview.transparent.description,"We're clear about what data we collect and why.",어떤 데이터를 수집하는지 명확히 알려드립니다.,TODO,MEDIUM,/app/privacy/page.tsx,48
+Privacy,Overview,privacy.overview.control.title,Your Control,귀하의 통제,TODO,MEDIUM,/app/privacy/page.tsx,54
+Privacy,Overview,privacy.overview.control.description,"You can access, update, or delete your data anytime.",언제든지 데이터에 접근하고 수정하거나 삭제할 수 있습니다.,TODO,MEDIUM,/app/privacy/page.tsx,55
+Privacy,Content,privacy.section1.title,1. Information We Collect,1. 수집하는 정보,TODO,HIGH,/app/privacy/page.tsx,64
+Privacy,Content,privacy.section2.title,2. How We Use Your Information,2. 정보 사용 방법,TODO,HIGH,/app/privacy/page.tsx,91
+Privacy,Content,privacy.section3.title,3. Information Sharing,3. 정보 공유,TODO,HIGH,/app/privacy/page.tsx,106
+Privacy,Content,privacy.section3.noSell.title,We Never Sell Your Data,귀하의 데이터를 판매하지 않습니다,TODO,HIGH,/app/privacy/page.tsx,112
+Privacy,Content,privacy.section3.noSell.description,Your personal information is never sold to third parties. Period.,귀하의 개인정보는 절대 제3자에게 판매되지 않습니다.,TODO,HIGH,/app/privacy/page.tsx,114
+Privacy,Content,privacy.section4.title,4. Children's Privacy (COPPA Compliance),4. 어린이 개인정보 보호 (COPPA 준수),TODO,HIGH,/app/privacy/page.tsx,131
+Privacy,Content,privacy.section5.title,5. Data Security,5. 데이터 보안,TODO,HIGH,/app/privacy/page.tsx,147
+Privacy,Content,privacy.section6.title,6. Your Rights,6. 귀하의 권리,TODO,HIGH,/app/privacy/page.tsx,177
+Privacy,Content,privacy.section7.title,7. Contact Us,7. 문의하기,TODO,HIGH,/app/privacy/page.tsx,198
+Privacy,Content,privacy.section8.title,8. Changes to This Policy,8. 정책 변경,TODO,HIGH,/app/privacy/page.tsx,216
+Privacy,Footer,privacy.footer.contactPrivacyTeam,Contact Privacy Team,개인정보 팀에 문의하기,TODO,MEDIUM,/app/privacy/page.tsx,236
+Privacy,Footer,privacy.footer.viewTerms,View Terms of Service,이용약관 보기,TODO,MEDIUM,/app/privacy/page.tsx,242
+Terms,Header,terms.title,Terms of Service,이용약관,TODO,HIGH,/app/terms/page.tsx,20
+Terms,Header,terms.description,"These terms govern your use of the 1001 Stories platform. Please read them carefully before using our services.",본 약관은 1001 스토리 플랫폼 사용을 규정합니다.,TODO,HIGH,/app/terms/page.tsx,22
+Terms,Header,terms.lastUpdated,Last updated: September 25, 2024,최종 업데이트: 2024년 9월 25일,TODO,MEDIUM,/app/terms/page.tsx,26
+Terms,Summary,terms.summary.title,Agreement Summary,약관 요약,TODO,HIGH,/app/terms/page.tsx,35
+Terms,Summary,terms.summary.canDo.title,You Can:,할 수 있는 것:,TODO,MEDIUM,/app/terms/page.tsx,40
+Terms,Summary,terms.summary.canDo.item1,Use the platform for educational purposes,교육 목적으로 플랫폼 사용,TODO,MEDIUM,/app/terms/page.tsx,43
+Terms,Summary,terms.summary.canDo.item2,Share appropriate stories and content,적절한 이야기와 콘텐츠 공유,TODO,MEDIUM,/app/terms/page.tsx,44
+Terms,Summary,terms.summary.canDo.item3,Connect with other users respectfully,다른 사용자와 존중하며 소통,TODO,MEDIUM,/app/terms/page.tsx,45
+Terms,Summary,terms.summary.canDo.item4,Download content for personal/classroom use,개인/교실 사용을 위한 콘텐츠 다운로드,TODO,MEDIUM,/app/terms/page.tsx,46
+Terms,Summary,terms.summary.cannotDo.title,You Cannot:,할 수 없는 것:,TODO,MEDIUM,/app/terms/page.tsx,52
+Terms,Summary,terms.summary.cannotDo.item1,Use the platform for commercial purposes,상업적 목적으로 플랫폼 사용,TODO,MEDIUM,/app/terms/page.tsx,55
+Terms,Summary,terms.summary.cannotDo.item2,Share inappropriate or harmful content,부적절하거나 유해한 콘텐츠 공유,TODO,MEDIUM,/app/terms/page.tsx,56
+Terms,Summary,terms.summary.cannotDo.item3,Violate others' privacy or rights,타인의 개인정보나 권리 침해,TODO,MEDIUM,/app/terms/page.tsx,57
+Terms,Summary,terms.summary.cannotDo.item4,Attempt to hack or disrupt the platform,플랫폼 해킹 또는 방해 시도,TODO,MEDIUM,/app/terms/page.tsx,58
+Terms,Content,terms.section1.title,1. Acceptance of Terms,1. 약관 동의,TODO,HIGH,/app/terms/page.tsx,67
+Terms,Content,terms.section1.minorsWarning,"For Minors: If you are under 18, your parent or guardian must agree to these terms on your behalf before you can use the platform.",미성년자: 18세 미만인 경우 부모나 보호자가 약관에 동의해야 합니다.,TODO,HIGH,/app/terms/page.tsx,75
+Terms,Content,terms.section2.title,2. Platform Purpose,2. 플랫폼 목적,TODO,HIGH,/app/terms/page.tsx,82
+Terms,Content,terms.section3.title,3. User Accounts and Roles,3. 사용자 계정 및 역할,TODO,HIGH,/app/terms/page.tsx,99
+Terms,Content,terms.section4.title,4. Content Guidelines,4. 콘텐츠 가이드라인,TODO,HIGH,/app/terms/page.tsx,130
+Terms,Content,terms.section5.title,5. Intellectual Property,5. 지적 재산권,TODO,HIGH,/app/terms/page.tsx,154
+Terms,Content,terms.section6.title,6. Educational Use,6. 교육적 사용,TODO,HIGH,/app/terms/page.tsx,176
+Terms,Content,terms.section7.title,7. Privacy and Data Protection,7. 개인정보 및 데이터 보호,TODO,HIGH,/app/terms/page.tsx,193
+Terms,Content,terms.section8.title,8. Platform Availability,8. 플랫폼 가용성,TODO,HIGH,/app/terms/page.tsx,208
+Terms,Content,terms.section9.title,9. Limitation of Liability,9. 책임 제한,TODO,HIGH,/app/terms/page.tsx,224
+Terms,Content,terms.section10.title,10. Termination,10. 계약 종료,TODO,HIGH,/app/terms/page.tsx,241
+Terms,Content,terms.section11.title,11. Changes to Terms,11. 약관 변경,TODO,HIGH,/app/terms/page.tsx,256
+Terms,Content,terms.section12.title,12. Contact Information,12. 연락처 정보,TODO,HIGH,/app/terms/page.tsx,272
+Terms,Footer,terms.footer.contactLegalTeam,Contact Legal Team,법무팀에 문의하기,TODO,MEDIUM,/app/terms/page.tsx,308
+Terms,Footer,terms.footer.viewPrivacyPolicy,View Privacy Policy,개인정보 처리방침 보기,TODO,MEDIUM,/app/terms/page.tsx,314
+Help,Header,help.title,Help Center,도움말 센터,TODO,HIGH,/app/help/page.tsx,20
+Help,Header,help.description,"Find answers to common questions, explore our guides, and get the support you need to make the most of 1001 Stories.",자주 묻는 질문에 대한 답을 찾고 가이드를 탐색하세요.,TODO,HIGH,/app/help/page.tsx,22
+Help,Header,help.search.placeholder,Search for help...,도움말 검색...,TODO,MEDIUM,/app/help/page.tsx,34
+Help,Quick Start,help.quickStart.title,Get Started Quickly,빠르게 시작하기,TODO,HIGH,/app/help/page.tsx,44
+Help,Quick Start,help.quickStart.newUser.title,New User Guide,신규 사용자 가이드,TODO,MEDIUM,/app/help/page.tsx,51
+Help,Quick Start,help.quickStart.newUser.description,"Learn how to create your account, choose your role, and start exploring stories.","계정을 만들고, 역할을 선택하고, 이야기를 탐색하는 방법을 배우세요.",TODO,MEDIUM,/app/help/page.tsx,53
+Help,Quick Start,help.quickStart.educators.title,For Educators,교육자를 위한,TODO,MEDIUM,/app/help/page.tsx,63
+Help,Quick Start,help.quickStart.educators.description,"Discover how to create classes, assign stories, and track student progress.","수업을 만들고, 이야기를 할당하고, 학생 진행 상황을 추적하는 방법을 알아보세요.",TODO,MEDIUM,/app/help/page.tsx,65
+Help,Quick Start,help.quickStart.technical.title,Technical Help,기술 지원,TODO,MEDIUM,/app/help/page.tsx,75
+Help,Quick Start,help.quickStart.technical.description,Troubleshoot common issues and learn about platform features.,일반적인 문제를 해결하고 플랫폼 기능에 대해 배우세요.,TODO,MEDIUM,/app/help/page.tsx,77
+Help,FAQ,help.faq.gettingStarted.title,Getting Started,시작하기,TODO,HIGH,/app/help/page.tsx,88
+Help,FAQ,help.faq.createAccount.question,How do I create an account?,계정을 어떻게 만드나요?,TODO,MEDIUM,/app/help/page.tsx,91
+Help,FAQ,help.faq.createAccount.answer,"Click the ""Sign Up"" button and choose your role (Student, Teacher, Writer, etc.). Fill out the required information and verify your email address.",가입 버튼을 클릭하고 역할을 선택하세요.,TODO,MEDIUM,/app/help/page.tsx,93
+Help,FAQ,help.faq.createAccount.tip,"Choose your role carefully as it determines what features you'll have access to.",기능에 접근할 수 있는 역할을 신중하게 선택하세요.,TODO,MEDIUM,/app/help/page.tsx,98
+Help,FAQ,help.faq.userRoles.question,What are the different user roles?,다양한 사용자 역할은 무엇인가요?,TODO,MEDIUM,/app/help/page.tsx,104
+Help,FAQ,help.faq.isFree.question,Is 1001 Stories free to use?,1001 스토리는 무료로 사용할 수 있나요?,TODO,MEDIUM,/app/help/page.tsx,126
+Help,FAQ,help.faq.isFree.answer,"Yes! 1001 Stories is a non-profit platform and free for educational use.",네! 1001 스토리는 비영리 플랫폼이며 교육 목적으로 무료입니다.,TODO,MEDIUM,/app/help/page.tsx,128
+Help,FAQ,help.faq.teachers.title,For Educators,교육자를 위한,TODO,HIGH,/app/help/page.tsx,138
+Help,FAQ,help.faq.support.title,Still Need Help?,여전히 도움이 필요하신가요?,TODO,HIGH,/app/help/page.tsx,260
+Help,FAQ,help.faq.support.description,"Our support team is here to help. Reach out and we'll get back to you as soon as possible.",지원팀이 도와드리겠습니다. 연락 주시면 최대한 빨리 답변드리겠습니다.,TODO,HIGH,/app/help/page.tsx,262
+Help,Contact,help.contact.email.title,Email Support,이메일 지원,TODO,MEDIUM,/app/help/page.tsx,271
+Help,Contact,help.contact.email.description,Get detailed help via email,이메일로 자세한 도움 받기,TODO,MEDIUM,/app/help/page.tsx,272
+Help,Contact,help.contact.email.button,Send Email,이메일 보내기,TODO,MEDIUM,/app/help/page.tsx,277
+Help,Contact,help.contact.liveChat.title,Live Chat,실시간 채팅,TODO,MEDIUM,/app/help/page.tsx,285
+Help,Contact,help.contact.liveChat.description,Chat with our support team,지원팀과 채팅하기,TODO,MEDIUM,/app/help/page.tsx,286
+Help,Contact,help.contact.liveChat.button,Start Chat,채팅 시작,TODO,MEDIUM,/app/help/page.tsx,288

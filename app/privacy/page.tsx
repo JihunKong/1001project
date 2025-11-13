@@ -1,13 +1,11 @@
-import { Metadata } from 'next';
+'use client';
+
 import { Shield, Eye, Lock, Users, Database, Mail } from 'lucide-react';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: '1001 Stories - Privacy Policy',
-  description: 'Learn about how 1001 Stories protects your privacy and handles your personal data in compliance with GDPR and other privacy regulations.',
-};
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function PrivacyPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -17,13 +15,12 @@ export default function PrivacyPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-6">
               <Shield className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('privacy.title')}</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Your privacy is important to us. This policy explains how we collect,
-              use, and protect your personal information.
+              {t('privacy.description')}
             </p>
             <p className="text-sm text-gray-500 mt-4">
-              Last updated: September 25, 2024
+              {t('privacy.lastUpdated')}
             </p>
           </div>
         </div>
@@ -32,27 +29,27 @@ export default function PrivacyPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Quick Overview */}
         <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Privacy at a Glance</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.overview.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-start gap-3">
               <Lock className="h-5 w-5 text-blue-600 mt-1" />
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Secure by Design</h3>
-                <p className="text-sm text-gray-600">We protect your data with industry-standard encryption.</p>
+                <h3 className="font-semibold text-gray-900 mb-1">{t('privacy.overview.secure.title')}</h3>
+                <p className="text-sm text-gray-600">{t('privacy.overview.secure.description')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Eye className="h-5 w-5 text-blue-600 mt-1" />
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Transparent</h3>
-                <p className="text-sm text-gray-600">We&apos;re clear about what data we collect and why.</p>
+                <h3 className="font-semibold text-gray-900 mb-1">{t('privacy.overview.transparent.title')}</h3>
+                <p className="text-sm text-gray-600">{t('privacy.overview.transparent.description')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Users className="h-5 w-5 text-blue-600 mt-1" />
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Your Control</h3>
-                <p className="text-sm text-gray-600">You can access, update, or delete your data anytime.</p>
+                <h3 className="font-semibold text-gray-900 mb-1">{t('privacy.overview.control.title')}</h3>
+                <p className="text-sm text-gray-600">{t('privacy.overview.control.description')}</p>
               </div>
             </div>
           </div>
@@ -61,7 +58,7 @@ export default function PrivacyPage() {
         {/* Main Content */}
         <div className="prose prose-lg max-w-none">
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Information We Collect</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section1.title')}</h2>
 
             <h3 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-6">
@@ -88,7 +85,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">2. How We Use Your Information</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section2.title')}</h2>
             <div className="space-y-4 text-gray-600">
               <p>We use your information to:</p>
               <ul className="list-disc list-inside space-y-2">
@@ -103,15 +100,15 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">3. Information Sharing</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section3.title')}</h2>
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-yellow-600 mt-1" />
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">We Never Sell Your Data</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">{t('privacy.section3.noSell.title')}</h3>
                   <p className="text-sm text-gray-600">
-                    Your personal information is never sold to third parties. Period.
+                    {t('privacy.section3.noSell.description')}
                   </p>
                 </div>
               </div>
@@ -128,7 +125,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">4. Children&apos;s Privacy (COPPA Compliance)</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section4.title')}</h2>
             <div className="bg-green-50 border border-green-200 rounded-lg p-6">
               <p className="text-gray-600 mb-4">
                 We take special care to protect children&apos;s privacy:
@@ -144,12 +141,12 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">5. Data Security</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section5.title')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Lock className="h-5 w-5 text-gray-600" />
-                  <h3 className="font-semibold text-gray-900">Technical Safeguards</h3>
+                  <h3 className="font-semibold text-gray-900">Technical Measures</h3>
                 </div>
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li>End-to-end encryption</li>
@@ -161,7 +158,7 @@ export default function PrivacyPage() {
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Database className="h-5 w-5 text-gray-600" />
-                  <h3 className="font-semibold text-gray-900">Data Practices</h3>
+                  <h3 className="font-semibold text-gray-900">Operational Practices</h3>
                 </div>
                 <ul className="text-sm text-gray-600 space-y-2">
                   <li>Data minimization</li>
@@ -174,7 +171,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">6. Your Rights</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section6.title')}</h2>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
               <p className="text-gray-600 mb-4">Under GDPR and other privacy laws, you have the right to:</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -195,7 +192,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">7. Contact Us</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section7.title')}</h2>
             <div className="bg-gray-50 rounded-lg p-6">
               <p className="text-gray-600 mb-4">
                 If you have questions about this privacy policy or want to exercise your rights:
@@ -203,7 +200,7 @@ export default function PrivacyPage() {
               <div className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-gray-600 mt-1" />
                 <div>
-                  <p className="font-medium text-gray-900">Email us:</p>
+                  <p className="font-medium text-gray-900">Email Us</p>
                   <a href="mailto:privacy@1001stories.org" className="text-blue-600 hover:text-blue-700">
                     privacy@1001stories.org
                   </a>
@@ -213,7 +210,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">8. Changes to This Policy</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section8.title')}</h2>
             <p className="text-gray-600 mb-4">
               We may update this privacy policy from time to time. When we do, we&apos;ll:
             </p>
@@ -233,13 +230,13 @@ export default function PrivacyPage() {
               href="/contact"
               className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Contact Privacy Team
+              {t('privacy.footer.contactPrivacyTeam')}
             </Link>
             <Link
               href="/terms"
               className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
             >
-              View Terms of Service
+              {t('privacy.footer.viewTerms')}
             </Link>
           </div>
         </div>

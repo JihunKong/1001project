@@ -1,10 +1,15 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { BookOpen } from 'lucide-react';
 import HomePageNavigation from '@/components/ui/HomePageNavigation';
 import FooterCTA from '@/components/landing/FooterCTA';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function AboutPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -33,7 +38,7 @@ export default function AboutPage() {
                 lineHeight: '1em'
               }}
             >
-              1001 Stories,
+              {t('about.hero.title')}
             </h1>
             <h2
               className="text-[#FAFAFA] font-semibold"
@@ -43,7 +48,7 @@ export default function AboutPage() {
                 lineHeight: '1.5em'
               }}
             >
-              Empowering Communities through Storytelling
+              {t('about.hero.subtitle')}
             </h2>
             <p
               className="text-[#FAFAFA]"
@@ -54,7 +59,7 @@ export default function AboutPage() {
                 lineHeight: '19px'
               }}
             >
-              A global citizenship platform for young learners, brining stories from under-resourced communities to the world
+              {t('about.hero.description')}
             </p>
           </div>
         </div>
@@ -72,7 +77,7 @@ export default function AboutPage() {
                 lineHeight: '1.5em'
               }}
             >
-              Who We Are
+              {t('about.whoWeAre.title')}
             </h2>
             <p
               className="text-[#2B2B2B] font-bold"
@@ -82,7 +87,7 @@ export default function AboutPage() {
                 lineHeight: '1.5em'
               }}
             >
-              Seeds of Empowerment and the 1001 Stories Project
+              {t('about.whoWeAre.subtitle')}
             </p>
           </div>
 
@@ -109,7 +114,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  Seeds of Empowerment
+                  {t('about.whoWeAre.soe.title')}
                 </h3>
                 <p
                   className="text-[#4C4C4D]"
@@ -120,7 +125,7 @@ export default function AboutPage() {
                     lineHeight: '2em'
                   }}
                 >
-                  SOE is a non-profit organization dedicated to empowering underserved communities through education, storytelling, and technology. By supporting grassroots projects round the world, they help amplify local voices and foster sustainable development.
+                  {t('about.whoWeAre.soe.description')}
                 </p>
               </div>
 
@@ -134,7 +139,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  1001 Stories Project
+                  {t('about.whoWeAre.project.title')}
                 </h3>
                 <p
                   className="text-[#4C4C4D]"
@@ -145,7 +150,7 @@ export default function AboutPage() {
                     lineHeight: '2em'
                   }}
                 >
-                  Our mobile storytelling program, 1001 Stories, brings meaningful learning to some of the hardest to reach populations around the world. We aim to facilitate the creation, development, and gathering of 1001 empowering stories from every participating local community.
+                  {t('about.whoWeAre.project.description')}
                 </p>
               </div>
             </div>
@@ -165,7 +170,7 @@ export default function AboutPage() {
                 lineHeight: '1.5em'
               }}
             >
-              Benefits
+              {t('about.benefits.title')}
             </h2>
             <p
               className="text-[#2B2B2B] font-bold"
@@ -175,7 +180,7 @@ export default function AboutPage() {
                 lineHeight: '19px'
               }}
             >
-              Why Join 1001 Stories?
+              {t('about.benefits.subtitle')}
             </p>
           </div>
 
@@ -201,7 +206,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  Promote Global Citizenship and Literacy
+                  {t('about.benefits.benefit1.title')}
                 </h3>
                 <p
                   className="text-[#6F6F6F]"
@@ -212,7 +217,7 @@ export default function AboutPage() {
                     lineHeight: '2em'
                   }}
                 >
-                  Through storytelling and cultural exchange, 1001 Stories fosters global citizenship education, helping children around the world develop reading and writing skills. By publishing and sharing their stories on a global stage, we amplify young voices and inspire cross-cultural understanding.
+                  {t('about.benefits.benefit1.description')}
                 </p>
               </div>
             </div>
@@ -238,7 +243,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  Empower Young Learners Everywhere
+                  {t('about.benefits.benefit2.title')}
                 </h3>
                 <p
                   className="text-[#6F6F6F]"
@@ -249,7 +254,7 @@ export default function AboutPage() {
                     lineHeight: '2em'
                   }}
                 >
-                  We raise awareness about diverse experiences and support children&apos;s dreams by offering scholarships and creating accessible educational opportunities. Our self-sustaining platform is designed to empower all young learners, regardless of their backgrounds, to thrive and grow.
+                  {t('about.benefits.benefit2.description')}
                 </p>
               </div>
             </div>
@@ -275,7 +280,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  Integrate AI and Personalized Learning
+                  {t('about.benefits.benefit3.title')}
                 </h3>
                 <p
                   className="text-[#6F6F6F]"
@@ -286,7 +291,7 @@ export default function AboutPage() {
                     lineHeight: '2em'
                   }}
                 >
-                  By combining storybooks with AI-powered tools, 1001 Stories offers personalized learning experiences tailored to each student&apos;s journey. Our platform nurtures creativity, builds practical AI literacy skills, and prepares young minds for an increasingly connected and digital future.
+                  {t('about.benefits.benefit3.description')}
                 </p>
               </div>
             </div>
@@ -306,7 +311,7 @@ export default function AboutPage() {
                 lineHeight: '1.5em'
               }}
             >
-              Our Features
+              {t('about.features.title')}
             </h2>
             <p
               className="text-[#2B2B2B] font-bold"
@@ -316,7 +321,7 @@ export default function AboutPage() {
                 lineHeight: '13px'
               }}
             >
-              More exciting features are on the way. Stay tuned!
+              {t('about.features.subtitle')}
             </p>
           </div>
 
@@ -341,7 +346,7 @@ export default function AboutPage() {
                       lineHeight: '1.5em'
                     }}
                   >
-                    📖 Browse the 1001 Stories Library
+                    {t('about.features.library.title')}
                   </h3>
                   <p
                     className="text-[#6F6F6F]"
@@ -352,7 +357,7 @@ export default function AboutPage() {
                       lineHeight: '2em'
                     }}
                   >
-                    Discover stories written by young authors around the world. Explore different cultures, perspectives, and dreams through storytelling.
+                    {t('about.features.library.description')}
                   </p>
                 </div>
               </div>
@@ -364,7 +369,7 @@ export default function AboutPage() {
                   lineHeight: '1.5em'
                 }}
               >
-                Learn More
+                {t('about.features.library.cta')}
               </button>
             </div>
 
@@ -388,7 +393,7 @@ export default function AboutPage() {
                       lineHeight: '1.5em'
                     }}
                   >
-                    📝 Write Your Story
+                    {t('about.features.write.title')}
                   </h3>
                   <p
                     className="text-[#6F6F6F]"
@@ -399,7 +404,7 @@ export default function AboutPage() {
                       lineHeight: '2em'
                     }}
                   >
-                    Share your voice with the world! Write and submit your own story, inspire others, and become part of our global library.
+                    {t('about.features.write.description')}
                   </p>
                 </div>
               </div>
@@ -411,7 +416,7 @@ export default function AboutPage() {
                   lineHeight: '1.5em'
                 }}
               >
-                Learn More
+                {t('about.features.write.cta')}
               </button>
             </div>
 
@@ -435,7 +440,7 @@ export default function AboutPage() {
                       lineHeight: '1.5em'
                     }}
                   >
-                    📚 Join a Book Club (Coming Soon)
+                    {t('about.features.bookclub.title')}
                   </h3>
                   <p
                     className="text-[#4C4C4D]"
@@ -446,7 +451,7 @@ export default function AboutPage() {
                       lineHeight: '2em'
                     }}
                   >
-                    Find and join book clubs that match your interests. Read together, discuss ideas, and connect with young storytellers across the globe.
+                    {t('about.features.bookclub.description')}
                   </p>
                 </div>
               </div>
@@ -458,7 +463,7 @@ export default function AboutPage() {
                   lineHeight: '1.5em'
                 }}
               >
-                Learn More
+                {t('about.features.bookclub.cta')}
               </button>
             </div>
 
@@ -482,7 +487,7 @@ export default function AboutPage() {
                       lineHeight: '1.5em'
                     }}
                   >
-                    🎯 Set and Track Your Goals (Coming Soon)
+                    {t('about.features.goals.title')}
                   </h3>
                   <p
                     className="text-[#4C4C4D]"
@@ -493,7 +498,7 @@ export default function AboutPage() {
                       lineHeight: '2em'
                     }}
                   >
-                    Start with a quick assessment to personalize your journey. Set learning goals based on your interests and track your progress as you grow.
+                    {t('about.features.goals.description')}
                   </p>
                 </div>
               </div>
@@ -505,7 +510,7 @@ export default function AboutPage() {
                   lineHeight: '1.5em'
                 }}
               >
-                Learn More
+                {t('about.features.goals.cta')}
               </button>
             </div>
           </div>
@@ -523,7 +528,7 @@ export default function AboutPage() {
               lineHeight: '1.5em'
             }}
           >
-            Our Testimonials
+            {t('about.testimonials.title')}
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -539,7 +544,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  Before 1001 Stories, I was too shy to share my writing. Now, my story is published for everyone to read! I feel like my voice matters, and I want to write even more
+                  {t('about.testimonials.sofia.quote')}
                 </p>
               </div>
               <div className="border-t border-[#F1F1F3]"></div>
@@ -560,7 +565,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  Sofia, Student (10)
+                  {t('about.testimonials.sofia.attribution')}
                 </span>
               </div>
             </div>
@@ -577,7 +582,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  I love reading stories from kids in other countries. It feels like I&apos;m making new friends from around the world. 1001 Stories makes learning so much fun!
+                  {t('about.testimonials.ayaan.quote')}
                 </p>
               </div>
               <div className="border-t border-[#F1F1F3]"></div>
@@ -598,7 +603,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  Ayaan, Student (11)
+                  {t('about.testimonials.ayaan.attribution')}
                 </span>
               </div>
             </div>
@@ -615,7 +620,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  1001 Stories gave my daughter the confidence to express herself creatively. Watching her set goals, complete her first story, and proudly share it was an unforgettable moment for our family
+                  {t('about.testimonials.emily.quote')}
                 </p>
               </div>
               <div className="border-t border-[#F1F1F3]"></div>
@@ -636,7 +641,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  Emily&apos;s Mom
+                  {t('about.testimonials.emily.attribution')}
                 </span>
               </div>
             </div>
@@ -653,7 +658,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  As a parent, I wanted something educational but also inspiring. 1001 Stories struck the perfect balance—helping my son develop literacy skills while encouraging him to think globally and dream big.
+                  {t('about.testimonials.david.quote')}
                 </p>
               </div>
               <div className="border-t border-[#F1F1F3]"></div>
@@ -674,7 +679,7 @@ export default function AboutPage() {
                     lineHeight: '1.5em'
                   }}
                 >
-                  David&apos;s Dad
+                  {t('about.testimonials.david.attribution')}
                 </span>
               </div>
             </div>
@@ -705,7 +710,7 @@ export default function AboutPage() {
                 className="text-[#FAFAFA]"
                 style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 500, lineHeight: '38px' }}
               >
-                Empowering young voices and inspiring the world through stories.
+                {t('about.footer.tagline')}
               </p>
 
               {/* Social Icons */}
@@ -729,7 +734,7 @@ export default function AboutPage() {
                 className="text-[#FAFAFA] font-semibold"
                 style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
               >
-                Contact
+                {t('about.footer.contactTitle')}
               </h3>
               <div className="space-y-2">
                 <a
@@ -744,7 +749,7 @@ export default function AboutPage() {
                   className="block text-[#FAFAFA] hover:underline"
                   style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 400, lineHeight: '24px' }}
                 >
-                  Contact Form
+                  {t('about.footer.contactForm')}
                 </Link>
               </div>
             </div>
@@ -759,7 +764,7 @@ export default function AboutPage() {
               className="text-[#FAFAFA] font-semibold"
               style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
             >
-              ©2024 1001 Stories. All rights reserved
+              {t('about.footer.copyright')}
             </p>
             <div className="flex space-x-6">
               <Link
@@ -767,14 +772,14 @@ export default function AboutPage() {
                 className="text-[#FAFAFA] hover:underline font-semibold"
                 style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
               >
-                Privacy Policy
+                {t('about.footer.privacyPolicy')}
               </Link>
               <Link
                 href="/terms"
                 className="text-[#FAFAFA] hover:underline font-semibold"
                 style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
               >
-                Terms of Service
+                {t('about.footer.termsOfService')}
               </Link>
             </div>
           </div>

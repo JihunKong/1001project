@@ -1,13 +1,11 @@
-import { Metadata } from 'next';
+'use client';
+
 import { HelpCircle, Search, BookOpen, Users, Settings, MessageCircle, Mail } from 'lucide-react';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: '1001 Stories - Help Center',
-  description: 'Find answers to common questions about 1001 Stories platform, get started guides, and contact our support team.',
-};
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function HelpPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -17,10 +15,9 @@ export default function HelpPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-6">
               <HelpCircle className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Help Center</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('help.title')}</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-              Find answers to common questions, explore our guides, and get the support you need
-              to make the most of 1001 Stories.
+              {t('help.description')}
             </p>
 
             {/* Search Bar */}
@@ -31,7 +28,7 @@ export default function HelpPage() {
               <input
                 type="text"
                 className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder="Search for help..."
+                placeholder={t('help.search.placeholder')}
               />
             </div>
           </div>
@@ -41,16 +38,16 @@ export default function HelpPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Quick Start */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Get Started Quickly</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">{t('help.quickStart.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Link href="#getting-started" className="group">
               <div className="bg-blue-50 rounded-2xl p-8 text-center hover:bg-blue-100 transition-colors">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-6 group-hover:scale-110 transition-transform">
                   <Users className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">New User Guide</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('help.quickStart.newUser.title')}</h3>
                 <p className="text-gray-600">
-                  Learn how to create your account, choose your role, and start exploring stories.
+                  {t('help.quickStart.newUser.description')}
                 </p>
               </div>
             </Link>
@@ -60,9 +57,9 @@ export default function HelpPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-6 group-hover:scale-110 transition-transform">
                   <BookOpen className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">For Educators</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('help.quickStart.educators.title')}</h3>
                 <p className="text-gray-600">
-                  Discover how to create classes, assign stories, and track student progress.
+                  {t('help.quickStart.educators.description')}
                 </p>
               </div>
             </Link>
@@ -72,9 +69,9 @@ export default function HelpPage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-500 rounded-full mb-6 group-hover:scale-110 transition-transform">
                   <Settings className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Technical Help</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('help.quickStart.technical.title')}</h3>
                 <p className="text-gray-600">
-                  Troubleshoot common issues and learn about platform features.
+                  {t('help.quickStart.technical.description')}
                 </p>
               </div>
             </Link>
@@ -85,23 +82,22 @@ export default function HelpPage() {
         <div className="space-y-12">
           {/* Getting Started */}
           <section id="getting-started">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Getting Started</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">{t('help.faq.gettingStarted.title')}</h2>
             <div className="space-y-6">
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">How do I create an account?</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('help.faq.createAccount.question')}</h3>
                 <p className="text-gray-600 mb-4">
-                  Click the &quot;Sign Up&quot; button and choose your role (Student, Teacher, Writer, etc.).
-                  Fill out the required information and verify your email address.
+                  {t('help.faq.createAccount.answer')}
                 </p>
                 <div className="bg-blue-50 border border-blue-200 rounded p-3">
                   <p className="text-sm text-gray-600">
-                    <strong>Tip:</strong> Choose your role carefully as it determines what features you&apos;ll have access to.
+                    <strong>Tip:</strong> {t('help.faq.createAccount.tip')}
                   </p>
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">What are the different user roles?</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('help.faq.userRoles.question')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
                   <div>
                     <p className="font-medium text-gray-900 mb-2">Educational Roles:</p>
@@ -123,11 +119,9 @@ export default function HelpPage() {
               </div>
 
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Is 1001 Stories free to use?</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('help.faq.isFree.question')}</h3>
                 <p className="text-gray-600">
-                  Yes! 1001 Stories is a non-profit platform and free for educational use.
-                  We&apos;re supported by the Seeds of Empowerment initiative to ensure
-                  global access to quality educational content.
+                  {t('help.faq.isFree.answer')}
                 </p>
               </div>
             </div>
@@ -135,7 +129,7 @@ export default function HelpPage() {
 
           {/* For Teachers */}
           <section id="for-teachers">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">For Educators</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">{t('help.faq.teachers.title')}</h2>
             <div className="space-y-6">
               <div className="bg-emerald-50 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">How do I create a class?</h3>
@@ -257,9 +251,9 @@ export default function HelpPage() {
         {/* Contact Support */}
         <div className="mt-16 bg-gray-50 rounded-2xl p-8">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Still Need Help?</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('help.faq.support.title')}</h2>
             <p className="text-gray-600">
-              Our support team is here to help. Reach out and we&apos;ll get back to you as soon as possible.
+              {t('help.faq.support.description')}
             </p>
           </div>
 
@@ -268,13 +262,13 @@ export default function HelpPage() {
               <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
                 <Mail className="h-6 w-6 text-blue-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Email Support</h3>
-              <p className="text-gray-600 mb-4">Get detailed help via email</p>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('help.contact.email.title')}</h3>
+              <p className="text-gray-600 mb-4">{t('help.contact.email.description')}</p>
               <a
                 href="mailto:support@1001stories.org"
                 className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Send Email
+                {t('help.contact.email.button')}
               </a>
             </div>
 
@@ -282,10 +276,10 @@ export default function HelpPage() {
               <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-full mb-4">
                 <MessageCircle className="h-6 w-6 text-emerald-600" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Live Chat</h3>
-              <p className="text-gray-600 mb-4">Chat with our support team</p>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('help.contact.liveChat.title')}</h3>
+              <p className="text-gray-600 mb-4">{t('help.contact.liveChat.description')}</p>
               <button className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors">
-                Start Chat
+                {t('help.contact.liveChat.button')}
               </button>
             </div>
           </div>
