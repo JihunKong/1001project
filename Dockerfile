@@ -114,9 +114,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/locales ./locales
 
 # Create necessary directories with proper permissions
-RUN mkdir -p uploads tmp public/generated-images && \
-    chown nextjs:nodejs uploads tmp public/generated-images && \
-    chmod 775 uploads tmp public/generated-images
+RUN mkdir -p uploads tmp public/generated-images public/covers && \
+    chown nextjs:nodejs uploads tmp public/generated-images public/covers && \
+    chmod 775 uploads tmp public/generated-images public/covers
 
 # Security: Remove write permissions from application files
 RUN find /app -type f -exec chmod 644 {} + && \

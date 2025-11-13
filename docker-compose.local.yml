@@ -19,6 +19,8 @@ services:
       - ./uploads:/app/uploads
       - ./prisma:/app/prisma
       - ./public/books:/app/public/books
+      - ./public/generated-images:/app/public/generated-images
+      - ./public/covers:/app/public/covers
     networks:
       - local-network
     depends_on:

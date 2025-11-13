@@ -25,6 +25,7 @@ services:
       - ./prisma:/app/prisma:ro
       - ./public/books:/app/public/books:ro
       - ./public/generated-images:/app/public/generated-images:rw
+      - ./public/covers:/app/public/covers:rw
     networks:
       - app-network
     depends_on:

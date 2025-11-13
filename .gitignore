@@ -79,6 +79,10 @@ public/pdfs/*.pdf
 uploads/books/*.pdf
 uploads/
 
+# Cover images - ignore uploads but keep directory
+public/covers/*
+!public/covers/.gitkeep
+
 # Large media files served from S3
 public/1001StoriesWinner.mov
 public/hero-classroom.jpg
