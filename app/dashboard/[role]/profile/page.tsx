@@ -30,7 +30,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="flex min-h-screen bg-white">
-      <div className="flex-1 lg:me-[350px] px-4 lg:px-[100px] py-10">
+      <div className="flex-1 px-4 lg:px-[100px] lg:pe-[100px] py-10 max-w-7xl mx-auto">
         <h1
           className="text-center mb-8 text-[#141414] font-medium"
           style={{ fontSize: '48px' }}

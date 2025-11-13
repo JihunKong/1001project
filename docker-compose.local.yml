@@ -21,6 +21,7 @@ services:
       - ./public/books:/app/public/books
       - ./public/generated-images:/app/public/generated-images
       - ./public/covers:/app/public/covers
+      - ./locales:/app/locales
     networks:
       - local-network
     depends_on:

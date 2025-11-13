@@ -393,7 +393,14 @@
         "stories": "Stories",
         "classes": "Classes",
         "pending": "Pending"
-      }
+      },
+      "published": "Published",
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "underReview": "Under Review",
+      "feedback": "Needs Revision",
+      "needRevision": "Needs Revision",
+      "approved": "Approved"
     },
     "overview": {
       "loadError": "Failed to load profile data. Please try refreshing the page."
@@ -448,6 +455,10 @@
       "noStories": "No stories yet",
       "writeFirst": "Write Your First Story",
       "newStory": "+ New Story"
+    },
+    "chart": {
+      "submissionTrends": "Submission Trends",
+      "noData": "No data available"
     }
   },
   "hero": {

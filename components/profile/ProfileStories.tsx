@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Story {
   id: string;
@@ -17,6 +18,7 @@ interface ProfileStoriesProps {
 }
 
 export function ProfileStories({ userId, role }: ProfileStoriesProps) {
+  const { t } = useTranslation();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +52,7 @@ export function ProfileStories({ userId, role }: ProfileStoriesProps) {
     return (
       <div className="text-center py-12">
         <p className="text-[#8E8E93] mb-4" style={{ fontSize: '18px' }}>
-          No stories yet
+          {t('profile.stories.noStories')}
         </p>
         {role === 'WRITER' && (
           <Link
@@ -58,7 +60,7 @@ export function ProfileStories({ userId, role }: ProfileStoriesProps) {
             className="inline-block px-6 py-3 bg-[#16A34A] text-white rounded-lg hover:bg-[#15803d] transition-colors"
             style={{ fontSize: '16px' }}
           >
-            Write Your First Story
+            {t('profile.stories.writeFirst')}
           </Link>
         )}
       </div>
@@ -78,7 +80,7 @@ export function ProfileStories({ userId, role }: ProfileStoriesProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-[#141414] font-medium" style={{ fontSize: '24px' }}>
-          Your Stories
+          {t('profile.stories.title')}
         </h2>
         {role === 'WRITER' && (
           <Link
@@ -86,7 +88,7 @@ export function ProfileStories({ userId, role }: ProfileStoriesProps) {
             className="px-4 py-2 bg-[#16A34A] text-white rounded-lg hover:bg-[#15803d] transition-colors"
             style={{ fontSize: '14px' }}
           >
-            + New Story
+            {t('profile.stories.newStory')}
           </Link>
         )}
       </div>
@@ -114,7 +116,7 @@ export function ProfileStories({ userId, role }: ProfileStoriesProps) {
                   {story.wordCount && (
                     <>
                       <span>•</span>
-                      <span>{story.wordCount.toLocaleString()} words</span>
+                      <span>{story.wordCount.toLocaleString()} {t('common.words')}</span>
                     </>
                   )}
                 </div>
