@@ -23,11 +23,18 @@ interface AIReviewCardProps {
 export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
   const { t } = useTranslation();
 
-  const REVIEW_TYPE_LABELS = useMemo(() => ({
-    GRAMMAR: t('dashboard.writer.submitText.aiFeedback.grammar'),
-    STRUCTURE: t('dashboard.writer.submitText.aiFeedback.structure'),
-    WRITING_HELP: t('dashboard.writer.submitText.aiFeedback.writingHelp')
-  }), [t]);
+  const getReviewTypeLabel = (reviewType: string): string => {
+    switch (reviewType) {
+      case 'GRAMMAR':
+        return t('dashboard.writer.submitText.aiFeedback.grammar');
+      case 'STRUCTURE':
+        return t('dashboard.writer.submitText.aiFeedback.structure');
+      case 'WRITING_HELP':
+        return t('dashboard.writer.submitText.aiFeedback.writingHelp');
+      default:
+        return reviewType;
+    }
+  };
 
   const [reviews, setReviews] = useState<AIReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -122,7 +129,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
         clearInterval(pollingInterval);
       }
     };
-  }, [submissionId, startPolling, pollingInterval]);
+  }, [submissionId, startPolling]);
 
   const fetchAutoReviews = async (shouldStartPolling = false) => {
     try {
@@ -322,7 +329,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
                       lineHeight: '1.221',
                       color: '#141414'
                     }}>
-                      {REVIEW_TYPE_LABELS[review.reviewType]}
+                      {getReviewTypeLabel(review.reviewType)}
                     </span>
                     {review.score !== undefined && review.score !== null && (
                       <span style={{

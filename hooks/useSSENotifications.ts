@@ -142,6 +142,21 @@ export function useSSENotifications(options: UseSSENotificationsOptions = {}) {
     };
   }, []);
 
+  // Add visibility change listener for instant reconnection when tab becomes active
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && !isConnected) {
+        console.log('Tab became visible, reconnecting SSE...');
+        reconnect();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isConnected, reconnect]);
+
   return {
     isConnected,
     error,
