@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Stats {
@@ -16,7 +16,12 @@ interface ProfileMonthlyStatsProps {
 
 export default function ProfileMonthlyStats({ stats, onDateRangeChange }: ProfileMonthlyStatsProps) {
   const { t, isLoading } = useTranslation();
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
+  const [selectedMonth, setSelectedMonth] = useState<Date | null>(null);
+
+  // Initialize selectedMonth on client-side only (after hydration)
+  useEffect(() => {
+    setSelectedMonth(new Date());
+  }, []);
 
   const statCards = useMemo(() => [
     {
@@ -51,7 +56,10 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
     return (monthIndex: number) => t(monthKeys[monthIndex]);
   }, [t]);
 
-  const monthOptions = useMemo(() => {
+  const [monthOptions, setMonthOptions] = useState<Array<{ value: string; label: string }>>([]);
+
+  // Generate month options on client-side only (after hydration)
+  useEffect(() => {
     const options = [];
     const today = new Date();
 
@@ -63,7 +71,7 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
       });
     }
 
-    return options;
+    setMonthOptions(options);
   }, [getMonthName]);
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -77,7 +85,7 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !selectedMonth || monthOptions.length === 0) {
     return <div className="mb-8 text-center py-8">Loading...</div>;
   }
 
