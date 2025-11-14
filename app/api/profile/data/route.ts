@@ -145,7 +145,8 @@ export async function GET(request: NextRequest) {
       chartData
     });
 
-  } catch {
+  } catch (error) {
+    console.error('[/api/profile/data] Error fetching profile data:', error);
     return NextResponse.json(
       { error: 'Failed to fetch profile data' },
       { status: 500 }
