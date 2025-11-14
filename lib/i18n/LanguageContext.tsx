@@ -27,14 +27,16 @@ export function LanguageProvider({ children, initialLanguage }: LanguageProvider
   const [language, setLanguage] = useState<SupportedLanguage>(initialLanguage);
   const [isRTL, setIsRTL] = useState<boolean>(isRTLLanguage(initialLanguage));
 
+  // Sync cookie language on initial mount only
   useEffect(() => {
     const cookieLang = getLanguagePreferenceClient();
 
-    if (cookieLang !== language) {
+    if (cookieLang !== initialLanguage) {
       setLanguage(cookieLang);
       setIsRTL(isRTLLanguage(cookieLang));
     }
-  }, [initialLanguage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   const changeLanguage = useCallback(async (newLanguage: SupportedLanguage) => {
     setLanguagePreferenceClient(newLanguage);

@@ -26,7 +26,7 @@ export default function NotificationDropdown() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [eventSource, setEventSource] = useState<EventSource | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Fetch notifications
@@ -48,70 +48,6 @@ export default function NotificationDropdown() {
     }
   };
 
-  // Setup SSE connection
-  const setupSSE = () => {
-    if (!session?.user?.id || eventSource) return;
-
-    const es = new EventSource('/api/notifications/sse');
-
-    es.onopen = () => {
-      // Connection established
-    };
-
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-
-        switch (data.type) {
-          case 'connection':
-            // Connection confirmed
-            break;
-
-          case 'notification':
-            // Add new notification to the list
-            setNotifications(prev => [data.data, ...prev.slice(0, 19)]);
-            setUnreadCount(prev => prev + 1);
-
-            // Show browser notification if permission granted
-            if (Notification.permission === 'granted') {
-              new Notification('1001 Stories', {
-                body: data.data.title,
-                icon: '/favicon.ico',
-                tag: data.data.id
-              });
-            }
-            break;
-
-          case 'status_change':
-            // Handle real-time status changes
-            // Refresh notifications to get the latest
-            fetchNotifications();
-            break;
-
-          case 'heartbeat':
-            // Keep connection alive
-            break;
-        }
-      } catch (error) {
-        // Failed to parse SSE message - ignore and continue
-      }
-    };
-
-    es.onerror = (error) => {
-      // SSE connection error - close and cleanup
-      es.close();
-      setEventSource(null);
-
-      // Retry connection after 5 seconds
-      setTimeout(() => {
-        if (session?.user?.id) {
-          setupSSE();
-        }
-      }, 5000);
-    };
-
-    setEventSource(es);
-  };
 
   // Mark notification as read
   const markAsRead = async (notificationId: string) => {
@@ -160,20 +96,78 @@ export default function NotificationDropdown() {
     }
   };
 
-  // Initialize
+  // Initialize SSE connection and notifications
   useEffect(() => {
-    if (session?.user?.id) {
-      fetchNotifications();
-      setupSSE();
-      requestNotificationPermission();
-    }
+    if (!session?.user?.id || eventSourceRef.current) return;
 
-    return () => {
-      if (eventSource) {
-        eventSource.close();
+    fetchNotifications();
+    requestNotificationPermission();
+
+    const es = new EventSource('/api/notifications/sse');
+    eventSourceRef.current = es;
+
+    es.onopen = () => {
+      // Connection established
+    };
+
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        switch (data.type) {
+          case 'connection':
+            // Connection confirmed
+            break;
+
+          case 'notification':
+            // Add new notification to the list
+            setNotifications(prev => [data.data, ...prev.slice(0, 19)]);
+            setUnreadCount(prev => prev + 1);
+
+            // Show browser notification if permission granted
+            if (Notification.permission === 'granted') {
+              new Notification('1001 Stories', {
+                body: data.data.title,
+                icon: '/favicon.ico',
+                tag: data.data.id
+              });
+            }
+            break;
+
+          case 'status_change':
+            // Handle real-time status changes
+            fetchNotifications();
+            break;
+
+          case 'heartbeat':
+            // Keep connection alive
+            break;
+        }
+      } catch (error) {
+        // Failed to parse SSE message - ignore and continue
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    es.onerror = (error) => {
+      // SSE connection error - close and cleanup
+      es.close();
+      eventSourceRef.current = null;
+
+      // Retry connection after 5 seconds
+      setTimeout(() => {
+        if (session?.user?.id) {
+          const retryEs = new EventSource('/api/notifications/sse');
+          eventSourceRef.current = retryEs;
+        }
+      }, 5000);
+    };
+
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+    };
   }, [session?.user?.id]);
 
   // Handle click outside to close dropdown

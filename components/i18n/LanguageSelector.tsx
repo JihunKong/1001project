@@ -49,10 +49,10 @@ export function LanguageSelector({ variant = 'default' }: LanguageSelectorProps)
       if (response.ok) {
         setLanguage('en');
         setIsOpen(false);
-        window.location.reload();
+        // No reload needed - React will handle the translation update
       }
     } catch (error) {
-      // Failed to reset language
+      console.error('[LanguageSelector] Failed to reset language:', error);
     }
   };
 
