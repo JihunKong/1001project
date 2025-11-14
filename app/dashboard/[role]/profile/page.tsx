@@ -29,8 +29,8 @@ export default async function ProfilePage() {
   const stats = await calculateStats(session.user.id, session.user.role as UserRole);
 
   return (
-    <div className="flex min-h-screen bg-white">
-      <div className="flex-1 px-4 lg:px-[100px] lg:pe-[100px] py-10 max-w-7xl mx-auto">
+    <div className="flex min-h-screen bg-white lg:ml-60">
+      <div className="flex-1 px-4 lg:ps-8 lg:pe-[350px] py-10">
         <h1
           className="text-center mb-8 text-[#141414] font-medium"
           style={{ fontSize: '48px' }}

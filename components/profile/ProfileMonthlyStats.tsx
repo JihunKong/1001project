@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Stats {
@@ -15,10 +15,10 @@ interface ProfileMonthlyStatsProps {
 }
 
 export default function ProfileMonthlyStats({ stats, onDateRangeChange }: ProfileMonthlyStatsProps) {
-  const { t } = useTranslation();
+  const { t, isLoading } = useTranslation();
   const [selectedMonth, setSelectedMonth] = useState(new Date());
 
-  const statCards = [
+  const statCards = useMemo(() => [
     {
       label: t('profile.stats.published'),
       value: stats.submissions?.published || 0
@@ -39,19 +39,19 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
       label: t('profile.stats.feedback'),
       value: stats.submissions?.needsRevision || 0
     }
-  ];
+  ], [t, stats]);
 
-  const getMonthName = (monthIndex: number) => {
+  const getMonthName = useMemo(() => {
     const monthKeys = [
       'profile.monthly.months.january', 'profile.monthly.months.february', 'profile.monthly.months.march',
       'profile.monthly.months.april', 'profile.monthly.months.may', 'profile.monthly.months.june',
       'profile.monthly.months.july', 'profile.monthly.months.august', 'profile.monthly.months.september',
       'profile.monthly.months.october', 'profile.monthly.months.november', 'profile.monthly.months.december'
     ];
-    return t(monthKeys[monthIndex]);
-  };
+    return (monthIndex: number) => t(monthKeys[monthIndex]);
+  }, [t]);
 
-  const generateMonthOptions = () => {
+  const monthOptions = useMemo(() => {
     const options = [];
     const today = new Date();
 
@@ -64,7 +64,7 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
     }
 
     return options;
-  };
+  }, [getMonthName]);
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newDate = new Date(e.target.value);
@@ -76,6 +76,10 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
       onDateRangeChange(startDate.toISOString(), endDate.toISOString());
     }
   };
+
+  if (isLoading) {
+    return <div className="mb-8 text-center py-8">Loading...</div>;
+  }
 
   return (
     <div className="mb-8">
@@ -100,7 +104,7 @@ export default function ProfileMonthlyStats({ stats, onDateRangeChange }: Profil
             color: '#141414'
           }}
         >
-          {generateMonthOptions().map((option) => (
+          {monthOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
