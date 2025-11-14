@@ -34,7 +34,7 @@ export function LanguageProvider({ children, initialLanguage }: LanguageProvider
       setLanguage(cookieLang);
       setIsRTL(isRTLLanguage(cookieLang));
     }
-  }, [initialLanguage, language]);
+  }, [initialLanguage]);
 
   const changeLanguage = useCallback(async (newLanguage: SupportedLanguage) => {
     setLanguagePreferenceClient(newLanguage);
@@ -47,9 +47,7 @@ export function LanguageProvider({ children, initialLanguage }: LanguageProvider
       console.error('[LanguageContext] Failed to preload translations:', error);
     }
 
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+    // No reload needed - React will automatically update translations via useTranslation hook
   }, []);
 
   return (

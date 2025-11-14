@@ -11,13 +11,13 @@ const translationsCache: Map<SupportedLanguage, TranslationData> = new Map();
 
 translationsCache.set('en', enTranslations);
 
-async function loadTranslations(lang: SupportedLanguage): Promise<TranslationData> {
+async function loadTranslations(lang: SupportedLanguage, signal?: AbortSignal): Promise<TranslationData> {
   if (translationsCache.has(lang)) {
     return translationsCache.get(lang)!;
   }
 
   try {
-    const response = await fetch(`/api/translations/${lang}`);
+    const response = await fetch(`/api/translations/${lang}`, { signal });
     if (!response.ok) {
       throw new Error(`Failed to load translations for ${lang}`);
     }
@@ -25,8 +25,11 @@ async function loadTranslations(lang: SupportedLanguage): Promise<TranslationDat
     translationsCache.set(lang, data);
     return data;
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw error;
+    }
     if (lang !== 'en') {
-      return loadTranslations('en');
+      return loadTranslations('en', signal);
     }
     return {};
   }
@@ -64,17 +67,26 @@ export function useTranslation(): UseTranslationReturn {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const abortController = new AbortController();
     setIsLoading(true);
 
-    loadTranslations(language)
+    loadTranslations(language, abortController.signal)
       .then(data => {
-        setTranslations({ ...data });
-        setIsLoading(false);
+        if (!abortController.signal.aborted) {
+          setTranslations({ ...data });
+          setIsLoading(false);
+        }
       })
       .catch(error => {
-        console.error('[useTranslation] Failed to load translations for:', language, error);
-        setIsLoading(false);
+        if (error.name !== 'AbortError') {
+          console.error('[useTranslation] Failed to load translations for:', language, error);
+          setIsLoading(false);
+        }
       });
+
+    return () => {
+      abortController.abort();
+    };
   }, [language]);
 
   const t = useCallback((key: string): string => {
