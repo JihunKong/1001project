@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface RTLContextType {
   direction: 'ltr' | 'rtl';
@@ -22,10 +22,10 @@ interface RTLProviderProps {
 }
 
 export function RTLProvider({ children, locale: propLocale }: RTLProviderProps) {
-  const { i18n } = useTranslation();
+  const { language } = useLanguage();
   const [mounted, setMounted] = useState(false);
 
-  const currentLocale = propLocale || i18n.language || 'en';
+  const currentLocale = propLocale || language || 'en';
   const direction = currentLocale.startsWith('ar') || currentLocale.startsWith('he') ? 'rtl' : 'ltr';
   const isRTL = direction === 'rtl';
   const fontFamily = undefined;
