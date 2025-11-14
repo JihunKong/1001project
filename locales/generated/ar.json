@@ -41,6 +41,21 @@
         "instructions": "اكتب قصتك أدناه. يمكنك الحفظ كمسودة أو الإرسال للمراجعة."
       },
       "submitText": {
+        "title": "Submit New Story",
+        "editTitle": "Edit Your Story",
+        "subtitle": "Write your story below. You can save as draft or submit for review when ready.",
+        "backToDashboard": "Back to Dashboard",
+        "characters": "characters",
+        "words": "words",
+        "saveAsDraft": "Save as Draft",
+        "submitForReview": "Submit for Review",
+        "updateSubmission": "Update Submission",
+        "placeholder": "Start writing your story here...",
+        "unsavedChanges": "Unsaved changes",
+        "draftSavedSuccess": "Draft saved successfully",
+        "submissionUpdatedSuccess": "Submission updated successfully",
+        "submissionCreatedSuccess": "Story created successfully",
+        "fillRequiredFields": "Please fill in all required fields",
         "aiFeedback": {
           "title": "AI Feedback",
           "grammar": "Grammar",
