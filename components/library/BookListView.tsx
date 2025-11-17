@@ -24,6 +24,7 @@ export interface Book {
   rating?: number;
   isPublished: boolean;
   isPremium: boolean;
+  featured: boolean;
 }
 
 interface BookListViewProps {

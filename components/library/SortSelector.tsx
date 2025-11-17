@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Clock, TrendingUp, AlphabeticalVariant, BarChart3, BookOpen } from 'lucide-react';
+import { ChevronDown, Clock, TrendingUp, Type, BarChart3, BookOpen } from 'lucide-react';
 
 export interface SortOption {
   label: string;
@@ -49,7 +49,7 @@ const getSortIcon = (sortBy: string) => {
     case 'viewCount':
       return <TrendingUp className="w-4 h-4" />;
     case 'title':
-      return <AlphabeticalVariant className="w-4 h-4" />;
+      return <Type className="w-4 h-4" />;
     case 'difficultyScore':
       return <BarChart3 className="w-4 h-4" />;
     case 'readingTime':

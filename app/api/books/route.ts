@@ -196,11 +196,12 @@ export async function GET(request: NextRequest) {
         { authorId: session.user.id }
       ];
     } else if (session.user.role === 'WRITER') {
-      // Writers see published books by OTHER authors (excluding their own)
+      // Writers see published books (including those without authorId)
       where.isPublished = true;
-      where.author = {
-        id: { not: session.user.id }
-      };
+      where.OR = [
+        { authorId: null },  // Legacy/sample books without author
+        { authorId: { not: session.user.id } }  // Books by other authors
+      ];
     }
     // ADMIN users see all books (no additional filters)
 
