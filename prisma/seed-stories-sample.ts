@@ -35,7 +35,7 @@ async function main() {
   console.log('🚀 Starting sample stories import...');
 
   // Read JSON file
-  const jsonPath = '/Users/jihunkong/Downloads/stories_sample.json';
+  const jsonPath = path.join(__dirname, 'stories_sample.json');
   const jsonData = fs.readFileSync(jsonPath, 'utf-8');
   const stories: StorySample[] = JSON.parse(jsonData);
 
