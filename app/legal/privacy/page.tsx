@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
           <p className="text-gray-600 mb-8">1001 Stories Program</p>
           <p className="text-sm text-gray-500 mb-8">Effective Date: October 1, 2025</p>
 
-          <div className="prose prose-lg max-w-none">
+          <div className="prose prose-lg max-w-none text-gray-900">
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Introduction</h2>
               <p className="text-gray-700 leading-relaxed">

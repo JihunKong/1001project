@@ -216,8 +216,8 @@ export default function BookDetailPage() {
         {/* Book Content */}
         {book.contentType === 'TEXT' && book.content && (
           <div className="bg-white rounded-lg shadow-sm p-8">
-            <div 
-              className="prose prose-lg max-w-none"
+            <div
+              className="prose prose-lg max-w-none text-gray-900"
               dangerouslySetInnerHTML={{ __html: book.content.replace(/\n/g, '<br />') }}
             />
           </div>

@@ -21,7 +21,7 @@ export default function TermsAndConditionsPage() {
           <p className="text-gray-600 mb-8">1001 Stories Program</p>
           <p className="text-sm text-gray-500 mb-8">Last Updated: October 1, 2025</p>
 
-          <div className="prose prose-lg max-w-none">
+          <div className="prose prose-lg max-w-none text-gray-900">
             <section className="mb-8">
               <p className="text-gray-700 leading-relaxed">
                 Welcome to the 1001 Stories Program. By subscribing to our services, you agree to the following

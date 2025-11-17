@@ -56,7 +56,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Main Content */}
-        <div className="prose prose-lg max-w-none">
+        <div className="prose prose-lg max-w-none text-gray-900">
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section1.title')}</h2>
 

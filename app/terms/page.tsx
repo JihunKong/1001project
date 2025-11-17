@@ -59,7 +59,7 @@ export default function TermsPage() {
         </div>
 
         {/* Main Content */}
-        <div className="prose prose-lg max-w-none">
+        <div className="prose prose-lg max-w-none text-gray-900">
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section1.title')}</h2>
             <p className="text-gray-600 mb-4">
