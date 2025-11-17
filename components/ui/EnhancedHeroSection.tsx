@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import CircularBadge from '@/components/landing/CircularBadge';
 
 interface HeroSectionProps {
   abTestVariant?: string;
@@ -30,83 +31,142 @@ const EnhancedHeroSection: React.FC<HeroSectionProps> = ({
   };
 
   return (
-    <section className="relative min-h-screen bg-white overflow-hidden pt-20">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <Image
-          src="/landing/hero-background.svg"
-          alt="Hero background"
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
+    <section
+      className="relative overflow-hidden pt-20"
+      style={{
+        minHeight: '100vh'
+      }}
+    >
+      {/* Rectangle 84 - Background Gradient */}
+      <div
+        className="absolute inset-x-0 pointer-events-none"
+        style={{
+          height: '1036.62px',
+          top: '-0.52px',
+          background: 'linear-gradient(180deg, rgba(4, 165, 157, 0.45) 0%, rgba(96, 138, 58, 0.45) 54.33%, rgba(250, 250, 250, 0.45) 100%)',
+          zIndex: 1
+        }}
+      />
+      {/* Main Container - 1920px width base */}
+      <div className="relative w-full min-h-[calc(100vh-80px)]" style={{ zIndex: 10 }}>
+        {/* Hero Background Image - Positioned from Figma */}
+        <div
+          className="absolute hidden lg:block"
+          style={{
+            left: '50%',
+            right: 0,
+            top: '-1.93px',
+            height: '923.29px',
+            borderRadius: '0px 0px 0px 400px',
+            overflow: 'hidden'
+          }}
+        >
+          <Image
+            src="/landing/hero-background.png"
+            alt="Hero background"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
 
-      <div className="relative max-w-[1240px] mx-auto px-8">
-        <div className="flex items-center min-h-[calc(100vh-80px)] py-20">
-          {/* Content */}
-          <div className="max-w-[701px] space-y-6">
-            {/* Small Title */}
-            <h2
-              className="text-[#FAFAFA] font-semibold"
-              style={{
-                fontFamily: 'Quicksand',
-                fontSize: '36px',
-                lineHeight: '45px',
-                textShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              {t('hero.subtitle')}
-            </h2>
+        {/* Circular Badge - Exact Figma Position */}
+        <div className="hidden lg:block">
+          <CircularBadge />
+        </div>
 
-            {/* Large Title */}
-            <h1
-              className="text-[#FAFAFA] font-bold"
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '80px',
-                lineHeight: '80px',
-                textShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              {t('hero.title')}
-            </h1>
+        {/* Content Container */}
+        <div className="relative px-8 lg:px-0">
+          <div className="mx-auto max-w-[1240px]">
+            <div className="flex items-center min-h-[calc(100vh-80px)] py-20 lg:pl-[81.4px]">
+              {/* Text Content - Max width from Figma */}
+              <div className="w-full lg:max-w-[661px]" style={{ display: 'flex', flexDirection: 'column' }}>
+                {/* Tag Badge */}
+                <span
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '40px',
+                    fontWeight: 700,
+                    lineHeight: '120%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: 'linear-gradient(90deg, #04A59D 0%, #91C549 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}
+                >
+                  {t('footerCta.tag')}
+                </span>
 
-            {/* Description */}
-            <p
-              className="text-[#EAEAEA] max-w-[661px]"
-              style={{
-                fontFamily: 'Poppins',
-                fontSize: '20px',
-                fontWeight: 500,
-                lineHeight: '30px',
-                textShadow: '0px 4px 4px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              {t('hero.description')}
-            </p>
+                {/* Main Title */}
+                <h1
+                  className="max-w-[539px]"
+                  style={{
+                    marginTop: '20px',
+                    fontFamily: 'Poppins',
+                    fontSize: '70px',
+                    fontWeight: 600,
+                    color: '#2B2B2B',
+                    lineHeight: '1.2',
+                    whiteSpace: 'pre-line'
+                  }}
+                >
+                  {t('hero.title')}
+                </h1>
 
-            {/* CTA Button */}
-            <div className="pt-4">
-              <Link
-                href="/library"
-                onClick={handleCTAClick}
-                className="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-[#04A59D] to-[#91C549] hover:opacity-90 text-white rounded-2xl shadow-[5px_5px_10px_2px_rgba(0,0,0,0.25)] transition-opacity group"
-                style={{
-                  fontFamily: 'Poppins',
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  lineHeight: '24px',
-                  width: '210px',
-                  height: '48px'
-                }}
-              >
-                <span className="text-[#F4F4F4]">{t('hero.cta')}</span>
-                <ArrowUpRight className="ml-2 w-6 h-6 text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-              </Link>
+                {/* Description */}
+                <p
+                  className="max-w-[539px]"
+                  style={{
+                    marginTop: '20px',
+                    fontFamily: 'Poppins',
+                    fontSize: '20px',
+                    fontWeight: 500,
+                    color: '#4B4B4B',
+                    lineHeight: '1.5'
+                  }}
+                >
+                  {t('hero.description')}
+                </p>
+
+                {/* CTA Button */}
+                <div style={{ marginTop: '40px' }}>
+                  <Link
+                    href="/library"
+                    onClick={handleCTAClick}
+                    className="inline-flex items-center justify-center hover:opacity-90 transition-opacity"
+                    style={{
+                      width: '210px',
+                      height: '48px',
+                      background: 'linear-gradient(90deg, #04A59D 0%, #91C549 100%)',
+                      borderRadius: '16px',
+                      boxShadow: '5px 5px 10px 2px rgba(0, 0, 0, 0.25)',
+                      fontFamily: 'Poppins',
+                      fontSize: '16px',
+                      fontWeight: 600,
+                      color: '#F4F4F4'
+                    }}
+                  >
+                    <span>{t('hero.cta')}</span>
+                    <ArrowUpRight className="ml-2 w-6 h-6 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Mobile Hero Image */}
+      <div className="lg:hidden relative w-full h-64 mt-8">
+        <Image
+          src="/landing/hero-background.png"
+          alt="Hero background"
+          fill
+          className="object-cover rounded-bl-[100px]"
+          priority
+        />
       </div>
     </section>
   );

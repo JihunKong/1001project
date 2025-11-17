@@ -16,7 +16,7 @@ export default function AboutPage() {
       <HomePageNavigation />
 
       {/* Hero Section */}
-      <section className="relative h-[752px] overflow-hidden">
+      <section className="relative h-[833px] overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/about/hero-background-13dbdc.png"

@@ -479,10 +479,11 @@
     }
   },
   "hero": {
-    "title": "Discover, Publish, and Share Stories from Around the World",
+    "tagline": "Where Stories Become Learning, and Learning Becomes Stories.",
+    "title": "Small Voices.\nBig Dreams.\nGlobal Impact.",
     "subtitle": "Empowering Children Through Stories",
-    "description": "A global non-profit platform connecting writers, educators, and students through the power of storytelling",
-    "cta": "Explore Stories"
+    "description": "Our mission is to empower children to write, share, and learn through storytelling.",
+    "cta": "Explore Library"
   },
   "features": {
     "discover": {
@@ -528,14 +529,25 @@
       "description": "Interactive stories designed for English language learners"
     },
     "englishLearning": {
+      "tagline": "Learn globally, connect universally.",
       "title": "English Learning Programs",
-      "description": "Interactive English language learning through storytelling",
+      "description1": "Our platform is deeply committed to children's education and growth. Through our English Learning Program, we help children learn and communicate with confidence.",
+      "description2": "Learn English through stories that inspire — our program allows children to explore language, culture, and imagination while developing real-world communication skills.",
       "cta": "Learn More"
     },
     "writingVolunteer": {
+      "tagline": "Fill your paper with the breathings of your heart.",
       "title": "Writing Volunteer",
-      "description": "Share your stories and inspire young readers",
-      "cta": "Get Started"
+      "description1": "Write a story, make an impact. Through Writing Volunteer, students have the opportunity to express their creativity and share their unique voices with the world.",
+      "description2": "By turning their stories into published works, they not only become young authors but also earn a Volunteer Certificate they can proudly present to schools and organizations as proof of their meaningful contribution.",
+      "cta": "Learn More"
+    },
+    "kidLibrary": {
+      "tagline": "A book is a dream you hold in your hands.",
+      "title": "Kid Library",
+      "description1": "Kid Library is a global story collection where children can read and listen to stories written by kids from different cultures. It's a place to discover diverse voices, learn empathy, and explore the world through storytelling.",
+      "description2": "Reading is more than just absorbing stories — it's a form of learning. Through this learning, we hope children will grow into the leaders of the world.",
+      "cta": "Explore Library"
     },
     "kidLibrarySection": {
       "title": "Kid's Library",
@@ -558,8 +570,10 @@
     "contactForm": "Contact Form"
   },
   "footerCta": {
-    "title": "Join Our Global Community",
-    "description": "Start discovering, creating, and sharing stories today",
+    "tag": "EMPOWER YOUNG VOICE",
+    "title": "Small Voices. Big Dreams. Global Impact.",
+    "description": "Our mission is to empower children to write, share, and learn through storytelling.",
+    "cta": "Explore Library",
     "signIn": "Sign In",
     "signUp": "Sign Up"
   },

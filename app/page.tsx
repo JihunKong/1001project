@@ -5,13 +5,15 @@ import Image from 'next/image';
 import { BookOpen } from 'lucide-react';
 import HomePageNavigation from '@/components/ui/HomePageNavigation';
 import EnhancedHeroSection from '@/components/ui/EnhancedHeroSection';
-import FeatureGrid from '@/components/landing/FeatureGrid';
+import MissionVisionSection from '@/components/landing/MissionVisionSection';
 import ProgramSections from '@/components/landing/ProgramSections';
+import OutcomeStatistics from '@/components/landing/OutcomeStatistics';
 import FooterCTA from '@/components/landing/FooterCTA';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function Home() {
   const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -20,34 +22,55 @@ export default function Home() {
       {/* Hero Section */}
       <EnhancedHeroSection />
 
-      {/* Feature Cards */}
-      <FeatureGrid />
+      {/* Mission/Vision Section */}
+      <MissionVisionSection />
 
       {/* Program Sections */}
       <ProgramSections />
+
+      {/* Outcome Statistics */}
+      <OutcomeStatistics />
 
       {/* Footer CTA */}
       <FooterCTA />
 
       {/* Footer */}
-      <footer className="bg-[#8FD0AA] text-white py-12">
+      <footer
+        className="py-12"
+        style={{
+          background: '#8FD0AA'
+        }}
+      >
         <div className="max-w-[1240px] mx-auto px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8">
             {/* Logo and Tagline */}
             <div className="space-y-6">
-              <div className="flex items-center">
-                <BookOpen className="h-7 w-7 text-[#608A3A]" />
+              <div className="flex items-center gap-2">
+                <BookOpen
+                  className="w-7 h-7"
+                  style={{ color: '#608A3A' }}
+                />
                 <span
-                  className="ml-2 text-[#608A3A] font-semibold"
-                  style={{ fontFamily: 'Poppins', fontSize: '24px', lineHeight: '36px' }}
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '24px',
+                    fontWeight: 600,
+                    color: '#608A3A',
+                    lineHeight: '36px'
+                  }}
                 >
                   1001 Stories
                 </span>
               </div>
 
               <p
-                className="text-[#FAFAFA]"
-                style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 500, lineHeight: '38px' }}
+                style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  color: '#FAFAFA',
+                  lineHeight: '38px'
+                }}
               >
                 {t('footer.tagline')}
               </p>
@@ -65,28 +88,47 @@ export default function Home() {
             </div>
 
             {/* Spacer */}
-            <div></div>
+            <div />
 
             {/* Contact */}
             <div className="space-y-4">
               <h3
-                className="text-[#FAFAFA] font-semibold"
-                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+                style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  color: '#FAFAFA',
+                  lineHeight: '24px'
+                }}
               >
                 {t('footer.contact')}
               </h3>
+
               <div className="space-y-2">
                 <a
                   href="mailto:info@1001stories.org"
-                  className="block text-[#FAFAFA] hover:underline"
-                  style={{ fontFamily: 'Inter', fontSize: '16px', fontWeight: 500, lineHeight: '19px' }}
+                  className="block hover:underline"
+                  style={{
+                    fontFamily: 'Inter',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    color: '#FAFAFA',
+                    lineHeight: '19px'
+                  }}
                 >
                   info@1001stories.org
                 </a>
+
                 <Link
                   href="/contact"
-                  className="block text-[#FAFAFA] hover:underline"
-                  style={{ fontFamily: 'Poppins', fontSize: '16px', fontWeight: 400, lineHeight: '24px' }}
+                  className="block hover:underline"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    color: '#FAFAFA',
+                    lineHeight: '24px'
+                  }}
                 >
                   {t('footer.contactForm')}
                 </Link>
@@ -95,28 +137,52 @@ export default function Home() {
           </div>
 
           {/* Divider */}
-          <div className="border-t border-[#FAFAFA] mb-6"></div>
+          <div
+            className="mb-6"
+            style={{
+              borderTop: '1px solid #FAFAFA'
+            }}
+          />
 
           {/* Bottom Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <p
-              className="text-[#FAFAFA] font-semibold"
-              style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+              style={{
+                fontFamily: 'Poppins',
+                fontSize: '16px',
+                fontWeight: 600,
+                color: '#FAFAFA',
+                lineHeight: '24px'
+              }}
             >
               {t('footer.copyright')}
             </p>
-            <div className="flex space-x-6">
+
+            <div className="flex gap-6">
               <Link
                 href="/privacy"
-                className="text-[#FAFAFA] hover:underline font-semibold"
-                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+                className="hover:underline"
+                style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  color: '#FAFAFA',
+                  lineHeight: '24px'
+                }}
               >
                 {t('footer.privacy')}
               </Link>
+
               <Link
                 href="/terms"
-                className="text-[#FAFAFA] hover:underline font-semibold"
-                style={{ fontFamily: 'Poppins', fontSize: '16px', lineHeight: '24px' }}
+                className="hover:underline"
+                style={{
+                  fontFamily: 'Poppins',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  color: '#FAFAFA',
+                  lineHeight: '24px'
+                }}
               >
                 {t('footer.terms')}
               </Link>

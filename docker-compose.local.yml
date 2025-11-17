@@ -16,11 +16,14 @@ services:
       - NODE_ENV=development
       - DATABASE_URL=postgresql://stories_user:${DB_PASSWORD:-jsIAqnRygzHf1%2B9m46zSob%2Flhg52huI6UNiy9rQzuFc%3D}@postgres:5432/stories_db
     volumes:
+      # Hot reload mounts for development
+      - ./app:/app/app
+      - ./components:/app/components
+      - ./lib:/app/lib
+      - ./public:/app/public
+      # Existing mounts
       - ./uploads:/app/uploads
       - ./prisma:/app/prisma
-      - ./public/books:/app/public/books
-      - ./public/generated-images:/app/public/generated-images
-      - ./public/covers:/app/public/covers
       - ./locales:/app/locales
     networks:
       - local-network
