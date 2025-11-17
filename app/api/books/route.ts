@@ -98,7 +98,12 @@ export async function GET(request: NextRequest) {
       search: searchParams.get('search'),
       language: searchParams.get('language'),
       category: searchParams.get('category'),
+      educationalCategory: searchParams.get('educationalCategory'),
+      country: searchParams.get('country'),
       ageRange: searchParams.get('ageRange'),
+      minDifficulty: searchParams.get('minDifficulty'),
+      maxDifficulty: searchParams.get('maxDifficulty'),
+      vocabularyLevel: searchParams.get('vocabularyLevel'),
       sortBy: searchParams.get('sortBy'),
       sortOrder: searchParams.get('sortOrder'),
       published: searchParams.get('published'),
@@ -113,7 +118,12 @@ export async function GET(request: NextRequest) {
     const search = (params.search as string) || '';
     const language = (params.language as string) || '';
     const category = (params.category as string) || '';
+    const educationalCategory = (params.educationalCategory as string) || '';
+    const country = (params.country as string) || '';
     const ageRange = (params.ageRange as string) || '';
+    const minDifficulty = params.minDifficulty as number | undefined;
+    const maxDifficulty = params.maxDifficulty as number | undefined;
+    const vocabularyLevel = (params.vocabularyLevel as string) || '';
     const sortBy = (params.sortBy as string) || 'createdAt';
     const sortOrder = (params.sortOrder as 'asc' | 'desc') || 'desc';
     const isPublished = params.published as boolean;
@@ -213,8 +223,35 @@ export async function GET(request: NextRequest) {
       where.category = { has: category };
     }
 
+    if (educationalCategory) {
+      where.educationalCategories = { has: educationalCategory };
+    }
+
+    if (country) {
+      where.country = country;
+    }
+
     if (ageRange) {
       where.ageRange = ageRange;
+    }
+
+    if (minDifficulty !== undefined || maxDifficulty !== undefined) {
+      where.difficultyScore = {};
+      if (minDifficulty !== undefined) {
+        where.difficultyScore.gte = minDifficulty;
+      }
+      if (maxDifficulty !== undefined) {
+        where.difficultyScore.lte = maxDifficulty;
+      }
+    }
+
+    if (vocabularyLevel) {
+      // Filter by vocabulary distribution (Basic, Intermediate, Advanced)
+      // Check if the specified level has >50% distribution
+      where.vocabularyDistribution = {
+        path: [vocabularyLevel],
+        gte: 50
+      };
     }
 
     if (isPublished) {
@@ -243,12 +280,19 @@ export async function GET(request: NextRequest) {
           contentType: true,
           authorName: true,
           authorAlias: true,
+          illustratorName: true,
+          editorName: true,
+          country: true,
           language: true,
           ageRange: true,
           readingLevel: true,
+          readingTime: true,
           category: true,
           genres: true,
           tags: true,
+          educationalCategories: true,
+          difficultyScore: true,
+          vocabularyDistribution: true,
           coverImage: true,
           visibility: true,
           isPremium: true,
@@ -257,6 +301,7 @@ export async function GET(request: NextRequest) {
           price: true,
           currency: true,
           viewCount: true,
+          likeCount: true,
           rating: true,
           publishedAt: true,
           createdAt: true,
@@ -294,7 +339,12 @@ export async function GET(request: NextRequest) {
         search,
         language,
         category,
+        educationalCategory,
+        country,
         ageRange,
+        minDifficulty,
+        maxDifficulty,
+        vocabularyLevel,
         sortBy,
         sortOrder,
         published: isPublished,
