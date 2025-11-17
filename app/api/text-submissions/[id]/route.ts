@@ -50,6 +50,15 @@ export async function GET(
             }
           },
           orderBy: { createdAt: 'desc' }
+        },
+        comments: {
+          include: {
+            author: {
+              select: { id: true, name: true, email: true, role: true }
+            }
+          },
+          where: { parentId: null },
+          orderBy: { createdAt: 'desc' }
         }
       }
     });

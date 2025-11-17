@@ -40,6 +40,17 @@ interface TextSubmission {
       role: string;
     };
   }>;
+  comments?: Array<{
+    id: string;
+    content: string;
+    createdAt: string;
+    author: {
+      id: string;
+      name: string | null;
+      email: string;
+      role: string;
+    };
+  }>;
   aiReviews?: Array<{
     id: string;
     feedback: any;
@@ -167,19 +178,18 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   const reviewerRoles = ['STORY_MANAGER', 'BOOK_MANAGER', 'CONTENT_ADMIN', 'ADMIN'];
-  const feedbacks = submission.workflowHistory
-    ?.filter(entry => {
-      const hasComment = entry.comment && entry.comment.trim() !== '';
-      const isNotAuthor = entry.performedBy.id !== submission.author.id;
-      const isReviewer = reviewerRoles.includes(entry.performedBy.role);
-      return hasComment && isNotAuthor && isReviewer;
+  const feedbacks = submission.comments
+    ?.filter(comment => {
+      const isReviewer = reviewerRoles.includes(comment.author.role);
+      const isNotAuthor = comment.author.id !== submission.author.id;
+      return isReviewer && isNotAuthor;
     })
-    .map(entry => ({
-      id: entry.id,
-      authorName: entry.performedBy.name,
-      authorEmail: entry.performedBy.email,
-      content: entry.comment || '',
-      createdAt: entry.createdAt
+    .map(comment => ({
+      id: comment.id,
+      authorName: comment.author.name || comment.author.email,
+      authorEmail: comment.author.email,
+      content: comment.content,
+      createdAt: comment.createdAt
     })) || [];
 
   return (
