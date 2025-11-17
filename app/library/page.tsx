@@ -1,269 +1,225 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
-import AnimatedBookCard from '@/components/ui/AnimatedBookCard';
+import { useSession } from 'next-auth/react';
+import { BookOpen, Search, Globe, Users, Star, Award, ArrowRight } from 'lucide-react';
 import ScrollAnimatedContainer from '@/components/ui/ScrollAnimatedContainer';
-import {
-  AdvancedFilters,
-  SortSelector,
-  ViewModeToggle,
-  BookListView,
-  EmptyState,
-  type Book,
-  type FilterState,
-  type SortOption,
-  type ViewMode
-} from '@/components/library';
 
-export default function LibraryPage() {
+export default function LibraryLandingPage() {
   const { data: session } = useSession();
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState<FilterState>({});
-  const [currentSort, setCurrentSort] = useState<SortOption>({
-    label: 'Newest First',
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
-  });
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [showFilters, setShowFilters] = useState(false);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const limit = 20;
 
-  const fetchBooks = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-        sortBy: currentSort.sortBy,
-        sortOrder: currentSort.sortOrder,
-        ...(searchTerm && { search: searchTerm }),
-        ...(filters.language && { language: filters.language }),
-        ...(filters.country && { country: filters.country }),
-        ...(filters.educationalCategory && { educationalCategory: filters.educationalCategory }),
-        ...(filters.ageRange && { ageRange: filters.ageRange }),
-        ...(filters.minDifficulty !== undefined && { minDifficulty: filters.minDifficulty.toString() }),
-        ...(filters.maxDifficulty !== undefined && { maxDifficulty: filters.maxDifficulty.toString() }),
-        ...(filters.vocabularyLevel && { vocabularyLevel: filters.vocabularyLevel }),
-      });
-
-      const response = await fetch(`/api/books?${params}`);
-      if (response.ok) {
-        const data = await response.json();
-        setBooks(data.books || []);
-        setTotalCount(data.pagination?.totalCount || 0);
-      }
-    } catch (error) {
-      console.error('Error fetching books:', error);
-    } finally {
-      setLoading(false);
+  const features = [
+    {
+      icon: <BookOpen className="w-8 h-8" />,
+      title: '22+ Stories from 6 Countries',
+      description: 'Discover authentic stories from children in Tanzania, India, Mexico, Palestine, Rwanda, and Uganda.',
+      color: 'text-blue-600'
+    },
+    {
+      icon: <Globe className="w-8 h-8" />,
+      title: '12 Languages Available',
+      description: 'Access stories in multiple languages including English, Spanish, French, Arabic, Hindi, and more.',
+      color: 'text-green-600'
+    },
+    {
+      icon: <Search className="w-8 h-8" />,
+      title: 'Advanced Search & Filters',
+      description: 'Find the perfect story with filters for age range, difficulty level, educational themes, and more.',
+      color: 'text-purple-600'
+    },
+    {
+      icon: <Users className="w-8 h-8" />,
+      title: 'Age-Appropriate Content',
+      description: 'Stories categorized by age (5-8, 9-12, 13-18) and reading difficulty levels.',
+      color: 'text-orange-600'
+    },
+    {
+      icon: <Award className="w-8 h-8" />,
+      title: 'Educational Categories',
+      description: 'Stories organized by themes like Perseverance, Problem Solving, Empathy, and more.',
+      color: 'text-yellow-600'
+    },
+    {
+      icon: <Star className="w-8 h-8" />,
+      title: 'Curated Collections',
+      description: 'Featured stories, premium content, and teacher-recommended selections.',
+      color: 'text-pink-600'
     }
-  }, [page, currentSort, searchTerm, filters]);
+  ];
 
-  useEffect(() => {
-    fetchBooks();
-  }, [fetchBooks]);
-
-  const handleFilterChange = (newFilters: FilterState) => {
-    setFilters(newFilters);
-    setPage(1);
-  };
-
-  const handleResetFilters = () => {
-    setFilters({});
-    setSearchTerm('');
-    setPage(1);
-  };
-
-  const handleSortChange = (newSort: SortOption) => {
-    setCurrentSort(newSort);
-    setPage(1);
-  };
-
-  const hasActiveFilters = Object.keys(filters).length > 0 || searchTerm.length > 0;
-
-  if (loading && books.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading library...</p>
-        </div>
-      </div>
-    );
-  }
+  const stats = [
+    { value: '22+', label: 'Published Stories' },
+    { value: '6', label: 'Countries' },
+    { value: '12', label: 'Languages' },
+    { value: '7', label: 'Educational Themes' }
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <ScrollAnimatedContainer animationType="slideInLeft" duration={600}>
-              <h1 className="text-3xl font-bold text-gray-900">Library</h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Discover {totalCount.toLocaleString()} stories from children around the world
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <ScrollAnimatedContainer animationType="fadeIn" duration={800}>
+            <div className="text-center">
+              <BookOpen className="w-16 h-16 mx-auto mb-6" />
+              <h1 className="text-5xl font-bold mb-4">
+                Discover Stories from Around the World
+              </h1>
+              <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                The 1001 Stories Library brings you authentic narratives from children in underserved communities,
+                fostering empathy, understanding, and global connections through the power of storytelling.
               </p>
-            </ScrollAnimatedContainer>
-            <ScrollAnimatedContainer animationType="slideInRight" delay={200}>
-              <div className="flex items-center gap-4">
-                {!session && (
+              <div className="flex justify-center gap-4">
+                {!session ? (
+                  <>
+                    <Link
+                      href="/signup"
+                      className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 hover:scale-105 shadow-lg"
+                    >
+                      Get Started Free
+                    </Link>
+                    <Link
+                      href="/login"
+                      className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-200"
+                    >
+                      Sign In
+                    </Link>
+                  </>
+                ) : (
                   <Link
-                    href="/login"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+                    href="/dashboard/writer/library"
+                    className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 hover:scale-105 shadow-lg inline-flex items-center gap-2"
                   >
-                    Sign In to Read
-                  </Link>
-                )}
-                {session && (
-                  <Link
-                    href="/dashboard"
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105"
-                  >
-                    My Dashboard
+                    Browse Library
+                    <ArrowRight className="w-5 h-5" />
                   </Link>
                 )}
               </div>
-            </ScrollAnimatedContainer>
+            </div>
+          </ScrollAnimatedContainer>
+        </div>
+      </div>
+
+      {/* Stats Bar */}
+      <div className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <ScrollAnimatedContainer key={index} animationType="slideUp" delay={index * 100}>
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-blue-600 mb-1">{stat.value}</div>
+                  <div className="text-sm text-gray-600">{stat.label}</div>
+                </div>
+              </ScrollAnimatedContainer>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar - Filters */}
-          <div className={`lg:w-80 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            <ScrollAnimatedContainer animationType="slideInLeft" delay={300}>
-              <AdvancedFilters
-                onFilterChange={handleFilterChange}
-                onReset={handleResetFilters}
-              />
-            </ScrollAnimatedContainer>
+      {/* Features Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <ScrollAnimatedContainer animationType="fadeIn">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Powerful Features for Every Reader
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Our library is designed to make discovering and reading stories effortless and enjoyable for students, teachers, and writers alike.
+            </p>
           </div>
+        </ScrollAnimatedContainer>
 
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            {/* Search and Controls */}
-            <ScrollAnimatedContainer animationType="slideUp" delay={400}>
-              <div className="bg-white rounded-lg shadow p-4 mb-6">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {/* Search */}
-                  <div className="flex-1">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          setPage(1);
-                        }}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Search by title, author, or keywords..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Sort and View Controls */}
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setShowFilters(!showFilters)}
-                      className="lg:hidden px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Filters
-                    </button>
-                    <SortSelector
-                      currentSort={currentSort}
-                      onSortChange={handleSortChange}
-                    />
-                    <ViewModeToggle
-                      currentMode={viewMode}
-                      onModeChange={setViewMode}
-                    />
-                  </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <ScrollAnimatedContainer key={index} animationType="slideUp" delay={index * 100}>
+              <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+                <div className={`${feature.color} mb-4`}>
+                  {feature.icon}
                 </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600">
+                  {feature.description}
+                </p>
               </div>
             </ScrollAnimatedContainer>
+          ))}
+        </div>
+      </div>
 
-            {/* Results Count */}
-            {hasActiveFilters && (
-              <ScrollAnimatedContainer animationType="fadeIn" delay={500}>
-                <div className="mb-4 text-sm text-gray-600">
-                  Showing {books.length} of {totalCount.toLocaleString()} stories
+      {/* Educational Themes */}
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <ScrollAnimatedContainer animationType="fadeIn">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                7 Educational Themes
+              </h2>
+              <p className="text-xl text-gray-600">
+                Stories organized by important life lessons and values
+              </p>
+            </div>
+          </ScrollAnimatedContainer>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            {['Perseverance', 'Problem Solving', 'Courage & Self-Advocacy', 'Empathy & Compassion', 'Responsibility & Ethics', 'Relationships & Communication', 'Learning & Growth'].map((theme, index) => (
+              <ScrollAnimatedContainer key={index} animationType="slideUp" delay={index * 50}>
+                <div className="bg-white rounded-lg p-4 shadow-md text-center hover:shadow-lg transition-shadow duration-300">
+                  <div className="text-sm font-medium text-gray-900">{theme}</div>
                 </div>
               </ScrollAnimatedContainer>
-            )}
-
-            {/* Books Display */}
-            {books.length === 0 ? (
-              <ScrollAnimatedContainer animationType="fadeIn" delay={600}>
-                <EmptyState
-                  type={hasActiveFilters ? 'filtered' : 'no-books'}
-                  onReset={hasActiveFilters ? handleResetFilters : undefined}
-                />
-              </ScrollAnimatedContainer>
-            ) : (
-              <ScrollAnimatedContainer animationType="fadeIn" delay={600}>
-                {viewMode === 'list' ? (
-                  <BookListView books={books} />
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {books.map((book, index) => (
-                      <AnimatedBookCard
-                        key={book.id}
-                        book={{
-                          id: book.id,
-                          title: book.title,
-                          authorName: book.authorName,
-                          description: book.summary,
-                          coverImage: book.coverImage,
-                          language: book.language,
-                          difficultyLevel: book.readingLevel || 'BEGINNER',
-                          ageGroup: book.ageRange || '5-8',
-                          pageCount: 0,
-                          averageRating: book.rating || 0,
-                          ratingCount: 0
-                        }}
-                        isAuthenticated={!!session}
-                        animationDelay={700 + (index * 100)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </ScrollAnimatedContainer>
-            )}
-
-            {/* Pagination */}
-            {totalCount > limit && (
-              <ScrollAnimatedContainer animationType="fadeIn" delay={700}>
-                <div className="mt-8 flex justify-center gap-2">
-                  <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Previous
-                  </button>
-                  <div className="flex items-center px-4 py-2 text-sm text-gray-700">
-                    Page {page} of {Math.ceil(totalCount / limit)}
-                  </div>
-                  <button
-                    onClick={() => setPage(p => Math.min(Math.ceil(totalCount / limit), p + 1))}
-                    disabled={page >= Math.ceil(totalCount / limit)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    Next
-                  </button>
-                </div>
-              </ScrollAnimatedContainer>
-            )}
+            ))}
           </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <ScrollAnimatedContainer animationType="fadeIn">
+            <h2 className="text-4xl font-bold mb-4">
+              Ready to Explore Global Stories?
+            </h2>
+            <p className="text-xl text-blue-100 mb-8">
+              Join thousands of readers discovering authentic narratives from around the world.
+            </p>
+            <div className="flex justify-center gap-4">
+              {!session ? (
+                <>
+                  <Link
+                    href="/signup"
+                    className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 hover:scale-105 shadow-lg"
+                  >
+                    Sign Up Free
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-200"
+                  >
+                    Sign In
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href="/dashboard/writer/library"
+                  className="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 hover:scale-105 shadow-lg inline-flex items-center gap-2"
+                >
+                  Go to Library
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              )}
+            </div>
+          </ScrollAnimatedContainer>
+        </div>
+      </div>
+
+      {/* Footer Note */}
+      <div className="bg-gray-50 border-t">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
+          <p className="text-gray-600">
+            All stories are published with permission from the authors. Revenue supports the Seeds of Empowerment program.
+          </p>
         </div>
       </div>
     </div>
