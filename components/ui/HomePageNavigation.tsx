@@ -68,7 +68,7 @@ export default function HomePageNavigation() {
               }}
               className="hover:opacity-70 transition-opacity"
             >
-              About US
+              {t('nav.aboutUs')}
             </Link>
 
             <div
@@ -85,7 +85,7 @@ export default function HomePageNavigation() {
                   color: '#2B2B2B'
                 }}
               >
-                Programs
+                {t('nav.programs')}
                 <ChevronDown className="w-4 h-4" />
               </button>
 
@@ -141,7 +141,7 @@ export default function HomePageNavigation() {
               }}
               className="hover:opacity-70 transition-opacity"
             >
-              Library
+              {t('nav.library')}
             </Link>
 
             <Link
@@ -154,7 +154,7 @@ export default function HomePageNavigation() {
               }}
               className="hover:opacity-70 transition-opacity"
             >
-              Volunteer
+              {t('nav.volunteer')}
             </Link>
           </div>
 
@@ -183,7 +183,7 @@ export default function HomePageNavigation() {
                   }}
                 >
                   <LayoutDashboard className="w-4 h-4" />
-                  Dashboard
+                  {t('nav.dashboard')}
                 </button>
                 <button
                   onClick={handleLogout}
@@ -196,7 +196,7 @@ export default function HomePageNavigation() {
                   }}
                 >
                   <LogOut className="w-4 h-4" />
-                  Logout
+                  {t('nav.logout')}
                 </button>
               </div>
             ) : (
@@ -211,7 +211,7 @@ export default function HomePageNavigation() {
                     color: '#2B2B2B'
                   }}
                 >
-                  Sign In
+                  {t('nav.signIn')}
                 </Link>
                 <Link
                   href="/signup"
@@ -224,7 +224,7 @@ export default function HomePageNavigation() {
                     background: 'linear-gradient(90deg, #04A59D 0%, #91C549 100%)'
                   }}
                 >
-                  Sign Up
+                  {t('nav.signUp')}
                 </Link>
               </>
             )}

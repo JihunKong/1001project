@@ -1,6 +1,9 @@
 'use client';
 
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
 export default function MissionVisionSection() {
+  const { t } = useTranslation();
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="mx-auto max-w-[1240px] px-8">
@@ -21,7 +24,7 @@ export default function MissionVisionSection() {
                   color: '#2B2B2B'
                 }}
               >
-                EMPOWER YOUNG VOICE
+                {t('landing.missionVision.badge')}
               </span>
             </div>
           </div>
@@ -43,10 +46,10 @@ export default function MissionVisionSection() {
                 backgroundClip: 'text'
               }}
             >
-              Where Every Smile Has a Story :{' '}
+              {t('landing.missionVision.tagline1')}
             </span>
             <span style={{ color: '#2B2B2B' }}>
-              Where Stories Become Learning, and Learning Becomes Stories.
+              {t('landing.missionVision.tagline2')}
             </span>
           </h2>
         </div>
@@ -63,7 +66,7 @@ export default function MissionVisionSection() {
                 color: '#04A59D'
               }}
             >
-              About Us
+              {t('landing.missionVision.aboutUs.title')}
             </h3>
             <p
               style={{
@@ -74,7 +77,7 @@ export default function MissionVisionSection() {
                 lineHeight: '2em'
               }}
             >
-              Our mobile storytelling program, 1001 Stories, brings meaningful learning to some of the hardest to reach populations around the world. We aim to facilitate the creation, development, and gathering of 1001 empowering stories from every participating local community.
+              {t('landing.missionVision.aboutUs.description')}
             </p>
           </div>
 
@@ -88,7 +91,7 @@ export default function MissionVisionSection() {
                 color: '#04A59D'
               }}
             >
-              Our Vision
+              {t('landing.missionVision.ourVision.title')}
             </h3>
             <p
               style={{
@@ -99,7 +102,7 @@ export default function MissionVisionSection() {
                 lineHeight: '2em'
               }}
             >
-              We believe every child carries the spark of an Einstein. Books inspire learning, and learning awakens potential. Our vision is a world where every child has access to education — a place where imagination can grow without limits.
+              {t('landing.missionVision.ourVision.description')}
             </p>
           </div>
         </div>
