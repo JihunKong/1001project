@@ -5,10 +5,6 @@ import { logger } from '@/lib/logger';
 import { getPrompts } from '@/lib/ai/prompts';
 import { SupportedLanguage } from '@/lib/i18n/language-cookie';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 interface AIFeedback {
   summary: string;
   strengths: string[];
@@ -341,6 +337,11 @@ export async function generateAIReview(
   const startTime = Date.now();
 
   try {
+    // Initialize OpenAI client at runtime (not at module level)
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     const prompts = getPrompts(language);
     const prompt = prompts.review[reviewType];
 

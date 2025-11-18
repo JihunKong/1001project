@@ -3,10 +3,6 @@ import { logger } from '@/lib/logger';
 import { getPrompts } from './prompts';
 import { SupportedLanguage } from '@/lib/i18n/language-cookie';
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || '',
-});
-
 export interface GrammarCheckResult {
   grammarIssues: Array<{
     line: number;
@@ -30,6 +26,11 @@ export async function checkGrammar(
   language?: SupportedLanguage
 ): Promise<GrammarCheckResult> {
   try {
+    // Initialize OpenAI client at runtime (not at module level)
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || '',
+    });
+
     const prompts = getPrompts(language);
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -69,6 +70,11 @@ export async function analyzeStructure(
   language?: SupportedLanguage
 ): Promise<StructureAnalysisResult> {
   try {
+    // Initialize OpenAI client at runtime (not at module level)
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || '',
+    });
+
     const prompts = getPrompts(language);
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
@@ -113,6 +119,11 @@ export async function getWritingHelp(
   language?: SupportedLanguage
 ): Promise<string> {
   try {
+    // Initialize OpenAI client at runtime (not at module level)
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY || '',
+    });
+
     const prompts = getPrompts(language);
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
