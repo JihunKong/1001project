@@ -394,10 +394,12 @@ deploy() {
     while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
         log "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES: Uploading $IMAGE_SIZE image..."
 
-        if scp -i "$SSH_KEY" \
+        if timeout 600 scp -i "$SSH_KEY" \
                -o StrictHostKeyChecking=no \
+               -o ConnectTimeout=30 \
                -o ServerAliveInterval=10 \
                -o ServerAliveCountMax=3 \
+               -o Compression=yes \
                "$IMAGE_FILE" \
                "$REMOTE_USER@$REMOTE_HOST:/tmp/app-image.tar.gz"; then
             UPLOAD_SUCCESS=true
