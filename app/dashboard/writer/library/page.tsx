@@ -228,7 +228,10 @@ export default function WriterLibraryPage() {
             ) : (
               <>
                 {viewMode === 'list' ? (
-                  <BookListView books={books} />
+                  <BookListView
+                    books={books}
+                    getLinkHref={(book) => book.contentType === 'TEXT' ? `/dashboard/writer/read/${book.id}` : `/library`}
+                  />
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                     {books.map((book) => (
@@ -249,6 +252,7 @@ export default function WriterLibraryPage() {
                         }}
                         isAuthenticated={true}
                         animationDelay={0}
+                        linkHref={book.contentType === 'TEXT' ? `/dashboard/writer/read/${book.id}` : `/library`}
                       />
                     ))}
                   </div>

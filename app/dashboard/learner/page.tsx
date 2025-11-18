@@ -264,7 +264,10 @@ export default function LearnerDashboard() {
                           Page {progress.currentPage} of {progress.book.pageCount}
                         </span>
                       </div>
-                      <button className="w-full min-h-[var(--min-touch-target)] bg-soe-green-400 hover:bg-soe-green-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400">
+                      <button
+                        onClick={() => window.location.href = `/dashboard/learner/read/${progress.bookId}`}
+                        className="w-full min-h-[var(--min-touch-target)] bg-soe-green-400 hover:bg-soe-green-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400"
+                      >
                         <PlayCircle className="h-4 w-4" />
                         Continue Reading
                       </button>

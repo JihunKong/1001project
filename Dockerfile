@@ -57,8 +57,6 @@ ARG UPSTAGE_API_KEY
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
-ENV OPENAI_API_KEY=${OPENAI_API_KEY}
-ENV UPSTAGE_API_KEY=${UPSTAGE_API_KEY}
 
 # Security: Create build user
 RUN addgroup --system --gid 1001 nodejs && \
@@ -74,7 +72,8 @@ RUN mkdir -p .next && chown nextjs:nodejs .next
 # Switch to non-root user for build
 USER nextjs
 
-# Generate Prisma client
+# Generate Prisma client (ignore checksum errors for temporary server issues)
+ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
 RUN npx prisma generate
 
 # Build application with optimization

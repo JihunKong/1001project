@@ -25,10 +25,12 @@ export interface Book {
   isPublished: boolean;
   isPremium: boolean;
   featured: boolean;
+  contentType?: string;
 }
 
 interface BookListViewProps {
   books: Book[];
+  getLinkHref?: (book: Book) => string;
 }
 
 const getDifficultyLabel = (score?: number): string => {
@@ -45,13 +47,20 @@ const getDifficultyColor = (score?: number): string => {
   return 'text-red-600';
 };
 
-export default function BookListView({ books }: BookListViewProps) {
+export default function BookListView({ books, getLinkHref }: BookListViewProps) {
+  const getHref = (book: Book) => {
+    if (getLinkHref) {
+      return getLinkHref(book);
+    }
+    return `/books/${book.id}`;
+  };
+
   return (
     <div className="space-y-4">
       {books.map((book) => (
         <Link
           key={book.id}
-          href={`/books/${book.id}`}
+          href={getHref(book)}
           className="flex bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all p-4 group"
         >
           {/* Book Cover */}

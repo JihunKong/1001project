@@ -2527,6 +2527,72 @@ body:has([data-role="writer"]) {
 }
 
 /* =================================== */
+/* Reading Interface - Force Dark Text */
+/* =================================== */
+/* Override dark mode for reading interfaces to ensure text readability */
+/* This prevents system dark mode from making text gray/light colored */
+
+/* Book content text - all elements */
+#book-content,
+#book-content *,
+#book-content p,
+#book-content h1,
+#book-content h2,
+#book-content h3,
+#book-content h4,
+#book-content h5,
+#book-content h6,
+#book-content li,
+#book-content strong,
+#book-content em,
+#book-content span {
+  color: rgb(17, 24, 39) !important; /* gray-900 - dark text */
+}
+
+/* Reading chatbot text - input and textarea */
+.reading-chatbot textarea,
+.reading-chatbot input,
+.reading-chatbot textarea::placeholder,
+.reading-chatbot input::placeholder {
+  color: rgb(17, 24, 39) !important;
+}
+
+/* Vocabulary popover text - all elements */
+.vocabulary-popover,
+.vocabulary-popover *,
+.vocabulary-popover div,
+.vocabulary-popover span,
+.vocabulary-popover p {
+  color: rgb(17, 24, 39) !important;
+}
+
+/* Metadata and labels in reading interface */
+[data-reading-interface] .text-sm,
+[data-reading-interface] .text-xs,
+[data-reading-interface] span,
+[data-reading-interface] p {
+  color: rgb(17, 24, 39) !important;
+}
+
+/* Force dark text even in dark mode */
+@media (prefers-color-scheme: dark) {
+  #book-content,
+  #book-content *,
+  .reading-chatbot textarea,
+  .reading-chatbot input,
+  .reading-chatbot textarea::placeholder,
+  .reading-chatbot input::placeholder,
+  .vocabulary-popover,
+  .vocabulary-popover *,
+  [data-reading-interface] .text-sm,
+  [data-reading-interface] .text-xs,
+  [data-reading-interface] span,
+  [data-reading-interface] p {
+    color: rgb(17, 24, 39) !important;
+  }
+}
+
+/* =================================== */
 /* CRITICAL: Global Select & Option Fix */
 /* =================================== */
 /* Ensures select dropdowns and their options always have visible text */
