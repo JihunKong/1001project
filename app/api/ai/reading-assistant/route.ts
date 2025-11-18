@@ -4,10 +4,6 @@ import { authOptions } from '@/lib/auth';
 import OpenAI from 'openai';
 import { prisma } from '@/lib/prisma';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 interface Message {
   role: 'system' | 'user' | 'assistant';
   content: string;
@@ -15,6 +11,11 @@ interface Message {
 
 export async function POST(request: NextRequest) {
   try {
+    // Initialize OpenAI client at runtime (not at module level)
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     const session = await getServerSession(authOptions);
 
     const allowedRoles = ['LEARNER', 'WRITER'];
