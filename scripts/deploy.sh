@@ -36,6 +36,58 @@ warn() {
     echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
+# Cross-platform timeout wrapper (works on macOS and Linux)
+run_with_timeout() {
+    local timeout_seconds=$1
+    shift
+    local cmd=("$@")
+
+    # Try timeout (Linux)
+    if command -v timeout &>/dev/null; then
+        timeout "$timeout_seconds" "${cmd[@]}"
+        return $?
+    fi
+
+    # Try gtimeout (macOS with coreutils installed)
+    if command -v gtimeout &>/dev/null; then
+        gtimeout "$timeout_seconds" "${cmd[@]}"
+        return $?
+    fi
+
+    # Fallback: Perl-based timeout (Perl is pre-installed on macOS)
+    perl -e '
+        use strict;
+        use warnings;
+        use POSIX ":sys_wait_h";
+
+        my $timeout = shift @ARGV;
+        my $pid = fork();
+
+        die "fork failed: $!" unless defined $pid;
+
+        if ($pid == 0) {
+            exec(@ARGV);
+            die "exec failed: $!";
+        }
+
+        eval {
+            local $SIG{ALRM} = sub { die "timeout\n" };
+            alarm($timeout);
+            waitpid($pid, 0);
+            alarm(0);
+        };
+
+        if ($@ && $@ eq "timeout\n") {
+            kill 9, $pid;
+            waitpid($pid, 0);
+            exit 124;  # Same exit code as timeout command
+        }
+
+        exit($? >> 8);
+    ' "$timeout_seconds" "${cmd[@]}"
+    return $?
+}
+
 # SSH command wrapper
 ssh_exec() {
     ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$REMOTE_USER@$REMOTE_HOST" "$@"
@@ -394,7 +446,7 @@ deploy() {
     while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
         log "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES: Uploading $IMAGE_SIZE image..."
 
-        if timeout 600 scp -i "$SSH_KEY" \
+        if run_with_timeout 600 scp -i "$SSH_KEY" \
                -o StrictHostKeyChecking=no \
                -o ConnectTimeout=30 \
                -o ServerAliveInterval=10 \
