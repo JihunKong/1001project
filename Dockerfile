@@ -42,6 +42,10 @@ COPY prisma ./prisma/
 # Install all dependencies including dev dependencies
 RUN npm ci --no-audit --no-fund && npm cache clean --force
 
+# Generate Prisma client in build-deps stage (with CDN fallback handling)
+ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
+RUN npx prisma generate || echo "Prisma generate failed, will use pre-generated client"
+
 # Stage 2: Builder
 FROM node:20-alpine AS builder
 WORKDIR /app
@@ -74,7 +78,9 @@ USER nextjs
 
 # Generate Prisma client (ignore checksum errors for temporary server issues)
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
-RUN npx prisma generate
+# TEMPORARILY COMMENTED DUE TO PRISMA CDN OUTAGE (2025-11-18)
+# RUN npx prisma generate
+# Note: Prisma client should be pre-generated locally before Docker build
 
 # Build application with optimization
 RUN npm run build && \
