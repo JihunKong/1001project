@@ -125,7 +125,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
           onClick={() => toggleSection('country')}
           className="flex items-center justify-between w-full text-left"
         >
-          <span className="font-medium text-gray-700">Country</span>
+          <span className="font-medium text-gray-900">Country</span>
           {expandedSections.country ? (
             <ChevronUp className="w-4 h-4 text-gray-500" />
           ) : (
@@ -143,7 +143,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
                   onChange={() => updateFilter('country', country)}
                   className="w-4 h-4 text-blue-600"
                 />
-                <span className="text-sm text-gray-700">{country}</span>
+                <span className="text-sm text-gray-900">{country}</span>
               </label>
             ))}
             {filters.country && (
@@ -164,7 +164,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
           onClick={() => toggleSection('category')}
           className="flex items-center justify-between w-full text-left"
         >
-          <span className="font-medium text-gray-700">Educational Theme</span>
+          <span className="font-medium text-gray-900">Educational Theme</span>
           {expandedSections.category ? (
             <ChevronUp className="w-4 h-4 text-gray-500" />
           ) : (
@@ -182,7 +182,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
                   onChange={() => updateFilter('educationalCategory', category)}
                   className="w-4 h-4 text-blue-600"
                 />
-                <span className="text-sm text-gray-700">{category}</span>
+                <span className="text-sm text-gray-900">{category}</span>
               </label>
             ))}
             {filters.educationalCategory && (
@@ -203,7 +203,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
           onClick={() => toggleSection('age')}
           className="flex items-center justify-between w-full text-left"
         >
-          <span className="font-medium text-gray-700">Age Range</span>
+          <span className="font-medium text-gray-900">Age Range</span>
           {expandedSections.age ? (
             <ChevronUp className="w-4 h-4 text-gray-500" />
           ) : (
@@ -221,7 +221,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
                   onChange={() => updateFilter('ageRange', range)}
                   className="w-4 h-4 text-blue-600"
                 />
-                <span className="text-sm text-gray-700">{range} years</span>
+                <span className="text-sm text-gray-900">{range} years</span>
               </label>
             ))}
             {filters.ageRange && (
@@ -242,7 +242,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
           onClick={() => toggleSection('difficulty')}
           className="flex items-center justify-between w-full text-left"
         >
-          <span className="font-medium text-gray-700">Difficulty Level</span>
+          <span className="font-medium text-gray-900">Difficulty Level</span>
           {expandedSections.difficulty ? (
             <ChevronUp className="w-4 h-4 text-gray-500" />
           ) : (
@@ -296,7 +296,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
           onClick={() => toggleSection('vocabulary')}
           className="flex items-center justify-between w-full text-left"
         >
-          <span className="font-medium text-gray-700">Vocabulary Level</span>
+          <span className="font-medium text-gray-900">Vocabulary Level</span>
           {expandedSections.vocabulary ? (
             <ChevronUp className="w-4 h-4 text-gray-500" />
           ) : (
@@ -314,7 +314,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
                   onChange={() => updateFilter('vocabularyLevel', level)}
                   className="w-4 h-4 text-blue-600"
                 />
-                <span className="text-sm text-gray-700">{level}</span>
+                <span className="text-sm text-gray-900">{level}</span>
               </label>
             ))}
             {filters.vocabularyLevel && (
@@ -335,7 +335,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
           onClick={() => toggleSection('language')}
           className="flex items-center justify-between w-full text-left"
         >
-          <span className="font-medium text-gray-700">Language</span>
+          <span className="font-medium text-gray-900">Language</span>
           {expandedSections.language ? (
             <ChevronUp className="w-4 h-4 text-gray-500" />
           ) : (
@@ -353,7 +353,7 @@ export default function AdvancedFilters({ onFilterChange, onReset }: AdvancedFil
                   onChange={() => updateFilter('language', lang.code)}
                   className="w-4 h-4 text-blue-600"
                 />
-                <span className="text-sm text-gray-700">{lang.name}</span>
+                <span className="text-sm text-gray-900">{lang.name}</span>
               </label>
             ))}
             {filters.language && (

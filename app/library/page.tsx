@@ -123,7 +123,7 @@ export default function LibraryLandingPage() {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Powerful Features for Every Reader
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-900 max-w-3xl mx-auto">
               Our library is designed to make discovering and reading stories effortless and enjoyable for students, teachers, and writers alike.
             </p>
           </div>
@@ -139,7 +139,7 @@ export default function LibraryLandingPage() {
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-900">
                   {feature.description}
                 </p>
               </div>
@@ -156,7 +156,7 @@ export default function LibraryLandingPage() {
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
                 7 Educational Themes
               </h2>
-              <p className="text-xl text-gray-600">
+              <p className="text-xl text-gray-900">
                 Stories organized by important life lessons and values
               </p>
             </div>
@@ -217,7 +217,7 @@ export default function LibraryLandingPage() {
       {/* Footer Note */}
       <div className="bg-gray-50 border-t">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
-          <p className="text-gray-600">
+          <p className="text-gray-900">
             All stories are published with permission from the authors. Revenue supports the Seeds of Empowerment program.
           </p>
         </div>

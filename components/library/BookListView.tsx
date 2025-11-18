@@ -83,16 +83,16 @@ export default function BookListView({ books }: BookListViewProps) {
                 {book.title}
               </h3>
               {book.subtitle && (
-                <p className="text-sm text-gray-600 mt-0.5 line-clamp-1">{book.subtitle}</p>
+                <p className="text-sm text-gray-900 mt-0.5 line-clamp-1">{book.subtitle}</p>
               )}
-              <p className="text-sm text-gray-700 mt-1">
+              <p className="text-sm text-gray-900 mt-1">
                 by <span className="font-medium">{book.authorName}</span>
                 {book.country && (
-                  <span className="text-gray-500"> • {book.country}</span>
+                  <span className="text-gray-700"> • {book.country}</span>
                 )}
               </p>
               {book.summary && (
-                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{book.summary}</p>
+                <p className="text-sm text-gray-900 mt-2 line-clamp-2">{book.summary}</p>
               )}
             </div>
 

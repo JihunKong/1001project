@@ -91,7 +91,7 @@ export default function SortSelector({ currentSort, onSortChange }: SortSelector
         className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
       >
         {getSortIcon(currentSort.sortBy)}
-        <span className="text-sm font-medium text-gray-700">{currentSort.label}</span>
+        <span className="text-sm font-medium text-gray-900">{currentSort.label}</span>
         <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
@@ -114,7 +114,7 @@ export default function SortSelector({ currentSort, onSortChange }: SortSelector
                   <div className={`${isActive ? 'text-blue-600' : 'text-gray-600'}`}>
                     {getSortIcon(option.sortBy)}
                   </div>
-                  <span className={`text-sm ${isActive ? 'text-blue-600 font-medium' : 'text-gray-700'}`}>
+                  <span className={`text-sm ${isActive ? 'text-blue-600 font-medium' : 'text-gray-900'}`}>
                     {option.label}
                   </span>
                 </button>

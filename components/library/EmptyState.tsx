@@ -53,7 +53,7 @@ export default function EmptyState({ type, onReset }: EmptyStateProps) {
       <h3 className="text-xl font-semibold text-gray-900 mb-2">
         {currentConfig.title}
       </h3>
-      <p className="text-gray-600 text-center max-w-md">
+      <p className="text-gray-900 text-center max-w-md">
         {currentConfig.description}
       </p>
       {currentConfig.action}
