@@ -1,5 +1,8 @@
 # Dependencies
 node_modules
+# BUT allow Prisma generated files (workaround for Prisma CDN outage)
+!node_modules/.prisma
+!node_modules/@prisma
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
