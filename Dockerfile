@@ -70,6 +70,11 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=build-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --chown=nextjs:nodejs . .
 
+# Copy locally-generated Prisma client (workaround for CDN outage)
+# This ensures Prisma types are available even if CDN fails during build
+COPY --chown=nextjs:nodejs node_modules/.prisma ./node_modules/.prisma
+COPY --chown=nextjs:nodejs node_modules/@prisma/client ./node_modules/@prisma/client
+
 # Create necessary directories and ensure ownership (optimized - only specific dirs)
 RUN mkdir -p .next && chown nextjs:nodejs .next
 
