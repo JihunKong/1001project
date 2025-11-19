@@ -158,13 +158,15 @@ export default function WriterHome() {
     const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffMins < 60) {
-      return `${diffMins}m ago`;
+      return t('common.timeAgo.minutesAgo', { minutes: diffMins });
     } else if (diffHours < 24) {
-      return `${diffHours}h ago`;
+      return t('common.timeAgo.hoursAgo', { hours: diffHours });
     } else if (diffDays < 30) {
-      return `${diffDays}d ago`;
+      return t('common.timeAgo.daysAgo', { days: diffDays });
     } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const month = date.toLocaleDateString('en-US', { month: 'short' });
+      const day = date.getDate();
+      return t('common.timeAgo.monthDay', { month, day });
     }
   };
 

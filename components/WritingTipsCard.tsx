@@ -1,8 +1,11 @@
 'use client';
 
 import { Lightbulb } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function WritingTipsCard() {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white border border-[#E5E5EA] rounded-lg p-6">
       <div className="flex flex-col gap-4">
@@ -17,7 +20,7 @@ export default function WritingTipsCard() {
               color: '#141414'
             }}
           >
-            Writing Tips
+            {t('dashboard.writer.writingTips.title')}
           </h3>
         </div>
 
@@ -30,7 +33,7 @@ export default function WritingTipsCard() {
             color: '#8E8E93'
           }}
         >
-          Get instant feedback on grammar, structure, and style to improve your story&apos;s quality.
+          {t('dashboard.writer.writingTips.description')}
         </p>
 
         <button
@@ -48,7 +51,7 @@ export default function WritingTipsCard() {
               color: '#141414'
             }}
           >
-            Learn more
+            {t('dashboard.writer.writingTips.learnMore')}
           </span>
         </button>
       </div>

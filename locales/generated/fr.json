@@ -448,7 +448,11 @@
         },
         "withdrawing": "Withdrawing...",
         "withdrawButton": "Withdraw Submission",
-        "aiReviewTip": "💡 Save as draft first to enable AI review"
+        "aiReviewTip": "💡 Save as draft first to enable AI review",
+        "title": "Submit Your Story",
+        "editTitle": "Edit Story",
+        "subtitle": "Share your story with students around the world",
+        "backToDashboard": "Back to Dashboard"
       },
       "submitConfirm": {
         "title": "Submit Story for Review",
@@ -546,6 +550,37 @@
             "title": "Publishing"
           }
         }
+      },
+      "home": {
+        "welcome": "Welcome",
+        "subtitle": "Track your writing journey and publish your stories to readers worldwide",
+        "noStories": "You haven't submitted any stories yet",
+        "writeFirstStory": "Write Your First Story"
+      },
+      "stats": {
+        "total": "Total Submissions",
+        "published": "Published Stories",
+        "inReview": "In Review",
+        "readers": "Readers Reached"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "writeNew": "Write New Story",
+        "viewLibrary": "View Library"
+      },
+      "recentActivity": {
+        "title": "Recent Activity"
+      },
+      "achievements": {
+        "title": "Your Achievements"
+      },
+      "writingTips": {
+        "title": "Writing Tips",
+        "description": "Get instant feedback on grammar, structure, and style to improve your story's quality.",
+        "learnMore": "Learn more"
+      },
+      "submit": {
+        "instructions": "Start writing your first story and share it with students worldwide"
       }
     },
     "workflow": {
@@ -642,7 +677,7 @@
       "label": "Accueil",
       "description": "Aller à la page principale"
     },
-    "myStories": "Mes Histoires",
+    "myStories": "My Stories",
     "library": {
       "label": "Bibliothèque",
       "description": "Parcourir tous les livres"
@@ -795,7 +830,8 @@
       "ageRange": "Tranche d'Âge",
       "language": "Langue",
       "allLanguages": "Toutes les Langues",
-      "allCategories": "Toutes les Catégories"
+      "allCategories": "Toutes les Catégories",
+      "toggleFilters": "Filters"
     },
     "discover": {
       "title": "Découvrez des Histoires Publiées",
@@ -843,6 +879,11 @@
       "descending": "Décroissant",
       "featured": "En vedette",
       "premium": "Premium"
+    },
+    "results": {
+      "showing": "Showing",
+      "of": "of",
+      "stories": "stories"
     }
   },
   "notification": {
@@ -874,22 +915,24 @@
     "updateError": "Échec de la mise à jour de l'histoire. Veuillez réessayer."
   },
   "status": {
-    "DRAFT": "Brouillon",
-    "PENDING": "En Attente",
-    "IN_REVIEW": "En Révision",
-    "NEEDS_REVISION": "Nécessite Révision",
-    "APPROVED": "Approuvées",
-    "PUBLISHED": "Publiées",
-    "REJECTED": "Rejetées",
+    "DRAFT": "Draft",
+    "PENDING": "Pending",
+    "IN_REVIEW": "In Review",
+    "NEEDS_REVISION": "Needs Revision",
+    "APPROVED": "Approved",
+    "PUBLISHED": "Published",
+    "REJECTED": "Rejected",
     "description": {
-      "draft": "Votre histoire est enregistrée en tant que brouillon",
-      "pending": "Votre histoire attend d'être examinée",
-      "inReview": "Votre histoire est en cours d'examen",
-      "needsRevision": "Votre histoire nécessite une révision",
-      "approved": "Votre histoire a été approuvée",
-      "published": "Votre histoire est maintenant publiée",
-      "rejected": "Votre histoire n'a pas été approuvée"
-    }
+      "draft": "Your story is saved as a draft",
+      "pending": "Your story is awaiting review",
+      "inReview": "Your story is being reviewed",
+      "needsRevision": "Your story needs revision",
+      "approved": "Your story has been approved",
+      "published": "Your story is now published",
+      "rejected": "Your story was not approved"
+    },
+    "STORY_REVIEW": "Story Review",
+    "STORY_APPROVED": "Story Approved"
   },
   "form": {
     "title": "Titre",
@@ -945,11 +988,11 @@
     "share": "Partager",
     "download": "Télécharger",
     "print": "Imprimer",
-    "viewAll": "Voir tout",
-    "updated": "Mis à jour",
+    "viewAll": "View all",
+    "updated": "Updated",
     "writer": "Écrivain",
     "breadcrumb": "Fil d'Ariane",
-    "loadingDashboard": "Chargement de votre tableau de bord...",
+    "loadingDashboard": "Loading your dashboard...",
     "loadingStory": "Chargement de votre histoire...",
     "loadingForm": "Chargement du formulaire...",
     "cancel": "Annuler",
@@ -966,7 +1009,14 @@
       "saving": "Saving...",
       "edit": "Edit",
       "delete": "Delete"
-    }
+    },
+    "timeAgo": {
+      "minutesAgo": "{minutes}m ago",
+      "hoursAgo": "{hours}h ago",
+      "daysAgo": "{days}d ago",
+      "monthDay": "{month} {day}"
+    },
+    "of": "of"
   },
   "language": {
     "en": "Anglais",

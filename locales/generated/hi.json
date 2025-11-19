@@ -448,7 +448,11 @@
         },
         "withdrawing": "Withdrawing...",
         "withdrawButton": "Withdraw Submission",
-        "aiReviewTip": "💡 Save as draft first to enable AI review"
+        "aiReviewTip": "💡 Save as draft first to enable AI review",
+        "title": "Submit Your Story",
+        "editTitle": "Edit Story",
+        "subtitle": "Share your story with students around the world",
+        "backToDashboard": "Back to Dashboard"
       },
       "submitConfirm": {
         "title": "Submit Story for Review",
@@ -546,6 +550,37 @@
             "title": "Publishing"
           }
         }
+      },
+      "home": {
+        "welcome": "Welcome",
+        "subtitle": "Track your writing journey and publish your stories to readers worldwide",
+        "noStories": "You haven't submitted any stories yet",
+        "writeFirstStory": "Write Your First Story"
+      },
+      "stats": {
+        "total": "Total Submissions",
+        "published": "Published Stories",
+        "inReview": "In Review",
+        "readers": "Readers Reached"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "writeNew": "Write New Story",
+        "viewLibrary": "View Library"
+      },
+      "recentActivity": {
+        "title": "Recent Activity"
+      },
+      "achievements": {
+        "title": "Your Achievements"
+      },
+      "writingTips": {
+        "title": "Writing Tips",
+        "description": "Get instant feedback on grammar, structure, and style to improve your story's quality.",
+        "learnMore": "Learn more"
+      },
+      "submit": {
+        "instructions": "Start writing your first story and share it with students worldwide"
       }
     },
     "workflow": {
@@ -642,12 +677,12 @@
       "label": "होम",
       "description": "मुख्य पेज पर जाएं"
     },
-    "myStories": "मेरी कहानियाँ",
+    "myStories": "My Stories",
     "library": {
       "label": "पुस्तकालय",
       "description": "सभी पुस्तकें ब्राउज़ करें"
     },
-    "notifications": "{count} सूचनाएं",
+    "notifications": "{count} notifications",
     "profile": "प्रोफ़ाइल",
     "skipToMain": "मुख्य सामग्री पर जाएं",
     "mainNavigation": "मुख्य नेविगेशन",
@@ -795,7 +830,8 @@
       "ageRange": "आयु सीमा",
       "language": "भाषा",
       "allLanguages": "सभी भाषाएं",
-      "allCategories": "सभी श्रेणियाँ"
+      "allCategories": "सभी श्रेणियाँ",
+      "toggleFilters": "Filters"
     },
     "discover": {
       "title": "प्रकाशित कहानियाँ खोजें",
@@ -843,6 +879,11 @@
       "descending": "अवरोही",
       "featured": "फीचर्ड",
       "premium": "प्रीमियम"
+    },
+    "results": {
+      "showing": "Showing",
+      "of": "of",
+      "stories": "stories"
     }
   },
   "notification": {
@@ -874,22 +915,24 @@
     "updateError": "कहानी अपडेट करने में विफल। कृपया पुनः प्रयास करें."
   },
   "status": {
-    "DRAFT": "मसौदा",
-    "PENDING": "लंबित",
-    "IN_REVIEW": "समीक्षाधीन",
-    "NEEDS_REVISION": "संशोधन की आवश्यकता है",
-    "APPROVED": "स्वीकृत",
-    "PUBLISHED": "प्रकाशित",
-    "REJECTED": "अस्वीकृत",
+    "DRAFT": "Draft",
+    "PENDING": "Pending",
+    "IN_REVIEW": "In Review",
+    "NEEDS_REVISION": "Needs Revision",
+    "APPROVED": "Approved",
+    "PUBLISHED": "Published",
+    "REJECTED": "Rejected",
     "description": {
-      "draft": "आपकी कहानी ड्राफ्ट के रूप में सहेजी गई है",
-      "pending": "आपकी कहानी समीक्षा की प्रतीक्षा में है",
-      "inReview": "आपकी कहानी की समीक्षा की जा रही है",
-      "needsRevision": "आपकी कहानी में संशोधन की आवश्यकता है",
-      "approved": "आपकी कहानी स्वीकृत हो गई है",
-      "published": "आपकी कहानी अब प्रकाशित हो गई है",
-      "rejected": "आपकी कहानी स्वीकृत नहीं की गई"
-    }
+      "draft": "Your story is saved as a draft",
+      "pending": "Your story is awaiting review",
+      "inReview": "Your story is being reviewed",
+      "needsRevision": "Your story needs revision",
+      "approved": "Your story has been approved",
+      "published": "Your story is now published",
+      "rejected": "Your story was not approved"
+    },
+    "STORY_REVIEW": "Story Review",
+    "STORY_APPROVED": "Story Approved"
   },
   "form": {
     "title": "शीर्षक",
@@ -945,11 +988,11 @@
     "share": "साझा करें",
     "download": "डाउनलोड करें",
     "print": "प्रिंट करें",
-    "viewAll": "सभी देखें",
-    "updated": "अपडेट किया गया",
+    "viewAll": "View all",
+    "updated": "Updated",
     "writer": "लेखक",
     "breadcrumb": "ब्रेडक्रम्ब",
-    "loadingDashboard": "आपका डैशबोर्ड लोड हो रहा है...",
+    "loadingDashboard": "Loading your dashboard...",
     "loadingStory": "आपकी कहानी लोड हो रही है...",
     "loadingForm": "सबमिशन फॉर्म लोड हो रहा है...",
     "cancel": "रद्द करें",
@@ -966,7 +1009,14 @@
       "saving": "Saving...",
       "edit": "Edit",
       "delete": "Delete"
-    }
+    },
+    "timeAgo": {
+      "minutesAgo": "{minutes}m ago",
+      "hoursAgo": "{hours}h ago",
+      "daysAgo": "{days}d ago",
+      "monthDay": "{month} {day}"
+    },
+    "of": "of"
   },
   "language": {
     "en": "अंग्रेज़ी",

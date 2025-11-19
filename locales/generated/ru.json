@@ -448,7 +448,11 @@
         },
         "withdrawing": "Withdrawing...",
         "withdrawButton": "Withdraw Submission",
-        "aiReviewTip": "💡 Save as draft first to enable AI review"
+        "aiReviewTip": "💡 Save as draft first to enable AI review",
+        "title": "Submit Your Story",
+        "editTitle": "Edit Story",
+        "subtitle": "Share your story with students around the world",
+        "backToDashboard": "Back to Dashboard"
       },
       "submitConfirm": {
         "title": "Submit Story for Review",
@@ -546,6 +550,37 @@
             "title": "Publishing"
           }
         }
+      },
+      "home": {
+        "welcome": "Welcome",
+        "subtitle": "Track your writing journey and publish your stories to readers worldwide",
+        "noStories": "You haven't submitted any stories yet",
+        "writeFirstStory": "Write Your First Story"
+      },
+      "stats": {
+        "total": "Total Submissions",
+        "published": "Published Stories",
+        "inReview": "In Review",
+        "readers": "Readers Reached"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "writeNew": "Write New Story",
+        "viewLibrary": "View Library"
+      },
+      "recentActivity": {
+        "title": "Recent Activity"
+      },
+      "achievements": {
+        "title": "Your Achievements"
+      },
+      "writingTips": {
+        "title": "Writing Tips",
+        "description": "Get instant feedback on grammar, structure, and style to improve your story's quality.",
+        "learnMore": "Learn more"
+      },
+      "submit": {
+        "instructions": "Start writing your first story and share it with students worldwide"
       }
     },
     "workflow": {
@@ -642,12 +677,12 @@
       "label": "Главная",
       "description": "Перейти на главную"
     },
-    "myStories": "Мои истории",
+    "myStories": "My Stories",
     "library": {
       "label": "Библиотека",
       "description": "Просмотреть все книги"
     },
-    "notifications": "{count} уведомлений",
+    "notifications": "{count} notifications",
     "profile": "Профиль",
     "skipToMain": "Перейти к основному содержанию",
     "mainNavigation": "Основная навигация",
@@ -795,7 +830,8 @@
       "ageRange": "Возрастной диапазон",
       "language": "Язык",
       "allLanguages": "Все языки",
-      "allCategories": "Все категории"
+      "allCategories": "Все категории",
+      "toggleFilters": "Filters"
     },
     "discover": {
       "title": "Откройте опубликованные истории",
@@ -843,6 +879,11 @@
       "descending": "По убыванию",
       "featured": "Рекомендуемое",
       "premium": "Премиум"
+    },
+    "results": {
+      "showing": "Showing",
+      "of": "of",
+      "stories": "stories"
     }
   },
   "notification": {
@@ -874,22 +915,24 @@
     "updateError": "Не удалось обновить историю. Попробуйте снова."
   },
   "status": {
-    "DRAFT": "Черновик",
-    "PENDING": "В ожидании",
-    "IN_REVIEW": "На рассмотрении",
-    "NEEDS_REVISION": "Требует доработки",
-    "APPROVED": "Одобрено",
-    "PUBLISHED": "Опубликовано",
-    "REJECTED": "Отклонено",
+    "DRAFT": "Draft",
+    "PENDING": "Pending",
+    "IN_REVIEW": "In Review",
+    "NEEDS_REVISION": "Needs Revision",
+    "APPROVED": "Approved",
+    "PUBLISHED": "Published",
+    "REJECTED": "Rejected",
     "description": {
-      "draft": "Ваша история сохранена как черновик",
-      "pending": "Ваша история ожидает проверки",
-      "inReview": "Ваша история проверяется",
-      "needsRevision": "Вашей истории требуется доработка",
-      "approved": "Ваша история одобрена",
-      "published": "Ваша история опубликована",
-      "rejected": "Ваша история не одобрена"
-    }
+      "draft": "Your story is saved as a draft",
+      "pending": "Your story is awaiting review",
+      "inReview": "Your story is being reviewed",
+      "needsRevision": "Your story needs revision",
+      "approved": "Your story has been approved",
+      "published": "Your story is now published",
+      "rejected": "Your story was not approved"
+    },
+    "STORY_REVIEW": "Story Review",
+    "STORY_APPROVED": "Story Approved"
   },
   "form": {
     "title": "Заголовок",
@@ -945,11 +988,11 @@
     "share": "Поделиться",
     "download": "Скачать",
     "print": "Печать",
-    "viewAll": "Посмотреть все",
-    "updated": "Обновлено",
+    "viewAll": "View all",
+    "updated": "Updated",
     "writer": "Автор",
     "breadcrumb": "Хлебные крошки",
-    "loadingDashboard": "Загрузка панели...",
+    "loadingDashboard": "Loading your dashboard...",
     "loadingStory": "Загрузка истории...",
     "loadingForm": "Загрузка формы...",
     "cancel": "Отмена",
@@ -966,7 +1009,14 @@
       "saving": "Saving...",
       "edit": "Edit",
       "delete": "Delete"
-    }
+    },
+    "timeAgo": {
+      "minutesAgo": "{minutes}m ago",
+      "hoursAgo": "{hours}h ago",
+      "daysAgo": "{days}d ago",
+      "monthDay": "{month} {day}"
+    },
+    "of": "of"
   },
   "language": {
     "en": "Английский",
