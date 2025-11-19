@@ -27,6 +27,7 @@ import {
   type RevisionRequestData
 } from '@/components/story-publication/admin';
 import Popover from '@/components/ui/Popover';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Comment {
   id: string;
@@ -94,6 +95,7 @@ interface TextSubmission {
 }
 
 export default function StoryReviewPage() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const params = useParams();
   const router = useRouter();
@@ -148,7 +150,7 @@ export default function StoryReviewPage() {
       const data = await response.json();
       setComments(data.comments || []);
     } catch (err) {
-      toast.error('Failed to load comments');
+      toast.error(t('dashboard.storyManager.review.toast.loadCommentsFailed'));
     } finally {
       setLoadingComments(false);
     }
@@ -183,9 +185,9 @@ export default function StoryReviewPage() {
       }
 
       await fetchComments();
-      toast.success('Comment added successfully!');
+      toast.success(t('dashboard.storyManager.review.toast.commentAdded'));
     } catch (err) {
-      toast.error('Failed to add comment');
+      toast.error(t('dashboard.storyManager.review.toast.commentAddFailed'));
     }
   };
 
@@ -226,9 +228,9 @@ export default function StoryReviewPage() {
       }
 
       await fetchComments();
-      toast.success('Reply added successfully!');
+      toast.success(t('dashboard.storyManager.review.toast.replyAdded'));
     } catch (err) {
-      toast.error('Failed to add reply');
+      toast.error(t('dashboard.storyManager.review.toast.replyAddFailed'));
     }
   };
 
@@ -247,9 +249,9 @@ export default function StoryReviewPage() {
       }
 
       await fetchComments();
-      toast.success(isResolved ? 'Comment resolved!' : 'Comment reopened!');
+      toast.success(isResolved ? t('dashboard.storyManager.review.toast.commentResolved') : t('dashboard.storyManager.review.toast.commentReopened'));
     } catch (err) {
-      toast.error('Failed to resolve comment');
+      toast.error(t('dashboard.storyManager.review.toast.commentResolveFailed'));
     }
   };
 
@@ -268,9 +270,9 @@ export default function StoryReviewPage() {
       }
 
       await fetchComments();
-      toast.success('Comment updated!');
+      toast.success(t('dashboard.storyManager.review.toast.commentUpdated'));
     } catch (err) {
-      toast.error('Failed to edit comment');
+      toast.error(t('dashboard.storyManager.review.toast.commentUpdateFailed'));
     }
   };
 
@@ -286,9 +288,9 @@ export default function StoryReviewPage() {
 
       await fetchComments();
       handleCloseCommentPopup();
-      toast.success('Comment deleted!');
+      toast.success(t('dashboard.storyManager.review.toast.commentDeleted'));
     } catch (err) {
-      toast.error('Failed to delete comment');
+      toast.error(t('dashboard.storyManager.review.toast.commentDeleteFailed'));
     }
   };
 
@@ -323,7 +325,7 @@ export default function StoryReviewPage() {
       setShowFeedbackForm(false);
       setAction(null);
 
-      toast.success('Revision requested successfully!');
+      toast.success(t('dashboard.storyManager.review.toast.revisionRequested'));
 
       setTimeout(() => {
         router.push('/dashboard/story-manager');
@@ -371,10 +373,10 @@ export default function StoryReviewPage() {
 
       toast.success(
         actionType === 'approve'
-          ? 'Story approved successfully!'
+          ? t('dashboard.storyManager.review.toast.storyApproved')
           : actionType === 'revision'
-          ? 'Revision requested successfully!'
-          : 'Story rejected successfully!'
+          ? t('dashboard.storyManager.review.toast.revisionRequested')
+          : t('dashboard.storyManager.review.toast.storyRejected')
       );
 
       setTimeout(() => {
@@ -401,6 +403,11 @@ export default function StoryReviewPage() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    const statusKey = `dashboard.storyManager.review.statusLabels.${status}`;
+    return t(statusKey);
+  };
+
   const canTakeAction = (status: string) => {
     return ['PENDING', 'STORY_REVIEW', 'NEEDS_REVISION'].includes(status);
   };
@@ -417,7 +424,7 @@ export default function StoryReviewPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-soe-green-400 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading story details...</p>
+          <p className="mt-4 text-gray-600">{t('dashboard.storyManager.review.loading')}</p>
         </div>
       </div>
     );
@@ -427,12 +434,12 @@ export default function StoryReviewPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600">Error: {error || 'Submission not found'}</p>
+          <p className="text-red-600">{t('dashboard.storyManager.review.error.message', { error: error || t('dashboard.storyManager.review.error.notFound') })}</p>
           <Link
             href="/dashboard/story-manager"
             className="mt-4 inline-block px-4 py-2 bg-soe-green-400 text-white rounded hover:bg-soe-green-500"
           >
-            Back to Dashboard
+            {t('dashboard.storyManager.review.backToDashboard')}
           </Link>
         </div>
       </div>
@@ -453,15 +460,15 @@ export default function StoryReviewPage() {
                 <ArrowLeft className="h-5 w-5" />
               </Link>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Story Review</h1>
+                <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.storyManager.review.title')}</h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  Review and provide inline feedback on story submission
+                  {t('dashboard.storyManager.review.subtitle')}
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(submission.status)}`}>
-                {submission.status.replace('_', ' ')}
+                {getStatusLabel(submission.status)}
               </span>
               {canTakeAction(submission.status) && (
                 <>
@@ -473,7 +480,7 @@ export default function StoryReviewPage() {
                     className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <CheckCircle className="h-4 w-4 mr-2" />
-                    Approve
+                    {t('dashboard.storyManager.review.actions.approve')}
                   </button>
                   <button
                     onClick={() => {
@@ -483,7 +490,7 @@ export default function StoryReviewPage() {
                     className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <Edit className="h-4 w-4 mr-2" />
-                    Request Revision
+                    {t('dashboard.storyManager.review.actions.requestRevision')}
                   </button>
                   <button
                     onClick={() => {
@@ -493,7 +500,7 @@ export default function StoryReviewPage() {
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <XCircle className="h-4 w-4 mr-2" />
-                    Reject
+                    {t('dashboard.storyManager.review.actions.reject')}
                   </button>
                 </>
               )}
@@ -510,12 +517,12 @@ export default function StoryReviewPage() {
             <div className="bg-white rounded-lg shadow p-6">
               <div className="border-b border-gray-200 pb-4 mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">{submission.title}</h2>
-                <p className="text-gray-600 mt-2">by {submission.authorAlias}</p>
+                <p className="text-gray-600 mt-2">{t('dashboard.storyManager.review.metadata.author', { name: submission.authorAlias })}</p>
 
                 <div className="flex flex-wrap gap-4 mt-4 text-sm text-gray-500">
                   <div className="flex items-center">
                     <FileText className="h-4 w-4 mr-1" />
-                    {submission.wordCount} words
+                    {submission.wordCount} {t('dashboard.storyManager.review.metadata.words')}
                   </div>
                   <div className="flex items-center">
                     <BookOpen className="h-4 w-4 mr-1" />
@@ -524,12 +531,12 @@ export default function StoryReviewPage() {
                   {submission.ageRange && (
                     <div className="flex items-center">
                       <User className="h-4 w-4 mr-1" />
-                      Ages {submission.ageRange}
+                      {t('dashboard.storyManager.review.metadata.ages', { range: submission.ageRange })}
                     </div>
                   )}
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-1" />
-                    {new Date(submission.createdAt).toLocaleDateString()}
+                    {t('dashboard.storyManager.review.metadata.submittedOn')} {new Date(submission.createdAt).toLocaleDateString()}
                   </div>
                 </div>
 
@@ -537,7 +544,7 @@ export default function StoryReviewPage() {
                   <div className="mt-4 space-y-2">
                     {(submission.category || []).length > 0 && (
                       <div className="flex flex-wrap gap-2">
-                        <span className="text-sm text-gray-500">Categories:</span>
+                        <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.metadata.categories')}</span>
                         {(submission.category || []).map((category, index) => (
                           <span key={index} className="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
                             {category}
@@ -547,7 +554,7 @@ export default function StoryReviewPage() {
                     )}
                     {submission.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2">
-                        <span className="text-sm text-gray-500">Tags:</span>
+                        <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.metadata.tags')}</span>
                         {submission.tags.map((tag, index) => (
                           <span key={index} className="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded">
                             <Tag className="h-3 w-3 mr-1" />
@@ -562,13 +569,13 @@ export default function StoryReviewPage() {
 
               {submission.summary && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Summary</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('dashboard.storyManager.review.sections.summary')}</h3>
                   <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">{submission.summary}</p>
                 </div>
               )}
 
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Story Content (Click text to add comments)</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.storyManager.review.sections.storyContent')}</h3>
                 <CommentableTextEditor
                   content={submission.content}
                   comments={comments}
@@ -583,7 +590,7 @@ export default function StoryReviewPage() {
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <MessageSquare className="h-5 w-5 mr-2" />
-                  Previous Feedback
+                  {t('dashboard.storyManager.review.sections.previousFeedback')}
                 </h3>
                 <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
                   <p className="text-gray-700">{submission.storyFeedback}</p>
@@ -603,7 +610,7 @@ export default function StoryReviewPage() {
             {/* Comments Sidebar */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Comments</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('dashboard.storyManager.review.comments.title')}</h3>
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gray-500" />
                   <select
@@ -611,9 +618,9 @@ export default function StoryReviewPage() {
                     onChange={(e) => setCommentFilter(e.target.value as 'all' | 'open' | 'resolved')}
                     className="text-sm border border-gray-300 rounded px-2 py-1 text-gray-900"
                   >
-                    <option value="all">All ({comments.length})</option>
-                    <option value="open">Open ({comments.filter(c => c.status === 'OPEN').length})</option>
-                    <option value="resolved">Resolved ({comments.filter(c => c.status === 'RESOLVED').length})</option>
+                    <option value="all">{t('dashboard.storyManager.review.comments.filter.all', { count: comments.length })}</option>
+                    <option value="open">{t('dashboard.storyManager.review.comments.filter.open', { count: comments.filter(c => c.status === 'OPEN').length })}</option>
+                    <option value="resolved">{t('dashboard.storyManager.review.comments.filter.resolved', { count: comments.filter(c => c.status === 'RESOLVED').length })}</option>
                   </select>
                 </div>
               </div>
@@ -639,7 +646,7 @@ export default function StoryReviewPage() {
                             ? 'bg-green-100 text-green-700'
                             : 'bg-yellow-100 text-yellow-700'
                         }`}>
-                          {comment.status}
+                          {t(`dashboard.storyManager.review.comments.status.${comment.status}`)}
                         </span>
                       </div>
                       {comment.highlightedText && (
@@ -651,40 +658,40 @@ export default function StoryReviewPage() {
                     </button>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500 text-center py-4">No comments yet. Select text to add comments.</p>
+                  <p className="text-sm text-gray-500 text-center py-4">{t('dashboard.storyManager.review.comments.empty')}</p>
                 )}
               </div>
             </div>
 
             {/* Author Information */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Author Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.storyManager.review.authorInfo.title')}</h3>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-500">Author Alias:</span>
+                  <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.authorInfo.authorAlias')}</span>
                   <p className="font-medium text-gray-900">{submission.authorAlias}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Real Name:</span>
+                  <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.authorInfo.realName')}</span>
                   <p className="font-medium text-gray-900">{submission.author.name}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Email:</span>
+                  <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.authorInfo.email')}</span>
                   <p className="font-medium text-gray-900">{submission.author.email}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Visibility:</span>
+                  <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.authorInfo.visibility')}</span>
                   <p className="font-medium text-gray-900">{submission.visibility}</p>
                 </div>
                 {submission.targetAudience && (
                   <div>
-                    <span className="text-sm text-gray-500">Target Audience:</span>
+                    <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.authorInfo.targetAudience')}</span>
                     <p className="font-medium text-gray-900">{submission.targetAudience}</p>
                   </div>
                 )}
                 {submission.licenseType && (
                   <div>
-                    <span className="text-sm text-gray-500">License:</span>
+                    <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.authorInfo.license')}</span>
                     <p className="font-medium text-gray-900">{submission.licenseType}</p>
                   </div>
                 )}
@@ -693,27 +700,27 @@ export default function StoryReviewPage() {
 
             {/* Workflow History */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Review History</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.storyManager.review.workflowHistory.title')}</h3>
               <div className="space-y-3">
                 {submission.workflowHistory.length > 0 ? (
                   submission.workflowHistory.map((entry) => (
                     <div key={entry.id} className="border-l-2 border-gray-200 pl-4 pb-3">
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-medium text-gray-900">
-                          {entry.fromStatus} → {entry.toStatus}
+                          {t('dashboard.storyManager.review.workflowHistory.transition', { fromStatus: entry.fromStatus, toStatus: entry.toStatus })}
                         </span>
                         <span className="text-xs text-gray-500">
                           {new Date(entry.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-600">{entry.performedBy.name}</p>
+                      <p className="text-xs text-gray-600">{t('dashboard.storyManager.review.workflowHistory.performedBy', { name: entry.performedBy.name })}</p>
                       {entry.comment && (
                         <p className="text-sm text-gray-700 mt-1">{entry.comment}</p>
                       )}
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500">No history available</p>
+                  <p className="text-sm text-gray-500">{t('dashboard.storyManager.review.workflowHistory.empty')}</p>
                 )}
               </div>
             </div>
@@ -740,8 +747,8 @@ export default function StoryReviewPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {action === 'approve' && 'Approve Story'}
-              {action === 'reject' && 'Reject Story'}
+              {action === 'approve' && t('dashboard.storyManager.review.modals.approve.title')}
+              {action === 'reject' && t('dashboard.storyManager.review.modals.reject.title')}
             </h3>
 
             <textarea
@@ -749,8 +756,8 @@ export default function StoryReviewPage() {
               onChange={(e) => setFeedback(e.target.value)}
               placeholder={
                 action === 'approve'
-                  ? 'Optional: Add any final comments...'
-                  : 'Explain why this story is being rejected...'
+                  ? t('dashboard.storyManager.review.modals.approve.placeholder')
+                  : t('dashboard.storyManager.review.modals.reject.placeholder')
               }
               rows={4}
               className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-900"
@@ -770,7 +777,7 @@ export default function StoryReviewPage() {
                 className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                 disabled={submitting}
               >
-                Cancel
+                {t('dashboard.storyManager.review.modals.cancel')}
               </button>
               <button
                 onClick={() => handleAction(action)}
@@ -781,7 +788,7 @@ export default function StoryReviewPage() {
                     : 'bg-red-600 hover:bg-red-700'
                 } disabled:opacity-50`}
               >
-                {submitting ? 'Processing...' : `Confirm ${action === 'approve' ? 'Approval' : 'Rejection'}`}
+                {submitting ? t('dashboard.storyManager.review.modals.processing') : (action === 'approve' ? t('dashboard.storyManager.review.modals.approve.confirm') : t('dashboard.storyManager.review.modals.reject.confirm'))}
               </button>
             </div>
           </div>

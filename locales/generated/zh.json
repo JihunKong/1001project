@@ -153,6 +153,105 @@
         "words": "{words} words",
         "ages": "Ages {ageRange}",
         "moreCategories": "+{count} more"
+      },
+      "review": {
+        "title": "Story Review",
+        "subtitle": "Review and provide inline feedback on story submission",
+        "backToDashboard": "Back to Dashboard",
+        "loading": "Loading story details...",
+        "error": {
+          "message": "Error: {error}",
+          "notFound": "Submission not found",
+          "failedToFetch": "Failed to fetch submission",
+          "failedToProcess": "Failed to process action"
+        },
+        "actions": {
+          "approve": "Approve",
+          "requestRevision": "Request Revision",
+          "reject": "Reject"
+        },
+        "metadata": {
+          "words": "words",
+          "ages": "Ages {range}",
+          "submittedOn": "Submitted on",
+          "categories": "Categories:",
+          "tags": "Tags:",
+          "author": "by {name}"
+        },
+        "sections": {
+          "summary": "Summary",
+          "storyContent": "Story Content (Click text to add comments)",
+          "previousFeedback": "Previous Feedback"
+        },
+        "comments": {
+          "title": "Comments",
+          "filter": {
+            "all": "All ({count})",
+            "open": "Open ({count})",
+            "resolved": "Resolved ({count})"
+          },
+          "empty": "No comments yet. Select text to add comments.",
+          "status": {
+            "OPEN": "OPEN",
+            "RESOLVED": "RESOLVED",
+            "ARCHIVED": "ARCHIVED"
+          }
+        },
+        "authorInfo": {
+          "title": "Author Information",
+          "authorAlias": "Author Alias:",
+          "realName": "Real Name:",
+          "email": "Email:",
+          "visibility": "Visibility:",
+          "targetAudience": "Target Audience:",
+          "license": "License:"
+        },
+        "workflowHistory": {
+          "title": "Review History",
+          "empty": "No history available",
+          "transition": "{fromStatus} → {toStatus}",
+          "performedBy": "by {name}"
+        },
+        "modals": {
+          "approve": {
+            "title": "Approve Story",
+            "placeholder": "Optional: Add any final comments...",
+            "confirm": "Confirm Approval"
+          },
+          "reject": {
+            "title": "Reject Story",
+            "placeholder": "Explain why this story is being rejected...",
+            "confirm": "Confirm Rejection"
+          },
+          "cancel": "Cancel",
+          "processing": "Processing..."
+        },
+        "toast": {
+          "commentAdded": "Comment added successfully!",
+          "commentAddFailed": "Failed to add comment",
+          "replyAdded": "Reply added successfully!",
+          "replyAddFailed": "Failed to add reply",
+          "commentResolved": "Comment resolved!",
+          "commentReopened": "Comment reopened!",
+          "commentResolveFailed": "Failed to resolve comment",
+          "commentUpdated": "Comment updated!",
+          "commentUpdateFailed": "Failed to edit comment",
+          "commentDeleted": "Comment deleted!",
+          "commentDeleteFailed": "Failed to delete comment",
+          "revisionRequested": "Revision requested successfully!",
+          "storyApproved": "Story approved successfully!",
+          "storyRejected": "Story rejected successfully!",
+          "loadCommentsFailed": "Failed to load comments"
+        },
+        "statusLabels": {
+          "PUBLISHED": "Published",
+          "STORY_APPROVED": "Story Approved",
+          "PENDING": "Pending",
+          "STORY_REVIEW": "Story Review",
+          "NEEDS_REVISION": "Needs Revision",
+          "REJECTED": "Rejected",
+          "DRAFT": "Draft"
+        }
       }
     },
     "bookManager": {
