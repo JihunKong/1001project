@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { MessageSquare } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Feedback {
   id: string;
@@ -16,6 +17,8 @@ interface ReviewerFeedbackListProps {
 }
 
 export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackListProps) {
+  const { t } = useTranslation();
+
   if (!feedbacks || feedbacks.length === 0) {
     return (
       <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-full max-h-[687px]">
@@ -30,7 +33,7 @@ export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackList
               lineHeight: '1.221'
             }}
           >
-            Reviewer&apos;s Feedback
+            {t('dashboard.writer.feedback.title')}
           </h3>
         </div>
         <p
@@ -42,7 +45,7 @@ export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackList
             lineHeight: '1.193'
           }}
         >
-          No feedback yet. Once your story is reviewed, feedback will appear here.
+          {t('dashboard.writer.feedback.noFeedbackMessage')}
         </p>
       </div>
     );
@@ -61,7 +64,7 @@ export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackList
             lineHeight: '1.221'
           }}
         >
-          Reviewer&apos;s Feedback
+          {t('dashboard.writer.feedback.title')}
         </h3>
       </div>
 

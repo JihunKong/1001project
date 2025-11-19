@@ -10,6 +10,7 @@ import {
 } from '../../components';
 import AIReviewCard from '@/components/story-publication/writer/AIReviewCard';
 import AnnotatedStoryViewer from '@/components/story-publication/writer/AnnotatedStoryViewer';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface TextSubmission {
   id: string;
@@ -62,6 +63,7 @@ interface TextSubmission {
 
 export default function StoryDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [submission, setSubmission] = useState<TextSubmission | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +110,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               color: '#8E8E93'
             }}
           >
-            Loading story...
+            {t('dashboard.writer.storyDetail.loadingStory')}
           </p>
         </div>
       </div>
@@ -132,7 +134,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 fontWeight: 400
               }}
             >
-              Back to Stories
+              {t('dashboard.writer.storyDetail.backToStories')}
             </span>
           </button>
 
@@ -146,7 +148,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 lineHeight: '1.221'
               }}
             >
-              Story Not Found
+              {t('dashboard.writer.storyDetail.notFound.title')}
             </h2>
             <p
               className="text-[#8E8E93] mb-6"
@@ -157,7 +159,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 lineHeight: '1.5'
               }}
             >
-              {error || 'The story you\'re looking for could not be found.'}
+              {error || t('dashboard.writer.storyDetail.notFound.message')}
             </p>
             <button
               onClick={() => router.push('/dashboard/writer')}
@@ -168,7 +170,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 fontWeight: 500
               }}
             >
-              Return to Dashboard
+              {t('dashboard.writer.storyDetail.returnToDashboard')}
             </button>
             </div>
           </div>
@@ -208,7 +210,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 fontWeight: 400
               }}
             >
-              Back to Stories
+              {t('dashboard.writer.storyDetail.backToStories')}
             </span>
           </button>
 
@@ -223,7 +225,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                   lineHeight: '1.221'
                 }}
               >
-                Track Your Story
+                {t('dashboard.writer.storyDetail.title')}
               </h1>
 
               {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') && (
@@ -238,14 +240,14 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                   }}
                 >
                   <Edit className="w-5 h-5" />
-                  Edit a story
+                  {t('dashboard.writer.storyDetail.editButton')}
                 </button>
               )}
             </div>
 
             <div className="space-y-5">
               <StoryTrackingCard
-                title={submission.title || 'Untitled'}
+                title={submission.title || t('dashboard.writer.storyDetail.untitled')}
                 description={submission.summary || submission.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
                 thumbnailUrl={submission.generatedImages?.[0]}
                 status={submission.status}
@@ -263,7 +265,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                   </div>
                   <div className="overflow-hidden">
                     <AnnotatedStoryViewer
-                      title={submission.title || 'Untitled'}
+                      title={submission.title || t('dashboard.writer.storyDetail.untitled')}
                       content={submission.content}
                       submissionId={submission.id}
                     />
@@ -271,7 +273,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
               ) : (
                 <StoryContentViewer
-                  title={submission.title || 'Untitled'}
+                  title={submission.title || t('dashboard.writer.storyDetail.untitled')}
                   content={submission.content}
                 />
               )}

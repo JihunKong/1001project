@@ -74,7 +74,7 @@ function SubmitTextPage() {
   }, []);
 
   const handleWithdraw = async () => {
-    if (!editId || !confirm('Are you sure you want to withdraw this submission? It will return to draft status.')) {
+    if (!editId || !confirm(t('dashboard.writer.submitText.withdrawConfirm'))) {
       return;
     }
 
@@ -92,7 +92,7 @@ function SubmitTextPage() {
       }
 
       setFormData(prev => ({ ...prev, status: 'DRAFT' }));
-      alert('Submission withdrawn successfully. You can now edit and resubmit.');
+      alert(t('dashboard.writer.submitText.withdrawSuccess'));
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to withdraw submission');
     } finally {
@@ -173,7 +173,7 @@ function SubmitTextPage() {
                   }}
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Dashboard
+                  {t('dashboard.writer.submitText.backButton')}
                 </Link>
               </div>
             </div>
@@ -212,7 +212,7 @@ function SubmitTextPage() {
                       fontWeight: 500,
                       lineHeight: '1.221'
                     }}>
-                      Submission Status
+                      {t('dashboard.writer.submitText.submissionStatus.title')}
                     </h3>
                     <p className="text-[#8E8E93]" style={{
                       fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
@@ -220,7 +220,7 @@ function SubmitTextPage() {
                       fontWeight: 400,
                       lineHeight: '1.193'
                     }}>
-                      Your story is currently under review. You can withdraw it to make changes.
+                      {t('dashboard.writer.submitText.submissionStatus.message')}
                     </p>
                   </div>
                   <button
@@ -234,14 +234,14 @@ function SubmitTextPage() {
                       lineHeight: '1.221'
                     }}
                   >
-                    {withdrawing ? 'Withdrawing...' : 'Withdraw Submission'}
+                    {withdrawing ? t('dashboard.writer.submitText.withdrawing') : t('dashboard.writer.submitText.withdrawButton')}
                   </button>
                 </div>
               </div>
             ) : !isEditing ? (
               <div className="bg-[#EEF2FF] border border-[#E0E7FF] rounded-lg p-4">
                 <p className="text-sm text-[#5951E7] text-center">
-                  💡 Save as draft first to enable AI review
+                  {t('dashboard.writer.submitText.aiReviewTip')}
                 </p>
               </div>
             ) : null}

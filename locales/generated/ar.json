@@ -339,7 +339,17 @@
           },
           "selectedText": "Selected Text",
           "title": "AI Suggestion"
-        }
+        },
+        "withdrawConfirm": "Are you sure you want to withdraw this submission? It will return to draft status.",
+        "withdrawSuccess": "Submission withdrawn successfully. You can now edit and resubmit.",
+        "backButton": "Back to Dashboard",
+        "submissionStatus": {
+          "title": "Submission Status",
+          "message": "Your story is currently under review. You can withdraw it to make changes."
+        },
+        "withdrawing": "Withdrawing...",
+        "withdrawButton": "Withdraw Submission",
+        "aiReviewTip": "💡 Save as draft first to enable AI review"
       },
       "submitConfirm": {
         "title": "Submit Story for Review",
@@ -373,6 +383,70 @@
         "lastSaved": "Last Saved",
         "wordCount": "Word Count",
         "notSaved": "Not saved yet"
+      },
+      "stories": {
+        "notifications": {
+          "statusChanged": "Your story \"{title}\" status changed to {status}",
+          "feedbackReceived": "New feedback received for \"{title}\"",
+          "deleteSuccess": "Story deleted successfully",
+          "deleteFailed": "Failed to delete story. Please try again.",
+          "withdrawSuccess": "Story withdrawn successfully. You can now edit it.",
+          "withdrawFailed": "Failed to withdraw story. Please try again.",
+          "disconnected": "Notification service disconnected.",
+          "reconnect": "Reconnect"
+        }
+      },
+      "storyDetail": {
+        "loading": "Loading...",
+        "loadingStory": "Loading story...",
+        "backToStories": "Back to Stories",
+        "notFound": {
+          "title": "Story Not Found",
+          "message": "The story you're looking for could not be found."
+        },
+        "returnToDashboard": "Return to Dashboard",
+        "title": "Track Your Story",
+        "editButton": "Edit a story",
+        "untitled": "Untitled",
+        "submissionDate": "Submission Date",
+        "targetAgeGroup": "Target Age Group",
+        "wordCount": "Word Count"
+      },
+      "storyCard": {
+        "status": {
+          "needRevision": "Need Revision",
+          "underReview": "Under Review",
+          "finalReview": "Final Review",
+          "approved": "Approved",
+          "draft": "Draft"
+        },
+        "submissionDate": "Submission Date",
+        "targetAgeGroup": "Target Age Group",
+        "wordCount": "Word Count"
+      },
+      "feedback": {
+        "title": "Reviewer's Feedback",
+        "noFeedback": "No feedback yet",
+        "noFeedbackMessage": "No feedback yet. Once your story is reviewed, feedback will appear here."
+      },
+      "timeline": {
+        "title": "Publishing Status",
+        "stages": {
+          "submission": {
+            "title": "Submission",
+            "description": "Your story has been submitted. Our team will review it shortly."
+          },
+          "review": {
+            "title": "Under Review",
+            "description": "Your story is currently under review. You'll be notified once feedback is ready."
+          },
+          "approval": {
+            "title": "Final Approval"
+          },
+          "publishing": {
+            "title": "Publishing"
+          }
+        }
       }
     },
     "workflow": {

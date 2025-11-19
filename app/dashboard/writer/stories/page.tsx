@@ -69,12 +69,12 @@ export default function WriterStories() {
 
   const { isConnected, error: sseError, reconnect } = useSSENotifications({
     onStatusUpdate: (event: SSEEvent) => {
-      setNotification(`Your story "${event.data.title}" status changed to ${event.data.status}`);
+      setNotification(t('dashboard.writer.stories.notifications.statusChanged', { title: event.data.title, status: event.data.status }));
       fetchData();
       setTimeout(() => setNotification(null), 5000);
     },
     onFeedbackReceived: (event: SSEEvent) => {
-      setNotification(`New feedback received for "${event.data.title}"`);
+      setNotification(t('dashboard.writer.stories.notifications.feedbackReceived', { title: event.data.title }));
       fetchData();
       setTimeout(() => setNotification(null), 5000);
     },
@@ -142,10 +142,10 @@ export default function WriterStories() {
       });
       if (!response.ok) throw new Error('Failed to delete story');
       await fetchData();
-      setNotification('Story deleted successfully');
+      setNotification(t('dashboard.writer.stories.notifications.deleteSuccess'));
       setTimeout(() => setNotification(null), 5000);
     } catch (err) {
-      setNotification('Failed to delete story. Please try again.');
+      setNotification(t('dashboard.writer.stories.notifications.deleteFailed'));
       setTimeout(() => setNotification(null), 5000);
     }
   };
@@ -162,10 +162,10 @@ export default function WriterStories() {
       if (!response.ok) throw new Error('Failed to withdraw story');
       await fetchData();
       setActiveTab('DRAFT');
-      setNotification('Story withdrawn successfully. You can now edit it.');
+      setNotification(t('dashboard.writer.stories.notifications.withdrawSuccess'));
       setTimeout(() => setNotification(null), 5000);
     } catch (err) {
-      setNotification('Failed to withdraw story. Please try again.');
+      setNotification(t('dashboard.writer.stories.notifications.withdrawFailed'));
       setTimeout(() => setNotification(null), 5000);
     }
   };
@@ -222,7 +222,7 @@ export default function WriterStories() {
           >
             <div className="flex items-center justify-between px-6">
               <p className="text-sm">
-                Notification service disconnected. <button onClick={reconnect} className="underline">Reconnect</button>
+                {t('dashboard.writer.stories.notifications.disconnected')} <button onClick={reconnect} className="underline">{t('dashboard.writer.stories.notifications.reconnect')}</button>
               </p>
               <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
             </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface StoryTrackingCardProps {
   title: string;
@@ -18,41 +19,54 @@ const getStatusStyles = (status: string) => {
     case 'NEEDS_REVISION':
       return {
         bg: '#FEF2F2',
-        text: '#C2410C',
-        label: 'Need Revision'
+        text: '#C2410C'
       };
     case 'PENDING':
     case 'STORY_REVIEW':
       return {
         bg: '#EEF2FF',
-        text: '#5951E7',
-        label: 'Under Review'
+        text: '#5951E7'
       };
     case 'BOOK_REVIEW':
       return {
         bg: '#FEF3C7',
-        text: '#F59E0B',
-        label: 'Final Review'
+        text: '#F59E0B'
       };
     case 'APPROVED':
     case 'PUBLISHED':
       return {
         bg: '#D1FAE5',
-        text: '#059669',
-        label: 'Approved'
+        text: '#059669'
       };
     case 'DRAFT':
       return {
         bg: '#F3F4F6',
-        text: '#6B7280',
-        label: 'Draft'
+        text: '#6B7280'
       };
     default:
       return {
         bg: '#F3F4F6',
-        text: '#6B7280',
-        label: status
+        text: '#6B7280'
       };
+  }
+};
+
+const getStatusLabel = (status: string, t: (key: string) => string) => {
+  switch (status) {
+    case 'NEEDS_REVISION':
+      return t('dashboard.writer.storyCard.status.needRevision');
+    case 'PENDING':
+    case 'STORY_REVIEW':
+      return t('dashboard.writer.storyCard.status.underReview');
+    case 'BOOK_REVIEW':
+      return t('dashboard.writer.storyCard.status.finalReview');
+    case 'APPROVED':
+    case 'PUBLISHED':
+      return t('dashboard.writer.storyCard.status.approved');
+    case 'DRAFT':
+      return t('dashboard.writer.storyCard.status.draft');
+    default:
+      return status;
   }
 };
 
@@ -66,6 +80,7 @@ export default function StoryTrackingCard({
   targetAudience,
   wordCount
 }: StoryTrackingCardProps) {
+  const { t } = useTranslation();
   const statusStyles = getStatusStyles(status);
 
   return (
@@ -150,7 +165,7 @@ export default function StoryTrackingCard({
                 color: statusStyles.text
               }}
             >
-              {statusStyles.label}
+              {getStatusLabel(status, t)}
             </span>
           </div>
         </div>
@@ -166,7 +181,7 @@ export default function StoryTrackingCard({
                 lineHeight: '1.221'
               }}
             >
-              Submission Date
+              {t('dashboard.writer.storyCard.submissionDate')}
             </p>
             <p
               className="text-[#141414]"
@@ -196,7 +211,7 @@ export default function StoryTrackingCard({
                   lineHeight: '1.221'
                 }}
               >
-                Target Age Group
+                {t('dashboard.writer.storyCard.targetAgeGroup')}
               </p>
               <p
                 className="text-[#141414]"
@@ -223,7 +238,7 @@ export default function StoryTrackingCard({
                   lineHeight: '1.221'
                 }}
               >
-                Word Count
+                {t('dashboard.writer.storyCard.wordCount')}
               </p>
               <p
                 className="text-[#141414]"

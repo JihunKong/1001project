@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
 interface WorkflowStage {
   number: number;
   title: string;
@@ -11,7 +13,7 @@ interface PublishingStatusTimelineProps {
   currentStatus: string;
 }
 
-const getWorkflowStages = (currentStatus: string): WorkflowStage[] => {
+const getWorkflowStages = (currentStatus: string, t: (key: string) => string): WorkflowStage[] => {
   let currentStage = 1;
 
   switch (currentStatus) {
@@ -37,25 +39,25 @@ const getWorkflowStages = (currentStatus: string): WorkflowStage[] => {
   return [
     {
       number: 1,
-      title: 'Submission',
-      description: 'Your story has been submitted. Our team will review it shortly.',
+      title: t('dashboard.writer.timeline.stages.submission.title'),
+      description: t('dashboard.writer.timeline.stages.submission.description'),
       status: currentStage >= 1 ? 'completed' : 'pending'
     },
     {
       number: 2,
-      title: 'Under Review',
-      description: "Your story is currently under review. You'll be notified once feedback is ready.",
+      title: t('dashboard.writer.timeline.stages.review.title'),
+      description: t('dashboard.writer.timeline.stages.review.description'),
       status: currentStage === 2 ? 'current' : currentStage > 2 ? 'completed' : 'pending'
     },
     {
       number: 3,
-      title: 'Final Approval',
+      title: t('dashboard.writer.timeline.stages.approval.title'),
       description: '',
       status: currentStage === 3 ? 'current' : currentStage > 3 ? 'completed' : 'pending'
     },
     {
       number: 4,
-      title: 'Publishing',
+      title: t('dashboard.writer.timeline.stages.publishing.title'),
       description: '',
       status: currentStage === 4 ? 'current' : currentStage > 4 ? 'completed' : 'pending'
     }
@@ -63,7 +65,8 @@ const getWorkflowStages = (currentStatus: string): WorkflowStage[] => {
 };
 
 export default function PublishingStatusTimeline({ currentStatus }: PublishingStatusTimelineProps) {
-  const stages = getWorkflowStages(currentStatus);
+  const { t } = useTranslation();
+  const stages = getWorkflowStages(currentStatus, t);
 
   return (
     <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-[610px]">
@@ -77,7 +80,7 @@ export default function PublishingStatusTimeline({ currentStatus }: PublishingSt
             lineHeight: '1.221'
           }}
         >
-          Publishing Status
+          {t('dashboard.writer.timeline.title')}
         </h3>
 
         <div className="relative">
