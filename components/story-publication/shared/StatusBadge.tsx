@@ -1,59 +1,51 @@
 'use client';
 
+import { useTranslation } from '@/lib/i18n/useTranslation';
+
 interface StatusBadgeProps {
   status: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+const STATUS_STYLE_CONFIG: Record<string, { color: string; bg: string }> = {
   DRAFT: {
-    label: 'Draft',
     color: 'text-gray-700',
     bg: 'bg-gray-100'
   },
   PENDING: {
-    label: 'Pending Review',
     color: 'text-yellow-700',
     bg: 'bg-yellow-100'
   },
   STORY_REVIEW: {
-    label: 'Story Review',
     color: 'text-purple-700',
     bg: 'bg-purple-100'
   },
   NEEDS_REVISION: {
-    label: 'Needs Revision',
     color: 'text-orange-700',
     bg: 'bg-orange-100'
   },
   STORY_APPROVED: {
-    label: 'Story Approved',
     color: 'text-blue-700',
     bg: 'bg-blue-100'
   },
   FORMAT_DECISION: {
-    label: 'Format Decision',
     color: 'text-indigo-700',
     bg: 'bg-indigo-100'
   },
   FINAL_REVIEW: {
-    label: 'Final Review',
     color: 'text-violet-700',
     bg: 'bg-violet-100'
   },
   PUBLISHED: {
-    label: 'Published',
     color: 'text-green-700',
     bg: 'bg-green-100'
   },
   REJECTED: {
-    label: 'Rejected',
     color: 'text-red-700',
     bg: 'bg-red-100'
   },
   ARCHIVED: {
-    label: 'Archived',
     color: 'text-gray-600',
     bg: 'bg-gray-200'
   }
@@ -66,19 +58,42 @@ const SIZE_CONFIG = {
 };
 
 export default function StatusBadge({ status, size = 'md', className = '' }: StatusBadgeProps) {
-  const config = STATUS_CONFIG[status] || {
-    label: status.replace(/_/g, ' '),
+  const { t } = useTranslation();
+
+  // Get label from translations
+  const getStatusLabel = (status: string): string => {
+    const statusKey = status.toLowerCase().replace(/_/g, '');
+    const translationKeys: Record<string, string> = {
+      'draft': 'components.statusBadge.draft',
+      'pending': 'components.statusBadge.pendingReview',
+      'submitted': 'components.statusBadge.pendingReview',
+      'storyreview': 'components.statusBadge.storyReview',
+      'inreview': 'components.statusBadge.storyReview',
+      'needsrevision': 'components.statusBadge.needsRevision',
+      'storyapproved': 'components.statusBadge.storyApproved',
+      'formatdecision': 'components.statusBadge.formatDecision',
+      'finalreview': 'components.statusBadge.finalReview',
+      'published': 'components.statusBadge.published',
+      'rejected': 'components.statusBadge.rejected',
+      'archived': 'components.statusBadge.archived'
+    };
+
+    return t(translationKeys[statusKey] || 'components.statusBadge.draft');
+  };
+
+  const styleConfig = STATUS_STYLE_CONFIG[status] || {
     color: 'text-gray-700',
     bg: 'bg-gray-100'
   };
 
   const sizeClasses = SIZE_CONFIG[size];
+  const label = getStatusLabel(status);
 
   return (
     <span
-      className={`inline-flex items-center font-semibold rounded-full ${config.bg} ${config.color} ${sizeClasses} ${className}`}
+      className={`inline-flex items-center font-semibold rounded-full ${styleConfig.bg} ${styleConfig.color} ${sizeClasses} ${className}`}
     >
-      {config.label}
+      {label}
     </span>
   );
 }

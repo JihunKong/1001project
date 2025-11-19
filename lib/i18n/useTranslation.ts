@@ -53,8 +53,16 @@ function getNestedValue(obj: any, path: string, fallbackObj?: any): string {
   return typeof current === 'string' ? current : path;
 }
 
+function interpolate(str: string, params?: Record<string, any>): string {
+  if (!params) return str;
+
+  return str.replace(/\{(\w+)\}/g, (match, key) => {
+    return params[key] !== undefined ? String(params[key]) : match;
+  });
+}
+
 export interface UseTranslationReturn {
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, any>) => string;
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => void;
   isRTL: boolean;
@@ -89,12 +97,12 @@ export function useTranslation(): UseTranslationReturn {
     };
   }, [language]);
 
-  const t = useCallback((key: string): string => {
+  const t = useCallback((key: string, params?: Record<string, any>): string => {
     const value = getNestedValue(translations, key, enTranslations);
     if (!value && value !== '') {
       console.warn('[useTranslation] Missing translation key:', key, 'for language:', language);
     }
-    return value;
+    return interpolate(value, params);
   }, [translations, language]);
 
   return {

@@ -856,5 +856,23 @@
         "failed": "Failed to send magic link. Please try again."
       }
     }
+  },
+  "components": {
+    "statusBadge": {
+      "draft": "Draft",
+      "pendingReview": "Pending Review",
+      "storyReview": "Story Review",
+      "needsRevision": "Needs Revision",
+      "storyApproved": "Story Approved",
+      "formatDecision": "Format Decision",
+      "finalReview": "Final Review",
+      "published": "Published",
+      "rejected": "Rejected",
+      "archived": "Archived"
+    },
+    "error": {
+      "prefix": "Error: ",
+      "retry": "Retry"
+    }
   }
 }
