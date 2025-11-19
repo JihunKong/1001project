@@ -723,5 +723,138 @@
     "progressAriaLabel": "オンボーディング進行状況: {percent}%",
     "start": "開始",
     "keyboardShortcuts": "← → 移動 | Enter 次へ | Esc 閉じる"
+  },
+  "auth": {
+    "common": {
+      "branding": {
+        "appName": "1001 Stories",
+        "soeAltText": "Seeds of Empowerment"
+      },
+      "form": {
+        "email": {
+          "label": "Email",
+          "placeholder": "Enter your email",
+          "validation": {
+            "required": "Email is required",
+            "invalid": "Please enter a valid email address"
+          }
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Enter your password",
+          "placeholderNew": "Create a password",
+          "validation": {
+            "required": "Password is required",
+            "minLength": "Password must be at least 8 characters",
+            "complexity": "Password must contain uppercase, lowercase, and number"
+          },
+          "showPassword": "Show password",
+          "hidePassword": "Hide password"
+        }
+      },
+      "buttons": {
+        "logIn": "Log In",
+        "signUp": "Sign Up",
+        "signInWithGoogle": "Sign in with Google"
+      },
+      "loading": {
+        "signingIn": "Signing in...",
+        "connecting": "Connecting...",
+        "sending": "Sending...",
+        "loading": "Loading..."
+      },
+      "divider": {
+        "or": "OR"
+      },
+      "footer": {
+        "termsPrefix": "By signing in, you agree to our",
+        "termsLink": "Terms of Service",
+        "privacyLink": "Privacy Policy",
+        "termsConnector": "and"
+      },
+      "errors": {
+        "generic": "An error occurred. Please try again.",
+        "socialFailed": "Failed to sign in with {provider}. Please try again."
+      }
+    },
+    "login": {
+      "header": {
+        "title": "Welcome Back!",
+        "rightPanel": {
+          "title": "Welcome to 1001 Stories",
+          "subtitle": "Discover stories from cultures around the world"
+        }
+      },
+      "form": {
+        "submitLabel": "Sign in to your account"
+      },
+      "links": {
+        "forgotPassword": "Forgot Password?",
+        "noAccount": "Don't have an account?",
+        "createAccount": "Create Account"
+      },
+      "errors": {
+        "authenticationError": "Authentication Error",
+        "invalidCredentials": "Invalid email or password. Please try again."
+      }
+    },
+    "signup": {
+      "header": {
+        "title": "Welcome to Our Family!",
+        "rightPanel": {
+          "title": "Join 1001 Stories",
+          "subtitle": "Share your cultural stories with the world",
+          "imageAlt": "Join our family"
+        }
+      },
+      "form": {
+        "fullName": {
+          "label": "Full Name",
+          "placeholder": "Enter your full name",
+          "validation": {
+            "required": "Full name is required",
+            "minLength": "Name must be at least 2 characters"
+          }
+        },
+        "terms": {
+          "validation": {
+            "required": "You must accept the terms of service"
+          }
+        }
+      },
+      "links": {
+        "hasAccount": "Already have an account?",
+        "signInHere": "Sign in here"
+      },
+      "messages": {
+        "success": "Success!",
+        "error": "Registration Error",
+        "accountCreated": "Account created successfully! Redirecting to login...",
+        "failed": "Failed to create account. Please try again.",
+        "socialFailed": "Failed to sign up with {provider}. Please try again."
+      }
+    },
+    "forgotPassword": {
+      "header": {
+        "title": "Forgot Password?",
+        "subtitle": "No worries! We'll send you a magic link to sign in.",
+        "rightPanel": {
+          "title": "We've Got You Covered",
+          "subtitle": "Just enter your email and we'll send you a magic link"
+        }
+      },
+      "form": {
+        "emailLabel": "Email Address",
+        "submitButton": "Send Magic Link"
+      },
+      "links": {
+        "backToLogin": "← Back to Login"
+      },
+      "messages": {
+        "success": "Check your email! We sent you a magic link to sign in.",
+        "emailRequired": "Please enter your email address",
+        "failed": "Failed to send magic link. Please try again."
+      }
+    }
   }
 }

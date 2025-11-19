@@ -723,5 +723,138 @@
     "progressAriaLabel": "온보딩 진행률: {percent}%",
     "start": "시작하기",
     "keyboardShortcuts": "← → 이동 | Enter 다음 | Esc 닫기"
+  },
+  "auth": {
+    "common": {
+      "branding": {
+        "appName": "1001 Stories",
+        "soeAltText": "Seeds of Empowerment"
+      },
+      "form": {
+        "email": {
+          "label": "이메일",
+          "placeholder": "이메일을 입력하세요",
+          "validation": {
+            "required": "이메일을 입력해주세요",
+            "invalid": "올바른 이메일 주소를 입력해주세요"
+          }
+        },
+        "password": {
+          "label": "비밀번호",
+          "placeholder": "비밀번호를 입력하세요",
+          "placeholderNew": "비밀번호를 생성하세요",
+          "validation": {
+            "required": "비밀번호를 입력해주세요",
+            "minLength": "비밀번호는 최소 8자 이상이어야 합니다",
+            "complexity": "비밀번호는 대문자, 소문자, 숫자를 포함해야 합니다"
+          },
+          "showPassword": "비밀번호 보기",
+          "hidePassword": "비밀번호 숨기기"
+        }
+      },
+      "buttons": {
+        "logIn": "로그인",
+        "signUp": "회원가입",
+        "signInWithGoogle": "Google로 로그인"
+      },
+      "loading": {
+        "signingIn": "로그인 중...",
+        "connecting": "연결 중...",
+        "sending": "전송 중...",
+        "loading": "로딩 중..."
+      },
+      "divider": {
+        "or": "또는"
+      },
+      "footer": {
+        "termsPrefix": "로그인하면",
+        "termsLink": "이용약관",
+        "privacyLink": "개인정보처리방침",
+        "termsConnector": "및"
+      },
+      "errors": {
+        "generic": "오류가 발생했습니다. 다시 시도해주세요.",
+        "socialFailed": "{provider} 로그인에 실패했습니다. 다시 시도해주세요."
+      }
+    },
+    "login": {
+      "header": {
+        "title": "다시 오신 것을 환영합니다!",
+        "rightPanel": {
+          "title": "1001 Stories에 오신 것을 환영합니다",
+          "subtitle": "전 세계의 다양한 문화 이야기를 발견하세요"
+        }
+      },
+      "form": {
+        "submitLabel": "계정에 로그인하기"
+      },
+      "links": {
+        "forgotPassword": "비밀번호를 잊으셨나요?",
+        "noAccount": "계정이 없으신가요?",
+        "createAccount": "계정 만들기"
+      },
+      "errors": {
+        "authenticationError": "인증 오류",
+        "invalidCredentials": "이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요."
+      }
+    },
+    "signup": {
+      "header": {
+        "title": "1001 Stories 가족이 되신 것을 환영합니다!",
+        "rightPanel": {
+          "title": "1001 Stories에 참여하세요",
+          "subtitle": "전 세계와 여러분의 문화 이야기를 공유하세요",
+          "imageAlt": "우리 가족이 되어주세요"
+        }
+      },
+      "form": {
+        "fullName": {
+          "label": "이름",
+          "placeholder": "이름을 입력하세요",
+          "validation": {
+            "required": "이름을 입력해주세요",
+            "minLength": "이름은 최소 2자 이상이어야 합니다"
+          }
+        },
+        "terms": {
+          "validation": {
+            "required": "이용약관에 동의해주세요"
+          }
+        }
+      },
+      "links": {
+        "hasAccount": "이미 계정이 있으신가요?",
+        "signInHere": "로그인하기"
+      },
+      "messages": {
+        "success": "성공!",
+        "error": "회원가입 오류",
+        "accountCreated": "계정이 성공적으로 생성되었습니다! 로그인 페이지로 이동합니다...",
+        "failed": "계정 생성에 실패했습니다. 다시 시도해주세요.",
+        "socialFailed": "{provider} 회원가입에 실패했습니다. 다시 시도해주세요."
+      }
+    },
+    "forgotPassword": {
+      "header": {
+        "title": "비밀번호를 잊으셨나요?",
+        "subtitle": "걱정하지 마세요! 로그인 매직 링크를 보내드립니다.",
+        "rightPanel": {
+          "title": "문제없습니다",
+          "subtitle": "이메일을 입력하시면 매직 링크를 보내드립니다"
+        }
+      },
+      "form": {
+        "emailLabel": "이메일 주소",
+        "submitButton": "매직 링크 보내기"
+      },
+      "links": {
+        "backToLogin": "← 로그인으로 돌아가기"
+      },
+      "messages": {
+        "success": "이메일을 확인해주세요! 로그인 매직 링크를 보내드렸습니다.",
+        "emailRequired": "이메일 주소를 입력해주세요",
+        "failed": "매직 링크 전송에 실패했습니다. 다시 시도해주세요."
+      }
+    }
   }
 }

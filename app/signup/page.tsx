@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface ValidationError {
   field: string;
@@ -13,6 +14,7 @@ interface ValidationError {
 }
 
 export default function SignupPage() {
+  const { t } = useTranslation();
   const router = useRouter();
 
   // Form state - role removed, will be set to WRITER on backend
@@ -70,13 +72,13 @@ export default function SignupPage() {
     if (!formData.name.trim()) {
       errors.push({
         field: 'name',
-        message: 'Full name is required',
+        message: t('auth.signup.form.fullName.validation.required'),
         code: 'REQUIRED'
       });
     } else if (formData.name.trim().length < 2) {
       errors.push({
         field: 'name',
-        message: 'Name must be at least 2 characters',
+        message: t('auth.signup.form.fullName.validation.minLength'),
         code: 'MIN_LENGTH'
       });
     }
@@ -85,13 +87,13 @@ export default function SignupPage() {
     if (!formData.email) {
       errors.push({
         field: 'email',
-        message: 'Email is required',
+        message: t('auth.common.form.email.validation.required'),
         code: 'REQUIRED'
       });
     } else if (!isValidEmail(formData.email)) {
       errors.push({
         field: 'email',
-        message: 'Please enter a valid email address',
+        message: t('auth.common.form.email.validation.invalid'),
         code: 'INVALID_FORMAT'
       });
     }
@@ -100,19 +102,19 @@ export default function SignupPage() {
     if (!formData.password) {
       errors.push({
         field: 'password',
-        message: 'Password is required',
+        message: t('auth.common.form.password.validation.required'),
         code: 'REQUIRED'
       });
     } else if (formData.password.length < 8) {
       errors.push({
         field: 'password',
-        message: 'Password must be at least 8 characters',
+        message: t('auth.common.form.password.validation.minLength'),
         code: 'MIN_LENGTH'
       });
     } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
       errors.push({
         field: 'password',
-        message: 'Password must contain uppercase, lowercase, and number',
+        message: t('auth.common.form.password.validation.complexity'),
         code: 'WEAK_PASSWORD'
       });
     }
@@ -121,7 +123,7 @@ export default function SignupPage() {
     if (!formData.termsAccepted) {
       errors.push({
         field: 'termsAccepted',
-        message: 'You must accept the terms of service',
+        message: t('auth.signup.form.terms.validation.required'),
         code: 'REQUIRED'
       });
     }
@@ -166,15 +168,15 @@ export default function SignupPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('Account created successfully! Redirecting to login...');
+        setMessage(t('auth.signup.messages.accountCreated'));
         setTimeout(() => {
           router.push('/login');
         }, 2000);
       } else {
-        setMessage(data.error || 'Failed to create account. Please try again.');
+        setMessage(data.error || t('auth.signup.messages.failed'));
       }
     } catch (error) {
-      setMessage('An error occurred. Please try again.');
+      setMessage(t('auth.common.errors.generic'));
     } finally {
       setLoading(false);
       setIsSubmitting(false);
@@ -189,7 +191,7 @@ export default function SignupPage() {
         callbackUrl: '/dashboard',
       });
     } catch (error) {
-      setMessage(`Failed to sign up with ${provider}. Please try again.`);
+      setMessage(t('auth.signup.messages.socialFailed', { provider }));
     } finally {
       setSocialLoading(null);
     }
@@ -212,14 +214,14 @@ export default function SignupPage() {
           {/* Logo/Header */}
           <div className="mb-8">
             <Link href="/" className="text-2xl font-semibold text-[#91C549]">
-              1001 Stories
+              {t('auth.common.branding.appName')}
             </Link>
           </div>
 
           {/* Form Container */}
           <div className="bg-white rounded-lg shadow-sm border border-[#E5E5E5] p-8">
             <h2 className="text-2xl font-semibold text-center text-[#171717] mb-8">
-              Welcome to Our Family!
+              {t('auth.signup.header.title')}
             </h2>
 
             {/* Message Display */}
@@ -239,7 +241,7 @@ export default function SignupPage() {
                   </span>
                   <div>
                     <h3 className="text-sm font-medium">
-                      {message.includes('success') ? 'Success!' : 'Registration Error'}
+                      {message.includes('success') ? t('auth.signup.messages.success') : t('auth.signup.messages.error')}
                     </h3>
                     <p className="text-sm mt-1">{message}</p>
                   </div>
@@ -254,7 +256,7 @@ export default function SignupPage() {
                   htmlFor="name"
                   className="block text-sm font-normal text-[#737373] mb-2"
                 >
-                  Full Name
+                  {t('auth.signup.form.fullName.label')}
                 </label>
                 <input
                   id="name"
@@ -271,7 +273,7 @@ export default function SignupPage() {
                     transition-colors duration-200
                     ${getFieldError('name') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
                   `}
-                  placeholder="Enter your full name"
+                  placeholder={t('auth.signup.form.fullName.placeholder')}
                   aria-invalid={!!getFieldError('name')}
                   aria-describedby={getFieldError('name') ? 'name-error' : undefined}
                 />
@@ -291,7 +293,7 @@ export default function SignupPage() {
                   htmlFor="email"
                   className="block text-sm font-normal text-[#737373] mb-2"
                 >
-                  Email
+                  {t('auth.common.form.email.label')}
                 </label>
                 <input
                   id="email"
@@ -309,7 +311,7 @@ export default function SignupPage() {
                     transition-colors duration-200
                     ${getFieldError('email') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
                   `}
-                  placeholder="Enter your email"
+                  placeholder={t('auth.common.form.email.placeholder')}
                   aria-invalid={!!getFieldError('email')}
                   aria-describedby={getFieldError('email') ? 'email-error' : undefined}
                 />
@@ -329,7 +331,7 @@ export default function SignupPage() {
                   htmlFor="password"
                   className="block text-sm font-normal text-[#737373] mb-2"
                 >
-                  Password
+                  {t('auth.common.form.password.label')}
                 </label>
                 <div className="relative">
                   <input
@@ -348,7 +350,7 @@ export default function SignupPage() {
                       transition-colors duration-200
                       ${getFieldError('password') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
                     `}
-                    placeholder="Create a password"
+                    placeholder={t('auth.common.form.password.placeholderNew')}
                     aria-invalid={!!getFieldError('password')}
                     aria-describedby={getFieldError('password') ? 'password-error' : undefined}
                   />
@@ -356,7 +358,7 @@ export default function SignupPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-label={showPassword ? t('auth.common.form.password.hidePassword') : t('auth.common.form.password.showPassword')}
                   >
                     <span className="text-gray-400 hover:text-gray-600">
                       {showPassword ? '🙈' : '👁️'}
@@ -390,7 +392,7 @@ export default function SignupPage() {
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                     </div>
                   ) : (
-                    'Sign Up'
+                    t('auth.common.buttons.signUp')
                   )}
                 </button>
 
@@ -402,7 +404,7 @@ export default function SignupPage() {
                     hover:bg-gray-50 focus:outline-none focus:ring-2
                     focus:ring-offset-2 focus:ring-[#91C549] transition-colors duration-200"
                 >
-                  Log In
+                  {t('auth.common.buttons.logIn')}
                 </button>
               </div>
             </form>
@@ -413,7 +415,7 @@ export default function SignupPage() {
                 <div className="w-full border-t border-[#E5E5E5]"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="px-3 bg-white text-sm text-[#737373]">OR</span>
+                <span className="px-3 bg-white text-sm text-[#737373]">{t('auth.common.divider.or')}</span>
               </div>
             </div>
 
@@ -433,14 +435,14 @@ export default function SignupPage() {
                 {socialLoading === 'google' ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2"></div>
-                    <span>Connecting...</span>
+                    <span>{t('auth.common.loading.connecting')}</span>
                   </div>
                 ) : (
                   <>
                     <div className="w-5 h-5 mr-3 bg-[#A3A3A3] rounded flex items-center justify-center text-white text-sm font-normal">
                       G
                     </div>
-                    <span>Sign in with Google</span>
+                    <span>{t('auth.common.buttons.signInWithGoogle')}</span>
                   </>
                 )}
               </button>
@@ -449,13 +451,13 @@ export default function SignupPage() {
             {/* Already have account */}
             <div className="mt-6 text-center">
               <span className="text-sm text-[#525252]">
-                Already have an account?{' '}
+                {t('auth.signup.links.hasAccount')}{' '}
               </span>
               <Link
                 href="/login"
                 className="text-sm text-[#000000] hover:text-[#2B2B2B] focus:outline-none focus:underline font-normal"
               >
-                Sign in here
+                {t('auth.signup.links.signInHere')}
               </Link>
             </div>
           </div>
@@ -463,13 +465,13 @@ export default function SignupPage() {
           {/* Terms & Privacy */}
           <div className="mt-6 text-center">
             <p className="text-xs text-[#737373]">
-              By signing in, you agree to our{' '}
+              {t('auth.common.footer.termsPrefix')}{' '}
               <Link href="/terms" className="text-[#737373] hover:text-[#2B2B2B] underline">
-                Terms of Service
+                {t('auth.common.footer.termsLink')}
               </Link>
-              {' '}and{' '}
+              {' '}{t('auth.common.footer.termsConnector')}{' '}
               <Link href="/privacy" className="text-[#737373] hover:text-[#2B2B2B] underline">
-                Privacy Policy
+                {t('auth.common.footer.privacyLink')}
               </Link>
             </p>
           </div>
@@ -482,17 +484,17 @@ export default function SignupPage() {
           <div className="mb-8">
             <Image
               src="/images/signup-illustration.svg"
-              alt="Join our family"
+              alt={t('auth.signup.header.rightPanel.imageAlt')}
               width={300}
               height={300}
               className="mx-auto"
             />
           </div>
           <h1 className="text-5xl font-semibold mb-6">
-            Join 1001 Stories
+            {t('auth.signup.header.rightPanel.title')}
           </h1>
           <p className="text-2xl font-semibold opacity-90">
-            Share your cultural stories with the world
+            {t('auth.signup.header.rightPanel.subtitle')}
           </p>
         </div>
       </div>

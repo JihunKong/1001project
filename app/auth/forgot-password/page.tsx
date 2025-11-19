@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -14,7 +16,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
 
     if (!email) {
-      setError('Please enter your email address');
+      setError(t('auth.forgotPassword.messages.emailRequired'));
       return;
     }
 
@@ -30,13 +32,13 @@ export default function ForgotPasswordPage() {
       });
 
       if (result?.error) {
-        setError('Failed to send magic link. Please try again.');
+        setError(t('auth.forgotPassword.messages.failed'));
       } else {
-        setMessage('Check your email! We sent you a magic link to sign in.');
+        setMessage(t('auth.forgotPassword.messages.success'));
         setEmail('');
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError(t('auth.common.errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -50,17 +52,17 @@ export default function ForgotPasswordPage() {
           {/* Logo/Header */}
           <div className="mb-8">
             <Link href="/" className="text-2xl font-semibold text-[#91C549]">
-              1001 Stories
+              {t('auth.common.branding.appName')}
             </Link>
           </div>
 
           {/* Form Container */}
           <div className="bg-white rounded-lg shadow-sm border border-[#E5E5E5] p-8">
             <h2 className="text-2xl font-normal text-center text-[#171717] mb-4">
-              Forgot Password?
+              {t('auth.forgotPassword.header.title')}
             </h2>
             <p className="text-center text-[#737373] text-sm mb-8">
-              No worries! We&apos;ll send you a magic link to sign in.
+              {t('auth.forgotPassword.header.subtitle')}
             </p>
 
             {/* Success Message */}
@@ -96,7 +98,7 @@ export default function ForgotPasswordPage() {
                   htmlFor="email"
                   className="block text-sm font-normal text-[#404040] mb-2"
                 >
-                  Email Address
+                  {t('auth.forgotPassword.form.emailLabel')}
                 </label>
                 <input
                   id="email"
@@ -109,7 +111,7 @@ export default function ForgotPasswordPage() {
                   className="w-full px-4 py-3 border rounded-lg text-gray-900
                     placeholder-[#ADAEBC] focus:outline-none focus:ring-2 focus:ring-[#91C549]
                     focus:border-transparent transition-colors duration-200 border-[#D4D4D4]"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.common.form.email.placeholder')}
                 />
               </div>
 
@@ -125,10 +127,10 @@ export default function ForgotPasswordPage() {
                 {loading ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-                    <span>Sending...</span>
+                    <span>{t('auth.common.loading.sending')}</span>
                   </div>
                 ) : (
-                  'Send Magic Link'
+                  t('auth.forgotPassword.form.submitButton')
                 )}
               </button>
             </form>
@@ -139,7 +141,7 @@ export default function ForgotPasswordPage() {
                 href="/login"
                 className="text-sm text-[#525252] hover:text-[#2B2B2B] focus:outline-none focus:underline"
               >
-                ← Back to Login
+                {t('auth.forgotPassword.links.backToLogin')}
               </Link>
             </div>
           </div>
@@ -147,13 +149,13 @@ export default function ForgotPasswordPage() {
           {/* Terms & Privacy */}
           <div className="mt-6 text-center">
             <p className="text-xs text-[#737373]">
-              By signing in, you agree to our{' '}
+              {t('auth.common.footer.termsPrefix')}{' '}
               <Link href="/terms" className="text-[#737373] hover:text-[#2B2B2B] underline">
-                Terms of Service
+                {t('auth.common.footer.termsLink')}
               </Link>
-              {' '}and{' '}
+              {' '}{t('auth.common.footer.termsConnector')}{' '}
               <Link href="/privacy" className="text-[#737373] hover:text-[#2B2B2B] underline">
-                Privacy Policy
+                {t('auth.common.footer.privacyLink')}
               </Link>
             </p>
           </div>
@@ -164,10 +166,10 @@ export default function ForgotPasswordPage() {
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#91C549]/70 to-[#04A59D]/70 items-center justify-center p-12">
         <div className="text-center text-white">
           <h1 className="text-5xl font-semibold mb-6">
-            We&apos;ve Got You Covered
+            {t('auth.forgotPassword.header.rightPanel.title')}
           </h1>
           <p className="text-2xl font-semibold opacity-90">
-            Just enter your email and we&apos;ll send you a magic link
+            {t('auth.forgotPassword.header.rightPanel.subtitle')}
           </p>
         </div>
       </div>
