@@ -665,6 +665,13 @@
     "buttons": {
       "dismiss": "닫기",
       "accept": "수락"
+    },
+    "actions": {
+      "cancel": "취소",
+      "save": "저장",
+      "saving": "저장 중...",
+      "edit": "수정",
+      "delete": "삭제"
     }
   },
   "language": {
@@ -1178,6 +1185,53 @@
     "error": {
       "prefix": "오류: ",
       "retry": "다시 시도"
+    }
+  },
+  "commentEditor": {
+    "loading": "에디터 불러오는 중...",
+    "instructions": "텍스트를 선택하여 인라인 코멘트를 추가하세요",
+    "openComments_one": "{{count}}개의 열린 코멘트",
+    "openComments_other": "{{count}}개의 열린 코멘트",
+    "stats": {
+      "characters": "글자",
+      "words": "단어"
+    },
+    "addComment": {
+      "label": "코멘트 추가",
+      "placeholder": "코멘트를 작성하세요...",
+      "cancel": "취소",
+      "submit": "코멘트 추가"
+    }
+  },
+  "commentPopup": {
+    "status": {
+      "resolved": "해결됨"
+    },
+    "deleteConfirm": {
+      "message": "이 코멘트를 삭제하시겠습니까?"
+    },
+    "actions": {
+      "reply": "답글",
+      "resolve": "해결",
+      "unresolve": "해결 취소"
+    },
+    "edit": {
+      "save": "저장",
+      "saving": "저장 중..."
+    },
+    "reply": {
+      "placeholder": "답글을 작성하세요...",
+      "send": "답글 보내기",
+      "sending": "전송 중..."
+    }
+  },
+  "commentThread": {
+    "deleteConfirm": {
+      "message": "이 답글을 삭제하시겠습니까?"
+    },
+    "edit": {
+      "save": "저장",
+      "saving": "저장 중..."
     }
   }
 }

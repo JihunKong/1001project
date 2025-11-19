@@ -8,6 +8,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { MessageSquarePlus } from 'lucide-react';
 import Popover from '@/components/ui/Popover';
 import DOMPurify from 'dompurify';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Comment {
   id: string;
@@ -88,6 +89,7 @@ export default function CommentableTextEditor({
   readOnly = false,
   className = ''
 }: CommentableTextEditorProps) {
+  const { t } = useTranslation();
   const [selectedText, setSelectedText] = useState('');
   const [selectionRange, setSelectionRange] = useState<{ from: number; to: number } | null>(null);
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
@@ -238,7 +240,7 @@ export default function CommentableTextEditor({
     return (
       <div className={`border border-gray-200 rounded-lg overflow-hidden ${className}`}>
         <div className="p-4 min-h-[400px] bg-white flex items-center justify-center">
-          <div className="text-gray-400">Loading editor...</div>
+          <div className="text-gray-400">{t('commentEditor.loading')}</div>
         </div>
       </div>
     );
@@ -270,7 +272,7 @@ export default function CommentableTextEditor({
         {!readOnly && (
           <div className="bg-[#EEF2FF] border-b border-[#E0E7FF] px-4 py-2 flex items-center gap-2 text-sm text-[#5951E7]">
             <MessageSquarePlus className="h-4 w-4" />
-            <span>Select text to add inline comments</span>
+            <span>{t('commentEditor.instructions')}</span>
           </div>
         )}
 
@@ -284,14 +286,14 @@ export default function CommentableTextEditor({
 
         <div className="bg-[#F9FAFB] border-t border-[#E5E5EA] px-4 py-2 text-sm text-[#8E8E93] flex justify-between">
           <div className="text-xs">
-            {comments.filter(c => c.status === 'OPEN').length} open comment{comments.filter(c => c.status === 'OPEN').length !== 1 ? 's' : ''}
+            {t(comments.filter(c => c.status === 'OPEN').length === 1 ? 'commentEditor.openComments_one' : 'commentEditor.openComments_other', { count: comments.filter(c => c.status === 'OPEN').length })}
           </div>
           <div className="flex items-center space-x-4 text-xs sm:text-sm">
             <span>
-              {editor.storage.characterCount ? editor.storage.characterCount.characters() : 0} characters
+              {editor.storage.characterCount ? editor.storage.characterCount.characters() : 0} {t('commentEditor.stats.characters')}
             </span>
             <span>
-              {editor.storage.characterCount ? editor.storage.characterCount.words() : 0} words
+              {editor.storage.characterCount ? editor.storage.characterCount.words() : 0} {t('commentEditor.stats.words')}
             </span>
           </div>
         </div>
@@ -307,7 +309,7 @@ export default function CommentableTextEditor({
         <div className="space-y-3">
           <div>
             <label className="block text-sm font-medium text-[#141414] mb-1">
-              Add Comment
+              {t('commentEditor.addComment.label')}
             </label>
             <div className="text-xs text-[#8E8E93] mb-2 p-2 bg-[#F9FAFB] rounded border border-[#E5E5EA]">
               &quot;{selectedText.length > 50 ? selectedText.substring(0, 50) + '...' : selectedText}&quot;
@@ -317,7 +319,7 @@ export default function CommentableTextEditor({
           <textarea
             value={commentContent}
             onChange={(e) => setCommentContent(e.target.value)}
-            placeholder="Write your comment..."
+            placeholder={t('commentEditor.addComment.placeholder')}
             className="w-full px-3 py-2 border border-[#E5E5EA] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5951E7] text-sm text-gray-900"
             rows={3}
             autoFocus
@@ -329,14 +331,14 @@ export default function CommentableTextEditor({
               onClick={handleClosePopover}
               className="flex-1 px-3 py-2 border border-[#E5E5EA] rounded-lg text-sm font-medium text-[#141414] hover:bg-[#F9FAFB]"
             >
-              Cancel
+              {t('commentEditor.addComment.cancel')}
             </button>
             <button
               onClick={handleAddComment}
               disabled={commentContent.trim().length === 0}
               className="flex-1 px-3 py-2 bg-[#5951E7] text-white rounded-lg text-sm font-medium hover:bg-[#4338CA] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add Comment
+              {t('commentEditor.addComment.submit')}
             </button>
           </div>
         </div>

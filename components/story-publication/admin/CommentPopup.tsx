@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { MessageSquare, CheckCircle, Trash2, Edit2, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import CommentThread from './CommentThread';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Comment {
   id: string;
@@ -45,6 +46,7 @@ export default function CommentPopup({
   onEdit,
   onDelete
 }: CommentPopupProps) {
+  const { t } = useTranslation();
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
@@ -100,7 +102,7 @@ export default function CommentPopup({
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this comment?')) return;
+    if (!confirm(t('commentPopup.deleteConfirm.message'))) return;
 
     setIsSubmitting(true);
     try {
@@ -156,7 +158,7 @@ export default function CommentPopup({
           {comment.status === 'RESOLVED' && (
             <div className="flex items-center gap-1 text-green-600 text-xs font-medium flex-shrink-0">
               <CheckCircle className="h-3 w-3" />
-              <span>Resolved</span>
+              <span>{t('commentPopup.status.resolved')}</span>
             </div>
           )}
         </div>
@@ -184,14 +186,14 @@ export default function CommentPopup({
                 disabled={isSubmitting}
                 className="px-3 py-1.5 text-sm border border-[#E5E5EA] rounded-lg hover:bg-[#F9FAFB] disabled:opacity-50"
               >
-                Cancel
+                {t('common.actions.cancel')}
               </button>
               <button
                 onClick={handleEdit}
                 disabled={isSubmitting || editContent.trim().length === 0}
                 className="px-3 py-1.5 text-sm bg-[#5951E7] text-white rounded-lg hover:bg-[#4338CA] disabled:opacity-50"
               >
-                {isSubmitting ? 'Saving...' : 'Save'}
+                {isSubmitting ? t('common.actions.saving') : t('common.actions.save')}
               </button>
             </div>
           </div>
@@ -205,7 +207,7 @@ export default function CommentPopup({
             className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#5951E7] hover:bg-[#EEF2FF] rounded"
           >
             <MessageSquare className="h-3 w-3" />
-            Reply
+            {t('commentPopup.actions.reply')}
           </button>
 
           {canResolve && (
@@ -215,7 +217,7 @@ export default function CommentPopup({
               className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-50 rounded disabled:opacity-50"
             >
               <CheckCircle className="h-3 w-3" />
-              {comment.isResolved ? 'Unresolve' : 'Resolve'}
+              {comment.isResolved ? t('commentPopup.actions.unresolve') : t('commentPopup.actions.resolve')}
             </button>
           )}
 
@@ -225,7 +227,7 @@ export default function CommentPopup({
               className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded"
             >
               <Edit2 className="h-3 w-3" />
-              Edit
+              {t('common.actions.edit')}
             </button>
           )}
 
@@ -236,7 +238,7 @@ export default function CommentPopup({
               className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 rounded ml-auto disabled:opacity-50"
             >
               <Trash2 className="h-3 w-3" />
-              Delete
+              {t('common.actions.delete')}
             </button>
           )}
         </div>
@@ -260,7 +262,7 @@ export default function CommentPopup({
           <textarea
             value={replyContent}
             onChange={(e) => setReplyContent(e.target.value)}
-            placeholder="Write a reply..."
+            placeholder={t('commentPopup.reply.placeholder')}
             className="w-full px-3 py-2 border border-[#E5E5EA] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5951E7] text-sm"
             rows={3}
             autoFocus
@@ -274,7 +276,7 @@ export default function CommentPopup({
               disabled={isSubmitting}
               className="px-3 py-1.5 text-sm border border-[#E5E5EA] rounded-lg hover:bg-[#F9FAFB] disabled:opacity-50"
             >
-              Cancel
+              {t('common.actions.cancel')}
             </button>
             <button
               onClick={handleReply}
@@ -282,7 +284,7 @@ export default function CommentPopup({
               className="flex items-center gap-1 px-3 py-1.5 text-sm bg-[#5951E7] text-white rounded-lg hover:bg-[#4338CA] disabled:opacity-50"
             >
               <Send className="h-3 w-3" />
-              {isSubmitting ? 'Sending...' : 'Send Reply'}
+              {isSubmitting ? t('commentPopup.reply.sending') : t('commentPopup.reply.send')}
             </button>
           </div>
         </div>

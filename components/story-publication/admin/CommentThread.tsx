@@ -3,6 +3,7 @@
 import { formatDistanceToNow } from 'date-fns';
 import { CheckCircle, Trash2, Edit2 } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Comment {
   id: string;
@@ -39,6 +40,7 @@ export default function CommentThread({
   onEdit,
   onDelete
 }: CommentThreadProps) {
+  const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +61,7 @@ export default function CommentThread({
   };
 
   const handleDelete = async (commentId: string) => {
-    if (!confirm('Are you sure you want to delete this reply?')) return;
+    if (!confirm(t('commentThread.deleteConfirm.message'))) return;
 
     setIsSubmitting(true);
     try {
@@ -146,14 +148,14 @@ export default function CommentThread({
                     disabled={isSubmitting}
                     className="px-2 py-1 text-xs border border-[#E5E5EA] rounded hover:bg-white disabled:opacity-50"
                   >
-                    Cancel
+                    {t('common.actions.cancel')}
                   </button>
                   <button
                     onClick={() => handleEdit(reply.id)}
                     disabled={isSubmitting || editContent.trim().length === 0}
                     className="px-2 py-1 text-xs bg-[#5951E7] text-white rounded hover:bg-[#4338CA] disabled:opacity-50"
                   >
-                    {isSubmitting ? 'Saving...' : 'Save'}
+                    {isSubmitting ? t('common.actions.saving') : t('common.actions.save')}
                   </button>
                 </div>
               </div>
@@ -171,7 +173,7 @@ export default function CommentThread({
                       className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded"
                     >
                       <Edit2 className="h-2.5 w-2.5" />
-                      Edit
+                      {t('common.actions.edit')}
                     </button>
                   )}
 
@@ -182,7 +184,7 @@ export default function CommentThread({
                       className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded disabled:opacity-50"
                     >
                       <Trash2 className="h-2.5 w-2.5" />
-                      Delete
+                      {t('common.actions.delete')}
                     </button>
                   )}
                 </div>
