@@ -1,44 +1,259 @@
 {
   "dashboard": {
-    "writer": {
-      "home": {
-        "title": "Inicio",
-        "welcome": "Bienvenido de nuevo",
-        "subtitle": "Continúa tu viaje de escritura",
-        "noStories": "Aún no hay historias",
-        "writeFirstStory": "Escribe Tu Primera Historia"
+    "common": {
+      "loading": "Loading your dashboard...",
+      "loadingStoryQueue": "Loading story review queue...",
+      "loadingFormatQueue": "Loading format decision queue...",
+      "loadingApprovalQueue": "Loading content approval queue...",
+      "loadingAdminDashboard": "Loading admin dashboard...",
+      "error": {
+        "prefix": "Error: ",
+        "retry": "Retry"
       },
+      "actions": {
+        "registerBook": "Register Book",
+        "viewDetails": "View Details",
+        "review": "Review",
+        "decide": "Decide",
+        "approve": "Approve",
+        "reject": "Reject",
+        "view": "View",
+        "feedback": "Feedback",
+        "notes": "Notes"
+      },
+      "priority": {
+        "high": "HIGH",
+        "medium": "MEDIUM",
+        "low": "LOW",
+        "urgent": "URGENT"
+      },
+      "table": {
+        "priority": "Priority",
+        "storyDetails": "Story Details",
+        "author": "Author",
+        "status": "Status",
+        "submitted": "Submitted",
+        "actions": "Actions",
+        "type": "Type",
+        "title": "Title",
+        "submitter": "Submitter",
+        "dueDate": "Due Date",
+        "class": "Class"
+      }
+    },
+    "learner": {
+      "title": "Learning Dashboard",
+      "welcome": "Welcome back, {name}! Keep reading and learning.",
+      "browseLibrary": "Browse Library",
       "stats": {
-        "title": "Tus Estadísticas",
-        "total": "Historias Totales",
-        "published": "Publicadas",
-        "draft": "Borradores",
-        "inReview": "En Revisión",
-        "readers": "Lectores Alcanzados",
-        "views": "Vistas Totales",
-        "totalWords": "Palabras totales",
-        "avgReadTime": "Tiempo promedio de lectura",
-        "completionRate": "Tasa de finalización"
+        "booksRead": "Books Read",
+        "readingTime": "Reading Time",
+        "readingStreak": "Reading Streak",
+        "classRank": "Class Rank",
+        "days": "{days} days",
+        "hours": "{hours}h"
+      },
+      "continueReading": {
+        "title": "Continue Reading",
+        "empty": "No books in progress",
+        "emptySubtitle": "Start reading a book assigned by your teacher",
+        "by": "by {author}",
+        "page": "Page {current} of {total}",
+        "continueButton": "Continue Reading"
+      },
+      "assignments": {
+        "title": "Upcoming Assignments",
+        "empty": "No assignments",
+        "emptySubtitle": "Your teacher will assign reading tasks here",
+        "due": "Due: {date}"
       },
       "quickActions": {
-        "title": "Acciones Rápidas",
-        "writeNew": "Escribir Nueva Historia",
-        "viewLibrary": "Explorar Biblioteca",
-        "manageStories": "Gestionar Mis Historias"
+        "title": "Quick Actions",
+        "joinBookClub": "Join Book Club",
+        "joinBookClubDesc": "Discuss books with classmates",
+        "askAIHelper": "Ask AI Helper",
+        "askAIHelperDesc": "Get help with difficult words",
+        "rateBooks": "Rate Books",
+        "rateBooksDesc": "Share your thoughts"
+      }
+    },
+    "teacher": {
+      "title": "Educator Dashboard",
+      "welcome": "Welcome back, {name}",
+      "createClass": "Create Class",
+      "assignReading": "Assign Reading",
+      "stats": {
+        "totalStudents": "Total Students",
+        "thisMonth": "+12 this month",
+        "activeClasses": "Active Classes",
+        "currentSemester": "Current semester",
+        "booksAssigned": "Books Assigned",
+        "completed": "{count} completed",
+        "avgProgress": "Avg Progress"
       },
-      "recentActivity": {
-        "title": "Actividad Reciente",
-        "noActivity": "Sin actividad reciente"
+      "myClasses": {
+        "title": "My Classes",
+        "class": "Class",
+        "classes": "Classes",
+        "empty": "No Classes Yet",
+        "emptyDesc": "Create your first class to start managing students",
+        "createFirst": "Create First Class",
+        "active": "● Active",
+        "inactive": "○ Inactive",
+        "classCode": "Class Code",
+        "students": "Students",
+        "viewStudents": "View Students",
+        "assignBooks": "Assign Books"
       },
-      "achievements": {
-        "title": "Logros",
-        "firstStory": "Primera Historia Publicada",
-        "tenStories": "10 Historias Publicadas",
-        "hundredReaders": "100 Lectores Alcanzados"
+      "studentProgress": {
+        "title": "Student Progress",
+        "recentActivity": "Recent Activity",
+        "empty": "No Activity Yet",
+        "emptyDesc": "Student progress will appear here. Assign books to classes to track progress",
+        "activeAgo": "Active {days} days ago",
+        "dayStreak": "{streak} day streak",
+        "booksCompleted": "Books Completed",
+        "avgProgress": "Average Progress",
+        "overallProgress": "Overall Progress"
       },
-      "submit": {
-        "title": "Enviar Nueva Historia",
-        "instructions": "Escribe tu historia a continuación. Puedes guardar como borrador o enviar para revisión."
+      "assignments": {
+        "title": "Recent Assignments",
+        "active": "{count} Active",
+        "newAssignment": "New Assignment",
+        "empty": "No Assignments Yet",
+        "emptyDesc": "Start by assigning books to your classes. Track student reading progress and engagement",
+        "tableEmpty": "No Assignments Created",
+        "tableEmptyDesc": "Start by assigning books to your classes",
+        "createFirst": "Create First Assignment",
+        "assignment": "Assignment",
+        "bookDetails": "Book Details",
+        "completionRate": "Completion Rate",
+        "studentsRatio": "{completed}/{total} students"
+      }
+    },
+    "storyManager": {
+      "title": "Story Manager Dashboard",
+      "subtitle": "Review and approve story submissions",
+      "filter": {
+        "all": "All Submissions",
+        "pending": "Pending Review",
+        "inReview": "In Review"
+      },
+      "stats": {
+        "pendingReview": "Pending Review",
+        "inReview": "In Review",
+        "approved": "Approved",
+        "needsRevision": "Needs Revision",
+        "totalReviewed": "Total Reviewed"
+      },
+      "queue": {
+        "title": "Story Submissions Queue",
+        "empty": "No submissions in queue",
+        "emptySubtitle": "Check back later for new story submissions",
+        "words": "{words} words",
+        "ages": "Ages {ageRange}",
+        "moreCategories": "+{count} more"
+      }
+    },
+    "bookManager": {
+      "title": "Book Manager Dashboard",
+      "subtitle": "Decide publication format for approved stories",
+      "filter": {
+        "all": "All Submissions",
+        "awaitingDecision": "Awaiting Decision",
+        "formatReview": "In Format Review",
+        "sentToAdmin": "Sent to Content Admin"
+      },
+      "stats": {
+        "awaitingDecision": "Awaiting Decision",
+        "formatReview": "Format Review",
+        "bookFormat": "Book Format",
+        "textFormat": "Text Format",
+        "totalDecisions": "Total Decisions"
+      },
+      "queue": {
+        "title": "Format Decision Queue",
+        "approvedBy": "Approved By",
+        "formatDecision": "Format Decision",
+        "empty": "No stories awaiting format decision",
+        "emptySubtitle": "Check back later for approved stories",
+        "pendingDecision": "Pending Decision",
+        "autoApproved": "Auto-approved"
+      }
+    },
+    "contentAdmin": {
+      "title": "Content Admin Dashboard",
+      "subtitle": "Final review and publication approval",
+      "filter": {
+        "all": "All Submissions",
+        "awaitingApproval": "Awaiting Approval",
+        "published": "Published",
+        "rejected": "Rejected"
+      },
+      "stats": {
+        "awaitingApproval": "Awaiting Approval",
+        "approved": "Approved",
+        "published": "Published",
+        "rejected": "Rejected",
+        "thisWeek": "This Week",
+        "totalReviewed": "Total Reviewed"
+      },
+      "queue": {
+        "title": "Final Approval Queue",
+        "formatDecision": "Format Decision",
+        "decidedBy": "Decided By",
+        "empty": "No submissions awaiting final approval",
+        "emptySubtitle": "Check back later for stories ready for publication",
+        "notDecided": "Not decided",
+        "autoAssigned": "Auto-assigned"
+      }
+    },
+    "admin": {
+      "title": "Admin Dashboard",
+      "subtitle": "System overview and management for {name}",
+      "analytics": "Analytics",
+      "settings": "Settings",
+      "stats": {
+        "totalUsers": "Total Users",
+        "active": "{count} active",
+        "totalBooks": "Total Books",
+        "submissions": "Submissions",
+        "systemHealth": "System Health",
+        "uptime": "Uptime: {uptime}",
+        "healthy": "healthy",
+        "warning": "warning",
+        "critical": "critical"
+      },
+      "usersByRole": {
+        "title": "Users by Role"
+      },
+      "systemAlerts": {
+        "title": "System Alerts",
+        "noAlerts": "No active alerts",
+        "noAlertsDesc": "All systems operating normally"
+      },
+      "systemResources": {
+        "title": "System Resources",
+        "diskUsage": "Disk Usage",
+        "memoryUsage": "Memory Usage",
+        "viewMetrics": "View Detailed Metrics"
+      },
+      "pendingReviews": {
+        "title": "Pending Reviews",
+        "count": "{count} pending",
+        "empty": "No pending reviews",
+        "emptyDesc": "All submissions and reports are up to date"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "userManagement": "User Management",
+        "userManagementDesc": "Manage user accounts and roles",
+        "contentModeration": "Content Moderation",
+        "contentModerationDesc": "Review and approve content",
+        "databaseBackup": "Database Backup",
+        "databaseBackupDesc": "Manage system backups",
+        "systemSettings": "System Settings",
+        "systemSettingsDesc": "Configure platform settings"
       }
     }
   },

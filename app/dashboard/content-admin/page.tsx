@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import {
   CheckCircle,
   XCircle,
@@ -63,6 +64,7 @@ interface Stats {
 }
 
 export default function ContentAdminDashboard() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [submissions, setSubmissions] = useState<TextSubmission[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -162,7 +164,7 @@ export default function ContentAdminDashboard() {
       <div data-role="content-admin" className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-soe-green-400 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading content approval queue...</p>
+          <p className="mt-4 text-gray-600">{t('dashboard.common.loadingApprovalQueue')}</p>
         </div>
       </div>
     );
@@ -172,12 +174,12 @@ export default function ContentAdminDashboard() {
     return (
       <div data-role="content-admin" className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600">Error: {error}</p>
+          <p className="text-red-600">{t('dashboard.common.error.prefix')}{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-soe-green-400 text-white rounded hover:bg-soe-green-500"
           >
-            Retry
+            {t('dashboard.common.error.retry')}
           </button>
         </div>
       </div>
@@ -190,9 +192,9 @@ export default function ContentAdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Content Admin Dashboard</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.contentAdmin.title')}</h1>
               <p className="mt-1 text-sm text-gray-500">
-                Final review and publication approval
+                {t('dashboard.contentAdmin.subtitle')}
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -201,17 +203,17 @@ export default function ContentAdminDashboard() {
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <BookOpen className="h-5 w-5 mr-2" />
-                Register Book
+                {t('dashboard.common.actions.registerBook')}
               </Link>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900"
               >
-                <option value="all">All Submissions</option>
-                <option value="CONTENT_REVIEW">Awaiting Approval</option>
-                <option value="PUBLISHED">Published</option>
-                <option value="REJECTED">Rejected</option>
+                <option value="all">{t('dashboard.contentAdmin.filter.all')}</option>
+                <option value="CONTENT_REVIEW">{t('dashboard.contentAdmin.filter.awaitingApproval')}</option>
+                <option value="PUBLISHED">{t('dashboard.contentAdmin.filter.published')}</option>
+                <option value="REJECTED">{t('dashboard.contentAdmin.filter.rejected')}</option>
               </select>
             </div>
           </div>
@@ -226,7 +228,7 @@ export default function ContentAdminDashboard() {
               <div className="flex items-center">
                 <Shield className="h-8 w-8 text-yellow-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Awaiting Approval</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.contentAdmin.stats.awaitingApproval')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.awaitingApproval}</p>
                 </div>
               </div>
@@ -236,7 +238,7 @@ export default function ContentAdminDashboard() {
               <div className="flex items-center">
                 <CheckCircle className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Approved</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.contentAdmin.stats.approved')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.approved}</p>
                 </div>
               </div>
@@ -246,7 +248,7 @@ export default function ContentAdminDashboard() {
               <div className="flex items-center">
                 <Star className="h-8 w-8 text-soe-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Published</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.contentAdmin.stats.published')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.published}</p>
                 </div>
               </div>
@@ -256,7 +258,7 @@ export default function ContentAdminDashboard() {
               <div className="flex items-center">
                 <XCircle className="h-8 w-8 text-red-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Rejected</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.contentAdmin.stats.rejected')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.rejected}</p>
                 </div>
               </div>
@@ -266,7 +268,7 @@ export default function ContentAdminDashboard() {
               <div className="flex items-center">
                 <TrendingUp className="h-8 w-8 text-purple-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">This Week</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.contentAdmin.stats.thisWeek')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.thisWeekApprovals}</p>
                 </div>
               </div>
@@ -276,7 +278,7 @@ export default function ContentAdminDashboard() {
               <div className="flex items-center">
                 <FileText className="h-8 w-8 text-soe-green-400" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Reviewed</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.contentAdmin.stats.totalReviewed')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.totalReviewed}</p>
                 </div>
               </div>
@@ -287,32 +289,32 @@ export default function ContentAdminDashboard() {
         {/* Submissions Table */}
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Final Approval Queue</h2>
+            <h2 className="text-lg font-medium text-gray-900">{t('dashboard.contentAdmin.queue.title')}</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Priority
+                    {t('dashboard.common.table.priority')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Story Details
+                    {t('dashboard.common.table.storyDetails')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Author
+                    {t('dashboard.common.table.author')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Format Decision
+                    {t('dashboard.contentAdmin.queue.formatDecision')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Decided By
+                    {t('dashboard.contentAdmin.queue.decidedBy')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t('dashboard.common.table.status')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t('dashboard.common.table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -322,8 +324,8 @@ export default function ContentAdminDashboard() {
                     <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                       <div className="flex flex-col items-center">
                         <Shield className="h-12 w-12 text-gray-300 mb-4" />
-                        <p>No submissions awaiting final approval</p>
-                        <p className="text-sm">Check back later for stories ready for publication</p>
+                        <p>{t('dashboard.contentAdmin.queue.empty')}</p>
+                        <p className="text-sm">{t('dashboard.contentAdmin.queue.emptySubtitle')}</p>
                       </div>
                     </td>
                   </tr>
@@ -334,7 +336,7 @@ export default function ContentAdminDashboard() {
                       <tr key={submission.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
-                            {priority.toUpperCase()}
+                            {t(`dashboard.common.priority.${priority}`).toUpperCase()}
                           </span>
                         </td>
                         <td className="px-6 py-4">
@@ -343,8 +345,8 @@ export default function ContentAdminDashboard() {
                               {submission.title}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {submission.wordCount} words • {submission.language}
-                              {submission.ageRange && ` • Ages ${submission.ageRange}`}
+                              {t('dashboard.storyManager.queue.words', { words: submission.wordCount })} • {submission.language}
+                              {submission.ageRange && ` • ${t('dashboard.storyManager.queue.ages', { ageRange: submission.ageRange })}`}
                             </div>
                             {(submission.category || []).length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
@@ -354,7 +356,7 @@ export default function ContentAdminDashboard() {
                                   </span>
                                 ))}
                                 {(submission.category || []).length > 2 && (
-                                  <span className="text-xs text-gray-500">+{(submission.category || []).length - 2} more</span>
+                                  <span className="text-xs text-gray-500">{t('dashboard.storyManager.queue.moreCategories', { count: (submission.category || []).length - 2 })}</span>
                                 )}
                               </div>
                             )}
@@ -373,7 +375,7 @@ export default function ContentAdminDashboard() {
                           <div className="flex items-center">
                             {getFormatIcon(submission.bookDecision || '')}
                             <span className="ml-2 text-sm font-medium">
-                              {submission.bookDecision || 'Not decided'}
+                              {submission.bookDecision || t('dashboard.contentAdmin.queue.notDecided')}
                             </span>
                           </div>
                         </td>
@@ -384,7 +386,7 @@ export default function ContentAdminDashboard() {
                               <div className="text-gray-500">{submission.bookManager.email}</div>
                             </div>
                           ) : (
-                            <span className="text-gray-400">Auto-assigned</span>
+                            <span className="text-gray-400">{t('dashboard.contentAdmin.queue.autoAssigned')}</span>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -408,12 +410,12 @@ export default function ContentAdminDashboard() {
                               className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
                             >
                               <Eye className="h-4 w-4 mr-1" />
-                              {submission.status === 'CONTENT_REVIEW' ? 'Review' : 'View'}
+                              {submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}
                             </Link>
                             {submission.finalNotes && (
                               <button className="text-soe-green-600 hover:text-soe-green-900 flex items-center">
                                 <AlertTriangle className="h-4 w-4 mr-1" />
-                                Notes
+                                {t('dashboard.common.actions.notes')}
                               </button>
                             )}
                           </div>

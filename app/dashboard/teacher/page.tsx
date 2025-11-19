@@ -29,6 +29,7 @@ import {
   DashboardTable,
   type Column
 } from '@/components/dashboard';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Class {
   id: string;
@@ -76,6 +77,7 @@ interface Stats {
 }
 
 export default function TeacherDashboard() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [classes, setClasses] = useState<Class[]>([]);
   const [recentProgress, setRecentProgress] = useState<StudentProgress[]>([]);
@@ -182,7 +184,7 @@ export default function TeacherDashboard() {
   }, [session]);
 
   if (status === 'loading' || loading) {
-    return <DashboardLoadingState message="Loading your dashboard..." />;
+    return <DashboardLoadingState message={t('dashboard.common.loading')} />;
   }
 
   if (error) {
@@ -193,11 +195,11 @@ export default function TeacherDashboard() {
     <>
       <button className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
         <Plus className="h-5 w-5" />
-        Create Class
+        {t('dashboard.teacher.createClass')}
       </button>
       <button className="w-full sm:w-auto bg-gradient-to-r from-soe-green-400 to-soe-green-500 hover:from-soe-green-500 hover:to-soe-green-600 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400">
         <BookOpen className="h-5 w-5" />
-        Assign Reading
+        {t('dashboard.teacher.assignReading')}
       </button>
     </>
   );
@@ -206,8 +208,8 @@ export default function TeacherDashboard() {
     <div data-role="teacher" className="min-h-screen bg-gradient-to-br from-gray-50 to-soe-green-50">
       <DashboardHeader
         icon={GraduationCap}
-        title="Educator Dashboard"
-        subtitle={`Welcome back, ${session?.user?.name}`}
+        title={t('dashboard.teacher.title')}
+        subtitle={t('dashboard.teacher.welcome', { name: session?.user?.name })}
         iconColor="from-emerald-500 to-emerald-600"
         actions={headerActions}
       />
@@ -217,31 +219,31 @@ export default function TeacherDashboard() {
         {stats && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <DashboardStatsCard
-              title="Total Students"
+              title={t('dashboard.teacher.stats.totalStudents')}
               value={stats.totalStudents}
               icon={Users}
               iconColor="text-soe-green-600"
               iconBgColor="from-soe-green-400 to-soe-green-500"
-              trend={{ value: '+12 this month', isPositive: true }}
+              trend={{ value: t('dashboard.teacher.stats.thisMonth'), isPositive: true }}
             />
             <DashboardStatsCard
-              title="Active Classes"
+              title={t('dashboard.teacher.stats.activeClasses')}
               value={stats.activeClasses}
-              subValue="Current semester"
+              subValue={t('dashboard.teacher.stats.currentSemester')}
               icon={Calendar}
               iconColor="text-white"
               iconBgColor="from-emerald-500 to-emerald-600"
             />
             <DashboardStatsCard
-              title="Books Assigned"
+              title={t('dashboard.teacher.stats.booksAssigned')}
               value={stats.booksAssigned}
-              subValue={`${stats.completedAssignments} completed`}
+              subValue={t('dashboard.teacher.stats.completed', { count: stats.completedAssignments })}
               icon={BookOpen}
               iconColor="text-white"
               iconBgColor="from-purple-500 to-purple-600"
             />
             <DashboardStatsCard
-              title="Avg Progress"
+              title={t('dashboard.teacher.stats.avgProgress')}
               value={`${stats.averageClassProgress}%`}
               icon={BarChart3}
               iconColor="text-white"
@@ -252,11 +254,11 @@ export default function TeacherDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
           <DashboardSection
-            title="My Classes"
+            title={t('dashboard.teacher.myClasses.title')}
             icon={Users}
             badge={
               <span className="ml-auto bg-soe-green-100 text-soe-green-700 px-2 py-1 text-xs font-medium rounded-full">
-                {classes.length} {classes.length === 1 ? 'Class' : 'Classes'}
+                {classes.length} {classes.length === 1 ? t('dashboard.teacher.myClasses.class') : t('dashboard.teacher.myClasses.classes')}
               </span>
             }
             headerBgColor="bg-gradient-to-r from-soe-green-50 to-soe-green-100"
@@ -266,12 +268,12 @@ export default function TeacherDashboard() {
               <DashboardEmptyState
                 icon={Users}
                 iconColor="from-gray-100 to-gray-200"
-                title="No Classes Yet"
-                description="Create your first class to start managing students"
+                title={t('dashboard.teacher.myClasses.empty')}
+                description={t('dashboard.teacher.myClasses.emptyDesc')}
                 action={
                   <button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 mx-auto shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                     <Plus className="h-4 w-4" />
-                    Create First Class
+                    {t('dashboard.teacher.myClasses.createFirst')}
                   </button>
                 }
               />
@@ -299,18 +301,18 @@ export default function TeacherDashboard() {
                               ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                               : 'bg-gray-100 text-gray-600 border border-gray-200'
                           }`}>
-                            {classItem.isActive ? '● Active' : '○ Inactive'}
+                            {classItem.isActive ? t('dashboard.teacher.myClasses.active') : t('dashboard.teacher.myClasses.inactive')}
                           </span>
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                         <div className="bg-gray-50 rounded-lg p-3">
-                          <p className="text-gray-600 text-xs mb-1">Class Code</p>
+                          <p className="text-gray-600 text-xs mb-1">{t('dashboard.teacher.myClasses.classCode')}</p>
                           <p className="font-mono font-semibold text-lg text-gray-900">{classItem.code}</p>
                         </div>
                         <div className="bg-gray-50 rounded-lg p-3">
-                          <p className="text-gray-600 text-xs mb-1">Students</p>
+                          <p className="text-gray-600 text-xs mb-1">{t('dashboard.teacher.myClasses.students')}</p>
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-gray-500" />
                             <span className="font-semibold text-lg text-gray-900">{classItem.studentCount}</span>
@@ -320,10 +322,10 @@ export default function TeacherDashboard() {
 
                       <div className="flex gap-2 pt-3 border-t border-gray-100">
                         <button className="flex-1 bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2">
-                          View Students
+                          {t('dashboard.teacher.myClasses.viewStudents')}
                         </button>
                         <button className="flex-1 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
-                          Assign Books
+                          {t('dashboard.teacher.myClasses.assignBooks')}
                         </button>
                         <button className="bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                           <Settings className="h-4 w-4" />
@@ -336,11 +338,11 @@ export default function TeacherDashboard() {
           </DashboardSection>
 
           <DashboardSection
-            title="Student Progress"
+            title={t('dashboard.teacher.studentProgress.title')}
             icon={TrendingUp}
             badge={
               <span className="ml-auto bg-emerald-100 text-emerald-700 px-2 py-1 text-xs font-medium rounded-full">
-                Recent Activity
+                {t('dashboard.teacher.studentProgress.recentActivity')}
               </span>
             }
             headerBgColor="bg-gradient-to-r from-emerald-50 to-teal-50"
@@ -350,8 +352,8 @@ export default function TeacherDashboard() {
               <DashboardEmptyState
                 icon={TrendingUp}
                 iconColor="from-emerald-100 to-emerald-200"
-                title="No Activity Yet"
-                description="Student progress will appear here. Assign books to classes to track progress"
+                title={t('dashboard.teacher.studentProgress.empty')}
+                description={t('dashboard.teacher.studentProgress.emptyDesc')}
               />
             ) : (
                 <div className="space-y-4">
@@ -367,14 +369,14 @@ export default function TeacherDashboard() {
                               {student.name}
                             </h3>
                             <p className="text-xs text-gray-500">
-                              Active {Math.floor((Date.now() - new Date(student.lastActivity).getTime()) / (1000 * 60 * 60 * 24))} days ago
+                              {t('dashboard.teacher.studentProgress.activeAgo', { days: Math.floor((Date.now() - new Date(student.lastActivity).getTime()) / (1000 * 60 * 60 * 24)) })}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1 bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">
                             <Award className="h-3 w-3" />
-                            {student.readingStreak} day streak
+                            {t('dashboard.teacher.studentProgress.dayStreak', { streak: student.readingStreak })}
                           </div>
                         </div>
                       </div>
@@ -383,14 +385,14 @@ export default function TeacherDashboard() {
                         <div className="bg-gradient-to-br from-soe-green-50 to-soe-green-100 rounded-lg p-3">
                           <div className="flex items-center gap-2 mb-1">
                             <CheckCircle className="h-4 w-4 text-soe-green-600" />
-                            <p className="text-xs font-medium text-soe-green-700">Books Completed</p>
+                            <p className="text-xs font-medium text-soe-green-700">{t('dashboard.teacher.studentProgress.booksCompleted')}</p>
                           </div>
                           <p className="text-2xl font-bold text-soe-green-900">{student.booksCompleted}<span className="text-sm text-soe-green-600">/{student.booksAssigned}</span></p>
                         </div>
                         <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg p-3">
                           <div className="flex items-center gap-2 mb-1">
                             <Target className="h-4 w-4 text-emerald-600" />
-                            <p className="text-xs font-medium text-emerald-700">Average Progress</p>
+                            <p className="text-xs font-medium text-emerald-700">{t('dashboard.teacher.studentProgress.avgProgress')}</p>
                           </div>
                           <p className="text-2xl font-bold text-emerald-900">{student.averageProgress}%</p>
                         </div>
@@ -398,7 +400,7 @@ export default function TeacherDashboard() {
 
                       <div className="bg-gray-50 rounded-lg p-3">
                         <DashboardProgressBar
-                          label="Overall Progress"
+                          label={t('dashboard.teacher.studentProgress.overallProgress')}
                           value={student.averageProgress}
                           showPercentage
                           colorScheme="custom"
@@ -414,17 +416,17 @@ export default function TeacherDashboard() {
         </div>
 
         <DashboardSection
-          title="Recent Assignments"
+          title={t('dashboard.teacher.assignments.title')}
           icon={BookOpen}
           badge={
             <span className="bg-purple-100 text-purple-700 px-2 py-1 text-xs font-medium rounded-full">
-              {assignments.length} Active
+              {t('dashboard.teacher.assignments.active', { count: assignments.length })}
             </span>
           }
           actions={
             <button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm hover:shadow-md transition-all duration-200">
               <Plus className="h-3 w-3" />
-              New Assignment
+              {t('dashboard.teacher.assignments.newAssignment')}
             </button>
           }
           headerBgColor="bg-gradient-to-r from-purple-50 to-soe-green-100"
@@ -437,8 +439,8 @@ export default function TeacherDashboard() {
               <DashboardEmptyState
                 icon={BookOpen}
                 iconColor="from-purple-100 to-purple-200"
-                title="No Assignments Yet"
-                description="Start by assigning books to your classes. Track student reading progress and engagement"
+                title={t('dashboard.teacher.assignments.empty')}
+                description={t('dashboard.teacher.assignments.emptyDesc')}
               />
             ) : (
               <div className="space-y-4">
@@ -454,7 +456,7 @@ export default function TeacherDashboard() {
                       </div>
                       <div className="flex space-x-2 ml-3">
                         <button className="bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2">
-                          View Details
+                          {t('dashboard.common.actions.viewDetails')}
                         </button>
                         <button className="bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                           <MessageSquare className="h-4 w-4" />
@@ -464,11 +466,11 @@ export default function TeacherDashboard() {
 
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs font-medium text-gray-600 mb-1">Class</p>
+                        <p className="text-xs font-medium text-gray-600 mb-1">{t('dashboard.common.table.class')}</p>
                         <p className="text-sm font-semibold text-gray-900 truncate">{assignment.className}</p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-xs font-medium text-gray-600 mb-1">Due Date</p>
+                        <p className="text-xs font-medium text-gray-600 mb-1">{t('dashboard.common.table.dueDate')}</p>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3 text-gray-500" />
                           <p className="text-sm font-semibold text-gray-900">
@@ -480,7 +482,7 @@ export default function TeacherDashboard() {
 
                     <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-3">
                       <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="font-medium text-gray-700">Completion Rate</span>
+                        <span className="font-medium text-gray-700">{t('dashboard.teacher.assignments.completionRate')}</span>
                         <span className="font-bold text-gray-900">
                           {assignment.studentsCompleted}/{assignment.totalStudents}
                         </span>
@@ -505,22 +507,22 @@ export default function TeacherDashboard() {
               <thead className="bg-gradient-to-r from-purple-50 to-soe-green-100">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Assignment
+                    {t('dashboard.teacher.assignments.assignment')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Book Details
+                    {t('dashboard.teacher.assignments.bookDetails')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Class
+                    {t('dashboard.common.table.class')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Due Date
+                    {t('dashboard.common.table.dueDate')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Progress
+                    {t('dashboard.teacher.assignments.completionRate')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Actions
+                    {t('dashboard.common.table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -531,12 +533,12 @@ export default function TeacherDashboard() {
                       <DashboardEmptyState
                         icon={BookOpen}
                         iconColor="from-purple-100 to-purple-200"
-                        title="No Assignments Created"
-                        description="Start by assigning books to your classes"
+                        title={t('dashboard.teacher.assignments.tableEmpty')}
+                        description={t('dashboard.teacher.assignments.tableEmptyDesc')}
                         action={
                           <button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 mx-auto">
                             <Plus className="h-4 w-4" />
-                            Create First Assignment
+                            {t('dashboard.teacher.assignments.createFirst')}
                           </button>
                         }
                       />
@@ -551,7 +553,7 @@ export default function TeacherDashboard() {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="bg-purple-100 text-purple-700 px-2 py-1 text-xs font-medium rounded-md">
-                            Assignment
+                            {t('dashboard.teacher.assignments.assignment')}
                           </span>
                         </div>
                       </td>
@@ -582,7 +584,7 @@ export default function TeacherDashboard() {
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="w-32">
                           <div className="text-xs text-gray-600 mb-1">
-                            {assignment.studentsCompleted}/{assignment.totalStudents} students
+                            {t('dashboard.teacher.assignments.studentsRatio', { completed: assignment.studentsCompleted, total: assignment.totalStudents })}
                           </div>
                           <DashboardProgressBar
                             value={assignment.completionRate}
@@ -596,7 +598,7 @@ export default function TeacherDashboard() {
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="flex space-x-2">
                           <button className="bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2">
-                            View Details
+                            {t('dashboard.common.actions.viewDetails')}
                           </button>
                           <button className="bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                             <MessageSquare className="h-4 w-4" />

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import {
   BookOpen,
   FileText,
@@ -52,6 +53,7 @@ interface Stats {
 }
 
 export default function BookManagerDashboard() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [submissions, setSubmissions] = useState<TextSubmission[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -155,7 +157,7 @@ export default function BookManagerDashboard() {
       <div data-role="book-manager" className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-soe-green-400 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading format decision queue...</p>
+          <p className="mt-4 text-gray-600">{t('dashboard.common.loadingFormatQueue')}</p>
         </div>
       </div>
     );
@@ -165,12 +167,12 @@ export default function BookManagerDashboard() {
     return (
       <div data-role="book-manager" className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600">Error: {error}</p>
+          <p className="text-red-600">{t('dashboard.common.error.prefix')}{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-soe-green-400 text-white rounded hover:bg-soe-green-500"
           >
-            Retry
+            {t('dashboard.common.error.retry')}
           </button>
         </div>
       </div>
@@ -183,9 +185,9 @@ export default function BookManagerDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Book Manager Dashboard</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.bookManager.title')}</h1>
               <p className="mt-1 text-sm text-gray-500">
-                Decide publication format for approved stories
+                {t('dashboard.bookManager.subtitle')}
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -194,17 +196,17 @@ export default function BookManagerDashboard() {
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <BookOpen className="h-5 w-5 mr-2" />
-                Register Book
+                {t('dashboard.common.actions.registerBook')}
               </Link>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900"
               >
-                <option value="all">All Submissions</option>
-                <option value="STORY_APPROVED">Awaiting Decision</option>
-                <option value="FORMAT_REVIEW">In Format Review</option>
-                <option value="CONTENT_REVIEW">Sent to Content Admin</option>
+                <option value="all">{t('dashboard.bookManager.filter.all')}</option>
+                <option value="STORY_APPROVED">{t('dashboard.bookManager.filter.awaitingDecision')}</option>
+                <option value="FORMAT_REVIEW">{t('dashboard.bookManager.filter.formatReview')}</option>
+                <option value="CONTENT_REVIEW">{t('dashboard.bookManager.filter.sentToAdmin')}</option>
               </select>
             </div>
           </div>
@@ -219,7 +221,7 @@ export default function BookManagerDashboard() {
               <div className="flex items-center">
                 <Clock className="h-8 w-8 text-yellow-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Awaiting Decision</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.bookManager.stats.awaitingDecision')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.awaitingDecision}</p>
                 </div>
               </div>
@@ -229,7 +231,7 @@ export default function BookManagerDashboard() {
               <div className="flex items-center">
                 <Layout className="h-8 w-8 text-purple-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Format Review</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.bookManager.stats.formatReview')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.formatReview}</p>
                 </div>
               </div>
@@ -239,7 +241,7 @@ export default function BookManagerDashboard() {
               <div className="flex items-center">
                 <BookOpen className="h-8 w-8 text-soe-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Book Format</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.bookManager.stats.bookFormat')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.bookFormat}</p>
                 </div>
               </div>
@@ -249,7 +251,7 @@ export default function BookManagerDashboard() {
               <div className="flex items-center">
                 <FileText className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Text Format</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.bookManager.stats.textFormat')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.textFormat}</p>
                 </div>
               </div>
@@ -259,7 +261,7 @@ export default function BookManagerDashboard() {
               <div className="flex items-center">
                 <CheckCircle className="h-8 w-8 text-soe-green-400" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Decisions</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.bookManager.stats.totalDecisions')}</p>
                   <p className="text-2xl font-bold text-gray-900">{stats.totalDecisions}</p>
                 </div>
               </div>
@@ -270,32 +272,32 @@ export default function BookManagerDashboard() {
         {/* Submissions Table */}
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Format Decision Queue</h2>
+            <h2 className="text-lg font-medium text-gray-900">{t('dashboard.bookManager.queue.title')}</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Priority
+                    {t('dashboard.common.table.priority')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Story Details
+                    {t('dashboard.common.table.storyDetails')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Author
+                    {t('dashboard.common.table.author')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Approved By
+                    {t('dashboard.bookManager.queue.approvedBy')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t('dashboard.common.table.status')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Format Decision
+                    {t('dashboard.bookManager.queue.formatDecision')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t('dashboard.common.table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -305,8 +307,8 @@ export default function BookManagerDashboard() {
                     <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                       <div className="flex flex-col items-center">
                         <Layout className="h-12 w-12 text-gray-300 mb-4" />
-                        <p>No stories awaiting format decision</p>
-                        <p className="text-sm">Check back later for approved stories</p>
+                        <p>{t('dashboard.bookManager.queue.empty')}</p>
+                        <p className="text-sm">{t('dashboard.bookManager.queue.emptySubtitle')}</p>
                       </div>
                     </td>
                   </tr>
@@ -317,7 +319,7 @@ export default function BookManagerDashboard() {
                       <tr key={submission.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
-                            {priority.toUpperCase()}
+                            {t(`dashboard.common.priority.${priority}`).toUpperCase()}
                           </span>
                         </td>
                         <td className="px-6 py-4">
@@ -326,8 +328,8 @@ export default function BookManagerDashboard() {
                               {submission.title}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {submission.wordCount} words • {submission.language}
-                              {submission.ageRange && ` • Ages ${submission.ageRange}`}
+                              {t('dashboard.storyManager.queue.words', { words: submission.wordCount })} • {submission.language}
+                              {submission.ageRange && ` • ${t('dashboard.storyManager.queue.ages', { ageRange: submission.ageRange })}`}
                             </div>
                             {(submission.category || []).length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
@@ -337,7 +339,7 @@ export default function BookManagerDashboard() {
                                   </span>
                                 ))}
                                 {(submission.category || []).length > 2 && (
-                                  <span className="text-xs text-gray-500">+{(submission.category || []).length - 2} more</span>
+                                  <span className="text-xs text-gray-500">{t('dashboard.storyManager.queue.moreCategories', { count: (submission.category || []).length - 2 })}</span>
                                 )}
                               </div>
                             )}
@@ -359,7 +361,7 @@ export default function BookManagerDashboard() {
                               <div className="text-gray-500">{submission.storyManager.email}</div>
                             </div>
                           ) : (
-                            <span className="text-gray-400">Auto-approved</span>
+                            <span className="text-gray-400">{t('dashboard.bookManager.queue.autoApproved')}</span>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -377,7 +379,7 @@ export default function BookManagerDashboard() {
                               {submission.bookDecision ? (
                                 <span className="font-medium">{submission.bookDecision}</span>
                               ) : (
-                                <span className="text-gray-500">Pending Decision</span>
+                                <span className="text-gray-500">{t('dashboard.bookManager.queue.pendingDecision')}</span>
                               )}
                             </span>
                           </div>
@@ -389,7 +391,7 @@ export default function BookManagerDashboard() {
                               className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
                             >
                               <Layout className="h-4 w-4 mr-1" />
-                              {submission.bookDecision ? 'Review' : 'Decide'}
+                              {submission.bookDecision ? t('dashboard.common.actions.view') : t('dashboard.common.actions.decide')}
                             </Link>
                           </div>
                         </td>

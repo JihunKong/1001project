@@ -1,44 +1,259 @@
 {
   "dashboard": {
-    "writer": {
-      "home": {
-        "title": "홈",
-        "welcome": "다시 오신 것을 환영합니다",
-        "subtitle": "글쓰기 여정을 계속하세요",
-        "noStories": "아직 스토리 없음",
-        "writeFirstStory": "첫 번째 스토리 쓰기"
+    "common": {
+      "loading": "대시보드를 불러오는 중...",
+      "loadingStoryQueue": "스토리 검토 대기열을 불러오는 중...",
+      "loadingFormatQueue": "형식 결정 대기열을 불러오는 중...",
+      "loadingApprovalQueue": "콘텐츠 승인 대기열을 불러오는 중...",
+      "loadingAdminDashboard": "관리자 대시보드를 불러오는 중...",
+      "error": {
+        "prefix": "오류: ",
+        "retry": "다시 시도"
       },
+      "actions": {
+        "registerBook": "도서 등록",
+        "viewDetails": "세부 정보 보기",
+        "review": "검토",
+        "decide": "결정",
+        "approve": "승인",
+        "reject": "거부",
+        "view": "보기",
+        "feedback": "피드백",
+        "notes": "노트"
+      },
+      "priority": {
+        "high": "높음",
+        "medium": "중간",
+        "low": "낮음",
+        "urgent": "긴급"
+      },
+      "table": {
+        "priority": "우선순위",
+        "storyDetails": "스토리 세부 정보",
+        "author": "작가",
+        "status": "상태",
+        "submitted": "제출일",
+        "actions": "작업",
+        "type": "유형",
+        "title": "제목",
+        "submitter": "제출자",
+        "dueDate": "마감일",
+        "class": "수업"
+      }
+    },
+    "learner": {
+      "title": "학습 대시보드",
+      "welcome": "{name}님, 다시 오신 것을 환영합니다! 계속 읽고 배우세요.",
+      "browseLibrary": "도서관 둘러보기",
       "stats": {
-        "title": "통계",
-        "total": "전체 스토리",
-        "published": "출판됨",
-        "draft": "초안",
-        "inReview": "검토 중",
-        "readers": "독자 도달",
-        "views": "총 조회수",
-        "totalWords": "총 단어 수",
-        "avgReadTime": "평균 읽기 시간",
-        "completionRate": "완료율"
+        "booksRead": "읽은 책",
+        "readingTime": "독서 시간",
+        "readingStreak": "연속 독서",
+        "classRank": "학급 순위",
+        "days": "{days}일",
+        "hours": "{hours}시간"
+      },
+      "continueReading": {
+        "title": "이어서 읽기",
+        "empty": "진행 중인 책이 없습니다",
+        "emptySubtitle": "선생님이 할당한 책을 읽기 시작하세요",
+        "by": "저자: {author}",
+        "page": "{current}/{total} 페이지",
+        "continueButton": "이어서 읽기"
+      },
+      "assignments": {
+        "title": "다가오는 과제",
+        "empty": "과제가 없습니다",
+        "emptySubtitle": "선생님이 여기에 독서 과제를 할당할 것입니다",
+        "due": "마감: {date}"
       },
       "quickActions": {
         "title": "빠른 작업",
-        "writeNew": "새 스토리 쓰기",
-        "viewLibrary": "라이브러리 탐색",
-        "manageStories": "내 스토리 관리"
+        "joinBookClub": "북클럽 가입",
+        "joinBookClubDesc": "친구들과 책에 대해 토론하세요",
+        "askAIHelper": "AI 도우미에게 질문",
+        "askAIHelperDesc": "어려운 단어에 대한 도움을 받으세요",
+        "rateBooks": "책 평가하기",
+        "rateBooksDesc": "생각을 공유하세요"
+      }
+    },
+    "teacher": {
+      "title": "교사 대시보드",
+      "welcome": "{name}님, 다시 오신 것을 환영합니다",
+      "createClass": "수업 만들기",
+      "assignReading": "독서 과제 할당",
+      "stats": {
+        "totalStudents": "전체 학생 수",
+        "thisMonth": "이번 달 +12명",
+        "activeClasses": "활성 수업",
+        "currentSemester": "이번 학기",
+        "booksAssigned": "할당된 책",
+        "completed": "{count}권 완료",
+        "avgProgress": "평균 진도"
       },
-      "recentActivity": {
-        "title": "최근 활동",
-        "noActivity": "최근 활동 없음"
+      "myClasses": {
+        "title": "내 수업",
+        "class": "수업",
+        "classes": "수업",
+        "empty": "아직 수업이 없습니다",
+        "emptyDesc": "학생 관리를 시작하려면 첫 번째 수업을 만드세요",
+        "createFirst": "첫 번째 수업 만들기",
+        "active": "● 활성",
+        "inactive": "○ 비활성",
+        "classCode": "수업 코드",
+        "students": "학생",
+        "viewStudents": "학생 보기",
+        "assignBooks": "책 할당"
       },
-      "achievements": {
-        "title": "업적",
-        "firstStory": "첫 번째 스토리 출판",
-        "tenStories": "10개 스토리 출판",
-        "hundredReaders": "100명 독자 도달"
+      "studentProgress": {
+        "title": "학생 진도",
+        "recentActivity": "최근 활동",
+        "empty": "아직 활동이 없습니다",
+        "emptyDesc": "학생 진도가 여기에 표시됩니다. 수업에 책을 할당하여 진도를 추적하세요",
+        "activeAgo": "{days}일 전 활동",
+        "dayStreak": "{streak}일 연속",
+        "booksCompleted": "완료한 책",
+        "avgProgress": "평균 진도",
+        "overallProgress": "전체 진도"
       },
-      "submit": {
-        "title": "새 스토리 제출",
-        "instructions": "아래에 스토리를 작성하세요. 초안으로 저장하거나 검토를 위해 제출할 수 있습니다."
+      "assignments": {
+        "title": "최근 과제",
+        "active": "{count}개 진행 중",
+        "newAssignment": "새 과제",
+        "empty": "아직 과제가 없습니다",
+        "emptyDesc": "수업에 책을 할당하여 시작하세요. 학생의 독서 진도와 참여도를 추적하세요",
+        "tableEmpty": "생성된 과제가 없습니다",
+        "tableEmptyDesc": "수업에 책을 할당하여 시작하세요",
+        "createFirst": "첫 번째 과제 만들기",
+        "assignment": "과제",
+        "bookDetails": "책 세부 정보",
+        "completionRate": "완료율",
+        "studentsRatio": "{completed}/{total} 학생"
+      }
+    },
+    "storyManager": {
+      "title": "스토리 관리자 대시보드",
+      "subtitle": "스토리 제출물 검토 및 승인",
+      "filter": {
+        "all": "모든 제출물",
+        "pending": "검토 대기 중",
+        "inReview": "검토 중"
+      },
+      "stats": {
+        "pendingReview": "검토 대기 중",
+        "inReview": "검토 중",
+        "approved": "승인됨",
+        "needsRevision": "수정 필요",
+        "totalReviewed": "총 검토 수"
+      },
+      "queue": {
+        "title": "스토리 제출 대기열",
+        "empty": "대기열에 제출물이 없습니다",
+        "emptySubtitle": "나중에 새 스토리 제출물을 확인하세요",
+        "words": "{words}단어",
+        "ages": "연령: {ageRange}",
+        "moreCategories": "+{count}개 더보기"
+      }
+    },
+    "bookManager": {
+      "title": "북 관리자 대시보드",
+      "subtitle": "승인된 스토리의 출판 형식 결정",
+      "filter": {
+        "all": "모든 제출물",
+        "awaitingDecision": "결정 대기 중",
+        "formatReview": "형식 검토 중",
+        "sentToAdmin": "콘텐츠 관리자에게 전송"
+      },
+      "stats": {
+        "awaitingDecision": "결정 대기 중",
+        "formatReview": "형식 검토",
+        "bookFormat": "도서 형식",
+        "textFormat": "텍스트 형식",
+        "totalDecisions": "총 결정 수"
+      },
+      "queue": {
+        "title": "형식 결정 대기열",
+        "approvedBy": "승인자",
+        "formatDecision": "형식 결정",
+        "empty": "형식 결정을 기다리는 스토리가 없습니다",
+        "emptySubtitle": "나중에 승인된 스토리를 확인하세요",
+        "pendingDecision": "결정 대기 중",
+        "autoApproved": "자동 승인됨"
+      }
+    },
+    "contentAdmin": {
+      "title": "콘텐츠 관리자 대시보드",
+      "subtitle": "최종 검토 및 출판 승인",
+      "filter": {
+        "all": "모든 제출물",
+        "awaitingApproval": "승인 대기 중",
+        "published": "출판됨",
+        "rejected": "거부됨"
+      },
+      "stats": {
+        "awaitingApproval": "승인 대기 중",
+        "approved": "승인됨",
+        "published": "출판됨",
+        "rejected": "거부됨",
+        "thisWeek": "이번 주",
+        "totalReviewed": "총 검토 수"
+      },
+      "queue": {
+        "title": "최종 승인 대기열",
+        "formatDecision": "형식 결정",
+        "decidedBy": "결정자",
+        "empty": "최종 승인을 기다리는 제출물이 없습니다",
+        "emptySubtitle": "나중에 출판 준비가 완료된 스토리를 확인하세요",
+        "notDecided": "결정되지 않음",
+        "autoAssigned": "자동 할당됨"
+      }
+    },
+    "admin": {
+      "title": "관리자 대시보드",
+      "subtitle": "{name}님의 시스템 개요 및 관리",
+      "analytics": "분석",
+      "settings": "설정",
+      "stats": {
+        "totalUsers": "전체 사용자",
+        "active": "{count}명 활성",
+        "totalBooks": "전체 도서",
+        "submissions": "제출물",
+        "systemHealth": "시스템 상태",
+        "uptime": "가동 시간: {uptime}",
+        "healthy": "정상",
+        "warning": "경고",
+        "critical": "위험"
+      },
+      "usersByRole": {
+        "title": "역할별 사용자"
+      },
+      "systemAlerts": {
+        "title": "시스템 알림",
+        "noAlerts": "활성 알림 없음",
+        "noAlertsDesc": "모든 시스템이 정상적으로 작동 중입니다"
+      },
+      "systemResources": {
+        "title": "시스템 리소스",
+        "diskUsage": "디스크 사용량",
+        "memoryUsage": "메모리 사용량",
+        "viewMetrics": "상세 지표 보기"
+      },
+      "pendingReviews": {
+        "title": "보류 중인 검토",
+        "count": "{count}개 보류 중",
+        "empty": "보류 중인 검토 없음",
+        "emptyDesc": "모든 제출물과 보고서가 최신 상태입니다"
+      },
+      "quickActions": {
+        "title": "빠른 작업",
+        "userManagement": "사용자 관리",
+        "userManagementDesc": "사용자 계정 및 역할 관리",
+        "contentModeration": "콘텐츠 관리",
+        "contentModerationDesc": "콘텐츠 검토 및 승인",
+        "databaseBackup": "데이터베이스 백업",
+        "databaseBackupDesc": "시스템 백업 관리",
+        "systemSettings": "시스템 설정",
+        "systemSettingsDesc": "플랫폼 설정 구성"
       }
     }
   },

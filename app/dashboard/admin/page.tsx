@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 import {
   Users,
   BookOpen,
@@ -69,6 +70,7 @@ interface SystemAlert {
 }
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null);
   const [usersByRole, setUsersByRole] = useState<UsersByRole | null>(null);
@@ -173,7 +175,7 @@ export default function AdminDashboard() {
   }, [session]);
 
   if (status === 'loading' || loading) {
-    return <DashboardLoadingState role="admin" message="Loading admin dashboard..." />;
+    return <DashboardLoadingState role="admin" message={t('dashboard.common.loadingAdminDashboard')} />;
   }
 
   if (error) {
@@ -183,7 +185,7 @@ export default function AdminDashboard() {
   const reviewColumns: Column<PendingReview>[] = [
     {
       key: 'type',
-      header: 'Type',
+      header: t('dashboard.common.table.type'),
       accessor: (review) => (
         <span className="capitalize text-sm font-medium text-gray-900">
           {review.type}
@@ -192,21 +194,21 @@ export default function AdminDashboard() {
     },
     {
       key: 'title',
-      header: 'Title',
+      header: t('dashboard.common.table.title'),
       accessor: (review) => (
         <div className="text-sm font-medium text-gray-900">{review.title}</div>
       )
     },
     {
       key: 'submitter',
-      header: 'Submitter',
+      header: t('dashboard.common.table.submitter'),
       accessor: (review) => (
         <span className="text-sm text-gray-500">{review.submitter}</span>
       )
     },
     {
       key: 'priority',
-      header: 'Priority',
+      header: t('dashboard.common.table.priority'),
       accessor: (review) => (
         <DashboardStatusBadge
           status={review.priority}
@@ -217,7 +219,7 @@ export default function AdminDashboard() {
     },
     {
       key: 'submittedAt',
-      header: 'Submitted',
+      header: t('dashboard.common.table.submitted'),
       accessor: (review) => (
         <span className="text-sm text-gray-500">
           {new Date(review.submittedAt).toLocaleDateString()}
@@ -226,17 +228,17 @@ export default function AdminDashboard() {
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('dashboard.common.table.actions'),
       accessor: (review) => (
         <div className="flex space-x-2">
           <button className="text-soe-green-600 hover:text-soe-green-900">
-            Review
+            {t('dashboard.common.actions.review')}
           </button>
           <button className="text-green-600 hover:text-green-900">
-            Approve
+            {t('dashboard.common.actions.approve')}
           </button>
           <button className="text-red-600 hover:text-red-900">
-            Reject
+            {t('dashboard.common.actions.reject')}
           </button>
         </div>
       )
@@ -246,17 +248,17 @@ export default function AdminDashboard() {
   return (
     <div data-role="admin" className="min-h-screen bg-gray-50">
       <DashboardHeader
-        title="Admin Dashboard"
-        subtitle={`System overview and management for ${session?.user?.name}`}
+        title={t('dashboard.admin.title')}
+        subtitle={t('dashboard.admin.subtitle', { name: session?.user?.name })}
         actions={
           <>
             <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
-              Analytics
+              {t('dashboard.admin.actions.analytics')}
             </button>
             <button className="bg-soe-green-400 hover:bg-soe-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
               <Settings className="h-5 w-5" />
-              Settings
+              {t('dashboard.admin.actions.settings')}
             </button>
           </>
         }
@@ -267,28 +269,28 @@ export default function AdminDashboard() {
         {systemStats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <DashboardStatsCard
-              title="Total Users"
+              title={t('dashboard.admin.stats.totalUsers')}
               value={systemStats.totalUsers.toLocaleString()}
-              subValue={`${systemStats.activeUsers.toLocaleString()} active`}
+              subValue={t('dashboard.admin.stats.activeUsers', { count: systemStats.activeUsers.toLocaleString() })}
               icon={Users}
               iconColor="text-soe-green-600"
             />
             <DashboardStatsCard
-              title="Total Books"
+              title={t('dashboard.admin.stats.totalBooks')}
               value={systemStats.totalBooks.toLocaleString()}
               icon={BookOpen}
               iconColor="text-green-600"
             />
             <DashboardStatsCard
-              title="Submissions"
+              title={t('dashboard.admin.stats.submissions')}
               value={systemStats.totalSubmissions.toLocaleString()}
               icon={FileText}
               iconColor="text-purple-600"
             />
             <DashboardStatsCard
-              title="System Health"
+              title={t('dashboard.admin.stats.systemHealth')}
               value={systemStats.systemHealth}
-              subValue={`Uptime: ${systemStats.uptime}`}
+              subValue={t('dashboard.admin.stats.uptime', { uptime: systemStats.uptime })}
               icon={Server}
               iconColor={
                 systemStats.systemHealth === 'healthy' ? 'text-green-600' :
@@ -301,7 +303,7 @@ export default function AdminDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Users by Role */}
-          <DashboardSection title="Users by Role" icon={Shield}>
+          <DashboardSection title={t('dashboard.admin.sections.usersByRole')} icon={Shield}>
             {usersByRole && (
               <div className="space-y-4">
                 {Object.entries(usersByRole).map(([role, count]) => (
@@ -319,13 +321,13 @@ export default function AdminDashboard() {
           </DashboardSection>
 
           {/* System Alerts */}
-          <DashboardSection title="System Alerts">
+          <DashboardSection title={t('dashboard.admin.sections.systemAlerts')}>
             {systemAlerts.length === 0 ? (
               <DashboardEmptyState
                 icon={CheckCircle}
                 iconColor="from-green-100 to-green-200"
-                title="No active alerts"
-                description="All systems operating normally"
+                title={t('dashboard.admin.alerts.noActiveAlerts')}
+                description={t('dashboard.admin.alerts.allSystemsNormal')}
               />
             ) : (
               <div className="space-y-3">
@@ -355,16 +357,16 @@ export default function AdminDashboard() {
 
           {/* System Resources */}
           {systemStats && (
-            <DashboardSection title="System Resources" icon={Server}>
+            <DashboardSection title={t('dashboard.admin.sections.systemResources')} icon={Server}>
               <div className="space-y-4">
                 <DashboardProgressBar
-                  label="Disk Usage"
+                  label={t('dashboard.admin.resources.diskUsage')}
                   value={systemStats.diskUsage}
                   showPercentage
                   colorScheme="default"
                 />
                 <DashboardProgressBar
-                  label="Memory Usage"
+                  label={t('dashboard.admin.resources.memoryUsage')}
                   value={systemStats.memoryUsage}
                   showPercentage
                   colorScheme="default"
@@ -372,7 +374,7 @@ export default function AdminDashboard() {
                 <div className="pt-4">
                   <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg flex items-center justify-center gap-2">
                     <Activity className="h-4 w-4" />
-                    View Detailed Metrics
+                    {t('dashboard.admin.resources.viewMetrics')}
                   </button>
                 </div>
               </div>
@@ -382,10 +384,10 @@ export default function AdminDashboard() {
 
         {/* Pending Reviews */}
         <DashboardSection
-          title="Pending Reviews"
+          title={t('dashboard.admin.sections.pendingReviews')}
           badge={
             <span className="bg-red-100 text-red-800 px-2 py-1 text-xs rounded-full">
-              {pendingReviews.length} pending
+              {t('dashboard.admin.reviews.pendingCount', { count: pendingReviews.length })}
             </span>
           }
           noPadding
@@ -396,44 +398,44 @@ export default function AdminDashboard() {
             keyExtractor={(review) => review.id}
             emptyState={{
               icon: <CheckCircle className="h-12 w-12 text-green-300" />,
-              title: 'No pending reviews',
-              description: 'All submissions and reports are up to date'
+              title: t('dashboard.admin.reviews.noPendingReviews'),
+              description: t('dashboard.admin.reviews.allUpToDate')
             }}
           />
         </DashboardSection>
 
         {/* Quick Actions */}
-        <DashboardSection title="Quick Actions" className="mt-8">
+        <DashboardSection title={t('dashboard.admin.sections.quickActions')} className="mt-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3">
               <Users className="h-6 w-6 text-soe-green-600" />
               <div className="text-left">
-                <p className="font-medium text-gray-900">User Management</p>
-                <p className="text-sm text-gray-500">Manage user accounts and roles</p>
+                <p className="font-medium text-gray-900">{t('dashboard.admin.quickActions.userManagement.title')}</p>
+                <p className="text-sm text-gray-500">{t('dashboard.admin.quickActions.userManagement.description')}</p>
               </div>
             </button>
 
             <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3">
               <BookOpen className="h-6 w-6 text-green-600" />
               <div className="text-left">
-                <p className="font-medium text-gray-900">Content Moderation</p>
-                <p className="text-sm text-gray-500">Review and approve content</p>
+                <p className="font-medium text-gray-900">{t('dashboard.admin.quickActions.contentModeration.title')}</p>
+                <p className="text-sm text-gray-500">{t('dashboard.admin.quickActions.contentModeration.description')}</p>
               </div>
             </button>
 
             <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3">
               <Database className="h-6 w-6 text-purple-600" />
               <div className="text-left">
-                <p className="font-medium text-gray-900">Database Backup</p>
-                <p className="text-sm text-gray-500">Manage system backups</p>
+                <p className="font-medium text-gray-900">{t('dashboard.admin.quickActions.databaseBackup.title')}</p>
+                <p className="text-sm text-gray-500">{t('dashboard.admin.quickActions.databaseBackup.description')}</p>
               </div>
             </button>
 
             <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3">
               <Globe className="h-6 w-6 text-orange-600" />
               <div className="text-left">
-                <p className="font-medium text-gray-900">System Settings</p>
-                <p className="text-sm text-gray-500">Configure platform settings</p>
+                <p className="font-medium text-gray-900">{t('dashboard.admin.quickActions.systemSettings.title')}</p>
+                <p className="text-sm text-gray-500">{t('dashboard.admin.quickActions.systemSettings.description')}</p>
               </div>
             </button>
           </div>
