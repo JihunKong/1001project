@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Modal from '@/components/figma/ui/Modal';
 import { CheckCircle2 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface TermsAndDisclosuresModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function TermsAndDisclosuresModal({
   onAgree,
   isSubmitting = false
 }: TermsAndDisclosuresModalProps) {
+  const { t } = useTranslation();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [confirmedOriginalWork, setConfirmedOriginalWork] = useState(false);
 
@@ -58,7 +60,7 @@ export default function TermsAndDisclosuresModal({
               lineHeight: '1.221'
             }}
           >
-            Terms & Disclosures
+            {t('dashboard.writer.submitText.termsModal.title')}
           </h2>
           <p
             className="text-[#141414]"
@@ -69,7 +71,7 @@ export default function TermsAndDisclosuresModal({
               lineHeight: '1.193'
             }}
           >
-            Before submitting your story, please review and agree to the following:
+            {t('dashboard.writer.submitText.termsModal.subtitle')}
           </p>
         </div>
 
@@ -93,7 +95,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.193'
               }}
             >
-              1. Copyright & Original Work
+              {t('dashboard.writer.submitText.termsModal.copyright.title')}
             </h3>
             <p
               className="text-[#8E8E93]"
@@ -104,7 +106,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.5'
               }}
             >
-              You confirm that this story is your original work and you own all copyright, or you have obtained necessary permissions from the copyright holder. You agree not to submit plagiarized or copyrighted content without proper authorization.
+              {t('dashboard.writer.submitText.termsModal.copyright.description')}
             </p>
           </div>
 
@@ -119,7 +121,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.193'
               }}
             >
-              2. Content Guidelines
+              {t('dashboard.writer.submitText.termsModal.guidelines.title')}
             </h3>
             <p
               className="text-[#8E8E93]"
@@ -130,7 +132,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.5'
               }}
             >
-              Your story must be appropriate for children and free from violence, explicit content, hate speech, or discriminatory language. Content should align with our mission to provide educational and inspiring stories for young readers worldwide.
+              {t('dashboard.writer.submitText.termsModal.guidelines.description')}
             </p>
           </div>
 
@@ -145,7 +147,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.193'
               }}
             >
-              3. License Agreement
+              {t('dashboard.writer.submitText.termsModal.license.title')}
             </h3>
             <p
               className="text-[#8E8E93]"
@@ -156,7 +158,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.5'
               }}
             >
-              By submitting, you grant 1001 Stories a license to publish, distribute, and display your story on our platform. You retain ownership of your work but allow us to make it available to students and teachers. You can choose your preferred license type after editorial review.
+              {t('dashboard.writer.submitText.termsModal.license.description')}
             </p>
           </div>
 
@@ -171,7 +173,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.193'
               }}
             >
-              4. Review Process
+              {t('dashboard.writer.submitText.termsModal.review.title')}
             </h3>
             <p
               className="text-[#8E8E93]"
@@ -182,7 +184,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.5'
               }}
             >
-              Your story will be reviewed by our editorial team within 3-5 business days. We may request revisions to improve clarity, age-appropriateness, or educational value. You will receive feedback via email and can make revisions through your dashboard.
+              {t('dashboard.writer.submitText.termsModal.review.description')}
             </p>
           </div>
         </div>
@@ -208,7 +210,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.5'
               }}
             >
-              I have read and agree to all terms above
+              {t('dashboard.writer.submitText.termsModal.checkboxes.agreeTerms')}
             </label>
           </div>
 
@@ -231,7 +233,7 @@ export default function TermsAndDisclosuresModal({
                 lineHeight: '1.5'
               }}
             >
-              I confirm this is my original work
+              {t('dashboard.writer.submitText.termsModal.checkboxes.confirmOriginal')}
             </label>
           </div>
         </div>
@@ -250,7 +252,7 @@ export default function TermsAndDisclosuresModal({
               lineHeight: '1.221'
             }}
           >
-            Cancel
+            {t('dashboard.writer.submitText.termsModal.buttons.cancel')}
           </button>
           <button
             type="button"
@@ -268,12 +270,12 @@ export default function TermsAndDisclosuresModal({
             {isSubmitting ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Submitting...</span>
+                <span>{t('dashboard.writer.submitText.termsModal.buttons.submitting')}</span>
               </>
             ) : (
               <>
                 <CheckCircle2 className="w-4 h-4" />
-                <span>I Agree</span>
+                <span>{t('dashboard.writer.submitText.termsModal.buttons.agree')}</span>
               </>
             )}
           </button>
@@ -281,7 +283,7 @@ export default function TermsAndDisclosuresModal({
 
         {!canAgree && !isSubmitting && (agreedToTerms || confirmedOriginalWork) && (
           <p className="text-sm text-[#DC2626] text-center -mt-2">
-            Please confirm both checkboxes to continue
+            {t('dashboard.writer.submitText.termsModal.error')}
           </p>
         )}
       </div>

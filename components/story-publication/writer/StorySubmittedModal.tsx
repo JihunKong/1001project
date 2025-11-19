@@ -2,6 +2,7 @@
 
 import Modal from '@/components/figma/ui/Modal';
 import { CheckCircle2 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface StorySubmittedModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export default function StorySubmittedModal({
   onTrackStatus,
   storyTitle
 }: StorySubmittedModalProps) {
+  const { t } = useTranslation();
+
   return (
     <Modal
       isOpen={isOpen}
@@ -45,7 +48,7 @@ export default function StorySubmittedModal({
               lineHeight: '1.221'
             }}
           >
-            Story Submitted!
+            {t('dashboard.writer.submitText.successModal.title')}
           </h2>
           {storyTitle && (
             <p
@@ -73,7 +76,7 @@ export default function StorySubmittedModal({
               lineHeight: '1.5'
             }}
           >
-            Your story has been successfully submitted for review.
+            {t('dashboard.writer.submitText.successModal.message')}
           </p>
           <div className="space-y-2">
             <p
@@ -85,7 +88,7 @@ export default function StorySubmittedModal({
                 lineHeight: '1.5'
               }}
             >
-              What happens next:
+              {t('dashboard.writer.submitText.successModal.nextSteps.title')}
             </p>
             <ul className="space-y-2 text-left">
               <li className="flex items-start gap-2 text-[#8E8E93]">
@@ -98,7 +101,7 @@ export default function StorySubmittedModal({
                     lineHeight: '1.5'
                   }}
                 >
-                  Our editorial team will review your story within 3-5 business days
+                  {t('dashboard.writer.submitText.successModal.nextSteps.review')}
                 </span>
               </li>
               <li className="flex items-start gap-2 text-[#8E8E93]">
@@ -111,7 +114,7 @@ export default function StorySubmittedModal({
                     lineHeight: '1.5'
                   }}
                 >
-                  You&apos;ll receive feedback or revision requests via email
+                  {t('dashboard.writer.submitText.successModal.nextSteps.feedback')}
                 </span>
               </li>
               <li className="flex items-start gap-2 text-[#8E8E93]">
@@ -124,7 +127,7 @@ export default function StorySubmittedModal({
                     lineHeight: '1.5'
                   }}
                 >
-                  Track your story&apos;s progress anytime from your dashboard
+                  {t('dashboard.writer.submitText.successModal.nextSteps.track')}
                 </span>
               </li>
             </ul>
@@ -143,7 +146,7 @@ export default function StorySubmittedModal({
             lineHeight: '1.221'
           }}
         >
-          Track Status
+          {t('dashboard.writer.submitText.successModal.button')}
         </button>
       </div>
     </Modal>
