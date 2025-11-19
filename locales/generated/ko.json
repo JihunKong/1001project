@@ -854,7 +854,31 @@
     },
     "book": {
       "by": "작가:",
-      "views": "조회"
+      "views": "조회",
+      "difficulty": {
+        "unknown": "알 수 없음",
+        "easy": "쉬움",
+        "medium": "보통",
+        "hard": "어려움"
+      },
+      "metadata": {
+        "ageRange": "{ageRange}세",
+        "readingTime": "{readingTime}분",
+        "likes": "좋아요 {likeCount}개"
+      },
+      "states": {
+        "loading": "책을 불러오는 중...",
+        "backButton": "뒤로",
+        "backToLibrary": "라이브러리로 돌아가기"
+      },
+      "errors": {
+        "notFound": "책을 찾을 수 없습니다",
+        "noPermission": "이 책을 볼 권한이 없습니다",
+        "loadFailed": "책을 불러오는데 실패했습니다",
+        "notFoundDescription": "찾으시는 책을 불러올 수 없습니다.",
+        "pdfViewerComingSoon": "PDF 뷰어가 곧 제공됩니다. PDF 파일: {pdfKey}",
+        "contentNotAvailable": "이 책의 콘텐츠를 사용할 수 없습니다."
+      }
     },
     "actions": {
       "readBook": "책 읽기",
@@ -884,6 +908,75 @@
       "showing": "표시 중",
       "of": "/",
       "stories": "스토리"
+    },
+    "landing": {
+      "hero": {
+        "title": "전 세계의 이야기를 발견하세요",
+        "description": "전 세계 소외된 지역 어린이들이 쓴 진정한 이야기를 탐험하세요. 여러분이 읽는 모든 이야기가 Seeds of Empowerment 프로그램을 통해 교육 기회를 지원합니다.",
+        "cta": {
+          "getStarted": "무료로 시작하기",
+          "signIn": "로그인",
+          "browseLibrary": "라이브러리 둘러보기",
+          "goToLibrary": "라이브러리로 이동",
+          "signUpFree": "무료 가입"
+        }
+      },
+      "stats": {
+        "storiesPublished": "출판된 이야기",
+        "countries": "국가",
+        "languages": "언어",
+        "themes": "교육 주제"
+      },
+      "features": {
+        "title": "모든 독자를 위한 강력한 기능",
+        "subtitle": "모든 이야기와 함께 학습과 참여를 향상시키도록 설계된 도구를 발견하세요.",
+        "items": {
+          "stories": {
+            "title": "6개국의 22개 이상의 이야기",
+            "description": "탄자니아, 인도, 멕시코, 팔레스타인, 르완다, 우간다의 어린이들의 진정한 이야기를 발견하세요."
+          },
+          "languages": {
+            "title": "12개 언어 지원",
+            "description": "영어, 스페인어, 프랑스어, 아랍어, 힌디어 등 여러 언어로 이야기에 접근하세요."
+          },
+          "aiPowered": {
+            "title": "AI 기반 학습 도구",
+            "description": "고급 AI로 구동되는 즉각적인 단어 설명, 콘텐츠 요약 및 개인화된 읽기 지원을 받으세요."
+          },
+          "progressive": {
+            "title": "단계별 읽기 레벨",
+            "description": "난이도 조정된 텍스트와 어휘 지원으로 읽기 숙련도에 맞게 콘텐츠가 자동으로 조정됩니다."
+          },
+          "interactive": {
+            "title": "인터랙티브 북클럽",
+            "description": "토론에 참여하고, 질문하고, 협력 학습 환경에서 다른 독자들과 연결하세요."
+          },
+          "educational": {
+            "title": "교육 영향 추적",
+            "description": "시간이 지남에 따라 읽기 진행 상황, 어휘 성장 및 학습 성과를 추적하세요."
+          }
+        }
+      },
+      "themes": {
+        "title": "7가지 교육 주제",
+        "description": "중요한 인생 교훈과 가치로 구성된 이야기",
+        "items": {
+          "perseverance": "인내와 회복력",
+          "problemSolving": "문제 해결과 비판적 사고",
+          "creativity": "창의성과 혁신",
+          "empathy": "공감과 이해",
+          "responsibility": "책임과 리더십",
+          "courage": "용기와 자기 표현",
+          "collaboration": "협력과 팀워크"
+        }
+      },
+      "cta": {
+        "title": "글로벌 이야기를 탐험할 준비가 되셨나요?",
+        "description": "영감을 주고, 교육하고, 힘을 실어주는 진정한 이야기를 발견하는 수천 명의 독자와 함께하세요. 오늘 무료로 가입하세요."
+      },
+      "footer": {
+        "note": "모든 이야기는 저자의 허가를 받아 출판됩니다. 수익금은 Seeds of Empowerment 프로그램을 지원합니다."
+      }
     }
   },
   "notification": {

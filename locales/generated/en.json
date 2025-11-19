@@ -854,7 +854,31 @@
     },
     "book": {
       "by": "By",
-      "views": "views"
+      "views": "views",
+      "difficulty": {
+        "unknown": "Unknown",
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "metadata": {
+        "ageRange": "{ageRange} years",
+        "readingTime": "{readingTime} min",
+        "likes": "{likeCount} likes"
+      },
+      "states": {
+        "loading": "Loading book...",
+        "backButton": "Back",
+        "backToLibrary": "Back to Library"
+      },
+      "errors": {
+        "notFound": "Book not found",
+        "noPermission": "You do not have permission to view this book",
+        "loadFailed": "Failed to load book",
+        "notFoundDescription": "The book you're looking for could not be loaded.",
+        "pdfViewerComingSoon": "PDF viewer coming soon. PDF file: {pdfKey}",
+        "contentNotAvailable": "Content not available for this book."
+      }
     },
     "actions": {
       "readBook": "Read Book",
@@ -884,6 +908,75 @@
       "showing": "Showing",
       "of": "of",
       "stories": "stories"
+    },
+    "landing": {
+      "hero": {
+        "title": "Discover Stories from Around the World",
+        "description": "Explore authentic stories written by children from underserved communities across the globe. Every story you read supports educational opportunities through our Seeds of Empowerment program.",
+        "cta": {
+          "getStarted": "Get Started Free",
+          "signIn": "Sign In",
+          "browseLibrary": "Browse Library",
+          "goToLibrary": "Go to Library",
+          "signUpFree": "Sign Up Free"
+        }
+      },
+      "stats": {
+        "storiesPublished": "Published Stories",
+        "countries": "Countries",
+        "languages": "Languages",
+        "themes": "Educational Themes"
+      },
+      "features": {
+        "title": "Powerful Features for Every Reader",
+        "subtitle": "Discover tools designed to enhance learning and engagement with every story.",
+        "items": {
+          "stories": {
+            "title": "22+ Stories from 6 Countries",
+            "description": "Discover authentic stories from children in Tanzania, India, Mexico, Palestine, Rwanda, and Uganda."
+          },
+          "languages": {
+            "title": "12 Languages Available",
+            "description": "Access stories in multiple languages including English, Spanish, French, Arabic, Hindi, and more."
+          },
+          "aiPowered": {
+            "title": "AI-Powered Learning Tools",
+            "description": "Get instant word explanations, content summaries, and personalized reading assistance powered by advanced AI."
+          },
+          "progressive": {
+            "title": "Progressive Reading Levels",
+            "description": "Content automatically adapts to your reading proficiency with difficulty-adjusted text and vocabulary support."
+          },
+          "interactive": {
+            "title": "Interactive Book Clubs",
+            "description": "Join discussions, ask questions, and connect with other readers in collaborative learning environments."
+          },
+          "educational": {
+            "title": "Educational Impact Tracking",
+            "description": "Track your reading progress, vocabulary growth, and learning achievements over time."
+          }
+        }
+      },
+      "themes": {
+        "title": "7 Educational Themes",
+        "description": "Stories organized by important life lessons and values",
+        "items": {
+          "perseverance": "Perseverance & Resilience",
+          "problemSolving": "Problem Solving & Critical Thinking",
+          "creativity": "Creativity & Innovation",
+          "empathy": "Empathy & Understanding",
+          "responsibility": "Responsibility & Leadership",
+          "courage": "Courage & Self-Expression",
+          "collaboration": "Collaboration & Teamwork"
+        }
+      },
+      "cta": {
+        "title": "Ready to Explore Global Stories?",
+        "description": "Join thousands of readers discovering authentic stories that inspire, educate, and empower. Sign up free today."
+      },
+      "footer": {
+        "note": "All stories are published with permission from the authors. Revenue supports the Seeds of Empowerment program."
+      }
     }
   },
   "notification": {
