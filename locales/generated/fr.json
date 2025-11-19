@@ -462,6 +462,80 @@
         "medium": "MEDIUM",
         "low": "LOW"
       }
+    },
+    "institution": {
+      "title": "Institution Dashboard",
+      "welcome": "Welcome back, {name}! Monitor your institution's reading programs.",
+      "loading": "Loading your dashboard...",
+      "error": {
+        "message": "Error: {error}",
+        "retry": "Retry"
+      },
+      "actions": {
+        "inviteTeacher": "Invite Teacher",
+        "viewReports": "View Reports",
+        "viewAll": "View All"
+      },
+      "stats": {
+        "totalTeachers": "Total Teachers",
+        "totalStudents": "Total Students",
+        "activeClasses": "Active Classes",
+        "completionRate": "Completion Rate"
+      },
+      "departments": {
+        "title": "Departments",
+        "empty": "No departments configured",
+        "avgProgress": "{progress}% avg progress",
+        "labels": {
+          "teachers": "Teachers",
+          "students": "Students",
+          "classes": "Classes"
+        }
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "empty": "No recent activity"
+      },
+      "teachers": {
+        "title": "Teachers",
+        "empty": "No teachers enrolled",
+        "inviteFirst": "Invite First Teacher",
+        "table": {
+          "teacher": "Teacher",
+          "department": "Department",
+          "classes": "Classes",
+          "students": "Students",
+          "readingHours": "Reading Hours",
+          "status": "Status",
+          "actions": "Actions",
+          "view": "View"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        }
+      }
+    },
+    "registerBook": {
+      "title": "Register New Book",
+      "subtitle": "Publish a book directly to the library without approval workflow",
+      "infoBadge": "Book will be published immediately upon submission",
+      "backToDashboard": "Back to Dashboard",
+      "form": {
+        "submitting": "Registering...",
+        "submit": "Register Book",
+        "cancel": "Cancel"
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "userProfile": "{name}'s Profile",
+      "loading": "Loading profile...",
+      "tabs": {
+        "overview": "Overview",
+        "settings": "Settings",
+        "activity": "Activity"
+      }
     }
   },
   "nav": {
@@ -825,7 +899,11 @@
     "email": "Email",
     "bio": "Bio",
     "location": "Emplacement",
-    "joinedDate": "Rejoint"
+    "joinedDate": "Rejoint",
+    "tabs": {
+      "overview": "Overview",
+      "stories": "Stories"
+    }
   },
   "hero": {
     "title": "Découvrez, publiez et partagez des histoires du monde entier",

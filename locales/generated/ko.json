@@ -462,6 +462,80 @@
         "medium": "보통",
         "low": "낮음"
       }
+    },
+    "institution": {
+      "title": "기관 대시보드",
+      "welcome": "환영합니다, {name}님! 귀 기관의 독서 프로그램을 모니터링하세요.",
+      "loading": "대시보드 로딩 중...",
+      "error": {
+        "message": "오류: {error}",
+        "retry": "재시도"
+      },
+      "actions": {
+        "inviteTeacher": "교사 초대",
+        "viewReports": "리포트 보기",
+        "viewAll": "전체 보기"
+      },
+      "stats": {
+        "totalTeachers": "총 교사 수",
+        "totalStudents": "총 학생 수",
+        "activeClasses": "활성 클래스",
+        "completionRate": "완료율"
+      },
+      "departments": {
+        "title": "부서",
+        "empty": "설정된 부서가 없습니다",
+        "avgProgress": "평균 진행률 {progress}%",
+        "labels": {
+          "teachers": "교사",
+          "students": "학생",
+          "classes": "클래스"
+        }
+      },
+      "recentActivity": {
+        "title": "최근 활동",
+        "empty": "최근 활동이 없습니다"
+      },
+      "teachers": {
+        "title": "교사",
+        "empty": "등록된 교사가 없습니다",
+        "inviteFirst": "첫 번째 교사 초대",
+        "table": {
+          "teacher": "교사",
+          "department": "부서",
+          "classes": "클래스",
+          "students": "학생",
+          "readingHours": "독서 시간",
+          "status": "상태",
+          "actions": "작업",
+          "view": "보기"
+        },
+        "status": {
+          "active": "활성",
+          "inactive": "비활성"
+        }
+      }
+    },
+    "registerBook": {
+      "title": "새 도서 등록",
+      "subtitle": "승인 절차 없이 도서관에 직접 도서 출판",
+      "infoBadge": "제출 즉시 도서가 출판됩니다",
+      "backToDashboard": "대시보드로 돌아가기",
+      "form": {
+        "submitting": "등록 중...",
+        "submit": "도서 등록",
+        "cancel": "취소"
+      }
+    },
+    "profile": {
+      "title": "프로필",
+      "userProfile": "{name}님의 프로필",
+      "loading": "프로필 로딩 중...",
+      "tabs": {
+        "overview": "개요",
+        "settings": "설정",
+        "activity": "활동"
+      }
     }
   },
   "nav": {
@@ -825,7 +899,11 @@
     "email": "이메일",
     "bio": "소개",
     "location": "위치",
-    "joinedDate": "가입일"
+    "joinedDate": "가입일",
+    "tabs": {
+      "overview": "개요",
+      "stories": "스토리"
+    }
   },
   "hero": {
     "title": "전 세계의 이야기를 발견하고 출판하며 공유하세요",

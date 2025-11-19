@@ -10,9 +10,11 @@ import { CoverImageUploader } from './CoverImageUploader';
 import { MetadataForm } from './MetadataForm';
 import RichTextEditor from '@/components/ui/RichTextEditor';
 import { BookRegistrationInput } from '@/lib/validation/book-registration.schema';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export function BookRegistrationForm() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -220,7 +222,7 @@ export function BookRegistrationForm() {
           disabled={isSubmitting}
           className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50"
         >
-          Cancel
+          {t('dashboard.registerBook.form.cancel')}
         </button>
         <button
           type="submit"
@@ -233,7 +235,7 @@ export function BookRegistrationForm() {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           )}
-          <span>{isSubmitting ? 'Publishing...' : 'Publish Book'}</span>
+          <span>{isSubmitting ? t('dashboard.registerBook.form.submitting') : t('dashboard.registerBook.form.submit')}</span>
         </button>
       </div>
     </form>

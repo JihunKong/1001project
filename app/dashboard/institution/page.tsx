@@ -16,6 +16,7 @@ import {
   UserPlus,
   Mail
 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Teacher {
   id: string;
@@ -58,6 +59,7 @@ interface RecentActivity {
 }
 
 export default function InstitutionDashboard() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -172,7 +174,7 @@ export default function InstitutionDashboard() {
       <div data-role="institution" className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-soe-green-400 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your dashboard...</p>
+          <p className="mt-4 text-gray-600">{t('dashboard.institution.loading')}</p>
         </div>
       </div>
     );
@@ -182,12 +184,12 @@ export default function InstitutionDashboard() {
     return (
       <div data-role="institution" className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600">Error: {error}</p>
+          <p className="text-red-600">{t('dashboard.institution.error.message', { error })}</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-soe-green-400 text-white rounded hover:bg-soe-green-500"
           >
-            Retry
+            {t('dashboard.institution.error.retry')}
           </button>
         </div>
       </div>
@@ -210,19 +212,19 @@ export default function InstitutionDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Institution Dashboard</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.institution.title')}</h1>
               <p className="mt-1 text-sm text-gray-500">
-                Welcome back, {session?.user?.name}! Monitor your institution&apos;s reading programs.
+                {t('dashboard.institution.welcome', { name: session?.user?.name })}
               </p>
             </div>
             <div className="flex gap-3">
               <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
                 <UserPlus className="h-5 w-5" />
-                Invite Teacher
+                {t('dashboard.institution.actions.inviteTeacher')}
               </button>
               <button className="bg-soe-green-400 hover:bg-soe-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                View Reports
+                {t('dashboard.institution.actions.viewReports')}
               </button>
             </div>
           </div>
@@ -237,7 +239,7 @@ export default function InstitutionDashboard() {
               <div className="flex items-center">
                 <GraduationCap className="h-8 w-8 text-soe-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Teachers</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.institution.stats.totalTeachers')}</p>
                   <p className="text-2xl font-bold text-gray-900">{analytics.totalTeachers}</p>
                 </div>
               </div>
@@ -247,7 +249,7 @@ export default function InstitutionDashboard() {
               <div className="flex items-center">
                 <Users className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Total Students</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.institution.stats.totalStudents')}</p>
                   <p className="text-2xl font-bold text-gray-900">{analytics.totalStudents.toLocaleString()}</p>
                 </div>
               </div>
@@ -257,7 +259,7 @@ export default function InstitutionDashboard() {
               <div className="flex items-center">
                 <Calendar className="h-8 w-8 text-purple-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Active Classes</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.institution.stats.activeClasses')}</p>
                   <p className="text-2xl font-bold text-gray-900">{analytics.totalClasses}</p>
                 </div>
               </div>
@@ -267,7 +269,7 @@ export default function InstitutionDashboard() {
               <div className="flex items-center">
                 <TrendingUp className="h-8 w-8 text-yellow-600" />
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Completion Rate</p>
+                  <p className="text-sm font-medium text-gray-500">{t('dashboard.institution.stats.completionRate')}</p>
                   <p className="text-2xl font-bold text-gray-900">{analytics.completionRate}%</p>
                 </div>
               </div>
@@ -279,13 +281,13 @@ export default function InstitutionDashboard() {
           {/* Departments Overview */}
           <div className="lg:col-span-2 bg-white rounded-lg shadow">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Departments</h2>
+              <h2 className="text-lg font-medium text-gray-900">{t('dashboard.institution.departments.title')}</h2>
             </div>
             <div className="p-6">
               {departments.length === 0 ? (
                 <div className="text-center py-8">
                   <Building2 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No departments configured</p>
+                  <p className="text-gray-500">{t('dashboard.institution.departments.empty')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -293,19 +295,19 @@ export default function InstitutionDashboard() {
                     <div key={dept.id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="font-medium text-gray-900">{dept.name}</h3>
-                        <span className="text-sm text-gray-500">{dept.averageProgress}% avg progress</span>
+                        <span className="text-sm text-gray-500">{t('dashboard.institution.departments.avgProgress', { progress: dept.averageProgress })}</span>
                       </div>
                       <div className="grid grid-cols-3 gap-4 text-sm">
                         <div>
-                          <p className="text-gray-500">Teachers</p>
+                          <p className="text-gray-500">{t('dashboard.institution.departments.labels.teachers')}</p>
                           <p className="font-medium text-gray-900">{dept.teacherCount}</p>
                         </div>
                         <div>
-                          <p className="text-gray-500">Students</p>
+                          <p className="text-gray-500">{t('dashboard.institution.departments.labels.students')}</p>
                           <p className="font-medium text-gray-900">{dept.studentCount}</p>
                         </div>
                         <div>
-                          <p className="text-gray-500">Classes</p>
+                          <p className="text-gray-500">{t('dashboard.institution.departments.labels.classes')}</p>
                           <p className="font-medium text-gray-900">{dept.activeClasses}</p>
                         </div>
                       </div>
@@ -327,13 +329,13 @@ export default function InstitutionDashboard() {
           {/* Recent Activity */}
           <div className="bg-white rounded-lg shadow">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
+              <h2 className="text-lg font-medium text-gray-900">{t('dashboard.institution.recentActivity.title')}</h2>
             </div>
             <div className="p-6">
               {recentActivity.length === 0 ? (
                 <div className="text-center py-8">
                   <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No recent activity</p>
+                  <p className="text-gray-500">{t('dashboard.institution.recentActivity.empty')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -360,9 +362,9 @@ export default function InstitutionDashboard() {
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-gray-900">Teachers</h2>
+              <h2 className="text-lg font-medium text-gray-900">{t('dashboard.institution.teachers.title')}</h2>
               <button className="text-soe-green-600 hover:text-soe-green-800 text-sm font-medium">
-                View All
+                {t('dashboard.institution.actions.viewAll')}
               </button>
             </div>
           </div>
@@ -371,25 +373,25 @@ export default function InstitutionDashboard() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Teacher
+                    {t('dashboard.institution.teachers.table.teacher')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Department
+                    {t('dashboard.institution.teachers.table.department')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Classes
+                    {t('dashboard.institution.teachers.table.classes')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Students
+                    {t('dashboard.institution.teachers.table.students')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Reading Hours
+                    {t('dashboard.institution.teachers.table.readingHours')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t('dashboard.institution.teachers.table.status')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t('dashboard.institution.teachers.table.actions')}
                   </th>
                 </tr>
               </thead>
@@ -399,10 +401,10 @@ export default function InstitutionDashboard() {
                     <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                       <div className="flex flex-col items-center">
                         <GraduationCap className="h-12 w-12 text-gray-300 mb-4" />
-                        <p>No teachers enrolled</p>
+                        <p>{t('dashboard.institution.teachers.empty')}</p>
                         <button className="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
                           <UserPlus className="h-4 w-4" />
-                          Invite First Teacher
+                          {t('dashboard.institution.teachers.inviteFirst')}
                         </button>
                       </div>
                     </td>
@@ -434,13 +436,13 @@ export default function InstitutionDashboard() {
                             ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-800'
                         }`}>
-                          {teacher.status}
+                          {teacher.status === 'active' ? t('dashboard.institution.teachers.status.active') : t('dashboard.institution.teachers.status.inactive')}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
                           <button className="text-soe-green-600 hover:text-soe-green-900">
-                            View
+                            {t('dashboard.institution.teachers.table.view')}
                           </button>
                           <button className="text-green-600 hover:text-green-900">
                             <Mail className="h-4 w-4" />
