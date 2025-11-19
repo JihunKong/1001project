@@ -1,6 +1,7 @@
 'use client';
 
 import { X, Sparkles } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface AIAnnotation {
   suggestionIndex: number;
@@ -19,12 +20,6 @@ interface AISuggestionPopoverProps {
   onAccept?: () => void;
 }
 
-const REVIEW_TYPE_LABELS: Record<string, string> = {
-  GRAMMAR: 'Grammar & Spelling',
-  STRUCTURE: 'Story Structure',
-  WRITING_HELP: 'Writing Tips'
-};
-
 const REVIEW_TYPE_COLORS: Record<string, string> = {
   GRAMMAR: '#fbbf24',
   STRUCTURE: '#60a5fa',
@@ -38,8 +33,24 @@ export default function AISuggestionPopover({
   onClose,
   onAccept
 }: AISuggestionPopoverProps) {
+  const { t } = useTranslation();
+
   const badgeColor = REVIEW_TYPE_COLORS[reviewType] || '#fbbf24';
-  const label = REVIEW_TYPE_LABELS[reviewType] || reviewType;
+
+  const getReviewTypeLabel = (type: string): string => {
+    switch (type) {
+      case 'GRAMMAR':
+        return t('dashboard.writer.submitText.aiSuggestion.reviewType.grammar');
+      case 'STRUCTURE':
+        return t('dashboard.writer.submitText.aiSuggestion.reviewType.structure');
+      case 'WRITING_HELP':
+        return t('dashboard.writer.submitText.aiSuggestion.reviewType.writingHelp');
+      default:
+        return type;
+    }
+  };
+
+  const label = getReviewTypeLabel(reviewType);
 
   return (
     <>
@@ -80,7 +91,7 @@ export default function AISuggestionPopover({
                 fontWeight: 500
               }}
             >
-              Selected Text
+              {t('dashboard.writer.submitText.aiSuggestion.selectedText')}
             </p>
             <p
               className="bg-[#F9FAFB] p-3 rounded border border-[#E5E5EA]"
@@ -104,7 +115,7 @@ export default function AISuggestionPopover({
                 fontWeight: 500
               }}
             >
-              AI Suggestion
+              {t('dashboard.writer.submitText.aiSuggestion.title')}
             </p>
             <p
               style={{
@@ -129,7 +140,7 @@ export default function AISuggestionPopover({
               fontWeight: 500
             }}
           >
-            Dismiss
+            {t('common.buttons.dismiss')}
           </button>
           {onAccept && (
             <button
@@ -144,7 +155,7 @@ export default function AISuggestionPopover({
                 fontWeight: 500
               }}
             >
-              Accept
+              {t('common.buttons.accept')}
             </button>
           )}
         </div>

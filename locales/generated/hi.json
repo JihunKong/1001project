@@ -254,6 +254,22 @@
         "databaseBackupDesc": "Manage system backups",
         "systemSettings": "System Settings",
         "systemSettingsDesc": "Configure platform settings"
+      },
+      "aiReview": {
+        "title": "AI Review Assistant",
+        "description": "Get AI-powered analysis to assist with your review. This helps identify grammar issues, structure problems, and writing improvements.",
+        "analyzingGrammar": "Analyzing Grammar...",
+        "checkGrammar": "Check Grammar & Spelling",
+        "analyzingStructure": "Analyzing Structure...",
+        "analyzeStructure": "Analyze Story Structure",
+        "analyzingWriting": "Analyzing Writing...",
+        "getWritingSuggestions": "Get Writing Suggestions",
+        "qualityScore": "Quality Score",
+        "summary": "Summary",
+        "strengths": "Strengths",
+        "improvements": "Areas for Improvement",
+        "suggestions": "Suggestions",
+        "requestNew": "Request New Review"
       }
     },
     "writer": {
@@ -310,6 +326,19 @@
             "track": "Track your story's progress anytime from your dashboard"
           },
           "button": "Track Status"
+        },
+        "aiFeedback": {
+          "loading": "Loading AI feedback...",
+          "description": "Your draft has been automatically reviewed. Check the feedback below to improve your story."
+        },
+        "aiSuggestion": {
+          "reviewType": {
+            "grammar": "Grammar & Spelling",
+            "structure": "Story Structure",
+            "writingHelp": "Writing Tips"
+          },
+          "selectedText": "Selected Text",
+          "title": "AI Suggestion"
         }
       }
     }
@@ -632,7 +661,11 @@
     "cancel": "रद्द करें",
     "save": "सहेजें",
     "confirm": "पुष्टि करें",
-    "open": "खोलें"
+    "open": "खोलें",
+    "buttons": {
+      "dismiss": "Dismiss",
+      "accept": "Accept"
+    }
   },
   "language": {
     "en": "अंग्रेज़ी",

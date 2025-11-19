@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Sparkles, Loader2, CheckCircle, AlertTriangle, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface AIReview {
   id: string;
@@ -23,6 +24,7 @@ interface AIReviewSectionProps {
 }
 
 export default function AIReviewSection({ submissionId, existingReview }: AIReviewSectionProps) {
+  const { t } = useTranslation();
   const [isRequesting, setIsRequesting] = useState(false);
   const [review, setReview] = useState<AIReview | null>(existingReview || null);
   const [reviewType, setReviewType] = useState<'GRAMMAR' | 'STRUCTURE' | 'WRITING_HELP'>('GRAMMAR');
@@ -74,7 +76,7 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-[#5951E7]" />
-            <h3 className="text-lg font-semibold text-gray-900">AI Review Assistant</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('dashboard.admin.aiReview.title')}</h3>
           </div>
           {review && (
             <span className="text-xs text-gray-500">
@@ -84,7 +86,7 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
         </div>
 
         <p className="text-sm text-gray-600">
-          Get AI-powered analysis to assist with your review. This helps identify grammar issues, structure problems, and writing improvements.
+          {t('dashboard.admin.aiReview.description')}
         </p>
 
         {!review ? (
@@ -98,12 +100,12 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 {isRequesting && reviewType === 'GRAMMAR' ? (
                   <>
                     <Loader2 className="h-5 w-5 text-gray-900 animate-spin" />
-                    <span className="text-sm font-medium text-gray-900">Analyzing Grammar...</span>
+                    <span className="text-sm font-medium text-gray-900">{t('dashboard.admin.aiReview.analyzingGrammar')}</span>
                   </>
                 ) : (
                   <>
                     <CheckCircle className="h-5 w-5 text-gray-900" />
-                    <span className="text-sm font-medium text-gray-900">Check Grammar & Spelling</span>
+                    <span className="text-sm font-medium text-gray-900">{t('dashboard.admin.aiReview.checkGrammar')}</span>
                   </>
                 )}
               </button>
@@ -116,12 +118,12 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 {isRequesting && reviewType === 'STRUCTURE' ? (
                   <>
                     <Loader2 className="h-5 w-5 text-gray-900 animate-spin" />
-                    <span className="text-sm font-medium text-gray-900">Analyzing Structure...</span>
+                    <span className="text-sm font-medium text-gray-900">{t('dashboard.admin.aiReview.analyzingStructure')}</span>
                   </>
                 ) : (
                   <>
                     <Info className="h-5 w-5 text-gray-900" />
-                    <span className="text-sm font-medium text-gray-900">Analyze Story Structure</span>
+                    <span className="text-sm font-medium text-gray-900">{t('dashboard.admin.aiReview.analyzeStructure')}</span>
                   </>
                 )}
               </button>
@@ -134,12 +136,12 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 {isRequesting && reviewType === 'WRITING_HELP' ? (
                   <>
                     <Loader2 className="h-5 w-5 text-gray-900 animate-spin" />
-                    <span className="text-sm font-medium text-gray-900">Analyzing Writing...</span>
+                    <span className="text-sm font-medium text-gray-900">{t('dashboard.admin.aiReview.analyzingWriting')}</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-5 w-5 text-gray-900" />
-                    <span className="text-sm font-medium text-gray-900">Get Writing Suggestions</span>
+                    <span className="text-sm font-medium text-gray-900">{t('dashboard.admin.aiReview.getWritingSuggestions')}</span>
                   </>
                 )}
               </button>
@@ -152,7 +154,7 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 <div className="flex items-center justify-between pb-3 border-b border-[#C7D2FE]">
                   <div className="flex items-center gap-2">
                     {getScoreIcon(review.score)}
-                    <span className="text-sm font-medium text-gray-700">Quality Score</span>
+                    <span className="text-sm font-medium text-gray-700">{t('dashboard.admin.aiReview.qualityScore')}</span>
                   </div>
                   <span
                     className="text-2xl font-bold"
@@ -167,7 +169,7 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 <div className="space-y-2">
                   <h4 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                     <Info className="h-4 w-4 text-[#5951E7]" />
-                    Summary
+                    {t('dashboard.admin.aiReview.summary')}
                   </h4>
                   <p className="text-sm text-gray-700 leading-relaxed">
                     {review.feedback.summary}
@@ -179,7 +181,7 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 <div className="space-y-2">
                   <h4 className="text-sm font-semibold text-green-900 flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    Strengths
+                    {t('dashboard.admin.aiReview.strengths')}
                   </h4>
                   <ul className="space-y-1 pl-4">
                     {review.feedback.strengths.map((strength, index) => (
@@ -198,7 +200,7 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 <div className="space-y-2">
                   <h4 className="text-sm font-semibold text-orange-900 flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4 text-orange-600" />
-                    Areas for Improvement
+                    {t('dashboard.admin.aiReview.improvements')}
                   </h4>
                   <ul className="space-y-1 pl-4">
                     {review.feedback.improvements.map((improvement, index) => (
@@ -217,7 +219,7 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 <div className="space-y-2">
                   <h4 className="text-sm font-semibold text-[#5951E7] flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-[#5951E7]" />
-                    Suggestions
+                    {t('dashboard.admin.aiReview.suggestions')}
                   </h4>
                   <ul className="space-y-1 pl-4">
                     {review.suggestions.map((suggestion, index) => (
@@ -238,7 +240,7 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                 onClick={() => setReview(null)}
                 className="text-sm text-gray-600 hover:text-gray-900 underline"
               >
-                Request New Review
+                {t('dashboard.admin.aiReview.requestNew')}
               </button>
             </div>
           </div>

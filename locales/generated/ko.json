@@ -254,6 +254,22 @@
         "databaseBackupDesc": "시스템 백업 관리",
         "systemSettings": "시스템 설정",
         "systemSettingsDesc": "플랫폼 설정 구성"
+      },
+      "aiReview": {
+        "title": "AI 검토 도우미",
+        "description": "검토를 돕기 위해 AI 기반 분석을 받아보세요. 문법 문제, 구조 문제 및 작문 개선 사항을 식별하는 데 도움이 됩니다.",
+        "analyzingGrammar": "문법 분석 중...",
+        "checkGrammar": "문법 및 맞춤법 확인",
+        "analyzingStructure": "구조 분석 중...",
+        "analyzeStructure": "이야기 구조 분석",
+        "analyzingWriting": "작문 분석 중...",
+        "getWritingSuggestions": "작문 제안 받기",
+        "qualityScore": "품질 점수",
+        "summary": "요약",
+        "strengths": "강점",
+        "improvements": "개선 영역",
+        "suggestions": "제안",
+        "requestNew": "새로운 검토 요청"
       }
     },
     "writer": {
@@ -310,6 +326,19 @@
             "track": "대시보드에서 언제든지 이야기 진행 상황을 추적할 수 있습니다"
           },
           "button": "상태 추적"
+        },
+        "aiFeedback": {
+          "loading": "AI 피드백 불러오는 중...",
+          "description": "초안이 자동으로 검토되었습니다. 아래 피드백을 확인하여 이야기를 개선하세요."
+        },
+        "aiSuggestion": {
+          "reviewType": {
+            "grammar": "문법 및 맞춤법",
+            "structure": "이야기 구조",
+            "writingHelp": "작문 팁"
+          },
+          "selectedText": "선택된 텍스트",
+          "title": "AI 제안"
         }
       }
     }
@@ -632,7 +661,11 @@
     "cancel": "취소",
     "save": "저장",
     "confirm": "확인",
-    "open": "열기"
+    "open": "열기",
+    "buttons": {
+      "dismiss": "닫기",
+      "accept": "수락"
+    }
   },
   "language": {
     "en": "영어",

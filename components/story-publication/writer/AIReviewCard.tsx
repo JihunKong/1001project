@@ -204,7 +204,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
             fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
             fontSize: '14px'
           }}>
-            Loading AI feedback...
+            {t('dashboard.writer.submitText.aiFeedback.loading')}
           </span>
         </div>
       </div>
@@ -276,7 +276,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
           lineHeight: '1.193',
           color: '#8E8E93'
         }}>
-          Your draft has been automatically reviewed. Check the feedback below to improve your story.
+          {t('dashboard.writer.submitText.aiFeedback.description')}
         </p>
 
         {isGenerating && (
