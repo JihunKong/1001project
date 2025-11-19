@@ -1016,7 +1016,8 @@
       "daysAgo": "{days}d ago",
       "monthDay": "{month} {day}"
     },
-    "of": "of"
+    "of": "of",
+    "words": "words"
   },
   "language": {
     "en": "Inglese",
@@ -1043,7 +1044,39 @@
   },
   "profile": {
     "title": "Il Mio Profilo",
-    "edit": "Modifica Profilo",
+    "edit": {
+      "0": "E",
+      "1": "d",
+      "2": "i",
+      "3": "t",
+      "4": " ",
+      "5": "P",
+      "6": "r",
+      "7": "o",
+      "8": "f",
+      "9": "i",
+      "10": "l",
+      "11": "e",
+      "12": "f",
+      "13": "i",
+      "14": "l",
+      "15": "o",
+      "title": "Edit Profile",
+      "backToProfile": "Back to profile",
+      "avatar": "Profile Picture",
+      "avatarUrlPlaceholder": "Enter image URL...",
+      "name": "Name",
+      "bio": "Bio",
+      "tags": "Interests & Tags",
+      "tagPlaceholder": "Add a tag (e.g., #writing, #education)",
+      "addTag": "Add",
+      "maxTags": "You can only add up to 10 tags",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "success": "Profile updated successfully!",
+      "error": "Failed to update profile. Please try again."
+    },
     "name": "Nome",
     "email": "Email",
     "bio": "Bio",
@@ -1052,6 +1085,112 @@
     "tabs": {
       "overview": "Overview",
       "stories": "Stories"
+    },
+    "card": {
+      "noBio": "No bio yet",
+      "editComingSoon": "Profile editing coming soon!",
+      "editProfile": "Edit Profile"
+    },
+    "stats": {
+      "writer": {
+        "published": "Published",
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "underReview": "Under Review",
+        "feedback": "Needs Revision"
+      },
+      "teacher": {
+        "classes": "Classes",
+        "students": "Students",
+        "assignedBooks": "Books Assigned",
+        "active": "Active Students"
+      },
+      "learner": {
+        "booksRead": "Books Read",
+        "inProgress": "In Progress",
+        "completed": "Completed",
+        "classes": "Classes"
+      },
+      "storyManager": {
+        "reviewed": "Reviewed",
+        "pending": "Pending",
+        "approved": "Approved",
+        "revisions": "Needs Revision"
+      },
+      "bookManager": {
+        "decisions": "Format Decisions",
+        "pending": "Pending",
+        "approved": "Approved"
+      },
+      "contentAdmin": {
+        "approvals": "Final Approvals",
+        "pending": "Pending",
+        "published": "Published"
+      },
+      "institution": {
+        "teachers": "Teachers",
+        "students": "Students",
+        "classes": "Classes",
+        "active": "Active Classes"
+      },
+      "admin": {
+        "users": "Total Users",
+        "stories": "Total Stories",
+        "classes": "Total Classes",
+        "pending": "Pending Reviews"
+      },
+      "published": "Published",
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "underReview": "Under Review",
+      "feedback": "Needs Revision",
+      "needRevision": "Needs Revision",
+      "approved": "Approved"
+    },
+    "overview": {
+      "loadError": "Failed to load profile data"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "noActivity": "No recent activity",
+      "commented": "commented on",
+      "viewStory": "View story:",
+      "statusChanged": "Status changed to",
+      "achievementUnlocked": "Unlocked achievement:"
+    },
+    "achievements": {
+      "title": "Achievements"
+    },
+    "monthly": {
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "title": "This Month's Statistics"
+    },
+    "currentProjects": {
+      "title": "Current Projects",
+      "startNew": "Start New",
+      "noProjects": "No projects yet",
+      "createFirst": "Create your first story",
+      "cannotCreate": "Learners cannot create stories",
+      "lastEdited": "Last edited: {date}"
+    },
+    "stories": {
+      "title": "My Stories",
+      "noStories": "You haven't written any stories yet",
+      "writeFirst": "Write your first story",
+      "newStory": "New Story"
     }
   },
   "hero": {

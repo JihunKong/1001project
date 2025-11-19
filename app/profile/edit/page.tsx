@@ -1,26 +1,53 @@
-import { redirect } from 'next/navigation';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ProfileEditForm } from '@/components/profile/ProfileEditForm';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
-export default async function ProfileEditPage() {
-  const session = await getServerSession(authOptions);
+export default function ProfileEditPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { t } = useTranslation();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!session?.user) {
-    redirect('/login?callbackUrl=/profile/edit');
+  useEffect(() => {
+    if (status === 'loading') return;
+
+    if (!session?.user) {
+      router.push('/login?callbackUrl=/profile/edit');
+      return;
+    }
+
+    // Fetch user data
+    fetch('/api/profile/data')
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          router.push('/login');
+        } else {
+          setUser(data);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        router.push('/login');
+      });
+  }, [session, status, router]);
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-soe-green-600"></div>
+      </div>
+    );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      profile: true
-    }
-  });
-
   if (!user) {
-    redirect('/login');
+    return null;
   }
 
   return (
@@ -34,14 +61,14 @@ export default async function ProfileEditPage() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          Back to profile
+          {t('profile.edit.backToProfile')}
         </Link>
 
         <h1
           className="text-[#141414] font-medium mb-8"
           style={{ fontSize: '48px', lineHeight: '1.221' }}
         >
-          Edit Profile
+          {t('profile.edit.title')}
         </h1>
 
         <ProfileEditForm user={user} />

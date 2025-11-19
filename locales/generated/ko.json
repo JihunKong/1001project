@@ -1016,7 +1016,8 @@
       "daysAgo": "{days}일 전",
       "monthDay": "{month}월 {day}일"
     },
-    "of": "/"
+    "of": "/",
+    "words": "단어"
   },
   "language": {
     "en": "영어",
@@ -1043,7 +1044,29 @@
   },
   "profile": {
     "title": "내 프로필",
-    "edit": "프로필 편집",
+    "edit": {
+      "0": "프",
+      "1": "로",
+      "2": "필",
+      "3": " ",
+      "4": "편",
+      "5": "집",
+      "title": "프로필 편집",
+      "backToProfile": "프로필로 돌아가기",
+      "avatar": "프로필 사진",
+      "avatarUrlPlaceholder": "이미지 URL 입력...",
+      "name": "이름",
+      "bio": "소개",
+      "tags": "관심사 및 태그",
+      "tagPlaceholder": "태그 추가 (예: #글쓰기, #교육)",
+      "addTag": "추가",
+      "maxTags": "최대 10개까지 태그를 추가할 수 있습니다",
+      "save": "변경사항 저장",
+      "saving": "저장 중...",
+      "cancel": "취소",
+      "success": "프로필이 성공적으로 업데이트되었습니다!",
+      "error": "프로필 업데이트에 실패했습니다. 다시 시도해주세요."
+    },
     "name": "이름",
     "email": "이메일",
     "bio": "소개",
@@ -1051,7 +1074,113 @@
     "joinedDate": "가입일",
     "tabs": {
       "overview": "개요",
-      "stories": "스토리"
+      "stories": "이야기"
+    },
+    "card": {
+      "noBio": "아직 소개가 없습니다",
+      "editComingSoon": "프로필 편집 기능이 곧 제공됩니다!",
+      "editProfile": "프로필 편집"
+    },
+    "stats": {
+      "writer": {
+        "published": "출판됨",
+        "draft": "초안",
+        "submitted": "제출됨",
+        "underReview": "검토 중",
+        "feedback": "수정 필요"
+      },
+      "teacher": {
+        "classes": "클래스",
+        "students": "학생",
+        "assignedBooks": "배정된 책",
+        "active": "활동 중인 학생"
+      },
+      "learner": {
+        "booksRead": "읽은 책",
+        "inProgress": "읽는 중",
+        "completed": "완료함",
+        "classes": "클래스"
+      },
+      "storyManager": {
+        "reviewed": "검토 완료",
+        "pending": "대기 중",
+        "approved": "승인됨",
+        "revisions": "수정 필요"
+      },
+      "bookManager": {
+        "decisions": "형식 결정",
+        "pending": "대기 중",
+        "approved": "승인됨"
+      },
+      "contentAdmin": {
+        "approvals": "최종 승인",
+        "pending": "대기 중",
+        "published": "출판됨"
+      },
+      "institution": {
+        "teachers": "교사",
+        "students": "학생",
+        "classes": "클래스",
+        "active": "활동 중인 클래스"
+      },
+      "admin": {
+        "users": "전체 사용자",
+        "stories": "전체 이야기",
+        "classes": "전체 클래스",
+        "pending": "검토 대기"
+      },
+      "published": "출판됨",
+      "draft": "초안",
+      "submitted": "제출됨",
+      "underReview": "검토 중",
+      "feedback": "수정 필요",
+      "needRevision": "수정 필요",
+      "approved": "승인됨"
+    },
+    "overview": {
+      "loadError": "프로필 데이터를 불러오지 못했습니다"
+    },
+    "activity": {
+      "title": "최근 활동",
+      "noActivity": "최근 활동이 없습니다",
+      "commented": "님이 댓글을 남겼습니다:",
+      "viewStory": "이야기 보기:",
+      "statusChanged": "상태가 변경되었습니다:",
+      "achievementUnlocked": "업적 달성:"
+    },
+    "achievements": {
+      "title": "업적"
+    },
+    "monthly": {
+      "months": {
+        "january": "1월",
+        "february": "2월",
+        "march": "3월",
+        "april": "4월",
+        "may": "5월",
+        "june": "6월",
+        "july": "7월",
+        "august": "8월",
+        "september": "9월",
+        "october": "10월",
+        "november": "11월",
+        "december": "12월"
+      },
+      "title": "이번 달 통계"
+    },
+    "currentProjects": {
+      "title": "현재 진행 중인 프로젝트",
+      "startNew": "새로 시작",
+      "noProjects": "아직 프로젝트가 없습니다",
+      "createFirst": "첫 번째 이야기를 만들어보세요",
+      "cannotCreate": "학습자는 이야기를 생성할 수 없습니다",
+      "lastEdited": "마지막 수정: {date}"
+    },
+    "stories": {
+      "title": "내 이야기",
+      "noStories": "아직 작성한 이야기가 없습니다",
+      "writeFirst": "첫 번째 이야기를 작성해보세요",
+      "newStory": "새 이야기"
     }
   },
   "hero": {
