@@ -43,16 +43,25 @@
     }
   },
   "nav": {
-    "home": "Accueil",
+    "home": {
+      "label": "Accueil",
+      "description": "Aller à la page principale"
+    },
     "myStories": "Mes Histoires",
-    "library": "Bibliothèque",
-    "notifications": "Notifications",
+    "library": {
+      "label": "Bibliothèque",
+      "description": "Parcourir tous les livres"
+    },
+    "notifications": "{count} notifications",
     "profile": "Profil",
     "skipToMain": "Passer au contenu principal",
     "mainNavigation": "Navigation principale",
     "mobileNavigation": "Navigation mobile",
     "currentPage": "page actuelle",
-    "userMenu": "Menu utilisateur",
+    "userMenu": {
+      "label": "Menu utilisateur",
+      "ariaLabel": "Menu utilisateur {action}"
+    },
     "helpSupport": "Aide et Support",
     "signOut": "Déconnexion",
     "aboutUs": "À propos",
@@ -65,7 +74,65 @@
     "logout": "Se déconnecter",
     "language": "Langue",
     "volunteer": "Bénévolat",
-    "signUp": "S'inscrire"
+    "signUp": "S'inscrire",
+    "profileSettings": "Paramètres du profil",
+    "showTutorial": "Afficher à nouveau le tutoriel",
+    "defaultUser": "Utilisateur",
+    "homePageLabel": "Page d'accueil de 1001 Stories",
+    "menu": {
+      "ariaLabel": "Menu {action}"
+    },
+    "getStarted": "Commencer",
+    "learner": {
+      "myBookshelf": {
+        "label": "Ma bibliothèque",
+        "description": "Voir les livres assignés et la progression de lecture"
+      },
+      "bookClub": {
+        "label": "Club de lecture",
+        "description": "Lire ensemble avec des amis"
+      }
+    },
+    "teacher": {
+      "dashboard": {
+        "label": "Tableau de bord",
+        "description": "Gérer les classes et les étudiants"
+      },
+      "classes": {
+        "label": "Gestion des classes",
+        "description": "Créer des classes et inviter des étudiants"
+      },
+      "assignments": {
+        "label": "Assigner des livres",
+        "description": "Assigner des livres aux étudiants"
+      }
+    },
+    "writer": {
+      "contribute": {
+        "label": "Tableau de bord",
+        "description": "Vérifiez vos contributions et votre impact"
+      },
+      "submit": {
+        "label": "Écrire une histoire",
+        "description": "Écrire une nouvelle histoire"
+      }
+    },
+    "manager": {
+      "dashboard": {
+        "label": "Tableau de bord de gestion",
+        "description": "Gestion et révision du contenu"
+      },
+      "reviews": {
+        "label": "Réviser les soumissions",
+        "description": "Réviser les histoires soumises"
+      }
+    },
+    "admin": {
+      "panel": {
+        "label": "Panneau d'administration",
+        "description": "Gérer l'ensemble du système"
+      }
+    }
   },
   "stories": {
     "title": "Mes Histoires",
@@ -292,7 +359,8 @@
     "loadingForm": "Chargement du formulaire...",
     "cancel": "Annuler",
     "save": "Enregistrer",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "open": "Ouvrir"
   },
   "language": {
     "en": "Anglais",
@@ -514,5 +582,146 @@
         "description": "Nous croyons que chaque enfant porte l'étincelle d'un Einstein. Les livres inspirent l'apprentissage et l'apprentissage éveille le potentiel. Notre vision est un monde où chaque enfant a accès à l'éducation — un endroit où l'imagination peut grandir sans limites."
       }
     }
+  },
+  "roles": {
+    "learner": "Apprenant",
+    "teacher": "Enseignant",
+    "writer": "Écrivain",
+    "storyManager": "Gestionnaire d'histoires",
+    "bookManager": "Gestionnaire de livres",
+    "contentAdmin": "Admin de contenu",
+    "admin": "Admin système",
+    "institution": "Institution"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur 1001 Stories ! 🎉",
+      "description": "Découvrez et partagez des histoires d'enfants du monde entier",
+      "content": "1001 Stories est une plateforme éducative à but non lucratif qui partage des histoires d'enfants dans les communautés mal desservies et connecte les éducateurs et les apprenants du monde entier."
+    },
+    "skip": "Passer",
+    "progress": "Progrès",
+    "progressAria": "Progression de l'intégration: {percent}%",
+    "previous": "Précédent",
+    "previousStep": "Étape précédente",
+    "next": "Suivant",
+    "nextStep": "Étape suivante",
+    "skipStep": "Passer",
+    "finish": "Terminer l'intégration",
+    "finishAria": "Terminer l'intégration",
+    "keyboardHints": "← → Naviguer | Enter Suivant | Esc Fermer",
+    "learner": {
+      "findBooks": {
+        "title": "Trouver des livres 📚",
+        "description": "Trouvez facilement les livres assignés par votre enseignant ou les livres qui vous intéressent"
+      },
+      "myBookshelf": {
+        "title": "De ma bibliothèque",
+        "content": "Vous pouvez vérifier les livres qui vous ont été assignés par votre enseignant. Vous pouvez également voir votre progression de lecture et votre statut d'achèvement en un coup d'œil."
+      },
+      "library": {
+        "title": "De la bibliothèque",
+        "content": "Explorez des histoires intéressantes d'enfants d'autres pays. Nous vous recommanderons des livres adaptés à votre âge et à vos intérêts."
+      },
+      "readingTools": {
+        "title": "Assistant de lecture 💡",
+        "description": "S'il y a un mot difficile, cliquez dessus pour entendre une explication",
+        "difficult": "Mot difficile",
+        "hint": "Cliquez pour apprendre la signification!",
+        "audio": "Écouter à haute voix",
+        "aiHelper": "Assistant IA",
+        "difficultWord": "mot difficile",
+        "clickHelp": "Cliquez pour obtenir la signification !",
+        "audioListen": "Écouter avec audio"
+      },
+      "progress": {
+        "title": "Vérifier la progression de lecture 📈",
+        "description": "Voyez combien vous avez lu et quels livres vous avez terminés.",
+        "goal": "Objectif de lecture de cette semaine",
+        "content": "Vérifiez votre progression de lecture et sentez-vous accompli avec les livres que vous avez terminés. Vous pouvez même comparer vos dossiers de lecture avec des amis!"
+      },
+      "progressTracking": {
+        "title": "Suivi de la progression de lecture 📈",
+        "description": "Vérifiez combien vous avez lu et quels livres vous avez terminés",
+        "weeklyGoal": "Objectif de lecture de cette semaine",
+        "content": "Vérifiez votre progression de lecture et ressentez un sentiment d'accomplissement pour les livres que vous avez terminés. Vous pouvez même comparer vos enregistrements de lecture avec des amis !"
+      }
+    },
+    "teacher": {
+      "createClass": {
+        "title": "Créer une classe 🏫",
+        "description": "Créez une classe pour vos élèves et partagez un code d'invitation",
+        "simple": "Création simple de classe",
+        "content": "Entrez le nom de la classe et la matière, et un code d'invitation à 6 caractères sera généré.",
+        "inviteCode": "Code d'invitation de classe"
+      },
+      "assignBooks": {
+        "title": "Assigner des livres 📖",
+        "description": "Sélectionnez et assignez des livres adaptés au niveau de vos élèves",
+        "individual": "Affectation individuelle",
+        "individualDesc": "Adapté au niveau de chaque élève",
+        "bulk": "Attribution en masse",
+        "bulkDesc": "Pour toute la classe",
+        "tip": "💡 Conseil : Tenez compte du niveau de lecture et des intérêts de vos élèves lors de la sélection de livres avec une difficulté appropriée.",
+        "batch": "Affectation en lot",
+        "batchDesc": "Pour toute la classe"
+      },
+      "monitor": {
+        "title": "Surveiller la progression 📊",
+        "description": "Vérifiez la progression de lecture et la compréhension de vos élèves en temps réel.",
+        "dashboard": "Tableau de bord de classe"
+      },
+      "monitorProgress": {
+        "title": "Surveiller la progression 📊",
+        "description": "Vérifiez la progression de lecture et la compréhension de vos élèves en temps réel",
+        "dashboard": "Tableau de bord de la classe"
+      }
+    },
+    "writer": {
+      "guidelines": {
+        "title": "Guide d'écriture d'histoires ✍️",
+        "description": "Écrivez des histoires avec un contenu approprié pour les enfants.",
+        "header": "Directives d'écriture",
+        "item1": "• Inclure des messages éducatifs et positifs",
+        "item2": "• Utiliser un langage adapté à l'âge",
+        "item3": "• Respecter la diversité culturelle",
+        "item4": "• Longueur recommandée: 500-2000 caractères",
+        "message": "💚 Vos histoires seront un cadeau précieux qui apportera de nouvelles perspectives et émotions aux enfants du monde entier."
+      },
+      "submission": {
+        "title": "Processus de soumission 📝",
+        "description": "Apprenez le processus de l'écriture à la publication.",
+        "step1": "Soumettre l'histoire",
+        "step1Desc": "Écrire en utilisant l'éditeur de texte",
+        "step2": "Révision du contenu",
+        "step2Desc": "Révision du gestionnaire d'histoires",
+        "step3": "Approbation de publication",
+        "step3Desc": "Révision finale et publication"
+      },
+      "storyGuidelines": {
+        "title": "Guide de rédaction d'histoires ✍️",
+        "description": "Rédigez des histoires avec un contenu approprié pour les enfants",
+        "header": "Directives de rédaction",
+        "educational": "• Incluez des messages éducatifs et positifs",
+        "ageAppropriate": "• Utilisez un langage adapté à l'âge",
+        "cultural": "• Respectez la diversité culturelle",
+        "wordCount": "• Longueur recommandée : 500-2000 mots",
+        "impact": "💚 Vos histoires deviennent des cadeaux précieux qui apportent de nouvelles perspectives et de l'inspiration aux enfants du monde entier."
+      },
+      "submissionProcess": {
+        "title": "Processus de soumission 📝",
+        "description": "Apprenez le processus de l'écriture d'histoire à la publication",
+        "step1": "Soumettre l'histoire",
+        "step1Desc": "Écrire avec l'éditeur de texte",
+        "step2": "Révision du contenu",
+        "step2Desc": "Révision du gestionnaire d'histoires",
+        "step3": "Approbation de publication",
+        "step3Desc": "Révision finale et publication"
+      }
+    },
+    "skipOnboarding": "Passer l'intégration",
+    "progressAriaLabel": "Progression de l'intégration : {percent}%",
+    "start": "Commencer",
+    "keyboardShortcuts": "← → Naviguer | Enter Suivant | Esc Fermer"
   }
 }

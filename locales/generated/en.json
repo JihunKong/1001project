@@ -43,16 +43,25 @@
     }
   },
   "nav": {
-    "home": "Home",
+    "home": {
+      "label": "Home",
+      "description": "Go to main page"
+    },
     "myStories": "My Stories",
-    "library": "Library",
-    "notifications": "Notifications",
+    "library": {
+      "label": "Library",
+      "description": "Browse all books"
+    },
+    "notifications": "{count} notifications",
     "profile": "Profile",
     "skipToMain": "Skip to main content",
     "mainNavigation": "Main navigation",
     "mobileNavigation": "Mobile navigation",
     "currentPage": "current page",
-    "userMenu": "User menu",
+    "userMenu": {
+      "label": "User menu",
+      "ariaLabel": "User menu {action}"
+    },
     "helpSupport": "Help & Support",
     "signOut": "Sign Out",
     "aboutUs": "About Us",
@@ -65,7 +74,65 @@
     "logout": "Log Out",
     "language": "Language",
     "volunteer": "Volunteer",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "profileSettings": "Profile Settings",
+    "showTutorial": "Show Tutorial Again",
+    "defaultUser": "User",
+    "homePageLabel": "1001 Stories Homepage",
+    "menu": {
+      "ariaLabel": "Menu {action}"
+    },
+    "getStarted": "Get Started",
+    "learner": {
+      "myBookshelf": {
+        "label": "My Bookshelf",
+        "description": "See assigned books and reading progress"
+      },
+      "bookClub": {
+        "label": "Book Club",
+        "description": "Read together with friends"
+      }
+    },
+    "teacher": {
+      "dashboard": {
+        "label": "Dashboard",
+        "description": "Manage classes and students"
+      },
+      "classes": {
+        "label": "Class Management",
+        "description": "Create classes and invite students"
+      },
+      "assignments": {
+        "label": "Assign Books",
+        "description": "Assign books to students"
+      }
+    },
+    "writer": {
+      "contribute": {
+        "label": "Dashboard",
+        "description": "Check your contributions and impact"
+      },
+      "submit": {
+        "label": "Write Story",
+        "description": "Write a new story"
+      }
+    },
+    "manager": {
+      "dashboard": {
+        "label": "Management Dashboard",
+        "description": "Content management and review"
+      },
+      "reviews": {
+        "label": "Review Submissions",
+        "description": "Review submitted stories"
+      }
+    },
+    "admin": {
+      "panel": {
+        "label": "Admin Panel",
+        "description": "Manage the entire system"
+      }
+    }
   },
   "stories": {
     "title": "My Stories",
@@ -292,7 +359,8 @@
     "loadingForm": "Loading submission form...",
     "cancel": "Cancel",
     "save": "Save",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "open": "Open"
   },
   "language": {
     "en": "English",
@@ -514,5 +582,146 @@
         "description": "We believe every child carries the spark of an Einstein. Books inspire learning, and learning awakens potential. Our vision is a world where every child has access to education — a place where imagination can grow without limits."
       }
     }
+  },
+  "roles": {
+    "learner": "Learner",
+    "teacher": "Teacher",
+    "writer": "Writer",
+    "storyManager": "Story Manager",
+    "bookManager": "Book Manager",
+    "contentAdmin": "Content Admin",
+    "admin": "System Admin",
+    "institution": "Institution"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to 1001 Stories! 🎉",
+      "description": "Discover and share stories from children around the world",
+      "content": "1001 Stories is a non-profit educational platform that shares stories from children in underserved communities and connects educators and learners worldwide."
+    },
+    "skip": "Skip",
+    "progress": "Progress",
+    "progressAria": "Onboarding progress: {percent}%",
+    "previous": "Previous",
+    "previousStep": "Previous step",
+    "next": "Next",
+    "nextStep": "Next step",
+    "skipStep": "Skip",
+    "finish": "Finish onboarding",
+    "finishAria": "Complete onboarding",
+    "keyboardHints": "← → Navigate | Enter Next | Esc Close",
+    "learner": {
+      "findBooks": {
+        "title": "Find Books 📚",
+        "description": "Easily find books assigned by your teacher or books you're interested in"
+      },
+      "myBookshelf": {
+        "title": "My Bookshelf",
+        "content": "You can check books assigned to you by your teacher. You can also see your reading progress and completion status at a glance."
+      },
+      "library": {
+        "title": "From Library",
+        "content": "Explore interesting stories from children in other countries. We'll recommend books that match your age and interests."
+      },
+      "readingTools": {
+        "title": "Reading Assistant 💡",
+        "description": "If there's a difficult word, click it to hear an explanation",
+        "difficult": "Difficult word",
+        "hint": "Click to learn the meaning!",
+        "audio": "Listen Aloud",
+        "aiHelper": "AI Helper",
+        "difficultWord": "difficult word",
+        "clickHelp": "Click to get the meaning!",
+        "audioListen": "Listen with audio"
+      },
+      "progress": {
+        "title": "Check Reading Progress 📈",
+        "description": "See how much you've read and which books you've completed.",
+        "goal": "This week's reading goal",
+        "content": "Check your reading progress and feel accomplished about the books you've completed. You can even compare your reading records with friends!"
+      },
+      "progressTracking": {
+        "title": "Track Reading Progress 📈",
+        "description": "Check how much you've read and which books you've completed",
+        "weeklyGoal": "This week's reading goal",
+        "content": "Check your reading progress and feel a sense of achievement for the books you've completed. You can even compare your reading records with friends!"
+      }
+    },
+    "teacher": {
+      "createClass": {
+        "title": "Create Class 🏫",
+        "description": "Create a class for your students and share an invitation code",
+        "simple": "Simple class creation",
+        "content": "Enter the class name and subject, and a 6-character invitation code will be generated.",
+        "inviteCode": "Class invitation code"
+      },
+      "assignBooks": {
+        "title": "Assign Books 📖",
+        "description": "Select and assign books suitable for your students' level",
+        "individual": "Individual assignment",
+        "individualDesc": "Tailored to each student's level",
+        "bulk": "Bulk Assignment",
+        "bulkDesc": "To the entire class",
+        "tip": "💡 Tip: Consider your students' reading level and interests when selecting books with appropriate difficulty.",
+        "batch": "Batch assignment",
+        "batchDesc": "For the entire class"
+      },
+      "monitor": {
+        "title": "Monitor Progress 📊",
+        "description": "Check your students' reading progress and comprehension in real-time.",
+        "dashboard": "Class Dashboard"
+      },
+      "monitorProgress": {
+        "title": "Monitor Progress 📊",
+        "description": "Check your students' reading progress and comprehension in real-time",
+        "dashboard": "Class Dashboard"
+      }
+    },
+    "writer": {
+      "guidelines": {
+        "title": "Story Writing Guide ✍️",
+        "description": "Write stories with content appropriate for children.",
+        "header": "Writing Guidelines",
+        "item1": "• Include educational and positive messages",
+        "item2": "• Use age-appropriate language",
+        "item3": "• Respect cultural diversity",
+        "item4": "• Recommended length: 500-2000 characters",
+        "message": "💚 Your stories will be a precious gift that brings new perspectives and emotions to children around the world."
+      },
+      "submission": {
+        "title": "Submission Process 📝",
+        "description": "Learn the process from writing to publication.",
+        "step1": "Submit Story",
+        "step1Desc": "Write using text editor",
+        "step2": "Content Review",
+        "step2Desc": "Story manager review",
+        "step3": "Publication Approval",
+        "step3Desc": "Final review and publication"
+      },
+      "storyGuidelines": {
+        "title": "Story Writing Guide ✍️",
+        "description": "Write stories with content appropriate for children",
+        "header": "Writing Guidelines",
+        "educational": "• Include educational and positive messages",
+        "ageAppropriate": "• Use age-appropriate language",
+        "cultural": "• Respect cultural diversity",
+        "wordCount": "• Recommended length: 500-2000 words",
+        "impact": "💚 Your stories become precious gifts that bring new perspectives and inspiration to children around the world."
+      },
+      "submissionProcess": {
+        "title": "Submission Process 📝",
+        "description": "Learn the process from story writing to publication",
+        "step1": "Submit Story",
+        "step1Desc": "Write with text editor",
+        "step2": "Content Review",
+        "step2Desc": "Story manager review",
+        "step3": "Publication Approval",
+        "step3Desc": "Final review and publication"
+      }
+    },
+    "skipOnboarding": "Skip onboarding",
+    "progressAriaLabel": "Onboarding progress: {percent}%",
+    "start": "Start",
+    "keyboardShortcuts": "← → Navigate | Enter Next | Esc Close"
   }
 }

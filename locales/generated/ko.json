@@ -43,16 +43,25 @@
     }
   },
   "nav": {
-    "home": "홈",
+    "home": {
+      "label": "홈",
+      "description": "메인 페이지로 이동"
+    },
     "myStories": "내 스토리",
-    "library": "라이브러리",
-    "notifications": "알림",
+    "library": {
+      "label": "라이브러리",
+      "description": "전체 도서 목록 보기"
+    },
+    "notifications": "알림 {count}개",
     "profile": "프로필",
-    "skipToMain": "본문으로 건너뛰기",
-    "mainNavigation": "주 내비게이션",
+    "skipToMain": "메인 콘텐츠로 건너뛰기",
+    "mainNavigation": "메인 네비게이션",
     "mobileNavigation": "모바일 내비게이션",
     "currentPage": "현재 페이지",
-    "userMenu": "사용자 메뉴",
+    "userMenu": {
+      "label": "사용자 메뉴",
+      "ariaLabel": "사용자 메뉴 {action}"
+    },
     "helpSupport": "도움말 및 지원",
     "signOut": "로그아웃",
     "aboutUs": "소개",
@@ -65,7 +74,65 @@
     "logout": "로그아웃",
     "language": "언어",
     "volunteer": "자원봉사",
-    "signUp": "회원가입"
+    "signUp": "회원가입",
+    "profileSettings": "프로필 설정",
+    "showTutorial": "사용법 다시 보기",
+    "defaultUser": "사용자",
+    "homePageLabel": "1001 Stories 홈페이지",
+    "menu": {
+      "ariaLabel": "메뉴 {action}"
+    },
+    "getStarted": "시작하기",
+    "learner": {
+      "myBookshelf": {
+        "label": "내 책장",
+        "description": "배정받은 책과 읽기 진도 확인"
+      },
+      "bookClub": {
+        "label": "북클럽",
+        "description": "친구들과 함께 읽기"
+      }
+    },
+    "teacher": {
+      "dashboard": {
+        "label": "대시보드",
+        "description": "클래스와 학생 관리"
+      },
+      "classes": {
+        "label": "클래스 관리",
+        "description": "클래스 생성 및 학생 초대"
+      },
+      "assignments": {
+        "label": "책 배정",
+        "description": "학생들에게 책 배정하기"
+      }
+    },
+    "writer": {
+      "contribute": {
+        "label": "대시보드",
+        "description": "기여 현황과 영향력 확인"
+      },
+      "submit": {
+        "label": "이야기 작성",
+        "description": "새로운 이야기 작성하기"
+      }
+    },
+    "manager": {
+      "dashboard": {
+        "label": "관리 대시보드",
+        "description": "콘텐츠 관리 및 검토"
+      },
+      "reviews": {
+        "label": "제출 검토",
+        "description": "제출된 이야기 검토하기"
+      }
+    },
+    "admin": {
+      "panel": {
+        "label": "관리자 패널",
+        "description": "시스템 전체 관리"
+      }
+    }
   },
   "stories": {
     "title": "내 스토리",
@@ -292,7 +359,8 @@
     "loadingForm": "제출 양식 로딩 중...",
     "cancel": "취소",
     "save": "저장",
-    "confirm": "확인"
+    "confirm": "확인",
+    "open": "열기"
   },
   "language": {
     "en": "영어",
@@ -514,5 +582,146 @@
         "description": "우리는 모든 어린이가 아인슈타인의 불꽃을 지니고 있다고 믿습니다. 책은 학습을 고취하고 학습은 잠재력을 깨웁니다. 우리의 비전은 모든 어린이가 교육에 접근할 수 있는 세상, 상상력이 한계 없이 자랄 수 있는 곳입니다."
       }
     }
+  },
+  "roles": {
+    "learner": "학습자",
+    "teacher": "교사",
+    "writer": "작가",
+    "storyManager": "스토리 관리자",
+    "bookManager": "북 관리자",
+    "contentAdmin": "콘텐츠 관리자",
+    "admin": "시스템 관리자",
+    "institution": "교육기관"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "1001 Stories에 오신 것을 환영합니다! 🎉",
+      "description": "전 세계 아이들의 이야기를 발견하고 공유하는 플랫폼입니다.",
+      "content": "1001 Stories는 소외된 지역 아이들의 이야기를 세상에 알리고, 전 세계 교육자와 학습자들을 연결하는 비영리 교육 플랫폼입니다."
+    },
+    "skip": "건너뛰기",
+    "progress": "진행률",
+    "progressAria": "온보딩 진행률: {percent}%",
+    "previous": "이전",
+    "previousStep": "이전 단계",
+    "next": "다음",
+    "nextStep": "다음 단계",
+    "skipStep": "건너뛰기",
+    "finish": "온보딩 완료",
+    "finishAria": "온보딩 완료",
+    "keyboardHints": "← → 이동 | Enter 다음 | Esc 닫기",
+    "learner": {
+      "findBooks": {
+        "title": "책 찾기 📚",
+        "description": "선생님이 배정한 책이나 관심 있는 책을 쉽게 찾아보세요."
+      },
+      "myBookshelf": {
+        "title": "내 책장에서",
+        "content": "선생님이 나에게 배정한 책들을 확인할 수 있어요. 읽기 진도와 완료 상태도 한눈에 볼 수 있답니다."
+      },
+      "library": {
+        "title": "라이브러리에서",
+        "content": "다른 나라 친구들의 재미있는 이야기들을 탐험해보세요. 연령대와 관심사에 맞는 책들을 추천해드려요."
+      },
+      "readingTools": {
+        "title": "읽기 도우미 💡",
+        "description": "어려운 단어가 있으면 클릭해서 설명을 들어보세요.",
+        "difficult": "어려운 단어",
+        "hint": "를 클릭하면 뜻을 알려드려요!",
+        "audio": "음성으로 듣기",
+        "aiHelper": "AI 도우미",
+        "difficultWord": "어려운 단어",
+        "clickHelp": "를 클릭하면 뜻을 알려드려요!",
+        "audioListen": "음성으로 듣기"
+      },
+      "progress": {
+        "title": "읽기 진도 확인 📈",
+        "description": "내가 얼마나 읽었는지, 어떤 책을 완료했는지 확인해보세요.",
+        "goal": "이번 주 읽기 목표",
+        "content": "읽기 진도를 확인하고, 완료한 책에 대한 성취감을 느껴보세요. 친구들과 읽기 기록을 비교해볼 수도 있어요!"
+      },
+      "progressTracking": {
+        "title": "읽기 진도 확인 📈",
+        "description": "내가 얼마나 읽었는지, 어떤 책을 완료했는지 확인해보세요.",
+        "weeklyGoal": "이번 주 읽기 목표",
+        "content": "읽기 진도를 확인하고, 완료한 책에 대한 성취감을 느껴보세요. 친구들과 읽기 기록을 비교해볼 수도 있어요!"
+      }
+    },
+    "teacher": {
+      "createClass": {
+        "title": "클래스 만들기 🏫",
+        "description": "학생들을 위한 클래스를 만들고 초대 코드를 공유하세요.",
+        "simple": "간단한 클래스 생성",
+        "content": "클래스 이름과 과목을 입력하면 6자리 초대 코드가 생성돼요.",
+        "inviteCode": "클래스 초대 코드"
+      },
+      "assignBooks": {
+        "title": "책 배정하기 📖",
+        "description": "학생들의 수준에 맞는 책을 선택해서 배정하세요.",
+        "individual": "개별 배정",
+        "individualDesc": "학생별 수준에 맞게",
+        "bulk": "일괄 배정",
+        "bulkDesc": "전체 클래스에게",
+        "tip": "💡 팁: 학생들의 읽기 수준과 관심사를 고려해서 적절한 난이도의 책을 선택해주세요.",
+        "batch": "일괄 배정",
+        "batchDesc": "전체 클래스에게"
+      },
+      "monitor": {
+        "title": "진도 모니터링 📊",
+        "description": "학생들의 읽기 진도와 이해도를 실시간으로 확인하세요.",
+        "dashboard": "클래스 대시보드"
+      },
+      "monitorProgress": {
+        "title": "진도 모니터링 📊",
+        "description": "학생들의 읽기 진도와 이해도를 실시간으로 확인하세요.",
+        "dashboard": "클래스 대시보드"
+      }
+    },
+    "writer": {
+      "guidelines": {
+        "title": "이야기 작성 가이드 ✍️",
+        "description": "아이들에게 적합한 내용으로 이야기를 작성해주세요.",
+        "header": "작성 가이드라인",
+        "item1": "• 교육적이고 긍정적인 메시지 포함",
+        "item2": "• 연령대에 적합한 언어 사용",
+        "item3": "• 문화적 다양성 존중",
+        "item4": "• 500-2000자 권장 분량",
+        "message": "💚 여러분의 이야기는 전 세계 아이들에게 새로운 시각과 감동을 전해줄 소중한 선물이 됩니다."
+      },
+      "submission": {
+        "title": "제출 과정 📝",
+        "description": "작성한 이야기가 출간되기까지의 과정을 알아보세요.",
+        "step1": "이야기 제출",
+        "step1Desc": "텍스트 에디터로 작성",
+        "step2": "내용 검토",
+        "step2Desc": "스토리 매니저 검토",
+        "step3": "출간 승인",
+        "step3Desc": "최종 검토 후 출간"
+      },
+      "storyGuidelines": {
+        "title": "이야기 작성 가이드 ✍️",
+        "description": "아이들에게 적합한 내용으로 이야기를 작성해주세요.",
+        "header": "작성 가이드라인",
+        "educational": "• 교육적이고 긍정적인 메시지 포함",
+        "ageAppropriate": "• 연령대에 적합한 언어 사용",
+        "cultural": "• 문화적 다양성 존중",
+        "wordCount": "• 500-2000자 권장 분량",
+        "impact": "💚 여러분의 이야기는 전 세계 아이들에게 새로운 시각과 감동을 전해줄 소중한 선물이 됩니다."
+      },
+      "submissionProcess": {
+        "title": "제출 과정 📝",
+        "description": "작성한 이야기가 출간되기까지의 과정을 알아보세요.",
+        "step1": "이야기 제출",
+        "step1Desc": "텍스트 에디터로 작성",
+        "step2": "내용 검토",
+        "step2Desc": "스토리 매니저 검토",
+        "step3": "출간 승인",
+        "step3Desc": "최종 검토 후 출간"
+      }
+    },
+    "skipOnboarding": "온보딩 건너뛰기",
+    "progressAriaLabel": "온보딩 진행률: {percent}%",
+    "start": "시작하기",
+    "keyboardShortcuts": "← → 이동 | Enter 다음 | Esc 닫기"
   }
 }

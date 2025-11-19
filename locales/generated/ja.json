@@ -43,16 +43,25 @@
     }
   },
   "nav": {
-    "home": "ホーム",
+    "home": {
+      "label": "ホーム",
+      "description": "メインページへ"
+    },
     "myStories": "マイストーリー",
-    "library": "ライブラリ",
-    "notifications": "通知",
+    "library": {
+      "label": "ライブラリ",
+      "description": "すべての本を閲覧"
+    },
+    "notifications": "通知 {count}件",
     "profile": "プロフィール",
     "skipToMain": "メインコンテンツへスキップ",
     "mainNavigation": "メインナビゲーション",
     "mobileNavigation": "モバイルナビゲーション",
     "currentPage": "現在のページ",
-    "userMenu": "ユーザーメニュー",
+    "userMenu": {
+      "label": "ユーザーメニュー",
+      "ariaLabel": "ユーザーメニュー {action}"
+    },
     "helpSupport": "ヘルプとサポート",
     "signOut": "サインアウト",
     "aboutUs": "私たちについて",
@@ -65,7 +74,65 @@
     "logout": "ログアウト",
     "language": "言語",
     "volunteer": "ボランティア",
-    "signUp": "サインアップ"
+    "signUp": "サインアップ",
+    "profileSettings": "プロフィール設定",
+    "showTutorial": "チュートリアルを再表示",
+    "defaultUser": "ユーザー",
+    "homePageLabel": "1001 Storiesホームページ",
+    "menu": {
+      "ariaLabel": "メニュー {action}"
+    },
+    "getStarted": "始める",
+    "learner": {
+      "myBookshelf": {
+        "label": "私の本棚",
+        "description": "割り当てられた本と読書進捗を確認"
+      },
+      "bookClub": {
+        "label": "読書クラブ",
+        "description": "友達と一緒に読む"
+      }
+    },
+    "teacher": {
+      "dashboard": {
+        "label": "ダッシュボード",
+        "description": "クラスと学生を管理"
+      },
+      "classes": {
+        "label": "クラス管理",
+        "description": "クラスを作成して学生を招待"
+      },
+      "assignments": {
+        "label": "本を割り当てる",
+        "description": "学生に本を割り当てる"
+      }
+    },
+    "writer": {
+      "contribute": {
+        "label": "ダッシュボード",
+        "description": "貢献と影響を確認"
+      },
+      "submit": {
+        "label": "物語を書く",
+        "description": "新しい物語を書く"
+      }
+    },
+    "manager": {
+      "dashboard": {
+        "label": "管理ダッシュボード",
+        "description": "コンテンツ管理とレビュー"
+      },
+      "reviews": {
+        "label": "投稿をレビュー",
+        "description": "提出された物語をレビュー"
+      }
+    },
+    "admin": {
+      "panel": {
+        "label": "管理パネル",
+        "description": "システム全体を管理"
+      }
+    }
   },
   "stories": {
     "title": "マイストーリー",
@@ -292,7 +359,8 @@
     "loadingForm": "フォームを読み込んでいます...",
     "cancel": "キャンセル",
     "save": "保存",
-    "confirm": "確認"
+    "confirm": "確認",
+    "open": "開く"
   },
   "language": {
     "en": "英語",
@@ -514,5 +582,146 @@
         "description": "私たちは全ての子どもがアインシュタインの火花を持っていると信じています。本は学びを刺激し、学びは可能性を目覚めさせます。私たちのビジョンは全ての子どもが教育にアクセスできる世界です — 想像力が無限に育つ場所です。"
       }
     }
+  },
+  "roles": {
+    "learner": "学習者",
+    "teacher": "教師",
+    "writer": "作家",
+    "storyManager": "ストーリー管理者",
+    "bookManager": "ブック管理者",
+    "contentAdmin": "コンテンツ管理者",
+    "admin": "システム管理者",
+    "institution": "教育機関"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "1001 Storiesへようこそ！🎉",
+      "description": "世界中の子どもたちのストーリーを発見して共有しましょう",
+      "content": "1001 Storiesは、恵まれないコミュニティの子どもたちのストーリーを共有し、世界中の教育者と学習者をつなぐ非営利の教育プラットフォームです。"
+    },
+    "skip": "スキップ",
+    "progress": "進行状況",
+    "progressAria": "オンボーディング進捗: {percent}%",
+    "previous": "前へ",
+    "previousStep": "前のステップ",
+    "next": "次へ",
+    "nextStep": "次のステップ",
+    "skipStep": "スキップ",
+    "finish": "オンボーディング完了",
+    "finishAria": "オンボーディング完了",
+    "keyboardHints": "← → 移動 | Enter 次へ | Esc 閉じる",
+    "learner": {
+      "findBooks": {
+        "title": "本を探す 📚",
+        "description": "先生が割り当てた本や興味のある本を簡単に見つけることができます"
+      },
+      "myBookshelf": {
+        "title": "私の本棚から",
+        "content": "先生から割り当てられた本を確認できます。読書の進捗状況と完了状況も一目で確認できます。"
+      },
+      "library": {
+        "title": "図書館から",
+        "content": "他の国の子どもたちの興味深いストーリーを探検しましょう。年齢や興味に合った本をおすすめします。"
+      },
+      "readingTools": {
+        "title": "読書アシスタント 💡",
+        "description": "難しい単語があったら、クリックして説明を聞いてください",
+        "difficult": "難しい単語",
+        "hint": "クリックして意味を学びましょう！",
+        "audio": "音声で聞く",
+        "aiHelper": "AIアシスタント",
+        "difficultWord": "難しい単語",
+        "clickHelp": "クリックすると意味がわかります！",
+        "audioListen": "音声で聴く"
+      },
+      "progress": {
+        "title": "読書進捗を確認 📈",
+        "description": "どれだけ読んだか、どの本を完了したかを確認しましょう。",
+        "goal": "今週の読書目標",
+        "content": "読書進捗を確認し、完了した本について達成感を感じましょう。友達と読書記録を比較することもできます！"
+      },
+      "progressTracking": {
+        "title": "読書進捗の追跡 📈",
+        "description": "どれだけ読んだか、どの本を完了したかを確認しましょう",
+        "weeklyGoal": "今週の読書目標",
+        "content": "読書の進捗状況を確認し、完了した本に対する達成感を感じましょう。友達と読書記録を比較することもできます！"
+      }
+    },
+    "teacher": {
+      "createClass": {
+        "title": "クラスを作成 🏫",
+        "description": "生徒のためのクラスを作成し、招待コードを共有します",
+        "simple": "簡単なクラス作成",
+        "content": "クラス名と科目を入力すると、6文字の招待コードが生成されます。",
+        "inviteCode": "クラス招待コード"
+      },
+      "assignBooks": {
+        "title": "本を割り当てる 📖",
+        "description": "生徒のレベルに合った本を選んで割り当てます",
+        "individual": "個別割り当て",
+        "individualDesc": "各生徒のレベルに合わせて",
+        "bulk": "一括割り当て",
+        "bulkDesc": "クラス全体に",
+        "tip": "💡 ヒント：適切な難易度の本を選ぶ際には、生徒の読書レベルと興味を考慮してください。",
+        "batch": "一括割り当て",
+        "batchDesc": "クラス全体に"
+      },
+      "monitor": {
+        "title": "進捗を監視 📊",
+        "description": "生徒の読書進捗と理解度をリアルタイムで確認しましょう。",
+        "dashboard": "クラスダッシュボード"
+      },
+      "monitorProgress": {
+        "title": "進捗を監視 📊",
+        "description": "生徒の読書進捗状況と理解度をリアルタイムで確認します",
+        "dashboard": "クラスダッシュボード"
+      }
+    },
+    "writer": {
+      "guidelines": {
+        "title": "物語執筆ガイド ✍️",
+        "description": "子供に適した内容の物語を書きましょう。",
+        "header": "執筆ガイドライン",
+        "item1": "• 教育的でポジティブなメッセージを含む",
+        "item2": "• 年齢に適した言語を使用",
+        "item3": "• 文化的多様性を尊重",
+        "item4": "• 推奨される長さ：500-2000文字",
+        "message": "💚 あなたの物語は、世界中の子どもたちに新しい視点と感動をもたらす貴重な贈り物となります。"
+      },
+      "submission": {
+        "title": "投稿プロセス 📝",
+        "description": "執筆から出版までのプロセスを学びましょう。",
+        "step1": "物語を投稿",
+        "step1Desc": "テキストエディターで作成",
+        "step2": "内容レビュー",
+        "step2Desc": "ストーリーマネージャーレビュー",
+        "step3": "出版承認",
+        "step3Desc": "最終レビューと出版"
+      },
+      "storyGuidelines": {
+        "title": "ストーリー執筆ガイド ✍️",
+        "description": "子供に適した内容のストーリーを書いてください",
+        "header": "執筆ガイドライン",
+        "educational": "• 教育的で肯定的なメッセージを含める",
+        "ageAppropriate": "• 年齢に適した言語を使用する",
+        "cultural": "• 文化的多様性を尊重する",
+        "wordCount": "• 推奨される長さ：500〜2000語",
+        "impact": "💚 あなたのストーリーは、世界中の子どもたちに新しい視点と感動を伝える貴重な贈り物になります。"
+      },
+      "submissionProcess": {
+        "title": "提出プロセス 📝",
+        "description": "ストーリーの執筆から出版までのプロセスを学びます",
+        "step1": "ストーリーを提出",
+        "step1Desc": "テキストエディタで作成",
+        "step2": "内容レビュー",
+        "step2Desc": "ストーリーマネージャーのレビュー",
+        "step3": "出版承認",
+        "step3Desc": "最終レビューと出版"
+      }
+    },
+    "skipOnboarding": "オンボーディングをスキップ",
+    "progressAriaLabel": "オンボーディング進行状況: {percent}%",
+    "start": "開始",
+    "keyboardShortcuts": "← → 移動 | Enter 次へ | Esc 閉じる"
   }
 }

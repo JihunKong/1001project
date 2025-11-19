@@ -5,6 +5,7 @@ import type { ExtendedSession } from '@/types/api'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 import {
   Bars3Icon,
   XMarkIcon,
@@ -39,6 +40,7 @@ interface UserMenuProps {
 }
 
 const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) => {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -90,19 +92,21 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
   const getRoleDisplayName = (role: string) => {
     switch (role) {
       case 'LEARNER':
-        return '학습자'
+        return t('roles.learner')
       case 'TEACHER':
-        return '교사'
+        return t('roles.teacher')
       case 'WRITER':
-        return '작가'
+        return t('roles.writer')
       case 'STORY_MANAGER':
-        return '스토리 관리자'
+        return t('roles.storyManager')
       case 'BOOK_MANAGER':
-        return '북 관리자'
+        return t('roles.bookManager')
       case 'CONTENT_ADMIN':
-        return '콘텐츠 관리자'
+        return t('roles.contentAdmin')
       case 'ADMIN':
-        return '시스템 관리자'
+        return t('roles.admin')
+      case 'INSTITUTION':
+        return t('roles.institution')
       default:
         return role
     }
@@ -118,7 +122,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
         aria-expanded={isOpen}
         aria-haspopup="true"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={`사용자 메뉴 ${isOpen ? '닫기' : '열기'}`}
+        aria-label={t('nav.userMenu.ariaLabel', { action: isOpen ? t('common.close') : t('common.open') })}
       >
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-br from-soe-green-400 to-soe-green-600 rounded-full flex items-center justify-center">
@@ -148,7 +152,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
             {/* User info header */}
             <div className="px-4 py-3 border-b border-gray-100">
               <p className="text-sm font-medium text-gray-900">
-                {session.user?.name || '사용자'}
+                {session.user?.name || t('nav.defaultUser')}
               </p>
               <p className="text-sm text-gray-500 truncate">
                 {session.user?.email}
@@ -163,7 +167,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
               onClick={() => setIsOpen(false)}
             >
               <UserIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-              프로필 설정
+              {t('nav.profileSettings')}
             </Link>
 
             {onTriggerOnboarding && (
@@ -176,7 +180,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
                 }}
               >
                 <QuestionMarkCircleIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-                사용법 다시 보기
+                {t('nav.showTutorial')}
               </button>
             )}
 
@@ -187,7 +191,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
               onClick={() => setIsOpen(false)}
             >
               <QuestionMarkCircleIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-              도움말
+              {t('nav.help')}
             </Link>
 
             <div className="border-t border-gray-100 my-1"></div>
@@ -201,7 +205,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
               }}
             >
               <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5 text-red-400 group-hover:text-red-500" />
-              로그아웃
+              {t('nav.logout')}
             </button>
           </div>
         </div>
@@ -215,6 +219,7 @@ interface EnhancedNavigationProps {
 }
 
 export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavigationProps) {
+  const { t } = useTranslation()
   const { data: session, status } = useSession()
   const router = useRouter()
   const pathname = usePathname()
@@ -248,18 +253,18 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
 
     const commonItems: NavigationItem[] = [
       {
-        name: '홈',
+        name: t('nav.home.label'),
         href: '/',
         icon: HomeIcon,
         current: pathname === '/',
-        description: '메인 페이지로 이동'
+        description: t('nav.home.description')
       },
       {
-        name: '도서관',
+        name: t('nav.library.label'),
         href: '/library',
         icon: BookOpenIcon,
         current: pathname.startsWith('/library'),
-        description: '전체 도서 목록 보기'
+        description: t('nav.library.description')
       }
     ]
 
@@ -268,18 +273,18 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
         return [
           ...commonItems,
           {
-            name: '내 책장',
+            name: t('nav.learner.myBookshelf.label'),
             href: '/dashboard/learner',
             icon: AcademicCapIcon,
             current: pathname.startsWith('/dashboard/learner'),
-            description: '배정받은 책과 읽기 진도 확인'
+            description: t('nav.learner.myBookshelf.description')
           },
           {
-            name: '북클럽',
+            name: t('nav.learner.bookClub.label'),
             href: '/dashboard/bookclub',
             icon: UserGroupIcon,
             current: pathname.startsWith('/dashboard/bookclub'),
-            description: '친구들과 함께 읽기'
+            description: t('nav.learner.bookClub.description')
           }
         ]
 
@@ -287,25 +292,25 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
         return [
           ...commonItems,
           {
-            name: '대시보드',
+            name: t('nav.teacher.dashboard.label'),
             href: '/dashboard/teacher',
             icon: AcademicCapIcon,
             current: pathname.startsWith('/dashboard/teacher'),
-            description: '클래스와 학생 관리'
+            description: t('nav.teacher.dashboard.description')
           },
           {
-            name: '클래스 관리',
+            name: t('nav.teacher.classes.label'),
             href: '/dashboard/teacher/classes',
             icon: UserGroupIcon,
             current: pathname.startsWith('/dashboard/teacher/classes'),
-            description: '클래스 생성 및 학생 초대'
+            description: t('nav.teacher.classes.description')
           },
           {
-            name: '책 배정',
+            name: t('nav.teacher.assignments.label'),
             href: '/dashboard/teacher/assignments',
             icon: BookOpenIcon,
             current: pathname.startsWith('/dashboard/teacher/assignments'),
-            description: '학생들에게 책 배정하기'
+            description: t('nav.teacher.assignments.description')
           }
         ]
 
@@ -313,18 +318,18 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
         return [
           ...commonItems,
           {
-            name: '대시보드',
+            name: t('nav.writer.contribute.label'),
             href: '/dashboard/writer',
             icon: SparklesIcon,
             current: pathname.startsWith('/dashboard/writer'),
-            description: '기여 현황과 영향력 확인'
+            description: t('nav.writer.contribute.description')
           },
           {
-            name: '이야기 작성',
+            name: t('nav.writer.submit.label'),
             href: '/dashboard/writer/submit',
             icon: DocumentTextIcon,
             current: pathname.startsWith('/dashboard/writer/submit'),
-            description: '새로운 이야기 작성하기'
+            description: t('nav.writer.submit.description')
           }
         ]
 
@@ -334,19 +339,19 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
         return [
           ...commonItems,
           {
-            name: '관리 대시보드',
+            name: t('nav.manager.dashboard.label'),
             href: '/dashboard/manager',
             icon: Cog6ToothIcon,
             current: pathname.startsWith('/dashboard/manager'),
-            description: '콘텐츠 관리 및 검토'
+            description: t('nav.manager.dashboard.description')
           },
           {
-            name: '제출 검토',
+            name: t('nav.manager.reviews.label'),
             href: '/dashboard/manager/reviews',
             icon: DocumentTextIcon,
             current: pathname.startsWith('/dashboard/manager/reviews'),
             badge: 5, // Mock pending reviews
-            description: '제출된 이야기 검토하기'
+            description: t('nav.manager.reviews.description')
           }
         ]
 
@@ -354,18 +359,18 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
         return [
           ...commonItems,
           {
-            name: '관리자 패널',
+            name: t('nav.admin.panel.label'),
             href: '/admin',
             icon: Cog6ToothIcon,
             current: pathname.startsWith('/admin'),
-            description: '시스템 전체 관리'
+            description: t('nav.admin.panel.description')
           }
         ]
 
       default:
         return commonItems
     }
-  }, [session?.user?.role, pathname])
+  }, [session?.user?.role, pathname, t])
 
   const navigationItems = getNavigationItems()
 
@@ -407,10 +412,10 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
         className="skip-link"
         tabIndex={1}
       >
-        메인 콘텐츠로 건너뛰기
+        {t('nav.skipToMain')}
       </a>
 
-      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40" role="navigation" aria-label="메인 네비게이션">
+      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40" role="navigation" aria-label={t('nav.mainNavigation')}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             {/* Logo and brand */}
@@ -418,7 +423,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
               <Link
                 href="/"
                 className="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2 rounded-lg p-1"
-                aria-label="1001 Stories 홈페이지"
+                aria-label={t('nav.homePageLabel')}
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-soe-green-400 to-soe-green-600 rounded-lg flex items-center justify-center">
                   <BookOpenIcon className="w-5 h-5 text-white" />
@@ -462,7 +467,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                   {/* Notifications */}
                   <button
                     className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-soe-green-400"
-                    aria-label={`알림 ${notifications}개`}
+                    aria-label={t('nav.notifications', { count: notifications })}
                   >
                     <BellIcon className="w-5 h-5" />
                     {notifications > 0 && (
@@ -486,19 +491,19 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     href="/library"
                     className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                   >
-                    도서관
+                    {t('nav.library.label')}
                   </Link>
                   <Link
                     href="/login"
                     className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                   >
-                    로그인
+                    {t('nav.signIn')}
                   </Link>
                   <Link
                     href="/signup"
                     className="btn btn-primary"
                   >
-                    시작하기
+                    {t('nav.getStarted')}
                   </Link>
                 </div>
               )}
@@ -509,7 +514,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
               {session && notifications > 0 && (
                 <button
                   className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-soe-green-400"
-                  aria-label={`알림 ${notifications}개`}
+                  aria-label={t('nav.notifications', { count: notifications })}
                 >
                   <BellIcon className="w-5 h-5" />
                   <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
@@ -525,7 +530,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                 aria-controls="mobile-menu"
                 aria-expanded={isMobileMenuOpen}
                 onClick={toggleMobileMenu}
-                aria-label={`메뉴 ${isMobileMenuOpen ? '닫기' : '열기'}`}
+                aria-label={t('nav.menu.ariaLabel', { action: isMobileMenuOpen ? t('common.close') : t('common.open') })}
               >
                 {isMobileMenuOpen ? (
                   <XMarkIcon className="block h-6 w-6" />
@@ -597,7 +602,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     role="menuitem"
                   >
                     <UserIcon className="w-5 h-5 mr-3" />
-                    프로필 설정
+                    {t('nav.profileSettings')}
                   </Link>
 
                   {onTriggerOnboarding && (
@@ -610,7 +615,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                       }}
                     >
                       <QuestionMarkCircleIcon className="w-5 h-5 mr-3" />
-                      사용법 다시 보기
+                      {t('nav.showTutorial')}
                     </button>
                   )}
 
@@ -623,7 +628,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     }}
                   >
                     <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
-                    로그아웃
+                    {t('nav.logout')}
                   </button>
                 </>
               ) : (
@@ -635,7 +640,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     role="menuitem"
                   >
                     <BookOpenIcon className="w-5 h-5 mr-3" />
-                    도서관
+                    {t('nav.library.label')}
                   </Link>
                   <Link
                     href="/login"
@@ -643,7 +648,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     role="menuitem"
                   >
                     <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
-                    로그인
+                    {t('nav.signIn')}
                   </Link>
                   <Link
                     href="/signup"
@@ -651,7 +656,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     role="menuitem"
                   >
                     <SparklesIcon className="w-5 h-5 mr-3" />
-                    시작하기
+                    {t('nav.getStarted')}
                   </Link>
                 </>
               )}
