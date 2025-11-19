@@ -652,13 +652,136 @@
     },
     "registerBook": {
       "title": "Register New Book",
-      "subtitle": "Publish a book directly to the library without approval workflow",
-      "infoBadge": "Book will be published immediately upon submission",
+      "subtitle": "Directly publish a book to the library without approval workflow",
+      "infoBadge": "Books are published immediately",
       "backToDashboard": "Back to Dashboard",
       "form": {
-        "submitting": "Registering...",
-        "submit": "Register Book",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "submit": "Publish Book",
+        "submitting": "Publishing..."
+      },
+      "sections": {
+        "basicInfo": "Basic Information",
+        "content": "Content",
+        "metadata": "Metadata"
+      },
+      "fields": {
+        "title": {
+          "label": "Title",
+          "placeholder": "Enter book title"
+        },
+        "subtitle": {
+          "label": "Subtitle",
+          "placeholder": "Enter subtitle (optional)"
+        },
+        "authorName": {
+          "label": "Author Name",
+          "placeholder": "Enter author name"
+        },
+        "summary": {
+          "label": "Summary",
+          "placeholder": "Brief description of the book"
+        },
+        "content": {
+          "label": "Story Content",
+          "placeholder": "Write your story here..."
+        }
+      },
+      "bookType": {
+        "label": "Book Type",
+        "text": {
+          "title": "Text Content",
+          "description": "Write or paste text directly"
+        },
+        "pdf": {
+          "title": "PDF File",
+          "description": "Upload existing PDF document"
+        }
+      },
+      "pdfUpload": {
+        "label": "PDF File",
+        "dragActive": "Drop the PDF file here",
+        "dragInactive": "Click to upload",
+        "dragOr": " or drag and drop",
+        "sizeLimit": "PDF up to {size}MB",
+        "errorInvalidFile": "Please select a valid PDF file",
+        "errorSize": "File size must be less than {size}MB"
+      },
+      "coverImage": {
+        "label": "Cover Image (Optional)",
+        "preview": "Cover preview",
+        "remove": "Remove image",
+        "dragActive": "Drop the image here",
+        "dragInactive": "Click to upload",
+        "dragOr": " or drag and drop",
+        "sizeLimit": "PNG, JPG, WEBP up to {size}MB",
+        "errorInvalidFile": "Please select a valid image file",
+        "errorSize": "Image size must be less than {size}MB"
+      },
+      "metadata": {
+        "language": {
+          "label": "Language",
+          "en": "English",
+          "ko": "Korean (한국어)",
+          "es": "Spanish (Español)",
+          "fr": "French (Français)",
+          "de": "German (Deutsch)",
+          "ja": "Japanese (日本語)",
+          "zh": "Chinese (中文)",
+          "ar": "Arabic (العربية)",
+          "hi": "Hindi (हिन्दी)",
+          "pt": "Portuguese (Português)",
+          "ru": "Russian (Русский)",
+          "it": "Italian (Italiano)"
+        },
+        "ageRange": {
+          "label": "Age Range",
+          "placeholder": "Select age range",
+          "years": "{range} years"
+        },
+        "categories": {
+          "label": "Categories",
+          "required": "At least one category is required",
+          "fiction": "Fiction",
+          "nonFiction": "Non-Fiction",
+          "poetry": "Poetry",
+          "biography": "Biography",
+          "fantasy": "Fantasy",
+          "adventure": "Adventure",
+          "mystery": "Mystery",
+          "scienceFiction": "Science Fiction",
+          "historical": "Historical",
+          "educational": "Educational"
+        },
+        "tags": {
+          "label": "Tags (comma-separated)",
+          "placeholder": "adventure, friendship, courage",
+          "hint": "Separate tags with commas"
+        },
+        "visibility": {
+          "label": "Visibility",
+          "public": "Public - Anyone can read",
+          "restricted": "Restricted - Requires permission",
+          "classroom": "Classroom Only - Teachers assign to students"
+        },
+        "premium": {
+          "label": "Premium Book (requires payment)"
+        },
+        "price": {
+          "label": "Price (USD)",
+          "placeholder": "9.99"
+        }
+      },
+      "errors": {
+        "titleRequired": "Title and author name are required",
+        "categoryRequired": "At least one category is required",
+        "pdfRequired": "PDF file is required when content type is PDF",
+        "contentRequired": "Content is required when content type is TEXT",
+        "priceRequired": "Price is required for premium books",
+        "registerFailed": "Failed to register book"
+      },
+      "success": {
+        "message": "Book registered and published successfully!"
       }
     },
     "profile": {

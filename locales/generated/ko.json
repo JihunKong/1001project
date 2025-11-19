@@ -652,13 +652,136 @@
     },
     "registerBook": {
       "title": "새 도서 등록",
-      "subtitle": "승인 절차 없이 도서관에 직접 도서 출판",
-      "infoBadge": "제출 즉시 도서가 출판됩니다",
+      "subtitle": "승인 절차 없이 도서관에 직접 출판",
+      "infoBadge": "도서가 즉시 출판됩니다",
       "backToDashboard": "대시보드로 돌아가기",
       "form": {
-        "submitting": "등록 중...",
-        "submit": "도서 등록",
-        "cancel": "취소"
+        "cancel": "취소",
+        "submit": "도서 출판",
+        "submitting": "출판 중..."
+      },
+      "sections": {
+        "basicInfo": "기본 정보",
+        "content": "콘텐츠",
+        "metadata": "메타데이터"
+      },
+      "fields": {
+        "title": {
+          "label": "제목",
+          "placeholder": "도서 제목을 입력하세요"
+        },
+        "subtitle": {
+          "label": "부제목",
+          "placeholder": "부제목을 입력하세요 (선택사항)"
+        },
+        "authorName": {
+          "label": "저자명",
+          "placeholder": "저자명을 입력하세요"
+        },
+        "summary": {
+          "label": "요약",
+          "placeholder": "도서에 대한 간단한 설명"
+        },
+        "content": {
+          "label": "이야기 내용",
+          "placeholder": "이야기를 여기에 작성하세요..."
+        }
+      },
+      "bookType": {
+        "label": "도서 유형",
+        "text": {
+          "title": "텍스트 콘텐츠",
+          "description": "텍스트를 직접 작성하거나 붙여넣기"
+        },
+        "pdf": {
+          "title": "PDF 파일",
+          "description": "기존 PDF 문서 업로드"
+        }
+      },
+      "pdfUpload": {
+        "label": "PDF 파일",
+        "dragActive": "PDF 파일을 여기에 드롭하세요",
+        "dragInactive": "클릭하여 업로드",
+        "dragOr": " 또는 드래그 앤 드롭",
+        "sizeLimit": "최대 {size}MB PDF",
+        "errorInvalidFile": "유효한 PDF 파일을 선택하세요",
+        "errorSize": "파일 크기는 {size}MB 미만이어야 합니다"
+      },
+      "coverImage": {
+        "label": "표지 이미지 (선택사항)",
+        "preview": "표지 미리보기",
+        "remove": "이미지 제거",
+        "dragActive": "이미지를 여기에 드롭하세요",
+        "dragInactive": "클릭하여 업로드",
+        "dragOr": " 또는 드래그 앤 드롭",
+        "sizeLimit": "PNG, JPG, WEBP 최대 {size}MB",
+        "errorInvalidFile": "유효한 이미지 파일을 선택하세요",
+        "errorSize": "이미지 크기는 {size}MB 미만이어야 합니다"
+      },
+      "metadata": {
+        "language": {
+          "label": "언어",
+          "en": "영어",
+          "ko": "한국어",
+          "es": "스페인어 (Español)",
+          "fr": "프랑스어 (Français)",
+          "de": "독일어 (Deutsch)",
+          "ja": "일본어 (日本語)",
+          "zh": "중국어 (中文)",
+          "ar": "아랍어 (العربية)",
+          "hi": "힌디어 (हिन्दी)",
+          "pt": "포르투갈어 (Português)",
+          "ru": "러시아어 (Русский)",
+          "it": "이탈리아어 (Italiano)"
+        },
+        "ageRange": {
+          "label": "연령대",
+          "placeholder": "연령대를 선택하세요",
+          "years": "{range}세"
+        },
+        "categories": {
+          "label": "카테고리",
+          "required": "최소 하나의 카테고리가 필요합니다",
+          "fiction": "소설",
+          "nonFiction": "논픽션",
+          "poetry": "시",
+          "biography": "전기",
+          "fantasy": "판타지",
+          "adventure": "모험",
+          "mystery": "미스터리",
+          "scienceFiction": "공상과학",
+          "historical": "역사",
+          "educational": "교육"
+        },
+        "tags": {
+          "label": "태그 (쉼표로 구분)",
+          "placeholder": "모험, 우정, 용기",
+          "hint": "쉼표로 태그를 구분하세요"
+        },
+        "visibility": {
+          "label": "공개 범위",
+          "public": "공개 - 누구나 읽을 수 있음",
+          "restricted": "제한됨 - 권한 필요",
+          "classroom": "교실 전용 - 교사가 학생에게 할당"
+        },
+        "premium": {
+          "label": "프리미엄 도서 (유료)"
+        },
+        "price": {
+          "label": "가격 (USD)",
+          "placeholder": "9.99"
+        }
+      },
+      "errors": {
+        "titleRequired": "제목과 저자명은 필수입니다",
+        "categoryRequired": "최소 하나의 카테고리가 필요합니다",
+        "pdfRequired": "콘텐츠 유형이 PDF일 때 PDF 파일이 필요합니다",
+        "contentRequired": "콘텐츠 유형이 TEXT일 때 내용이 필요합니다",
+        "priceRequired": "프리미엄 도서에는 가격이 필요합니다",
+        "registerFailed": "도서 등록에 실패했습니다"
+      },
+      "success": {
+        "message": "도서가 성공적으로 등록 및 출판되었습니다!"
       }
     },
     "profile": {
