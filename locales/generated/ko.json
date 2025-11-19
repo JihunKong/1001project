@@ -340,6 +340,53 @@
           "selectedText": "선택된 텍스트",
           "title": "AI 제안"
         }
+      },
+      "submitConfirm": {
+        "title": "검토를 위해 스토리 제출",
+        "storyTitle": "스토리 제목",
+        "untitledStory": "제목 없는 스토리",
+        "words": "단어",
+        "nextSteps": {
+          "title": "다음 단계는 무엇인가요?",
+          "step1": "귀하의 스토리는 편집팀의 검토를 받게 됩니다",
+          "step2": "검토는 일반적으로 영업일 기준 3-5일이 소요됩니다",
+          "step3": "이메일을 통해 피드백 또는 수정 요청을 받게 됩니다"
+        },
+        "copyright": {
+          "label": "저작권 확인:",
+          "text": "이 작품이 나의 독창적인 작품이며 저작권을 소유하고 있거나, 이 스토리를 제출하기 위해 필요한 허가를 받았음을 확인합니다."
+        },
+        "reviewProcess": {
+          "label": "검토 절차:",
+          "text": "내 스토리가 검토될 것이며, 출판 전에 수정 요청을 받을 수 있음을 이해합니다."
+        },
+        "buttons": {
+          "cancel": "취소",
+          "submit": "검토를 위해 제출",
+          "submitting": "제출 중..."
+        },
+        "error": "제출하려면 위의 두 가지 확인사항을 모두 확인해주세요"
+      },
+      "details": {
+        "title": "세부 정보",
+        "status": "상태",
+        "lastSaved": "마지막 저장",
+        "wordCount": "단어 수",
+        "notSaved": "아직 저장되지 않음"
+      }
+    },
+    "workflow": {
+      "noHistory": "워크플로우 기록이 없습니다",
+      "metadata": {
+        "priority": "우선순위:",
+        "dueDate": "마감일:",
+        "revisionTypes": "수정 유형:"
+      },
+      "priority": {
+        "urgent": "긴급",
+        "high": "높음",
+        "medium": "보통",
+        "low": "낮음"
       }
     }
   },

@@ -2,6 +2,7 @@
 
 import { Calendar, User, MessageSquare } from 'lucide-react';
 import StatusBadge from './StatusBadge';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface WorkflowEntry {
   id: string;
@@ -23,10 +24,12 @@ interface WorkflowTimelineProps {
 }
 
 export default function WorkflowTimeline({ entries, className = '' }: WorkflowTimelineProps) {
+  const { t } = useTranslation();
+
   if (entries.length === 0) {
     return (
       <div className={`text-center py-8 ${className}`}>
-        <p className="text-sm text-gray-500">No workflow history available</p>
+        <p className="text-sm text-gray-500">{t('dashboard.workflow.noHistory')}</p>
       </div>
     );
   }
@@ -85,20 +88,20 @@ export default function WorkflowTimeline({ entries, className = '' }: WorkflowTi
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   {entry.metadata.priority && (
                     <div>
-                      <span className="text-gray-500">Priority:</span>
+                      <span className="text-gray-500">{t('dashboard.workflow.metadata.priority')}</span>
                       <span className={`ml-2 font-medium ${
                         entry.metadata.priority === 'URGENT' ? 'text-red-600' :
                         entry.metadata.priority === 'HIGH' ? 'text-orange-600' :
                         entry.metadata.priority === 'MEDIUM' ? 'text-blue-600' :
                         'text-gray-600'
                       }`}>
-                        {entry.metadata.priority}
+                        {t(`dashboard.workflow.priority.${entry.metadata.priority.toLowerCase()}`)}
                       </span>
                     </div>
                   )}
                   {entry.metadata.dueDate && (
                     <div>
-                      <span className="text-gray-500">Due Date:</span>
+                      <span className="text-gray-500">{t('dashboard.workflow.metadata.dueDate')}</span>
                       <span className="ml-2 font-medium text-gray-700">
                         {new Date(entry.metadata.dueDate).toLocaleDateString()}
                       </span>
@@ -106,7 +109,7 @@ export default function WorkflowTimeline({ entries, className = '' }: WorkflowTi
                   )}
                   {entry.metadata.revisionTypes && entry.metadata.revisionTypes.length > 0 && (
                     <div className="col-span-2">
-                      <span className="text-gray-500">Revision Types:</span>
+                      <span className="text-gray-500">{t('dashboard.workflow.metadata.revisionTypes')}</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {entry.metadata.revisionTypes.map((type: string) => (
                           <span

@@ -1,6 +1,7 @@
 'use client';
 
 import { StatusBadge } from '../shared';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface SubmissionDetailsCardProps {
   status?: string;
@@ -17,8 +18,9 @@ export default function SubmissionDetailsCard({
   createdAt,
   wordCount = 0,
 }: SubmissionDetailsCardProps) {
+  const { t } = useTranslation();
   const formatDate = (date?: Date | string | null) => {
-    if (!date) return 'Not saved yet';
+    if (!date) return t('dashboard.writer.details.notSaved');
     const d = new Date(date);
     return d.toLocaleDateString('en-US', {
       month: 'long',
@@ -41,7 +43,7 @@ export default function SubmissionDetailsCard({
                 lineHeight: '1.221'
               }}
             >
-              Details
+              {t('dashboard.writer.details.title')}
             </h3>
           </div>
 
@@ -56,7 +58,7 @@ export default function SubmissionDetailsCard({
                 width: '81px'
               }}
             >
-              Status
+              {t('dashboard.writer.details.status')}
             </span>
             <StatusBadge status={status} />
           </div>
@@ -71,7 +73,7 @@ export default function SubmissionDetailsCard({
                 lineHeight: '1.193'
               }}
             >
-              Last Saved
+              {t('dashboard.writer.details.lastSaved')}
             </span>
             <span
               className="text-[#141414]"
@@ -96,7 +98,7 @@ export default function SubmissionDetailsCard({
                 lineHeight: '1.193'
               }}
             >
-              Word Count
+              {t('dashboard.writer.details.wordCount')}
             </span>
             <span
               className="text-[#141414]"

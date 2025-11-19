@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Modal from '@/components/figma/ui/Modal';
 import { AlertCircle, CheckCircle2, FileText, Send } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface SubmissionConfirmationModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export default function SubmissionConfirmationModal({
   wordCount,
   isSubmitting = false
 }: SubmissionConfirmationModalProps) {
+  const { t } = useTranslation();
   const [copyrightConfirmed, setCopyrightConfirmed] = useState(false);
   const [understandReview, setUnderstandReview] = useState(false);
 
@@ -45,7 +47,7 @@ export default function SubmissionConfirmationModal({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Submit Story for Review"
+      title={t('dashboard.writer.submitConfirm.title')}
       size="md"
       closeOnBackdropClick={!isSubmitting}
       closeOnEscape={!isSubmitting}
@@ -57,7 +59,7 @@ export default function SubmissionConfirmationModal({
             <FileText className="w-5 h-5 text-[#8E8E93] mt-0.5" />
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-medium text-[#141414] mb-1">
-                Story Title
+                {t('dashboard.writer.submitConfirm.storyTitle')}
               </h3>
               <p
                 className="text-[#141414] truncate"
@@ -68,10 +70,10 @@ export default function SubmissionConfirmationModal({
                   lineHeight: '1.221'
                 }}
               >
-                {title || 'Untitled Story'}
+                {title || t('dashboard.writer.submitConfirm.untitledStory')}
               </p>
               <p className="text-sm text-[#8E8E93] mt-1">
-                {wordCount.toLocaleString()} words
+                {wordCount.toLocaleString()} {t('dashboard.writer.submitConfirm.words')}
               </p>
             </div>
           </div>
@@ -90,20 +92,20 @@ export default function SubmissionConfirmationModal({
                   fontWeight: 500
                 }}
               >
-                What happens next?
+                {t('dashboard.writer.submitConfirm.nextSteps.title')}
               </h4>
               <ul className="space-y-2 text-sm text-[#5951E7]">
                 <li className="flex items-start gap-2">
                   <span className="mt-1.5 w-1 h-1 bg-[#5951E7] rounded-full flex-shrink-0"></span>
-                  <span>Your story will be reviewed by our editorial team</span>
+                  <span>{t('dashboard.writer.submitConfirm.nextSteps.step1')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1.5 w-1 h-1 bg-[#5951E7] rounded-full flex-shrink-0"></span>
-                  <span>Review typically takes 3-5 business days</span>
+                  <span>{t('dashboard.writer.submitConfirm.nextSteps.step2')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1.5 w-1 h-1 bg-[#5951E7] rounded-full flex-shrink-0"></span>
-                  <span>You&apos;ll receive feedback or revision requests via email</span>
+                  <span>{t('dashboard.writer.submitConfirm.nextSteps.step3')}</span>
                 </li>
               </ul>
             </div>
@@ -129,7 +131,7 @@ export default function SubmissionConfirmationModal({
                 lineHeight: '1.5'
               }}
             >
-              <span className="font-medium">Copyright Confirmation:</span> I confirm that this is my original work and I own the copyright, or I have obtained necessary permissions to submit this story.
+              <span className="font-medium">{t('dashboard.writer.submitConfirm.copyright.label')}</span> {t('dashboard.writer.submitConfirm.copyright.text')}
             </label>
           </div>
 
@@ -150,7 +152,7 @@ export default function SubmissionConfirmationModal({
                 lineHeight: '1.5'
               }}
             >
-              <span className="font-medium">Review Process:</span> I understand that my story will be reviewed and I may receive requests for revisions before publication.
+              <span className="font-medium">{t('dashboard.writer.submitConfirm.reviewProcess.label')}</span> {t('dashboard.writer.submitConfirm.reviewProcess.text')}
             </label>
           </div>
         </div>
@@ -169,7 +171,7 @@ export default function SubmissionConfirmationModal({
               lineHeight: '1.221'
             }}
           >
-            Cancel
+            {t('dashboard.writer.submitConfirm.buttons.cancel')}
           </button>
           <button
             type="button"
@@ -186,12 +188,12 @@ export default function SubmissionConfirmationModal({
             {isSubmitting ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Submitting...</span>
+                <span>{t('dashboard.writer.submitConfirm.buttons.submitting')}</span>
               </>
             ) : (
               <>
                 <Send className="w-5 h-5" />
-                <span>Submit for Review</span>
+                <span>{t('dashboard.writer.submitConfirm.buttons.submit')}</span>
               </>
             )}
           </button>
@@ -199,7 +201,7 @@ export default function SubmissionConfirmationModal({
 
         {!canSubmit && !isSubmitting && (
           <p className="text-sm text-[#DC2626] text-center -mt-2">
-            Please confirm both statements above to submit
+            {t('dashboard.writer.submitConfirm.error')}
           </p>
         )}
       </div>

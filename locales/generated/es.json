@@ -340,6 +340,53 @@
           "selectedText": "Selected Text",
           "title": "AI Suggestion"
         }
+      },
+      "submitConfirm": {
+        "title": "Submit Story for Review",
+        "storyTitle": "Story Title",
+        "untitledStory": "Untitled Story",
+        "words": "words",
+        "nextSteps": {
+          "title": "What happens next?",
+          "step1": "Your story will be reviewed by our editorial team",
+          "step2": "Review typically takes 3-5 business days",
+          "step3": "You'll receive feedback or revision requests via email"
+        },
+        "copyright": {
+          "label": "Copyright Confirmation:",
+          "text": "I confirm that this is my original work and I own the copyright, or I have obtained necessary permissions to submit this story."
+        },
+        "reviewProcess": {
+          "label": "Review Process:",
+          "text": "I understand that my story will be reviewed and I may receive requests for revisions before publication."
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "submit": "Submit for Review",
+          "submitting": "Submitting..."
+        },
+        "error": "Please confirm both statements above to submit"
+      },
+      "details": {
+        "title": "Details",
+        "status": "Status",
+        "lastSaved": "Last Saved",
+        "wordCount": "Word Count",
+        "notSaved": "Not saved yet"
+      }
+    },
+    "workflow": {
+      "noHistory": "No workflow history available",
+      "metadata": {
+        "priority": "Priority:",
+        "dueDate": "Due Date:",
+        "revisionTypes": "Revision Types:"
+      },
+      "priority": {
+        "urgent": "URGENT",
+        "high": "HIGH",
+        "medium": "MEDIUM",
+        "low": "LOW"
       }
     }
   },
