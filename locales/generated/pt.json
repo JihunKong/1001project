@@ -1717,5 +1717,93 @@
       "save": "Save",
       "saving": "Saving..."
     }
+  },
+  "notifications": {
+    "dropdown": {
+      "title": "Notifications",
+      "markAllRead": "Mark all read",
+      "unread": "{count} unread notification",
+      "unreadPlural": "{count} unread notifications",
+      "loading": "Loading notifications...",
+      "noNotifications": "No notifications yet",
+      "noNotificationsHint": "You'll see updates about your stories here",
+      "viewStory": "View story →",
+      "viewAll": "View all notifications →",
+      "justNow": "Just now",
+      "minutesAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago",
+      "markAsRead": "Mark as read"
+    },
+    "center": {
+      "title": "Notifications",
+      "unreadCount": "{count} unread",
+      "allCaughtUp": "All caught up!",
+      "refresh": "Refresh",
+      "settings": "Notification settings",
+      "filter": {
+        "all": "All notifications",
+        "unread": "Unread only",
+        "read": "Read only"
+      },
+      "typeFilter": {
+        "all": "All types",
+        "writer": "Story updates",
+        "assignment": "Assignments",
+        "achievement": "Achievements",
+        "system": "System"
+      },
+      "selected": "{count} selected",
+      "markAsRead": "Mark as read",
+      "delete": "Delete",
+      "selectAll": "Select all",
+      "clearSelection": "Clear",
+      "loading": "Loading...",
+      "noNotifications": "No notifications found",
+      "noNotificationsHint": "Try changing your filters or check back later",
+      "loadMore": "Load more",
+      "yesterday": "Yesterday",
+      "daysAgo": "{count} days ago",
+      "confirmDelete": "Delete {count} notification?",
+      "confirmDeletePlural": "Delete {count} notifications?"
+    },
+    "preferences": {
+      "title": "Notification Preferences",
+      "subtitle": "Customize how you want to be notified",
+      "refreshPreferences": "Refresh preferences",
+      "loading": "Loading preferences...",
+      "saving": "Saving...",
+      "save": "Save Preferences",
+      "successMessage": "Preferences saved successfully!",
+      "errorMessage": "Failed to save preferences",
+      "loadError": "Failed to load preferences",
+      "channels": {
+        "title": "Notification Channels",
+        "email": "Email Notifications",
+        "emailDesc": "Receive notifications via email",
+        "push": "Browser Notifications",
+        "pushDesc": "Get real-time browser notifications"
+      },
+      "types": {
+        "title": "Notification Types",
+        "statusChanges": "Status Changes",
+        "statusChangesDesc": "When your story status is updated",
+        "feedback": "Feedback & Comments",
+        "feedbackDesc": "When reviewers leave feedback",
+        "deadlines": "Deadlines & Reminders",
+        "deadlinesDesc": "Assignment and submission deadlines",
+        "achievements": "Achievements",
+        "achievementsDesc": "When you earn new achievements",
+        "reviewAssignments": "Review Assignments",
+        "reviewAssignmentsDesc": "When new stories need review (reviewers only)"
+      },
+      "digest": {
+        "title": "Email Digest",
+        "frequency": "Digest Frequency",
+        "never": "Never",
+        "daily": "Daily (9 AM)",
+        "weekly": "Weekly (Monday 9 AM)"
+      }
+    }
   }
 }
