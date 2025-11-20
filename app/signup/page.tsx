@@ -6,6 +6,7 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import PasswordRequirements from '@/components/auth/PasswordRequirements';
 
 interface ValidationError {
   field: string;
@@ -22,6 +23,7 @@ export default function SignupPage() {
     name: '',
     email: '',
     password: '',
+    passwordConfirm: '',
     termsAccepted: false
   });
 
@@ -31,6 +33,12 @@ export default function SignupPage() {
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordRequirements, setPasswordRequirements] = useState({
+    minLength: false,
+    hasUppercase: false,
+    hasLowercase: false,
+    hasNumber: false
+  });
 
   // Accessibility and UX state
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -57,13 +65,16 @@ export default function SignupPage() {
     };
   }, []);
 
-  // Clear errors when form data changes
+  // Real-time password validation
   useEffect(() => {
-    if (message || validationErrors.length > 0) {
-      setMessage('');
-      setValidationErrors([]);
-    }
-  }, [formData, message, validationErrors.length]);
+    const password = formData.password;
+    setPasswordRequirements({
+      minLength: password.length >= 8,
+      hasUppercase: /[A-Z]/.test(password),
+      hasLowercase: /[a-z]/.test(password),
+      hasNumber: /\d/.test(password)
+    });
+  }, [formData.password]);
 
   const validateForm = (): boolean => {
     const errors: ValidationError[] = [];
@@ -116,6 +127,21 @@ export default function SignupPage() {
         field: 'password',
         message: t('auth.common.form.password.validation.complexity'),
         code: 'WEAK_PASSWORD'
+      });
+    }
+
+    // Password confirmation validation
+    if (!formData.passwordConfirm) {
+      errors.push({
+        field: 'passwordConfirm',
+        message: t('auth.common.form.passwordConfirm.validation.required'),
+        code: 'REQUIRED'
+      });
+    } else if (formData.password !== formData.passwordConfirm) {
+      errors.push({
+        field: 'passwordConfirm',
+        message: t('auth.common.form.passwordConfirm.validation.mismatch'),
+        code: 'PASSWORD_MISMATCH'
       });
     }
 
@@ -268,7 +294,7 @@ export default function SignupPage() {
                   onFocus={() => setFocusedField('name')}
                   onBlur={() => setFocusedField(null)}
                   className={`
-                    w-full px-3 py-3 border-b bg-transparent
+                    w-full px-3 py-3 border-b bg-transparent text-gray-900
                     placeholder-[#ADAEBC] focus:outline-none focus:border-[#91C549]
                     transition-colors duration-200
                     ${getFieldError('name') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
@@ -306,7 +332,7 @@ export default function SignupPage() {
                   onFocus={() => setFocusedField('email')}
                   onBlur={() => setFocusedField(null)}
                   className={`
-                    w-full px-3 py-3 border-b bg-transparent
+                    w-full px-3 py-3 border-b bg-transparent text-gray-900
                     placeholder-[#ADAEBC] focus:outline-none focus:border-[#91C549]
                     transition-colors duration-200
                     ${getFieldError('email') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
@@ -345,7 +371,7 @@ export default function SignupPage() {
                     onFocus={() => setFocusedField('password')}
                     onBlur={() => setFocusedField(null)}
                     className={`
-                      w-full px-3 py-3 pr-10 border-b bg-transparent
+                      w-full px-3 py-3 pr-10 border-b bg-transparent text-gray-900
                       placeholder-[#ADAEBC] focus:outline-none focus:border-[#91C549]
                       transition-colors duration-200
                       ${getFieldError('password') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
@@ -374,10 +400,52 @@ export default function SignupPage() {
                     {getFieldError('password')?.message}
                   </p>
                 )}
+                <PasswordRequirements
+                  requirements={passwordRequirements}
+                  show={formData.password.length > 0}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="passwordConfirm"
+                  className="block text-sm font-normal text-[#737373] mb-2"
+                >
+                  {t('auth.common.form.passwordConfirm.label')}
+                </label>
+                <input
+                  id="passwordConfirm"
+                  name="passwordConfirm"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={formData.passwordConfirm}
+                  onChange={handleInputChange}
+                  onFocus={() => setFocusedField('passwordConfirm')}
+                  onBlur={() => setFocusedField(null)}
+                  className={`
+                    w-full px-3 py-3 border-b bg-transparent text-gray-900
+                    placeholder-[#ADAEBC] focus:outline-none focus:border-[#91C549]
+                    transition-colors duration-200
+                    ${getFieldError('passwordConfirm') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
+                  `}
+                  placeholder={t('auth.common.form.passwordConfirm.placeholder')}
+                  aria-invalid={!!getFieldError('passwordConfirm')}
+                  aria-describedby={getFieldError('passwordConfirm') ? 'passwordConfirm-error' : undefined}
+                />
+                {getFieldError('passwordConfirm') && (
+                  <p
+                    id="passwordConfirm-error"
+                    role="alert"
+                    className="mt-1 text-sm text-red-600"
+                  >
+                    {getFieldError('passwordConfirm')?.message}
+                  </p>
+                )}
               </div>
 
               {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-3 pt-2">
+              <div className="grid grid-cols-2 gap-3 pt-8">
                 <button
                   type="submit"
                   disabled={loading || isSubmitting}

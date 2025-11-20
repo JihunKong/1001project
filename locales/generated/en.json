@@ -1734,7 +1734,14 @@
             "complexity": "Password must contain uppercase, lowercase, and number"
           },
           "showPassword": "Show password",
-          "hidePassword": "Hide password"
+          "hidePassword": "Hide password",
+          "requirements": {
+            "title": "Password must include:",
+            "minLength": "At least 8 characters",
+            "uppercase": "One uppercase letter (A-Z)",
+            "lowercase": "One lowercase letter (a-z)",
+            "number": "One number (0-9)"
+          }
         }
       },
       "buttons": {
@@ -1804,6 +1811,14 @@
         "terms": {
           "validation": {
             "required": "You must accept the terms of service"
+          }
+        },
+        "passwordConfirm": {
+          "label": "Confirm Password",
+          "placeholder": "Re-enter your password",
+          "validation": {
+            "required": "Password confirmation is required",
+            "mismatch": "Passwords do not match"
           }
         }
       },
