@@ -1,8 +1,11 @@
 'use client';
 
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function CircularBadge() {
+  const { t } = useTranslation();
+
   return (
     <div className="absolute top-[200px] lg:top-[250px] xl:top-[288px] left-[46.1%] z-10 hidden lg:block">
       <div className="relative w-[100px] h-[100px] lg:w-[120px] lg:h-[120px] xl:w-[139px] xl:h-[139px] animate-spin-slow">
@@ -28,7 +31,7 @@ export default function CircularBadge() {
             letterSpacing="2"
           >
             <textPath href="#circlePath" startOffset="0%">
-              REGISTER FIRST! • REGISTER FIRST! •
+              {t('circularBadge.text')}
             </textPath>
           </text>
         </svg>

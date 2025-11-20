@@ -60,41 +60,41 @@ export default function PrivacyPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section1.title')}</h2>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('privacy.section1.personalInfo.title')}</h3>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-6">
-              <li>Account information (name, email address, role)</li>
-              <li>Profile information (cultural background, languages, preferences)</li>
-              <li>Educational information (institution, grade level for students)</li>
-              <li>Communication records (messages, support requests)</li>
+              <li>{t('privacy.section1.personalInfo.item1')}</li>
+              <li>{t('privacy.section1.personalInfo.item2')}</li>
+              <li>{t('privacy.section1.personalInfo.item3')}</li>
+              <li>{t('privacy.section1.personalInfo.item4')}</li>
             </ul>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Usage Information</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('privacy.section1.usageInfo.title')}</h3>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-6">
-              <li>Reading progress and learning analytics</li>
-              <li>Platform usage patterns and preferences</li>
-              <li>Device and browser information</li>
-              <li>IP address and location data (city/country level only)</li>
+              <li>{t('privacy.section1.usageInfo.item1')}</li>
+              <li>{t('privacy.section1.usageInfo.item2')}</li>
+              <li>{t('privacy.section1.usageInfo.item3')}</li>
+              <li>{t('privacy.section1.usageInfo.item4')}</li>
             </ul>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Content You Create</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('privacy.section1.contentCreate.title')}</h3>
             <ul className="list-disc list-inside text-gray-600 space-y-2">
-              <li>Stories and submissions</li>
-              <li>Comments and reviews</li>
-              <li>Assignments and class materials (for educators)</li>
+              <li>{t('privacy.section1.contentCreate.item1')}</li>
+              <li>{t('privacy.section1.contentCreate.item2')}</li>
+              <li>{t('privacy.section1.contentCreate.item3')}</li>
             </ul>
           </section>
 
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section2.title')}</h2>
             <div className="space-y-4 text-gray-600">
-              <p>We use your information to:</p>
+              <p>{t('privacy.section2.intro')}</p>
               <ul className="list-disc list-inside space-y-2">
-                <li>Provide and improve our educational platform</li>
-                <li>Personalize your learning experience</li>
-                <li>Enable communication between users (teachers, students, writers)</li>
-                <li>Ensure platform security and prevent abuse</li>
-                <li>Send important updates and notifications</li>
-                <li>Comply with legal requirements</li>
+                <li>{t('privacy.section2.item1')}</li>
+                <li>{t('privacy.section2.item2')}</li>
+                <li>{t('privacy.section2.item3')}</li>
+                <li>{t('privacy.section2.item4')}</li>
+                <li>{t('privacy.section2.item5')}</li>
+                <li>{t('privacy.section2.item6')}</li>
               </ul>
             </div>
           </section>
@@ -114,13 +114,13 @@ export default function PrivacyPage() {
               </div>
             </div>
 
-            <p className="text-gray-600 mb-4">We may share your information only in these limited circumstances:</p>
+            <p className="text-gray-600 mb-4">{t('privacy.section3.intro')}</p>
             <ul className="list-disc list-inside text-gray-600 space-y-2">
-              <li>With your explicit consent</li>
-              <li>To comply with legal obligations</li>
-              <li>To protect the safety of our users</li>
-              <li>With service providers who help us operate the platform (all bound by strict confidentiality)</li>
-              <li>In case of a business transfer (you would be notified)</li>
+              <li>{t('privacy.section3.item1')}</li>
+              <li>{t('privacy.section3.item2')}</li>
+              <li>{t('privacy.section3.item3')}</li>
+              <li>{t('privacy.section3.item4')}</li>
+              <li>{t('privacy.section3.item5')}</li>
             </ul>
           </section>
 
@@ -128,14 +128,14 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section4.title')}</h2>
             <div className="bg-green-50 border border-green-200 rounded-lg p-6">
               <p className="text-gray-600 mb-4">
-                We take special care to protect children&apos;s privacy:
+                {t('privacy.section4.intro')}
               </p>
               <ul className="list-disc list-inside text-gray-600 space-y-2">
-                <li>Parental consent is required for users under 13</li>
-                <li>Children&apos;s data is minimized and specially protected</li>
-                <li>No behavioral advertising to children</li>
-                <li>Parents can review and delete their child&apos;s information</li>
-                <li>Educational use only - no commercial purposes</li>
+                <li>{t('privacy.section4.item1')}</li>
+                <li>{t('privacy.section4.item2')}</li>
+                <li>{t('privacy.section4.item3')}</li>
+                <li>{t('privacy.section4.item4')}</li>
+                <li>{t('privacy.section4.item5')}</li>
               </ul>
             </div>
           </section>
@@ -146,25 +146,25 @@ export default function PrivacyPage() {
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Lock className="h-5 w-5 text-gray-600" />
-                  <h3 className="font-semibold text-gray-900">Technical Measures</h3>
+                  <h3 className="font-semibold text-gray-900">{t('privacy.section5.technicalMeasures.title')}</h3>
                 </div>
                 <ul className="text-sm text-gray-600 space-y-2">
-                  <li>End-to-end encryption</li>
-                  <li>Secure data centers</li>
-                  <li>Regular security audits</li>
-                  <li>Access controls</li>
+                  <li>{t('privacy.section5.technicalMeasures.item1')}</li>
+                  <li>{t('privacy.section5.technicalMeasures.item2')}</li>
+                  <li>{t('privacy.section5.technicalMeasures.item3')}</li>
+                  <li>{t('privacy.section5.technicalMeasures.item4')}</li>
                 </ul>
               </div>
               <div className="bg-gray-50 rounded-lg p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Database className="h-5 w-5 text-gray-600" />
-                  <h3 className="font-semibold text-gray-900">Operational Practices</h3>
+                  <h3 className="font-semibold text-gray-900">{t('privacy.section5.operationalPractices.title')}</h3>
                 </div>
                 <ul className="text-sm text-gray-600 space-y-2">
-                  <li>Data minimization</li>
-                  <li>Regular backups</li>
-                  <li>Staff training</li>
-                  <li>Incident response plan</li>
+                  <li>{t('privacy.section5.operationalPractices.item1')}</li>
+                  <li>{t('privacy.section5.operationalPractices.item2')}</li>
+                  <li>{t('privacy.section5.operationalPractices.item3')}</li>
+                  <li>{t('privacy.section5.operationalPractices.item4')}</li>
                 </ul>
               </div>
             </div>
@@ -173,19 +173,19 @@ export default function PrivacyPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section6.title')}</h2>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <p className="text-gray-600 mb-4">Under GDPR and other privacy laws, you have the right to:</p>
+              <p className="text-gray-600 mb-4">{t('privacy.section6.intro')}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ul className="list-disc list-inside text-sm text-gray-600 space-y-2">
-                  <li>Access your personal data</li>
-                  <li>Correct inaccurate information</li>
-                  <li>Delete your account and data</li>
-                  <li>Export your data</li>
+                  <li>{t('privacy.section6.item1')}</li>
+                  <li>{t('privacy.section6.item2')}</li>
+                  <li>{t('privacy.section6.item3')}</li>
+                  <li>{t('privacy.section6.item4')}</li>
                 </ul>
                 <ul className="list-disc list-inside text-sm text-gray-600 space-y-2">
-                  <li>Restrict processing</li>
-                  <li>Object to processing</li>
-                  <li>Withdraw consent</li>
-                  <li>Lodge complaints</li>
+                  <li>{t('privacy.section6.item5')}</li>
+                  <li>{t('privacy.section6.item6')}</li>
+                  <li>{t('privacy.section6.item7')}</li>
+                  <li>{t('privacy.section6.item8')}</li>
                 </ul>
               </div>
             </div>
@@ -195,14 +195,14 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section7.title')}</h2>
             <div className="bg-gray-50 rounded-lg p-6">
               <p className="text-gray-600 mb-4">
-                If you have questions about this privacy policy or want to exercise your rights:
+                {t('privacy.section7.intro')}
               </p>
               <div className="flex items-start gap-3">
                 <Mail className="h-5 w-5 text-gray-600 mt-1" />
                 <div>
-                  <p className="font-medium text-gray-900">Email Us</p>
+                  <p className="font-medium text-gray-900">{t('privacy.section7.emailLabel')}</p>
                   <a href="mailto:privacy@1001stories.org" className="text-blue-600 hover:text-blue-700">
-                    privacy@1001stories.org
+                    {t('privacy.section7.email')}
                   </a>
                 </div>
               </div>
@@ -212,13 +212,13 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section8.title')}</h2>
             <p className="text-gray-600 mb-4">
-              We may update this privacy policy from time to time. When we do, we&apos;ll:
+              {t('privacy.section8.intro')}
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-6">
-              <li>Update the &quot;Last updated&quot; date at the top</li>
-              <li>Notify you via email or platform notification</li>
-              <li>Give you time to review changes before they take effect</li>
-              <li>Highlight significant changes clearly</li>
+              <li>{t('privacy.section8.item1')}</li>
+              <li>{t('privacy.section8.item2')}</li>
+              <li>{t('privacy.section8.item3')}</li>
+              <li>{t('privacy.section8.item4')}</li>
             </ul>
           </section>
         </div>

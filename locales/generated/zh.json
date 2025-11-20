@@ -796,15 +796,9 @@
     }
   },
   "nav": {
-    "home": {
-      "label": "首页",
-      "description": "转到主页"
-    },
+    "home": "Home",
     "myStories": "My Stories",
-    "library": {
-      "label": "图书馆",
-      "description": "浏览所有书籍"
-    },
+    "library": "Library",
     "notifications": "{count} notifications",
     "profile": "个人资料",
     "skipToMain": "跳至主要内容",
@@ -827,7 +821,7 @@
     "logout": "登出",
     "language": "语言",
     "volunteer": "志愿者",
-    "signUp": "注册",
+    "signUp": "Sign Up",
     "profileSettings": "个人设置",
     "showTutorial": "重新显示教程",
     "defaultUser": "用户",
@@ -885,6 +879,14 @@
         "label": "管理面板",
         "description": "管理整个系统"
       }
+    },
+    "homeDetailed": {
+      "label": "Home",
+      "description": "Go to main page"
+    },
+    "libraryDetailed": {
+      "label": "Library",
+      "description": "Browse all books"
     }
   },
   "stories": {
@@ -1187,53 +1189,7 @@
     "monthsAgo": "{count}个月前"
   },
   "common": {
-    "loading": "加载中...",
-    "error": "发生错误",
-    "success": "成功",
-    "search": "搜索",
-    "filter": "筛选",
-    "sort": "排序",
-    "close": "关闭",
-    "back": "返回",
-    "next": "下一步",
-    "previous": "上一步",
-    "readMore": "阅读更多",
-    "showLess": "显示更少",
-    "noResults": "未找到结果",
-    "tryAgain": "重试",
-    "share": "分享",
-    "download": "下载",
-    "print": "打印",
-    "viewAll": "View all",
-    "updated": "Updated",
-    "writer": "作家",
-    "breadcrumb": "面包屑导航",
-    "loadingDashboard": "Loading your dashboard...",
-    "loadingStory": "加载您的故事...",
-    "loadingForm": "加载提交表单...",
-    "cancel": "取消",
-    "save": "保存",
-    "confirm": "确认",
-    "open": "打开",
-    "buttons": {
-      "dismiss": "Dismiss",
-      "accept": "Accept"
-    },
-    "actions": {
-      "cancel": "Cancel",
-      "save": "Save",
-      "saving": "Saving...",
-      "edit": "Edit",
-      "delete": "Delete"
-    },
-    "timeAgo": {
-      "minutesAgo": "{minutes}m ago",
-      "hoursAgo": "{hours}h ago",
-      "daysAgo": "{days}d ago",
-      "monthDay": "{month} {day}"
-    },
-    "of": "of",
-    "words": "words"
+    "resetLanguage": "Reset to English"
   },
   "language": {
     "en": "英语",
@@ -1426,17 +1382,26 @@
     }
   },
   "programs": {
-    "empowerment": {
-      "title": "赋权之种",
-      "description": "通过教育和讲故事支持服务不足社区的儿童"
+    "kidLibrary": {
+      "title": "Kid's Library",
+      "tagline": "For Young Readers",
+      "description1": "Discover stories from children around the world. Each story is carefully curated to inspire and educate young readers.",
+      "description2": "Every story is age-appropriate and features diverse cultures and perspectives to broaden children's worldviews.",
+      "cta": "Explore Library"
     },
-    "diversity": {
-      "title": "全球多样性倡议",
-      "description": "庆祝来自世界各个角落的多样化声音和观点"
+    "writingVolunteer": {
+      "title": "Writing Volunteer",
+      "tagline": "Share Your Story",
+      "description1": "Become a writing volunteer and share your stories with children around the world. Our platform welcomes all voices.",
+      "description2": "Join our supportive community to create meaningful content that inspires the next generation.",
+      "cta": "Become a Writer"
     },
-    "english": {
-      "title": "英语学习",
-      "description": "为英语学习者设计的互动故事"
+    "englishLearning": {
+      "title": "English Learning",
+      "tagline": "Learn Through Stories",
+      "description1": "Master English through engaging stories. Our interactive platform makes language learning fun and effective.",
+      "description2": "Track your progress, expand your vocabulary, and build confidence through real stories.",
+      "cta": "Start Learning"
     }
   },
   "footer": {
@@ -1449,7 +1414,9 @@
     "copyright": "© 2025 1001 Stories. 保留所有权利。",
     "privacy": "隐私政策",
     "terms": "服务条款",
-    "contact": "联系我们"
+    "contact": "联系我们",
+    "tagline": "Empowering young voices, inspiring the world through stories.",
+    "contactForm": "Contact Form"
   },
   "about": {
     "hero": {
@@ -2020,5 +1987,21 @@
         "weekly": "Weekly (Monday 9 AM)"
       }
     }
+  },
+  "footerCta": {
+    "tag": "Join Today",
+    "title": "Start Your Story Journey",
+    "description": "Discover, create, and share stories from around the world",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
+  "outcomeStats": {
+    "storiesPublished": "Stories Published",
+    "childrenReached": "Children Reached",
+    "countries": "Countries",
+    "volunteers": "Volunteers"
+  },
+  "circularBadge": {
+    "text": "REGISTER FIRST! • REGISTER FIRST! • "
   }
 }

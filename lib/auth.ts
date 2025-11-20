@@ -280,7 +280,7 @@ export const authOptions: NextAuthOptions = {
             language: "en",
           }
         })
-        
+
         await client.subscription.create({
           data: {
             userId: user.id,
@@ -288,11 +288,26 @@ export const authOptions: NextAuthOptions = {
             status: "ACTIVE",
           }
         })
+
+        // Create VolunteerProfile for WRITER role (OAuth users default to WRITER)
+        if (user.role === 'WRITER') {
+          await client.volunteerProfile.create({
+            data: {
+              userId: user.id,
+              verificationStatus: 'PENDING',
+              languageLevels: {},
+              availableSlots: {},
+            }
+          });
+        }
       })
     },
-    
-    async signIn({ user }) {
-      logger.auth(`User signed in`, { email: user.email });
+
+    async signIn({ user, account }) {
+      logger.auth(`User signed in`, {
+        email: user.email,
+        provider: account?.provider || 'unknown'
+      });
     },
   },
   

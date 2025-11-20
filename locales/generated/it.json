@@ -796,15 +796,9 @@
     }
   },
   "nav": {
-    "home": {
-      "label": "Home",
-      "description": "Vai alla pagina principale"
-    },
+    "home": "Home",
     "myStories": "My Stories",
-    "library": {
-      "label": "Biblioteca",
-      "description": "Sfoglia tutti i libri"
-    },
+    "library": "Library",
     "notifications": "{count} notifications",
     "profile": "Profilo",
     "skipToMain": "Vai al contenuto principale",
@@ -827,7 +821,7 @@
     "logout": "Esci",
     "language": "Lingua",
     "volunteer": "Volontario",
-    "signUp": "Iscriviti",
+    "signUp": "Sign Up",
     "profileSettings": "Impostazioni profilo",
     "showTutorial": "Mostra di nuovo il tutorial",
     "defaultUser": "Utente",
@@ -885,6 +879,14 @@
         "label": "Pannello admin",
         "description": "Gestisci l'intero sistema"
       }
+    },
+    "homeDetailed": {
+      "label": "Home",
+      "description": "Go to main page"
+    },
+    "libraryDetailed": {
+      "label": "Library",
+      "description": "Browse all books"
     }
   },
   "stories": {
@@ -1187,53 +1189,7 @@
     "monthsAgo": "{count} mesi fa"
   },
   "common": {
-    "loading": "Caricamento...",
-    "error": "Si è verificato un errore",
-    "success": "Successo",
-    "search": "Cerca",
-    "filter": "Filtra",
-    "sort": "Ordina",
-    "close": "Chiudi",
-    "back": "Indietro",
-    "next": "Avanti",
-    "previous": "Precedente",
-    "readMore": "Leggi di Più",
-    "showLess": "Mostra Meno",
-    "noResults": "Nessun risultato trovato",
-    "tryAgain": "Riprova",
-    "share": "Condividi",
-    "download": "Scarica",
-    "print": "Stampa",
-    "viewAll": "View all",
-    "updated": "Updated",
-    "writer": "Scrittore",
-    "breadcrumb": "Breadcrumb",
-    "loadingDashboard": "Loading your dashboard...",
-    "loadingStory": "Caricamento della storia...",
-    "loadingForm": "Caricamento del modulo...",
-    "cancel": "Annulla",
-    "save": "Salva",
-    "confirm": "Conferma",
-    "open": "Apri",
-    "buttons": {
-      "dismiss": "Dismiss",
-      "accept": "Accept"
-    },
-    "actions": {
-      "cancel": "Cancel",
-      "save": "Save",
-      "saving": "Saving...",
-      "edit": "Edit",
-      "delete": "Delete"
-    },
-    "timeAgo": {
-      "minutesAgo": "{minutes}m ago",
-      "hoursAgo": "{hours}h ago",
-      "daysAgo": "{days}d ago",
-      "monthDay": "{month} {day}"
-    },
-    "of": "of",
-    "words": "words"
+    "resetLanguage": "Reset to English"
   },
   "language": {
     "en": "Inglese",
@@ -1430,17 +1386,26 @@
     }
   },
   "programs": {
-    "empowerment": {
-      "title": "Semi di empowerment",
-      "description": "Sostenere i bambini nelle comunità svantaggiate attraverso l'istruzione e la narrazione"
+    "kidLibrary": {
+      "title": "Kid's Library",
+      "tagline": "For Young Readers",
+      "description1": "Discover stories from children around the world. Each story is carefully curated to inspire and educate young readers.",
+      "description2": "Every story is age-appropriate and features diverse cultures and perspectives to broaden children's worldviews.",
+      "cta": "Explore Library"
     },
-    "diversity": {
-      "title": "Iniziativa di diversità globale",
-      "description": "Celebrare voci e prospettive diverse da ogni angolo del mondo"
+    "writingVolunteer": {
+      "title": "Writing Volunteer",
+      "tagline": "Share Your Story",
+      "description1": "Become a writing volunteer and share your stories with children around the world. Our platform welcomes all voices.",
+      "description2": "Join our supportive community to create meaningful content that inspires the next generation.",
+      "cta": "Become a Writer"
     },
-    "english": {
-      "title": "Apprendimento della lingua inglese",
-      "description": "Storie interattive progettate per studenti di inglese"
+    "englishLearning": {
+      "title": "English Learning",
+      "tagline": "Learn Through Stories",
+      "description1": "Master English through engaging stories. Our interactive platform makes language learning fun and effective.",
+      "description2": "Track your progress, expand your vocabulary, and build confidence through real stories.",
+      "cta": "Start Learning"
     }
   },
   "footer": {
@@ -1453,7 +1418,9 @@
     "copyright": "© 2025 1001 Stories. Tutti i diritti riservati.",
     "privacy": "Informativa sulla privacy",
     "terms": "Termini di servizio",
-    "contact": "Contattaci"
+    "contact": "Contattaci",
+    "tagline": "Empowering young voices, inspiring the world through stories.",
+    "contactForm": "Contact Form"
   },
   "about": {
     "hero": {
@@ -2024,5 +1991,21 @@
         "weekly": "Weekly (Monday 9 AM)"
       }
     }
+  },
+  "footerCta": {
+    "tag": "Join Today",
+    "title": "Start Your Story Journey",
+    "description": "Discover, create, and share stories from around the world",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
+  "outcomeStats": {
+    "storiesPublished": "Stories Published",
+    "childrenReached": "Children Reached",
+    "countries": "Countries",
+    "volunteers": "Volunteers"
+  },
+  "circularBadge": {
+    "text": "REGISTER FIRST! • REGISTER FIRST! • "
   }
 }

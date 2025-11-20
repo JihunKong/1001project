@@ -63,9 +63,7 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section1.title')}</h2>
             <p className="text-gray-600 mb-4">
-              By accessing or using 1001 Stories, you agree to be bound by these Terms of Service
-              and all applicable laws and regulations. If you do not agree with any of these terms,
-              you are prohibited from using or accessing this platform.
+              {t('terms.section1.agreement')}
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-gray-600">
@@ -77,17 +75,16 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section2.title')}</h2>
             <p className="text-gray-600 mb-4">
-              1001 Stories is an educational platform designed to:
+              {t('terms.section2.intro')}
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-4">
-              <li>Facilitate cultural exchange through storytelling</li>
-              <li>Provide educational resources for teachers and students</li>
-              <li>Support literacy development worldwide</li>
-              <li>Connect communities through shared narratives</li>
+              <li>{t('terms.section2.purpose1')}</li>
+              <li>{t('terms.section2.purpose2')}</li>
+              <li>{t('terms.section2.purpose3')}</li>
+              <li>{t('terms.section2.purpose4')}</li>
             </ul>
             <p className="text-gray-600">
-              The platform is operated by Seeds of Empowerment, a non-profit organization
-              dedicated to educational empowerment.
+              {t('terms.section2.operator')}
             </p>
           </section>
 
@@ -96,28 +93,27 @@ export default function TermsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Educational Roles</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">{t('terms.section3.educationalRoles.title')}</h3>
                 <ul className="text-sm text-gray-600 space-y-2">
-                  <li>• <strong>Students:</strong> Access assigned content, track progress</li>
-                  <li>• <strong>Teachers:</strong> Create classes, assign materials</li>
-                  <li>• <strong>Institutions:</strong> Manage organizational access</li>
+                  <li>• {t('terms.section3.educationalRoles.students')}</li>
+                  <li>• {t('terms.section3.educationalRoles.teachers')}</li>
+                  <li>• {t('terms.section3.educationalRoles.institutions')}</li>
                 </ul>
               </div>
               <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Content Roles</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">{t('terms.section3.contentRoles.title')}</h3>
                 <ul className="text-sm text-gray-600 space-y-2">
-                  <li>• <strong>Writers:</strong> Submit stories and content</li>
-                  <li>• <strong>Managers:</strong> Review and curate content</li>
-                  <li>• <strong>Admins:</strong> Platform administration</li>
+                  <li>• {t('terms.section3.contentRoles.writers')}</li>
+                  <li>• {t('terms.section3.contentRoles.managers')}</li>
+                  <li>• {t('terms.section3.contentRoles.admins')}</li>
                 </ul>
               </div>
             </div>
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Account Security</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">{t('terms.section3.accountSecurity.title')}</h3>
               <p className="text-sm text-gray-600">
-                You are responsible for maintaining the security of your account and password.
-                Notify us immediately of any unauthorized use of your account.
+                {t('terms.section3.accountSecurity.content')}
               </p>
             </div>
           </section>
@@ -125,23 +121,23 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section4.title')}</h2>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Acceptable Content</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('terms.section4.acceptableContent.title')}</h3>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-6">
-              <li>Educational and culturally enriching stories</li>
-              <li>Age-appropriate content for the intended audience</li>
-              <li>Respectful discussions and comments</li>
-              <li>Original work or properly attributed content</li>
+              <li>{t('terms.section4.acceptableContent.item1')}</li>
+              <li>{t('terms.section4.acceptableContent.item2')}</li>
+              <li>{t('terms.section4.acceptableContent.item3')}</li>
+              <li>{t('terms.section4.acceptableContent.item4')}</li>
             </ul>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Prohibited Content</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('terms.section4.prohibitedContent.title')}</h3>
             <div className="bg-red-50 border border-red-200 rounded-lg p-6">
               <ul className="list-disc list-inside text-gray-600 space-y-2">
-                <li>Harmful, abusive, or discriminatory content</li>
-                <li>Inappropriate sexual or violent material</li>
-                <li>Copyright-infringing content</li>
-                <li>Spam, malware, or malicious code</li>
-                <li>Personal information of others</li>
-                <li>Commercial advertisements or solicitations</li>
+                <li>{t('terms.section4.prohibitedContent.item1')}</li>
+                <li>{t('terms.section4.prohibitedContent.item2')}</li>
+                <li>{t('terms.section4.prohibitedContent.item3')}</li>
+                <li>{t('terms.section4.prohibitedContent.item4')}</li>
+                <li>{t('terms.section4.prohibitedContent.item5')}</li>
+                <li>{t('terms.section4.prohibitedContent.item6')}</li>
               </ul>
             </div>
           </section>
@@ -149,38 +145,35 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section5.title')}</h2>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Your Content</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('terms.section5.yourContent.title')}</h3>
             <p className="text-gray-600 mb-4">
-              When you submit content to 1001 Stories, you retain ownership of your original work.
-              However, you grant us a license to:
+              {t('terms.section5.yourContent.intro')}
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-6">
-              <li>Display and distribute your content on the platform</li>
-              <li>Make editorial improvements while preserving authenticity</li>
-              <li>Create educational materials based on your stories</li>
-              <li>Translate content to make it accessible globally</li>
+              <li>{t('terms.section5.yourContent.license1')}</li>
+              <li>{t('terms.section5.yourContent.license2')}</li>
+              <li>{t('terms.section5.yourContent.license3')}</li>
+              <li>{t('terms.section5.yourContent.license4')}</li>
             </ul>
 
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Our Content</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('terms.section5.ourContent.title')}</h3>
             <p className="text-gray-600 mb-4">
-              The platform itself, including design, features, and curated content,
-              is owned by Seeds of Empowerment and protected by intellectual property laws.
+              {t('terms.section5.ourContent.description')}
             </p>
           </section>
 
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section6.title')}</h2>
             <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Permitted Educational Uses</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">{t('terms.section6.permittedUses.title')}</h3>
               <ul className="text-sm text-gray-600 space-y-2 mb-4">
-                <li>• Classroom instruction and assignments</li>
-                <li>• Student research and projects</li>
-                <li>• Teacher training and development</li>
-                <li>• Non-profit educational initiatives</li>
+                <li>• {t('terms.section6.permittedUses.item1')}</li>
+                <li>• {t('terms.section6.permittedUses.item2')}</li>
+                <li>• {t('terms.section6.permittedUses.item3')}</li>
+                <li>• {t('terms.section6.permittedUses.item4')}</li>
               </ul>
               <p className="text-sm text-gray-600">
-                <strong>Attribution:</strong> When using our content, please credit &quot;1001 Stories&quot; and
-                include a link to our platform when possible.
+                {t('terms.section6.permittedUses.attribution')}
               </p>
             </div>
           </section>
@@ -188,14 +181,11 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section7.title')}</h2>
             <p className="text-gray-600 mb-4">
-              Your privacy is important to us. Our data practices are governed by our
-              <Link href="/privacy" className="text-blue-600 hover:text-blue-700 underline">Privacy Policy</Link>,
-              which is incorporated into these terms by reference.
+              {t('terms.section7.intro')} <Link href="/privacy" className="text-blue-600 hover:text-blue-700 underline">Privacy Policy</Link>
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-gray-600">
-                <strong>COPPA Compliance:</strong> We comply with the Children&apos;s Online Privacy
-                Protection Act and have special protections for users under 13.
+                {t('terms.section7.coppaCompliance')}
               </p>
             </div>
           </section>
@@ -203,16 +193,15 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section8.title')}</h2>
             <p className="text-gray-600 mb-4">
-              While we strive to maintain continuous service, we cannot guarantee:
+              {t('terms.section8.intro')}
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-4">
-              <li>Uninterrupted access to the platform</li>
-              <li>Error-free operation</li>
-              <li>Permanent availability of all content</li>
+              <li>{t('terms.section8.limitation1')}</li>
+              <li>{t('terms.section8.limitation2')}</li>
+              <li>{t('terms.section8.limitation3')}</li>
             </ul>
             <p className="text-gray-600">
-              We reserve the right to modify, suspend, or discontinue the platform
-              with appropriate notice to users.
+              {t('terms.section8.disclaimer')}
             </p>
           </section>
 
@@ -220,15 +209,13 @@ export default function TermsPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section9.title')}</h2>
             <div className="bg-gray-50 border border-gray-300 rounded-lg p-6">
               <p className="text-gray-600 mb-4">
-                1001 Stories is provided &quot;as is&quot; for educational purposes. To the fullest
-                extent permitted by law, Seeds of Empowerment disclaims all warranties
-                and limits liability for:
+                {t('terms.section9.intro')}
               </p>
               <ul className="list-disc list-inside text-gray-600 space-y-2">
-                <li>Indirect, incidental, or consequential damages</li>
-                <li>Loss of data or educational progress</li>
-                <li>Service interruptions or technical issues</li>
-                <li>Content accuracy or completeness</li>
+                <li>{t('terms.section9.liability1')}</li>
+                <li>{t('terms.section9.liability2')}</li>
+                <li>{t('terms.section9.liability3')}</li>
+                <li>{t('terms.section9.liability4')}</li>
               </ul>
             </div>
           </section>
@@ -236,31 +223,30 @@ export default function TermsPage() {
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section10.title')}</h2>
             <p className="text-gray-600 mb-4">
-              Either party may terminate this agreement:
+              {t('terms.section10.intro')}
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-4">
-              <li><strong>You:</strong> By discontinuing use and deleting your account</li>
-              <li><strong>Us:</strong> For violation of these terms or misuse of the platform</li>
+              <li>{t('terms.section10.you')}</li>
+              <li>{t('terms.section10.us')}</li>
             </ul>
             <p className="text-gray-600">
-              Upon termination, your access will cease, but educational content you&apos;ve
-              created may remain for the benefit of the community (unless you request removal).
+              {t('terms.section10.afterTermination')}
             </p>
           </section>
 
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section11.title')}</h2>
             <p className="text-gray-600 mb-4">
-              We may update these terms periodically to reflect:
+              {t('terms.section11.intro')}
             </p>
             <ul className="list-disc list-inside text-gray-600 space-y-2 mb-4">
-              <li>Changes in applicable law</li>
-              <li>New platform features</li>
-              <li>Community feedback</li>
-              <li>Educational best practices</li>
+              <li>{t('terms.section11.reason1')}</li>
+              <li>{t('terms.section11.reason2')}</li>
+              <li>{t('terms.section11.reason3')}</li>
+              <li>{t('terms.section11.reason4')}</li>
             </ul>
             <p className="text-gray-600">
-              We&apos;ll notify users of significant changes via email or platform notification.
+              {t('terms.section11.notification')}
             </p>
           </section>
 
@@ -268,24 +254,24 @@ export default function TermsPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('terms.section12.title')}</h2>
             <div className="bg-gray-50 rounded-lg p-6">
               <p className="text-gray-600 mb-4">
-                Questions about these terms? We&apos;re here to help:
+                {t('terms.section12.intro')}
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <Mail className="h-5 w-5 text-gray-600" />
                   <div>
-                    <p className="font-medium text-gray-900">Legal Team:</p>
+                    <p className="font-medium text-gray-900">{t('terms.section12.legal.label')}</p>
                     <a href="mailto:legal@1001stories.org" className="text-blue-600 hover:text-blue-700">
-                      legal@1001stories.org
+                      {t('terms.section12.legal.email')}
                     </a>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-gray-600" />
                   <div>
-                    <p className="font-medium text-gray-900">General Support:</p>
+                    <p className="font-medium text-gray-900">{t('terms.section12.support.label')}</p>
                     <a href="mailto:support@1001stories.org" className="text-blue-600 hover:text-blue-700">
-                      support@1001stories.org
+                      {t('terms.section12.support.email')}
                     </a>
                   </div>
                 </div>

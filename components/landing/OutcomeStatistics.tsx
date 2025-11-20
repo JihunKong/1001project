@@ -1,31 +1,33 @@
 'use client';
 
 import { BookOpen, Users, Globe, Baby } from 'lucide-react';
-
-const statistics = [
-  {
-    icon: BookOpen,
-    number: '500+',
-    label: 'Stories Published',
-  },
-  {
-    icon: Baby,
-    number: '10K',
-    label: 'Children Reached',
-  },
-  {
-    icon: Globe,
-    number: '50+',
-    label: 'Countries',
-  },
-  {
-    icon: Users,
-    number: '100+',
-    label: 'Volunteers',
-  },
-];
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function OutcomeStatistics() {
+  const { t } = useTranslation();
+
+  const statistics = [
+    {
+      icon: BookOpen,
+      number: '500+',
+      label: t('outcomeStats.storiesPublished'),
+    },
+    {
+      icon: Baby,
+      number: '10K',
+      label: t('outcomeStats.childrenReached'),
+    },
+    {
+      icon: Globe,
+      number: '50+',
+      label: t('outcomeStats.countries'),
+    },
+    {
+      icon: Users,
+      number: '100+',
+      label: t('outcomeStats.volunteers'),
+    },
+  ];
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="mx-auto max-w-[1240px] px-8">

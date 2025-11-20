@@ -796,15 +796,9 @@
     }
   },
   "nav": {
-    "home": {
-      "label": "Главная",
-      "description": "Перейти на главную"
-    },
+    "home": "Home",
     "myStories": "My Stories",
-    "library": {
-      "label": "Библиотека",
-      "description": "Просмотреть все книги"
-    },
+    "library": "Library",
     "notifications": "{count} notifications",
     "profile": "Профиль",
     "skipToMain": "Перейти к основному содержанию",
@@ -827,7 +821,7 @@
     "logout": "Выйти",
     "language": "Язык",
     "volunteer": "Волонтер",
-    "signUp": "Регистрация",
+    "signUp": "Sign Up",
     "profileSettings": "Настройки профиля",
     "showTutorial": "Показать учебник снова",
     "defaultUser": "Пользователь",
@@ -885,6 +879,14 @@
         "label": "Панель администратора",
         "description": "Управлять всей системой"
       }
+    },
+    "homeDetailed": {
+      "label": "Home",
+      "description": "Go to main page"
+    },
+    "libraryDetailed": {
+      "label": "Library",
+      "description": "Browse all books"
     }
   },
   "stories": {
@@ -1187,53 +1189,7 @@
     "monthsAgo": "{count} месяцев назад"
   },
   "common": {
-    "loading": "Загрузка...",
-    "error": "Произошла ошибка",
-    "success": "Успех",
-    "search": "Поиск",
-    "filter": "Фильтр",
-    "sort": "Сортировать",
-    "close": "Закрыть",
-    "back": "Назад",
-    "next": "Далее",
-    "previous": "Назад",
-    "readMore": "Читать далее",
-    "showLess": "Показать меньше",
-    "noResults": "Результатов не найдено",
-    "tryAgain": "Попробовать снова",
-    "share": "Поделиться",
-    "download": "Скачать",
-    "print": "Печать",
-    "viewAll": "View all",
-    "updated": "Updated",
-    "writer": "Автор",
-    "breadcrumb": "Хлебные крошки",
-    "loadingDashboard": "Loading your dashboard...",
-    "loadingStory": "Загрузка истории...",
-    "loadingForm": "Загрузка формы...",
-    "cancel": "Отмена",
-    "save": "Сохранить",
-    "confirm": "Подтвердить",
-    "open": "Открыть",
-    "buttons": {
-      "dismiss": "Dismiss",
-      "accept": "Accept"
-    },
-    "actions": {
-      "cancel": "Cancel",
-      "save": "Save",
-      "saving": "Saving...",
-      "edit": "Edit",
-      "delete": "Delete"
-    },
-    "timeAgo": {
-      "minutesAgo": "{minutes}m ago",
-      "hoursAgo": "{hours}h ago",
-      "daysAgo": "{days}d ago",
-      "monthDay": "{month} {day}"
-    },
-    "of": "of",
-    "words": "words"
+    "resetLanguage": "Reset to English"
   },
   "language": {
     "en": "Английский",
@@ -1435,17 +1391,26 @@
     }
   },
   "programs": {
-    "empowerment": {
-      "title": "Семена расширения возможностей",
-      "description": "Поддержка детей в недостаточно обслуживаемых сообществах через образование и рассказывание историй"
+    "kidLibrary": {
+      "title": "Kid's Library",
+      "tagline": "For Young Readers",
+      "description1": "Discover stories from children around the world. Each story is carefully curated to inspire and educate young readers.",
+      "description2": "Every story is age-appropriate and features diverse cultures and perspectives to broaden children's worldviews.",
+      "cta": "Explore Library"
     },
-    "diversity": {
-      "title": "Инициатива глобального разнообразия",
-      "description": "Празднование разнообразных голосов и перспектив со всех уголков мира"
+    "writingVolunteer": {
+      "title": "Writing Volunteer",
+      "tagline": "Share Your Story",
+      "description1": "Become a writing volunteer and share your stories with children around the world. Our platform welcomes all voices.",
+      "description2": "Join our supportive community to create meaningful content that inspires the next generation.",
+      "cta": "Become a Writer"
     },
-    "english": {
-      "title": "Изучение английского языка",
-      "description": "Интерактивные истории для изучающих английский"
+    "englishLearning": {
+      "title": "English Learning",
+      "tagline": "Learn Through Stories",
+      "description1": "Master English through engaging stories. Our interactive platform makes language learning fun and effective.",
+      "description2": "Track your progress, expand your vocabulary, and build confidence through real stories.",
+      "cta": "Start Learning"
     }
   },
   "footer": {
@@ -1458,7 +1423,9 @@
     "copyright": "© 2025 1001 Stories. Все права защищены.",
     "privacy": "Политика конфиденциальности",
     "terms": "Условия обслуживания",
-    "contact": "Свяжитесь с нами"
+    "contact": "Свяжитесь с нами",
+    "tagline": "Empowering young voices, inspiring the world through stories.",
+    "contactForm": "Contact Form"
   },
   "about": {
     "hero": {
@@ -2029,5 +1996,21 @@
         "weekly": "Weekly (Monday 9 AM)"
       }
     }
+  },
+  "footerCta": {
+    "tag": "Join Today",
+    "title": "Start Your Story Journey",
+    "description": "Discover, create, and share stories from around the world",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
+  "outcomeStats": {
+    "storiesPublished": "Stories Published",
+    "childrenReached": "Children Reached",
+    "countries": "Countries",
+    "volunteers": "Volunteers"
+  },
+  "circularBadge": {
+    "text": "REGISTER FIRST! • REGISTER FIRST! • "
   }
 }

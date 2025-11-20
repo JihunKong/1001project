@@ -253,18 +253,18 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
 
     const commonItems: NavigationItem[] = [
       {
-        name: t('nav.home.label'),
+        name: t('nav.home'),
         href: '/',
         icon: HomeIcon,
         current: pathname === '/',
-        description: t('nav.home.description')
+        description: t('nav.homeDetailed.description')
       },
       {
-        name: t('nav.library.label'),
+        name: t('nav.library'),
         href: '/library',
         icon: BookOpenIcon,
         current: pathname.startsWith('/library'),
-        description: t('nav.library.description')
+        description: t('nav.libraryDetailed.description')
       }
     ]
 
@@ -491,7 +491,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     href="/library"
                     className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                   >
-                    {t('nav.library.label')}
+                    {t('nav.library')}
                   </Link>
                   <Link
                     href="/login"
@@ -640,7 +640,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     role="menuitem"
                   >
                     <BookOpenIcon className="w-5 h-5 mr-3" />
-                    {t('nav.library.label')}
+                    {t('nav.library')}
                   </Link>
                   <Link
                     href="/login"

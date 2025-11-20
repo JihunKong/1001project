@@ -796,12 +796,14 @@
     }
   },
   "nav": {
-    "home": {
+    "home": "Home",
+    "homeDetailed": {
       "label": "Home",
       "description": "Go to main page"
     },
     "myStories": "My Stories",
-    "library": {
+    "library": "Library",
+    "libraryDetailed": {
       "label": "Library",
       "description": "Browse all books"
     },
@@ -1187,53 +1189,7 @@
     "monthsAgo": "{count} months ago"
   },
   "common": {
-    "loading": "Loading...",
-    "error": "An error occurred",
-    "success": "Success",
-    "search": "Search",
-    "filter": "Filter",
-    "sort": "Sort",
-    "close": "Close",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "readMore": "Read More",
-    "showLess": "Show Less",
-    "noResults": "No results found",
-    "tryAgain": "Try Again",
-    "share": "Share",
-    "download": "Download",
-    "print": "Print",
-    "viewAll": "View all",
-    "updated": "Updated",
-    "writer": "Writer",
-    "breadcrumb": "Breadcrumb",
-    "loadingDashboard": "Loading your dashboard...",
-    "loadingStory": "Loading your story...",
-    "loadingForm": "Loading submission form...",
-    "cancel": "Cancel",
-    "save": "Save",
-    "confirm": "Confirm",
-    "open": "Open",
-    "buttons": {
-      "dismiss": "Dismiss",
-      "accept": "Accept"
-    },
-    "actions": {
-      "cancel": "Cancel",
-      "save": "Save",
-      "saving": "Saving...",
-      "edit": "Edit",
-      "delete": "Delete"
-    },
-    "timeAgo": {
-      "minutesAgo": "{minutes}m ago",
-      "hoursAgo": "{hours}h ago",
-      "daysAgo": "{days}d ago",
-      "monthDay": "{month} {day}"
-    },
-    "of": "of",
-    "words": "words"
+    "resetLanguage": "Reset to English"
   },
   "language": {
     "en": "English",
@@ -1411,6 +1367,13 @@
     "description": "A global non-profit platform connecting writers, educators, and students through the power of storytelling",
     "cta": "Explore Stories"
   },
+  "footerCta": {
+    "tag": "Join Today",
+    "title": "Start Your Story Journey",
+    "description": "Discover, create, and share stories from around the world",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
   "features": {
     "discover": {
       "title": "Discover Global Stories",
@@ -1426,17 +1389,26 @@
     }
   },
   "programs": {
-    "empowerment": {
-      "title": "Seeds of Empowerment",
-      "description": "Supporting children in underserved communities through education and storytelling"
+    "kidLibrary": {
+      "title": "Kid's Library",
+      "tagline": "For Young Readers",
+      "description1": "Discover stories from children around the world. Each story is carefully curated to inspire and educate young readers.",
+      "description2": "Every story is age-appropriate and features diverse cultures and perspectives to broaden children's worldviews.",
+      "cta": "Explore Library"
     },
-    "diversity": {
-      "title": "Global Diversity Initiative",
-      "description": "Celebrating diverse voices and perspectives from every corner of the world"
+    "writingVolunteer": {
+      "title": "Writing Volunteer",
+      "tagline": "Share Your Story",
+      "description1": "Become a writing volunteer and share your stories with children around the world. Our platform welcomes all voices.",
+      "description2": "Join our supportive community to create meaningful content that inspires the next generation.",
+      "cta": "Become a Writer"
     },
-    "english": {
-      "title": "English Language Learning",
-      "description": "Interactive stories designed for English language learners"
+    "englishLearning": {
+      "title": "English Learning",
+      "tagline": "Learn Through Stories",
+      "description1": "Master English through engaging stories. Our interactive platform makes language learning fun and effective.",
+      "description2": "Track your progress, expand your vocabulary, and build confidence through real stories.",
+      "cta": "Start Learning"
     }
   },
   "footer": {
@@ -1446,10 +1418,12 @@
       "primary": "Get Started",
       "secondary": "Learn More"
     },
+    "tagline": "Empowering young voices, inspiring the world through stories.",
     "copyright": "© 2025 1001 Stories. All rights reserved.",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "contact": "Contact Us"
+    "contact": "Contact Us",
+    "contactForm": "Contact Form"
   },
   "about": {
     "hero": {
@@ -1866,6 +1840,61 @@
         "emailRequired": "Please enter your email address",
         "failed": "Failed to send magic link. Please try again."
       }
+    },
+    "errors": {
+      "accountLinkingRequired": {
+        "title": "Account Already Exists",
+        "message": "An account with this email already exists. Please log in with your email and link your Google account from your profile settings."
+      },
+      "oauthNotLinked": {
+        "title": "Account Not Linked",
+        "message": "This Google account is not linked to your profile. Please link it from your profile settings."
+      },
+      "oauthSignin": {
+        "title": "OAuth Sign In Failed",
+        "message": "Failed to sign in with your account. Please try again."
+      },
+      "oauthCallback": {
+        "title": "OAuth Callback Error",
+        "message": "An error occurred during the OAuth process. Please try again."
+      },
+      "oauthCreateAccount": {
+        "title": "Failed to Create Account",
+        "message": "We couldn't create your account with this OAuth provider. Please try a different method."
+      },
+      "emailCreateAccount": {
+        "title": "Email Registration Failed",
+        "message": "We couldn't create your account with this email. Please try again or use a different email."
+      },
+      "callback": {
+        "title": "Authentication Callback Error",
+        "message": "An error occurred during authentication. Please try again."
+      },
+      "oauthNotVerified": {
+        "title": "Account Not Verified",
+        "message": "Your OAuth account is not verified. Please verify your email before signing in."
+      },
+      "emailSignin": {
+        "title": "Email Sign In Failed",
+        "message": "Failed to sign in with email. Please check your credentials and try again."
+      },
+      "credentialsSignin": {
+        "title": "Invalid Credentials",
+        "message": "The email or password you entered is incorrect. Please try again."
+      },
+      "sessionRequired": {
+        "title": "Session Required",
+        "message": "You must be signed in to access this page."
+      },
+      "default": {
+        "title": "Authentication Error",
+        "message": "An error occurred during authentication. Please try again."
+      },
+      "errorCode": "Error Code",
+      "continueButton": "Continue",
+      "backToHome": "Back to Home",
+      "needHelp": "Need help?",
+      "contactSupport": "Contact Support"
     }
   },
   "components": {
@@ -2020,5 +2049,14 @@
         "weekly": "Weekly (Monday 9 AM)"
       }
     }
+  },
+  "outcomeStats": {
+    "storiesPublished": "Stories Published",
+    "childrenReached": "Children Reached",
+    "countries": "Countries",
+    "volunteers": "Volunteers"
+  },
+  "circularBadge": {
+    "text": "REGISTER FIRST! • REGISTER FIRST! • "
   }
 }

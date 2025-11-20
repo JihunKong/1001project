@@ -796,15 +796,9 @@
     }
   },
   "nav": {
-    "home": {
-      "label": "होम",
-      "description": "मुख्य पेज पर जाएं"
-    },
+    "home": "Home",
     "myStories": "My Stories",
-    "library": {
-      "label": "पुस्तकालय",
-      "description": "सभी पुस्तकें ब्राउज़ करें"
-    },
+    "library": "Library",
     "notifications": "{count} notifications",
     "profile": "प्रोफ़ाइल",
     "skipToMain": "मुख्य सामग्री पर जाएं",
@@ -827,7 +821,7 @@
     "logout": "लॉग आउट",
     "language": "भाषा",
     "volunteer": "स्वयंसेवक",
-    "signUp": "साइन अप करें",
+    "signUp": "Sign Up",
     "profileSettings": "प्रोफ़ाइल सेटिंग्स",
     "showTutorial": "ट्यूटोरियल फिर से दिखाएं",
     "defaultUser": "उपयोगकर्ता",
@@ -885,6 +879,14 @@
         "label": "व्यवस्थापक पैनल",
         "description": "संपूर्ण प्रणाली प्रबंधित करें"
       }
+    },
+    "homeDetailed": {
+      "label": "Home",
+      "description": "Go to main page"
+    },
+    "libraryDetailed": {
+      "label": "Library",
+      "description": "Browse all books"
     }
   },
   "stories": {
@@ -1187,53 +1189,7 @@
     "monthsAgo": "{count} महीने पहले"
   },
   "common": {
-    "loading": "लोड हो रहा है...",
-    "error": "एक त्रुटि हुई",
-    "success": "सफलता",
-    "search": "खोजें",
-    "filter": "फ़िल्टर",
-    "sort": "क्रमबद्ध करें",
-    "close": "बंद करें",
-    "back": "वापस",
-    "next": "अगला",
-    "previous": "पिछला",
-    "readMore": "और पढ़ें",
-    "showLess": "कम दिखाएं",
-    "noResults": "कोई परिणाम नहीं मिला",
-    "tryAgain": "पुनः प्रयास करें",
-    "share": "साझा करें",
-    "download": "डाउनलोड करें",
-    "print": "प्रिंट करें",
-    "viewAll": "View all",
-    "updated": "Updated",
-    "writer": "लेखक",
-    "breadcrumb": "ब्रेडक्रम्ब",
-    "loadingDashboard": "Loading your dashboard...",
-    "loadingStory": "आपकी कहानी लोड हो रही है...",
-    "loadingForm": "सबमिशन फॉर्म लोड हो रहा है...",
-    "cancel": "रद्द करें",
-    "save": "सहेजें",
-    "confirm": "पुष्टि करें",
-    "open": "खोलें",
-    "buttons": {
-      "dismiss": "Dismiss",
-      "accept": "Accept"
-    },
-    "actions": {
-      "cancel": "Cancel",
-      "save": "Save",
-      "saving": "Saving...",
-      "edit": "Edit",
-      "delete": "Delete"
-    },
-    "timeAgo": {
-      "minutesAgo": "{minutes}m ago",
-      "hoursAgo": "{hours}h ago",
-      "daysAgo": "{days}d ago",
-      "monthDay": "{month} {day}"
-    },
-    "of": "of",
-    "words": "words"
+    "resetLanguage": "Reset to English"
   },
   "language": {
     "en": "अंग्रेज़ी",
@@ -1436,17 +1392,26 @@
     }
   },
   "programs": {
-    "empowerment": {
-      "title": "सशक्तिकरण के बीज",
-      "description": "शिक्षा और कहानी कहने के माध्यम से वंचित समुदायों के बच्चों का समर्थन"
+    "kidLibrary": {
+      "title": "Kid's Library",
+      "tagline": "For Young Readers",
+      "description1": "Discover stories from children around the world. Each story is carefully curated to inspire and educate young readers.",
+      "description2": "Every story is age-appropriate and features diverse cultures and perspectives to broaden children's worldviews.",
+      "cta": "Explore Library"
     },
-    "diversity": {
-      "title": "वैश्विक विविधता पहल",
-      "description": "दुनिया के हर कोने से विविध आवाज़ों और दृष्टिकोणों का जश्न"
+    "writingVolunteer": {
+      "title": "Writing Volunteer",
+      "tagline": "Share Your Story",
+      "description1": "Become a writing volunteer and share your stories with children around the world. Our platform welcomes all voices.",
+      "description2": "Join our supportive community to create meaningful content that inspires the next generation.",
+      "cta": "Become a Writer"
     },
-    "english": {
-      "title": "अंग्रेजी भाषा सीखना",
-      "description": "अंग्रेजी भाषा सीखने वालों के लिए डिज़ाइन की गई इंटरैक्टिव कहानियां"
+    "englishLearning": {
+      "title": "English Learning",
+      "tagline": "Learn Through Stories",
+      "description1": "Master English through engaging stories. Our interactive platform makes language learning fun and effective.",
+      "description2": "Track your progress, expand your vocabulary, and build confidence through real stories.",
+      "cta": "Start Learning"
     }
   },
   "footer": {
@@ -1459,7 +1424,9 @@
     "copyright": "© 2025 1001 Stories. सभी अधिकार सुरक्षित।",
     "privacy": "गोपनीयता नीति",
     "terms": "सेवा की शर्तें",
-    "contact": "हमसे संपर्क करें"
+    "contact": "हमसे संपर्क करें",
+    "tagline": "Empowering young voices, inspiring the world through stories.",
+    "contactForm": "Contact Form"
   },
   "about": {
     "hero": {
@@ -2030,5 +1997,21 @@
         "weekly": "Weekly (Monday 9 AM)"
       }
     }
+  },
+  "footerCta": {
+    "tag": "Join Today",
+    "title": "Start Your Story Journey",
+    "description": "Discover, create, and share stories from around the world",
+    "signIn": "Sign In",
+    "signUp": "Sign Up"
+  },
+  "outcomeStats": {
+    "storiesPublished": "Stories Published",
+    "childrenReached": "Children Reached",
+    "countries": "Countries",
+    "volunteers": "Volunteers"
+  },
+  "circularBadge": {
+    "text": "REGISTER FIRST! • REGISTER FIRST! • "
   }
 }

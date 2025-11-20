@@ -796,12 +796,14 @@
     }
   },
   "nav": {
-    "home": {
+    "home": "홈",
+    "homeDetailed": {
       "label": "홈",
       "description": "메인 페이지로 이동"
     },
     "myStories": "내 스토리",
-    "library": {
+    "library": "도서관",
+    "libraryDetailed": {
       "label": "라이브러리",
       "description": "전체 도서 목록 보기"
     },
@@ -822,12 +824,12 @@
     "getInvolved": "참여하기",
     "signIn": "로그인",
     "signup": "회원가입",
+    "signUp": "회원가입",
     "dashboard": "대시보드",
     "help": "도움말",
     "logout": "로그아웃",
     "language": "언어",
     "volunteer": "자원봉사",
-    "signUp": "회원가입",
     "profileSettings": "프로필 설정",
     "showTutorial": "사용법 다시 보기",
     "defaultUser": "사용자",
@@ -1233,7 +1235,8 @@
       "monthDay": "{month}월 {day}일"
     },
     "of": "/",
-    "words": "단어"
+    "words": "단어",
+    "resetLanguage": "영어로 재설정"
   },
   "language": {
     "en": "영어",
@@ -1411,6 +1414,13 @@
     "description": "스토리텔링의 힘으로 작가, 교육자, 학생을 연결하는 글로벌 비영리 플랫폼",
     "cta": "이야기 탐색"
   },
+  "footerCta": {
+    "tag": "오늘 참여하세요",
+    "title": "당신의 이야기 여정을 시작하세요",
+    "description": "전 세계의 이야기를 발견하고 만들고 공유하세요",
+    "signIn": "로그인",
+    "signUp": "회원가입"
+  },
   "features": {
     "discover": {
       "title": "세계의 이야기 발견",
@@ -1426,17 +1436,26 @@
     }
   },
   "programs": {
-    "empowerment": {
-      "title": "역량 강화의 씨앗",
-      "description": "교육과 스토리텔링을 통해 소외된 지역 어린이들을 지원"
+    "kidLibrary": {
+      "title": "어린이 도서관",
+      "tagline": "어린 독자를 위한",
+      "description1": "전 세계 어린이들의 이야기를 발견하세요. 각 이야기는 신중하게 선별되어 어린 독자들에게 영감과 교육을 제공합니다.",
+      "description2": "각 이야기는 연령에 적합하며 다양한 문화와 관점을 담고 있어 아이들의 세계관을 넓혀줍니다.",
+      "cta": "도서관 탐색"
     },
-    "diversity": {
-      "title": "글로벌 다양성 이니셔티브",
-      "description": "세계 모든 곳의 다양한 목소리와 관점을 축하"
+    "writingVolunteer": {
+      "title": "작가 자원봉사",
+      "tagline": "당신의 이야기를 나누세요",
+      "description1": "작가 자원봉사자가 되어 전 세계 어린이들과 당신의 이야기를 공유하세요. 우리 플랫폼은 모든 목소리를 환영합니다.",
+      "description2": "우리의 지원 커뮤니티에 합류하여 다음 세대에 영감을 주는 의미 있는 콘텐츠를 만드세요.",
+      "cta": "작가 되기"
     },
-    "english": {
+    "englishLearning": {
       "title": "영어 학습",
-      "description": "영어 학습자를 위해 설계된 대화형 이야기"
+      "tagline": "이야기로 배우세요",
+      "description1": "흥미로운 이야기로 영어를 마스터하세요. 우리의 대화형 플랫폼은 언어 학습을 재미있고 효과적으로 만듭니다.",
+      "description2": "진행 상황을 추적하고 어휘를 확장하며 실제 이야기를 통해 자신감을 쌓으세요.",
+      "cta": "학습 시작"
     }
   },
   "footer": {
@@ -1446,10 +1465,12 @@
       "primary": "시작하기",
       "secondary": "자세히 알아보기"
     },
+    "tagline": "젊은 목소리에 힘을 실어주고, 이야기로 세상에 영감을 줍니다.",
     "copyright": "© 2025 1001 Stories. 모든 권리 보유.",
     "privacy": "개인정보 처리방침",
     "terms": "서비스 약관",
-    "contact": "문의하기"
+    "contact": "문의하기",
+    "contactForm": "문의 양식"
   },
   "about": {
     "hero": {
@@ -1866,6 +1887,61 @@
         "emailRequired": "이메일 주소를 입력해주세요",
         "failed": "매직 링크 전송에 실패했습니다. 다시 시도해주세요."
       }
+    },
+    "errors": {
+      "accountLinkingRequired": {
+        "title": "계정이 이미 존재합니다",
+        "message": "이 이메일로 이미 계정이 존재합니다. 이메일로 로그인하고 프로필 설정에서 Google 계정을 연결해주세요."
+      },
+      "oauthNotLinked": {
+        "title": "계정이 연결되지 않음",
+        "message": "이 Google 계정이 프로필에 연결되어 있지 않습니다. 프로필 설정에서 연결해주세요."
+      },
+      "oauthSignin": {
+        "title": "OAuth 로그인 실패",
+        "message": "계정으로 로그인하는 데 실패했습니다. 다시 시도해주세요."
+      },
+      "oauthCallback": {
+        "title": "OAuth 콜백 오류",
+        "message": "OAuth 프로세스 중 오류가 발생했습니다. 다시 시도해주세요."
+      },
+      "oauthCreateAccount": {
+        "title": "계정 생성 실패",
+        "message": "이 OAuth 제공자로 계정을 생성할 수 없습니다. 다른 방법을 시도해주세요."
+      },
+      "emailCreateAccount": {
+        "title": "이메일 등록 실패",
+        "message": "이 이메일로 계정을 생성할 수 없습니다. 다시 시도하거나 다른 이메일을 사용해주세요."
+      },
+      "callback": {
+        "title": "인증 콜백 오류",
+        "message": "인증 중 오류가 발생했습니다. 다시 시도해주세요."
+      },
+      "oauthNotVerified": {
+        "title": "계정 미인증",
+        "message": "OAuth 계정이 인증되지 않았습니다. 로그인하기 전에 이메일을 인증해주세요."
+      },
+      "emailSignin": {
+        "title": "이메일 로그인 실패",
+        "message": "이메일로 로그인하는 데 실패했습니다. 자격 증명을 확인하고 다시 시도해주세요."
+      },
+      "credentialsSignin": {
+        "title": "잘못된 자격 증명",
+        "message": "입력한 이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요."
+      },
+      "sessionRequired": {
+        "title": "세션 필요",
+        "message": "이 페이지에 액세스하려면 로그인해야 합니다."
+      },
+      "default": {
+        "title": "인증 오류",
+        "message": "인증 중 오류가 발생했습니다. 다시 시도해주세요."
+      },
+      "errorCode": "오류 코드",
+      "continueButton": "계속",
+      "backToHome": "홈으로 돌아가기",
+      "needHelp": "도움이 필요하신가요?",
+      "contactSupport": "지원팀 문의"
     }
   },
   "components": {
@@ -2020,5 +2096,14 @@
         "weekly": "매주 (월요일 오전 9시)"
       }
     }
+  },
+  "outcomeStats": {
+    "storiesPublished": "출판된 이야기",
+    "childrenReached": "도달한 어린이",
+    "countries": "국가",
+    "volunteers": "자원봉사자"
+  },
+  "circularBadge": {
+    "text": "먼저 등록하세요! • 먼저 등록하세요! • "
   }
 }
