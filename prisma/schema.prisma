@@ -170,6 +170,13 @@ model Profile {
   pushNotifications  Boolean @default(true)
   newsletter         Boolean @default(true)
 
+  // Onboarding fields
+  accountType         AccountType? // STUDENT or PARENT
+  ageGroup            String? // "5-8", "9-12", "13-17", "18+"
+  country             String? // Country selection
+  interests           String[] // Interest categories (Fiction, Non-Fiction, etc.)
+  onboardingCompleted Boolean      @default(false)
+
   // Cached stats for performance
   cachedStats    Json?
   statsUpdatedAt DateTime?
@@ -180,6 +187,12 @@ model Profile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("profiles")
+}
+
+// Account type for onboarding
+enum AccountType {
+  STUDENT
+  PARENT
 }
 
 // ==========================================

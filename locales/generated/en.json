@@ -2065,6 +2065,120 @@
       }
     }
   },
+  "onboarding": {
+    "common": {
+      "next": "Next",
+      "back": "Back",
+      "skip": "Skip",
+      "finish": "Finish",
+      "stepIndicator": "Step {current} of {total}"
+    },
+    "welcome": {
+      "title": "Welcome to 1001 Stories!",
+      "subtitle": "Let's personalize your reading experience",
+      "description": "We'll help you discover stories that match your interests and reading level. This will only take a minute!",
+      "getStarted": "Get Started",
+      "loginInstead": "Already have an account? Log in"
+    },
+    "step1": {
+      "title": "Who will be reading?",
+      "subtitle": "This helps us recommend age-appropriate content",
+      "student": {
+        "title": "I'm a Student",
+        "description": "Browse stories and learn at your own pace"
+      },
+      "parent": {
+        "title": "I'm a Parent",
+        "description": "Find stories for your children and track their progress"
+      }
+    },
+    "step2": {
+      "title": "Select age group",
+      "subtitle": "We'll recommend stories for this age range",
+      "ageGroups": {
+        "young": {
+          "label": "5-8 years",
+          "description": "Early readers with simple stories"
+        },
+        "middle": {
+          "label": "9-12 years",
+          "description": "Developing readers with engaging tales"
+        },
+        "teen": {
+          "label": "13-17 years",
+          "description": "Young adults with complex narratives"
+        },
+        "adult": {
+          "label": "18+ years",
+          "description": "Mature readers and parents"
+        }
+      }
+    },
+    "step3": {
+      "title": "Where are you from?",
+      "subtitle": "We'll prioritize stories from your region",
+      "countryLabel": "Select your country",
+      "countryPlaceholder": "Choose a country",
+      "languageLabel": "Preferred language",
+      "languagePlaceholder": "Select language",
+      "languages": {
+        "en": "English",
+        "ko": "한국어 (Korean)",
+        "es": "Español (Spanish)",
+        "fr": "Français (French)",
+        "de": "Deutsch (German)",
+        "zh": "中文 (Chinese)",
+        "ja": "日本語 (Japanese)",
+        "ar": "العربية (Arabic)",
+        "pt": "Português (Portuguese)",
+        "ru": "Русский (Russian)",
+        "hi": "हिन्दी (Hindi)",
+        "it": "Italiano (Italian)"
+      }
+    },
+    "step4": {
+      "title": "What interests you?",
+      "subtitle": "Select categories you'd like to explore (choose at least one)",
+      "selectAll": "Select all",
+      "clearAll": "Clear all",
+      "categories": {
+        "fiction": {
+          "title": "Fiction",
+          "items": {
+            "adventure": "Adventure",
+            "fantasy": "Fantasy",
+            "mystery": "Mystery",
+            "scienceFiction": "Science Fiction",
+            "historical": "Historical Fiction"
+          }
+        },
+        "nonFiction": {
+          "title": "Non-Fiction",
+          "items": {
+            "biography": "Biography",
+            "history": "History",
+            "science": "Science",
+            "nature": "Nature",
+            "culture": "Culture & Society"
+          }
+        },
+        "thematic": {
+          "title": "Themes & Values",
+          "items": {
+            "friendship": "Friendship",
+            "family": "Family",
+            "courage": "Courage & Bravery",
+            "kindness": "Kindness",
+            "creativity": "Creativity",
+            "perseverance": "Perseverance"
+          }
+        }
+      },
+      "validation": {
+        "selectAtLeastOne": "Please select at least one interest"
+      }
+    }
+  },
   "outcomeStats": {
     "storiesPublished": "Stories Published",
     "childrenReached": "Children Reached",

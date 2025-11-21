@@ -83,6 +83,12 @@ export default withAuth(
         return NextResponse.redirect(loginUrl);
       }
 
+      // Check if user has completed onboarding (except for learner/parent roles)
+      if (pathname.startsWith('/dashboard') && !pathname.startsWith('/dashboard/learner') && !pathname.startsWith('/dashboard/parent')) {
+        // For now, skip onboarding check for non-learner roles
+        // Learners/Parents must complete onboarding via signup flow
+      }
+
       // Admin routes - check for redirect loops
       if (pathname.startsWith('/admin') && token.role !== 'ADMIN') {
         if (isRedirectLoop(trackingKey)) {
@@ -157,8 +163,10 @@ export default withAuth(
           pathname.startsWith('/api/health') ||
           pathname.startsWith('/api/books') ||
           pathname.startsWith('/api/translations') ||
+          pathname.startsWith('/api/onboarding') ||
           pathname.startsWith('/login') ||
           pathname.startsWith('/signup') ||
+          pathname.startsWith('/onboarding') ||
           pathname.startsWith('/about') ||
           pathname.startsWith('/library') ||
           pathname.startsWith('/legal') ||

@@ -195,9 +195,16 @@ export default function SignupPage() {
 
       if (response.ok) {
         setMessage(t('auth.signup.messages.accountCreated'));
+
+        await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        });
+
         setTimeout(() => {
-          router.push('/login');
-        }, 2000);
+          router.push('/onboarding');
+        }, 1500);
       } else {
         setMessage(data.error || t('auth.signup.messages.failed'));
       }
@@ -214,7 +221,7 @@ export default function SignupPage() {
 
     try {
       await signIn(provider, {
-        callbackUrl: '/dashboard',
+        callbackUrl: '/onboarding',
       });
     } catch (error) {
       setMessage(t('auth.signup.messages.socialFailed', { provider }));
