@@ -4,7 +4,6 @@ import { useSession, signOut } from 'next-auth/react';
 import { ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import NotificationDropdown from '@/components/notifications/NotificationDropdown';
 import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
@@ -80,7 +79,6 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
         </div>
 
         <div className="flex items-center gap-4 ml-auto">
-          <NotificationDropdown />
           <LanguageSelector variant="compact" />
 
           <div className="relative">

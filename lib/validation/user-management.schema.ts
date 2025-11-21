@@ -61,8 +61,14 @@ export const updateUserSchema = z.object({
 export const listUsersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
-  search: z.string().max(100).optional(),
-  role: userRoleSchema.optional(),
+  search: z.preprocess(
+    (val) => val === '' || val === null ? undefined : val,
+    z.string().max(100).optional()
+  ),
+  role: z.preprocess(
+    (val) => val === '' || val === null ? undefined : val,
+    userRoleSchema.optional()
+  ),
   status: z.preprocess(
     (val) => val === '' || val === null ? undefined : val,
     z.string()
