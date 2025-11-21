@@ -185,6 +185,8 @@ export default withAuth(
           pathname.startsWith('/landing/') ||
           pathname.startsWith('/assets/') ||
           pathname.startsWith('/images/') ||
+          pathname.startsWith('/covers/') ||
+          pathname.startsWith('/books/') ||
           pathname.startsWith('/figma-assets/')
         ) {
           return true;
