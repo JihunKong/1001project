@@ -185,6 +185,7 @@ Writer Dashboard,AI Feedback,dashboard.writer.submitText.aiFeedback.willAppear,A
 Writer Dashboard,AI Feedback,dashboard.writer.submitText.aiFeedback.summary,Summary,요약,DONE,HIGH,/components/story-publication/writer/AIReviewCard.tsx,356
 Writer Dashboard,AI Feedback,dashboard.writer.submitText.aiFeedback.strengths,Strengths,강점,DONE,HIGH,/components/story-publication/writer/AIReviewCard.tsx,378
 Writer Dashboard,AI Feedback,dashboard.writer.submitText.aiFeedback.suggestions,Suggestions for Improvement,개선 제안,DONE,HIGH,/components/story-publication/writer/AIReviewCard.tsx,408
+Writer Dashboard,Submit Text,dashboard.writer.submitText.titlePlaceholder,Enter your story title here...,여기에 이야기 제목을 입력하세요...,DONE,HIGH,/components/story-publication/writer/TextSubmissionForm.tsx,259
 Landing,Footer,footer.tagline,Empowering young voices, inspiring the world through stories.,젊은 목소리에 힘을 실어주고, 이야기로 세상에 영감을 줍니다.,DONE,HIGH,/app/page.tsx,75
 Landing,Footer,footer.contactForm,Contact Form,문의 양식,DONE,HIGH,/app/page.tsx,133
 Landing,Statistics,outcomeStats.storiesPublished,Stories Published,출판된 이야기,DONE,HIGH,/components/landing/OutcomeStatistics.tsx,13

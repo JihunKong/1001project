@@ -369,6 +369,110 @@
         "improvements": "개선 영역",
         "suggestions": "제안",
         "requestNew": "새로운 검토 요청"
+      },
+      "userManagement": {
+        "title": "사용자 관리",
+        "subtitle": "시스템 사용자 및 역할 관리",
+        "createUser": "사용자 생성",
+        "searchPlaceholder": "이름 또는 이메일로 검색...",
+        "allRoles": "모든 역할",
+        "allStatus": "모든 상태",
+        "active": "활성",
+        "deleted": "삭제됨",
+        "noUsersFound": "사용자를 찾을 수 없습니다",
+        "table": {
+          "name": "이름",
+          "email": "이메일",
+          "role": "역할",
+          "status": "상태",
+          "created": "생성일",
+          "actions": "작업",
+          "verified": "인증됨",
+          "notVerified": "미인증"
+        },
+        "form": {
+          "create": {
+            "title": "새 사용자 생성",
+            "submit": "사용자 생성"
+          },
+          "edit": {
+            "title": "사용자 편집",
+            "submit": "사용자 업데이트"
+          },
+          "basicInfo": "기본 정보",
+          "profileInfo": "프로필 정보 (선택사항)",
+          "email": "이메일",
+          "name": "이름",
+          "role": "역할",
+          "password": "비밀번호",
+          "passwordHint": "최소 8자",
+          "passwordEditHint": "현재 비밀번호 유지하려면 비워두세요",
+          "firstName": "이름",
+          "lastName": "성",
+          "organization": "조직",
+          "phone": "전화번호",
+          "location": "위치",
+          "bio": "소개",
+          "cancel": "취소",
+          "saving": "저장 중...",
+          "required": "필수"
+        },
+        "details": {
+          "title": "사용자 세부정보",
+          "basicInfo": "기본 정보",
+          "profileInfo": "프로필 정보",
+          "activityStats": "활동 통계",
+          "emailVerified": "이메일 인증",
+          "createdAt": "생성일",
+          "updatedAt": "수정일",
+          "deletedAt": "삭제일",
+          "fullName": "전체 이름",
+          "sessions": "세션",
+          "submissions": "제출물",
+          "classes": "클래스",
+          "edit": "사용자 편집",
+          "close": "닫기",
+          "activeAccount": "활성 계정",
+          "deletedAccount": "삭제된 계정"
+        },
+        "delete": {
+          "title": "사용자 삭제",
+          "warning": "경고: 이 작업은 취소할 수 없습니다",
+          "aboutTo": "다음 사용자를 삭제하려고 합니다:",
+          "consequences": "다음 작업이 수행됩니다:",
+          "softDelete": "사용자 계정 소프트 삭제",
+          "revokeAccess": "모든 접근 권한 취소",
+          "preserveData": "감사 목적으로 사용자 데이터 보존",
+          "preventLogin": "향후 로그인 차단",
+          "confirmText": "DELETE를 입력하여 확인",
+          "confirmPlaceholder": "DELETE 입력",
+          "cancel": "취소",
+          "confirm": "사용자 삭제",
+          "deleting": "삭제 중..."
+        },
+        "pagination": {
+          "showing": "표시",
+          "to": "~",
+          "of": "/",
+          "results": "결과",
+          "page": "페이지",
+          "previous": "이전",
+          "next": "다음"
+        },
+        "roles": {
+          "LEARNER": "학습자",
+          "TEACHER": "교사",
+          "INSTITUTION": "교육기관",
+          "WRITER": "작가",
+          "STORY_MANAGER": "스토리 관리자",
+          "BOOK_MANAGER": "도서 관리자",
+          "CONTENT_ADMIN": "콘텐츠 관리자",
+          "ADMIN": "관리자"
+        },
+        "loading": "사용자 로딩 중...",
+        "backToDashboard": "대시보드로 돌아가기",
+        "pageTitle": "사용자 관리",
+        "pageSubtitle": "모든 시스템 사용자, 역할 및 권한 관리"
       }
     },
     "writer": {
@@ -1250,7 +1354,6 @@
       "daysAgo": "{days}일 전",
       "monthDay": "{month}월 {day}일"
     },
-    "of": "/",
     "words": "단어",
     "resetLanguage": "영어로 재설정"
   },
@@ -1642,135 +1745,118 @@
     "institution": "교육기관"
   },
   "onboarding": {
+    "common": {
+      "next": "다음",
+      "back": "이전",
+      "skip": "건너뛰기",
+      "finish": "완료",
+      "stepIndicator": "{total}단계 중 {current}단계"
+    },
     "welcome": {
-      "title": "1001 Stories에 오신 것을 환영합니다! 🎉",
-      "description": "전 세계 아이들의 이야기를 발견하고 공유하는 플랫폼입니다.",
-      "content": "1001 Stories는 소외된 지역 아이들의 이야기를 세상에 알리고, 전 세계 교육자와 학습자들을 연결하는 비영리 교육 플랫폼입니다."
+      "title": "1001 Stories에 오신 것을 환영합니다!",
+      "subtitle": "맞춤형 독서 경험을 설정해보세요",
+      "description": "여러분의 관심사와 독서 수준에 맞는 이야기를 찾아드릴게요. 1분만 투자하시면 됩니다!",
+      "getStarted": "시작하기",
+      "loginInstead": "이미 계정이 있으신가요? 로그인하기"
     },
-    "skip": "건너뛰기",
-    "progress": "진행률",
-    "progressAria": "온보딩 진행률: {percent}%",
-    "previous": "이전",
-    "previousStep": "이전 단계",
-    "next": "다음",
-    "nextStep": "다음 단계",
-    "skipStep": "건너뛰기",
-    "finish": "온보딩 완료",
-    "finishAria": "온보딩 완료",
-    "keyboardHints": "← → 이동 | Enter 다음 | Esc 닫기",
-    "learner": {
-      "findBooks": {
-        "title": "책 찾기 📚",
-        "description": "선생님이 배정한 책이나 관심 있는 책을 쉽게 찾아보세요."
+    "step1": {
+      "title": "누가 책을 읽나요?",
+      "subtitle": "연령에 맞는 콘텐츠를 추천해드리기 위한 질문입니다",
+      "student": {
+        "title": "학생입니다",
+        "description": "자기만의 속도로 이야기를 탐색하고 배워요"
       },
-      "myBookshelf": {
-        "title": "내 책장에서",
-        "content": "선생님이 나에게 배정한 책들을 확인할 수 있어요. 읽기 진도와 완료 상태도 한눈에 볼 수 있답니다."
-      },
-      "library": {
-        "title": "라이브러리에서",
-        "content": "다른 나라 친구들의 재미있는 이야기들을 탐험해보세요. 연령대와 관심사에 맞는 책들을 추천해드려요."
-      },
-      "readingTools": {
-        "title": "읽기 도우미 💡",
-        "description": "어려운 단어가 있으면 클릭해서 설명을 들어보세요.",
-        "difficult": "어려운 단어",
-        "hint": "를 클릭하면 뜻을 알려드려요!",
-        "audio": "음성으로 듣기",
-        "aiHelper": "AI 도우미",
-        "difficultWord": "어려운 단어",
-        "clickHelp": "를 클릭하면 뜻을 알려드려요!",
-        "audioListen": "음성으로 듣기"
-      },
-      "progress": {
-        "title": "읽기 진도 확인 📈",
-        "description": "내가 얼마나 읽었는지, 어떤 책을 완료했는지 확인해보세요.",
-        "goal": "이번 주 읽기 목표",
-        "content": "읽기 진도를 확인하고, 완료한 책에 대한 성취감을 느껴보세요. 친구들과 읽기 기록을 비교해볼 수도 있어요!"
-      },
-      "progressTracking": {
-        "title": "읽기 진도 확인 📈",
-        "description": "내가 얼마나 읽었는지, 어떤 책을 완료했는지 확인해보세요.",
-        "weeklyGoal": "이번 주 읽기 목표",
-        "content": "읽기 진도를 확인하고, 완료한 책에 대한 성취감을 느껴보세요. 친구들과 읽기 기록을 비교해볼 수도 있어요!"
+      "parent": {
+        "title": "부모입니다",
+        "description": "자녀를 위한 이야기를 찾고 진행 상황을 확인해요"
       }
     },
-    "teacher": {
-      "createClass": {
-        "title": "클래스 만들기 🏫",
-        "description": "학생들을 위한 클래스를 만들고 초대 코드를 공유하세요.",
-        "simple": "간단한 클래스 생성",
-        "content": "클래스 이름과 과목을 입력하면 6자리 초대 코드가 생성돼요.",
-        "inviteCode": "클래스 초대 코드"
-      },
-      "assignBooks": {
-        "title": "책 배정하기 📖",
-        "description": "학생들의 수준에 맞는 책을 선택해서 배정하세요.",
-        "individual": "개별 배정",
-        "individualDesc": "학생별 수준에 맞게",
-        "bulk": "일괄 배정",
-        "bulkDesc": "전체 클래스에게",
-        "tip": "💡 팁: 학생들의 읽기 수준과 관심사를 고려해서 적절한 난이도의 책을 선택해주세요.",
-        "batch": "일괄 배정",
-        "batchDesc": "전체 클래스에게"
-      },
-      "monitor": {
-        "title": "진도 모니터링 📊",
-        "description": "학생들의 읽기 진도와 이해도를 실시간으로 확인하세요.",
-        "dashboard": "클래스 대시보드"
-      },
-      "monitorProgress": {
-        "title": "진도 모니터링 📊",
-        "description": "학생들의 읽기 진도와 이해도를 실시간으로 확인하세요.",
-        "dashboard": "클래스 대시보드"
+    "step2": {
+      "title": "연령대를 선택하세요",
+      "subtitle": "이 연령대에 맞는 이야기를 추천해드릴게요",
+      "ageGroups": {
+        "young": {
+          "label": "5-8세",
+          "description": "쉬운 이야기로 시작하는 초기 독자"
+        },
+        "middle": {
+          "label": "9-12세",
+          "description": "흥미로운 이야기를 즐기는 발전하는 독자"
+        },
+        "teen": {
+          "label": "13-17세",
+          "description": "복잡한 서사를 이해하는 청소년 독자"
+        },
+        "adult": {
+          "label": "18세 이상",
+          "description": "성인 독자 및 부모님"
+        }
       }
     },
-    "writer": {
-      "guidelines": {
-        "title": "이야기 작성 가이드 ✍️",
-        "description": "아이들에게 적합한 내용으로 이야기를 작성해주세요.",
-        "header": "작성 가이드라인",
-        "item1": "• 교육적이고 긍정적인 메시지 포함",
-        "item2": "• 연령대에 적합한 언어 사용",
-        "item3": "• 문화적 다양성 존중",
-        "item4": "• 500-2000자 권장 분량",
-        "message": "💚 여러분의 이야기는 전 세계 아이들에게 새로운 시각과 감동을 전해줄 소중한 선물이 됩니다."
-      },
-      "submission": {
-        "title": "제출 과정 📝",
-        "description": "작성한 이야기가 출간되기까지의 과정을 알아보세요.",
-        "step1": "이야기 제출",
-        "step1Desc": "텍스트 에디터로 작성",
-        "step2": "내용 검토",
-        "step2Desc": "스토리 매니저 검토",
-        "step3": "출간 승인",
-        "step3Desc": "최종 검토 후 출간"
-      },
-      "storyGuidelines": {
-        "title": "이야기 작성 가이드 ✍️",
-        "description": "아이들에게 적합한 내용으로 이야기를 작성해주세요.",
-        "header": "작성 가이드라인",
-        "educational": "• 교육적이고 긍정적인 메시지 포함",
-        "ageAppropriate": "• 연령대에 적합한 언어 사용",
-        "cultural": "• 문화적 다양성 존중",
-        "wordCount": "• 500-2000자 권장 분량",
-        "impact": "💚 여러분의 이야기는 전 세계 아이들에게 새로운 시각과 감동을 전해줄 소중한 선물이 됩니다."
-      },
-      "submissionProcess": {
-        "title": "제출 과정 📝",
-        "description": "작성한 이야기가 출간되기까지의 과정을 알아보세요.",
-        "step1": "이야기 제출",
-        "step1Desc": "텍스트 에디터로 작성",
-        "step2": "내용 검토",
-        "step2Desc": "스토리 매니저 검토",
-        "step3": "출간 승인",
-        "step3Desc": "최종 검토 후 출간"
+    "step3": {
+      "title": "어디에서 오셨나요?",
+      "subtitle": "여러분 지역의 이야기를 우선적으로 보여드릴게요",
+      "countryLabel": "국가를 선택하세요",
+      "countryPlaceholder": "국가 선택",
+      "languageLabel": "선호하는 언어",
+      "languagePlaceholder": "언어 선택",
+      "languages": {
+        "en": "English (영어)",
+        "ko": "한국어",
+        "es": "Español (스페인어)",
+        "fr": "Français (프랑스어)",
+        "de": "Deutsch (독일어)",
+        "zh": "中文 (중국어)",
+        "ja": "日本語 (일본어)",
+        "ar": "العربية (아랍어)",
+        "pt": "Português (포르투갈어)",
+        "ru": "Русский (러시아어)",
+        "hi": "हिन्दी (힌디어)",
+        "it": "Italiano (이탈리아어)"
       }
     },
-    "skipOnboarding": "온보딩 건너뛰기",
-    "progressAriaLabel": "온보딩 진행률: {percent}%",
-    "start": "시작하기",
-    "keyboardShortcuts": "← → 이동 | Enter 다음 | Esc 닫기"
+    "step4": {
+      "title": "어떤 것에 관심이 있나요?",
+      "subtitle": "탐색하고 싶은 카테고리를 선택하세요 (최소 1개)",
+      "selectAll": "전체 선택",
+      "clearAll": "전체 해제",
+      "categories": {
+        "fiction": {
+          "title": "픽션",
+          "items": {
+            "adventure": "모험",
+            "fantasy": "판타지",
+            "mystery": "미스터리",
+            "scienceFiction": "공상과학",
+            "historical": "역사소설"
+          }
+        },
+        "nonFiction": {
+          "title": "논픽션",
+          "items": {
+            "biography": "전기",
+            "history": "역사",
+            "science": "과학",
+            "nature": "자연",
+            "culture": "문화와 사회"
+          }
+        },
+        "thematic": {
+          "title": "주제 및 가치",
+          "items": {
+            "friendship": "우정",
+            "family": "가족",
+            "courage": "용기와 용맹",
+            "kindness": "친절",
+            "creativity": "창의성",
+            "perseverance": "인내"
+          }
+        }
+      },
+      "validation": {
+        "selectAtLeastOne": "최소 1개의 관심사를 선택해주세요"
+      }
+    }
   },
   "auth": {
     "common": {
@@ -2125,120 +2211,6 @@
         "never": "사용 안 함",
         "daily": "매일 (오전 9시)",
         "weekly": "매주 (월요일 오전 9시)"
-      }
-    }
-  },
-  "onboarding": {
-    "common": {
-      "next": "다음",
-      "back": "이전",
-      "skip": "건너뛰기",
-      "finish": "완료",
-      "stepIndicator": "{total}단계 중 {current}단계"
-    },
-    "welcome": {
-      "title": "1001 Stories에 오신 것을 환영합니다!",
-      "subtitle": "맞춤형 독서 경험을 설정해보세요",
-      "description": "여러분의 관심사와 독서 수준에 맞는 이야기를 찾아드릴게요. 1분만 투자하시면 됩니다!",
-      "getStarted": "시작하기",
-      "loginInstead": "이미 계정이 있으신가요? 로그인하기"
-    },
-    "step1": {
-      "title": "누가 책을 읽나요?",
-      "subtitle": "연령에 맞는 콘텐츠를 추천해드리기 위한 질문입니다",
-      "student": {
-        "title": "학생입니다",
-        "description": "자기만의 속도로 이야기를 탐색하고 배워요"
-      },
-      "parent": {
-        "title": "부모입니다",
-        "description": "자녀를 위한 이야기를 찾고 진행 상황을 확인해요"
-      }
-    },
-    "step2": {
-      "title": "연령대를 선택하세요",
-      "subtitle": "이 연령대에 맞는 이야기를 추천해드릴게요",
-      "ageGroups": {
-        "young": {
-          "label": "5-8세",
-          "description": "쉬운 이야기로 시작하는 초기 독자"
-        },
-        "middle": {
-          "label": "9-12세",
-          "description": "흥미로운 이야기를 즐기는 발전하는 독자"
-        },
-        "teen": {
-          "label": "13-17세",
-          "description": "복잡한 서사를 이해하는 청소년 독자"
-        },
-        "adult": {
-          "label": "18세 이상",
-          "description": "성인 독자 및 부모님"
-        }
-      }
-    },
-    "step3": {
-      "title": "어디에서 오셨나요?",
-      "subtitle": "여러분 지역의 이야기를 우선적으로 보여드릴게요",
-      "countryLabel": "국가를 선택하세요",
-      "countryPlaceholder": "국가 선택",
-      "languageLabel": "선호하는 언어",
-      "languagePlaceholder": "언어 선택",
-      "languages": {
-        "en": "English (영어)",
-        "ko": "한국어",
-        "es": "Español (스페인어)",
-        "fr": "Français (프랑스어)",
-        "de": "Deutsch (독일어)",
-        "zh": "中文 (중국어)",
-        "ja": "日本語 (일본어)",
-        "ar": "العربية (아랍어)",
-        "pt": "Português (포르투갈어)",
-        "ru": "Русский (러시아어)",
-        "hi": "हिन्दी (힌디어)",
-        "it": "Italiano (이탈리아어)"
-      }
-    },
-    "step4": {
-      "title": "어떤 것에 관심이 있나요?",
-      "subtitle": "탐색하고 싶은 카테고리를 선택하세요 (최소 1개)",
-      "selectAll": "전체 선택",
-      "clearAll": "전체 해제",
-      "categories": {
-        "fiction": {
-          "title": "픽션",
-          "items": {
-            "adventure": "모험",
-            "fantasy": "판타지",
-            "mystery": "미스터리",
-            "scienceFiction": "공상과학",
-            "historical": "역사소설"
-          }
-        },
-        "nonFiction": {
-          "title": "논픽션",
-          "items": {
-            "biography": "전기",
-            "history": "역사",
-            "science": "과학",
-            "nature": "자연",
-            "culture": "문화와 사회"
-          }
-        },
-        "thematic": {
-          "title": "주제 및 가치",
-          "items": {
-            "friendship": "우정",
-            "family": "가족",
-            "courage": "용기와 용맹",
-            "kindness": "친절",
-            "creativity": "창의성",
-            "perseverance": "인내"
-          }
-        }
-      },
-      "validation": {
-        "selectAtLeastOne": "최소 1개의 관심사를 선택해주세요"
       }
     }
   },

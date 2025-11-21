@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import {
   Users,
@@ -93,73 +94,32 @@ export default function AdminDashboard() {
   // Fetch dashboard data
   const fetchData = async () => {
     try {
-      // These APIs would need to be implemented
-      // For now, using mock data since APIs don't exist yet
+      // Fetch real statistics from API
+      const response = await fetch('/api/admin/stats?timeframe=30d');
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch statistics');
+      }
+
+      const data = await response.json();
+
+      // Map API response to dashboard state
       setSystemStats({
-        totalUsers: 15420,
-        totalBooks: 2850,
-        totalSubmissions: 1240,
-        activeUsers: 8350,
-        systemHealth: 'healthy',
-        diskUsage: 68,
-        memoryUsage: 45,
-        uptime: '12 days, 8 hours'
+        totalUsers: data.overview.users.total,
+        totalBooks: data.overview.content.totalBooks,
+        totalSubmissions: data.overview.content.submissions.total,
+        activeUsers: data.overview.users.active,
+        systemHealth: 'healthy', // Keep as static for now
+        diskUsage: 0, // System metrics not yet implemented
+        memoryUsage: 0,
+        uptime: 'N/A'
       });
 
-      setUsersByRole({
-        LEARNER: 12500,
-        TEACHER: 2100,
-        WRITER: 650,
-        STORY_MANAGER: 85,
-        BOOK_MANAGER: 42,
-        CONTENT_ADMIN: 28,
-        INSTITUTION: 145,
-        ADMIN: 25
-      });
+      setUsersByRole(data.overview.users.byRole);
 
-      setPendingReviews([
-        {
-          id: '1',
-          type: 'submission',
-          title: 'The Magic Garden - Children\'s Story',
-          submitter: 'Maria Garcia',
-          submittedAt: new Date().toISOString(),
-          priority: 'high'
-        },
-        {
-          id: '2',
-          type: 'user',
-          title: 'New Institution Registration - Lincoln Elementary',
-          submitter: 'James Wilson',
-          submittedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          priority: 'medium'
-        },
-        {
-          id: '3',
-          type: 'report',
-          title: 'Inappropriate Content Report',
-          submitter: 'System',
-          submittedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          priority: 'urgent'
-        }
-      ]);
-
-      setSystemAlerts([
-        {
-          id: '1',
-          level: 'warning',
-          message: 'Database backup took longer than usual (45 minutes)',
-          timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          resolved: false
-        },
-        {
-          id: '2',
-          level: 'info',
-          message: 'New version 1.2.3 deployed successfully',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          resolved: true
-        }
-      ]);
+      // Clear pending reviews and system alerts - these should come from dedicated endpoints
+      setPendingReviews([]);
+      setSystemAlerts([]);
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -407,13 +367,13 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <DashboardSection title={t('dashboard.admin.sections.quickActions')} className="mt-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3">
+            <Link href="/dashboard/admin/users" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-colors">
               <Users className="h-6 w-6 text-soe-green-600" />
               <div className="text-left">
                 <p className="font-medium text-gray-900">{t('dashboard.admin.quickActions.userManagement.title')}</p>
                 <p className="text-sm text-gray-500">{t('dashboard.admin.quickActions.userManagement.description')}</p>
               </div>
-            </button>
+            </Link>
 
             <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3">
               <BookOpen className="h-6 w-6 text-green-600" />

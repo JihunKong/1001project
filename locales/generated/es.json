@@ -369,10 +369,115 @@
         "improvements": "Areas for Improvement",
         "suggestions": "Suggestions",
         "requestNew": "Request New Review"
+      },
+      "userManagement": {
+        "title": "Gestión de Usuarios",
+        "subtitle": "Administrar usuarios del sistema y sus roles",
+        "createUser": "Crear Usuario",
+        "searchPlaceholder": "Buscar por nombre o correo electrónico...",
+        "allRoles": "All Roles",
+        "allStatus": "All Status",
+        "active": "Active",
+        "deleted": "Deleted",
+        "noUsersFound": "No users found",
+        "table": {
+          "name": "Name",
+          "email": "Email",
+          "role": "Role",
+          "status": "Status",
+          "created": "Created",
+          "actions": "Actions",
+          "verified": "Verified",
+          "notVerified": "Not Verified"
+        },
+        "form": {
+          "create": {
+            "title": "Create New User",
+            "submit": "Create User"
+          },
+          "edit": {
+            "title": "Edit User",
+            "submit": "Update User"
+          },
+          "basicInfo": "Basic Information",
+          "profileInfo": "Profile Information (Optional)",
+          "email": "Email",
+          "name": "Name",
+          "role": "Role",
+          "password": "Password",
+          "passwordHint": "Min 8 characters",
+          "passwordEditHint": "Leave blank to keep current",
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "organization": "Organization",
+          "phone": "Phone",
+          "location": "Location",
+          "bio": "Bio",
+          "cancel": "Cancel",
+          "saving": "Saving...",
+          "required": "required"
+        },
+        "details": {
+          "title": "User Details",
+          "basicInfo": "Basic Information",
+          "profileInfo": "Profile Information",
+          "activityStats": "Activity Statistics",
+          "emailVerified": "Email Verified",
+          "createdAt": "Created At",
+          "updatedAt": "Updated At",
+          "deletedAt": "Deleted At",
+          "fullName": "Full Name",
+          "sessions": "Sessions",
+          "submissions": "Submissions",
+          "classes": "Classes",
+          "edit": "Edit User",
+          "close": "Close",
+          "activeAccount": "Active Account",
+          "deletedAccount": "Deleted Account"
+        },
+        "delete": {
+          "title": "Delete User",
+          "warning": "Warning: This action cannot be undone",
+          "aboutTo": "You are about to delete the following user:",
+          "consequences": "This will:",
+          "softDelete": "Soft delete the user account",
+          "revokeAccess": "Revoke all access permissions",
+          "preserveData": "Preserve user data for audit purposes",
+          "preventLogin": "Prevent future logins",
+          "confirmText": "Type DELETE to confirm",
+          "confirmPlaceholder": "Type DELETE",
+          "cancel": "Cancel",
+          "confirm": "Delete User",
+          "deleting": "Deleting..."
+        },
+        "pagination": {
+          "showing": "Showing",
+          "to": "to",
+          "of": "of",
+          "results": "results",
+          "page": "Page",
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "roles": {
+          "LEARNER": "Learner",
+          "TEACHER": "Teacher",
+          "INSTITUTION": "Institution",
+          "WRITER": "Writer",
+          "STORY_MANAGER": "Story Manager",
+          "BOOK_MANAGER": "Book Manager",
+          "CONTENT_ADMIN": "Content Admin",
+          "ADMIN": "Admin"
+        },
+        "loading": "Loading users...",
+        "backToDashboard": "Back to Dashboard",
+        "pageTitle": "User Management",
+        "pageSubtitle": "Manage all system users, roles, and permissions"
       }
     },
     "writer": {
       "submitText": {
+        "titlePlaceholder": "Ingresa el título de tu historia aquí...",
         "placeholder": "Tell your story...",
         "characters": "characters",
         "words": "words",
