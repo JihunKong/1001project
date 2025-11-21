@@ -1202,7 +1202,9 @@
     "monthsAgo": "{count} months ago"
   },
   "common": {
-    "resetLanguage": "Reset to English"
+    "resetLanguage": "Reset to English",
+    "page": "Page",
+    "of": "of"
   },
   "language": {
     "en": "English",
