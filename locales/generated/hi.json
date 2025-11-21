@@ -321,7 +321,8 @@
         "uptime": "Uptime: {uptime}",
         "healthy": "healthy",
         "warning": "warning",
-        "critical": "critical"
+        "critical": "critical",
+        "activeUsers": "{count} active"
       },
       "usersByRole": {
         "title": "Users by Role"
@@ -345,13 +346,25 @@
       },
       "quickActions": {
         "title": "Quick Actions",
-        "userManagement": "User Management",
+        "userManagement": {
+          "title": "User Management",
+          "description": "Manage user accounts and roles"
+        },
         "userManagementDesc": "Manage user accounts and roles",
-        "contentModeration": "Content Moderation",
+        "contentModeration": {
+          "title": "Content Moderation",
+          "description": "Review and approve content"
+        },
         "contentModerationDesc": "Review and approve content",
-        "databaseBackup": "Database Backup",
+        "databaseBackup": {
+          "title": "Database Backup",
+          "description": "Manage system backups"
+        },
         "databaseBackupDesc": "Manage system backups",
-        "systemSettings": "System Settings",
+        "systemSettings": {
+          "title": "System Settings",
+          "description": "Configure platform settings"
+        },
         "systemSettingsDesc": "Configure platform settings"
       },
       "aiReview": {
@@ -473,6 +486,26 @@
         "backToDashboard": "Back to Dashboard",
         "pageTitle": "User Management",
         "pageSubtitle": "Manage all system users, roles, and permissions"
+      },
+      "actions": {
+        "analytics": "Analytics",
+        "settings": "Settings"
+      },
+      "sections": {
+        "usersByRole": "Users by Role",
+        "systemAlerts": "System Alerts",
+        "systemResources": "System Resources",
+        "pendingReviews": "Pending Reviews",
+        "quickActions": "Quick Actions"
+      },
+      "alerts": {
+        "noActiveAlerts": "No Active Alerts",
+        "allSystemsNormal": "All systems operating normally"
+      },
+      "reviews": {
+        "pendingCount": "{count} pending",
+        "noPendingReviews": "No Pending Reviews",
+        "allUpToDate": "All submissions and reports are up to date"
       }
     },
     "writer": {
@@ -992,7 +1025,9 @@
     "libraryDetailed": {
       "label": "Library",
       "description": "Browse all books"
-    }
+    },
+    "users": "Users",
+    "settings": "Settings"
   },
   "stories": {
     "title": "मेरी कहानियाँ",

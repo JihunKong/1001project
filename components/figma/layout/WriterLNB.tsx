@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Bookmark, User, FileText } from 'lucide-react';
+import { Home, Bookmark, User, FileText, Users, Settings } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface NavItem {
@@ -12,39 +12,71 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-export default function WriterLNB() {
+interface WriterLNBProps {
+  role?: string;
+}
+
+export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
 
-  const navItems: NavItem[] = [
-    {
-      id: 'home',
-      label: t('nav.home'),
-      href: '/dashboard/writer',
-      icon: Home
-    },
-    {
-      id: 'library',
-      label: t('nav.library'),
-      href: '/dashboard/writer/library',
-      icon: Bookmark
-    },
-    {
-      id: 'profile',
-      label: t('nav.profile'),
-      href: '/dashboard/writer/profile',
-      icon: User
-    },
-    {
-      id: 'stories',
-      label: t('nav.myStories'),
-      href: '/dashboard/writer/stories',
-      icon: FileText
+  const getNavItems = (userRole: string): NavItem[] => {
+    if (userRole === 'admin') {
+      return [
+        {
+          id: 'home',
+          label: t('nav.home'),
+          href: '/dashboard/admin',
+          icon: Home
+        },
+        {
+          id: 'users',
+          label: t('nav.users'),
+          href: '/dashboard/admin/users',
+          icon: Users
+        },
+        {
+          id: 'settings',
+          label: t('nav.settings'),
+          href: '/dashboard/admin/settings',
+          icon: Settings
+        }
+      ];
     }
-  ];
+
+    return [
+      {
+        id: 'home',
+        label: t('nav.home'),
+        href: '/dashboard/writer',
+        icon: Home
+      },
+      {
+        id: 'library',
+        label: t('nav.library'),
+        href: '/dashboard/writer/library',
+        icon: Bookmark
+      },
+      {
+        id: 'profile',
+        label: t('nav.profile'),
+        href: '/dashboard/writer/profile',
+        icon: User
+      },
+      {
+        id: 'stories',
+        label: t('nav.myStories'),
+        href: '/dashboard/writer/stories',
+        icon: FileText
+      }
+    ];
+  };
+
+  const navItems = getNavItems(role);
+  const basePath = role === 'admin' ? '/dashboard/admin' : '/dashboard/writer';
 
   const isActive = (item: NavItem) => {
-    if (item.href === '/dashboard/writer') {
+    if (item.href === basePath) {
       return pathname === item.href;
     }
     return pathname?.startsWith(item.href);

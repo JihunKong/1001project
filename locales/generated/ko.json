@@ -321,7 +321,8 @@
         "uptime": "가동 시간: {uptime}",
         "healthy": "정상",
         "warning": "경고",
-        "critical": "위험"
+        "critical": "위험",
+        "activeUsers": "{count} active"
       },
       "usersByRole": {
         "title": "역할별 사용자"
@@ -345,13 +346,25 @@
       },
       "quickActions": {
         "title": "빠른 작업",
-        "userManagement": "사용자 관리",
+        "userManagement": {
+          "title": "User Management",
+          "description": "Manage user accounts and roles"
+        },
         "userManagementDesc": "사용자 계정 및 역할 관리",
-        "contentModeration": "콘텐츠 관리",
+        "contentModeration": {
+          "title": "Content Moderation",
+          "description": "Review and approve content"
+        },
         "contentModerationDesc": "콘텐츠 검토 및 승인",
-        "databaseBackup": "데이터베이스 백업",
+        "databaseBackup": {
+          "title": "Database Backup",
+          "description": "Manage system backups"
+        },
         "databaseBackupDesc": "시스템 백업 관리",
-        "systemSettings": "시스템 설정",
+        "systemSettings": {
+          "title": "System Settings",
+          "description": "Configure platform settings"
+        },
         "systemSettingsDesc": "플랫폼 설정 구성"
       },
       "aiReview": {
@@ -473,6 +486,26 @@
         "backToDashboard": "대시보드로 돌아가기",
         "pageTitle": "사용자 관리",
         "pageSubtitle": "모든 시스템 사용자, 역할 및 권한 관리"
+      },
+      "actions": {
+        "analytics": "Analytics",
+        "settings": "Settings"
+      },
+      "sections": {
+        "usersByRole": "Users by Role",
+        "systemAlerts": "System Alerts",
+        "systemResources": "System Resources",
+        "pendingReviews": "Pending Reviews",
+        "quickActions": "Quick Actions"
+      },
+      "alerts": {
+        "noActiveAlerts": "No Active Alerts",
+        "allSystemsNormal": "All systems operating normally"
+      },
+      "reviews": {
+        "pendingCount": "{count} pending",
+        "noPendingReviews": "No Pending Reviews",
+        "allUpToDate": "All submissions and reports are up to date"
       }
     },
     "writer": {
@@ -1005,7 +1038,9 @@
         "label": "관리자 패널",
         "description": "시스템 전체 관리"
       }
-    }
+    },
+    "users": "Users",
+    "settings": "Settings"
   },
   "stories": {
     "title": "내 스토리",
