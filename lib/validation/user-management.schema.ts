@@ -63,7 +63,11 @@ export const listUsersQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(20),
   search: z.string().max(100).optional(),
   role: userRoleSchema.optional(),
-  status: z.enum(['active', 'deleted']).optional(),
+  status: z.string()
+    .toLowerCase()
+    .transform(val => val as 'active' | 'deleted')
+    .pipe(z.enum(['active', 'deleted']))
+    .optional(),
   sortBy: z.enum(['createdAt', 'name', 'email', 'updatedAt']).default('createdAt'),
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });

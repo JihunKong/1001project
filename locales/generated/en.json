@@ -311,7 +311,42 @@
       "title": "Admin Dashboard",
       "subtitle": "System overview and management for {name}",
       "analytics": "Analytics",
-      "settings": "Settings",
+      "settings": {
+        "title": "System Settings",
+        "subtitle": "Configure and monitor platform settings",
+        "systemInfo": {
+          "title": "System Information",
+          "version": "Version",
+          "environment": "Environment",
+          "buildTime": "Build Time",
+          "databaseStatus": "Database Status"
+        },
+        "featureFlags": {
+          "title": "Feature Flags",
+          "aiImages": "AI Image Generation",
+          "aiImagesDesc": "Generate images for text-only stories using OpenAI",
+          "tts": "Text-to-Speech",
+          "ttsDesc": "Convert text to audio narration",
+          "chatbot": "AI Chatbot",
+          "chatbotDesc": "Educational assistant powered by Upstage AI"
+        },
+        "services": {
+          "title": "Services Status",
+          "database": "PostgreSQL Database",
+          "databaseDesc": "Main data storage",
+          "redis": "Redis Cache",
+          "redisDesc": "Session and cache storage",
+          "email": "Email Service",
+          "emailDesc": "SMTP email delivery"
+        },
+        "security": {
+          "title": "Security Information",
+          "info": "Current security configurations:",
+          "sessionTimeout": "Session timeout: 30 days",
+          "passwordPolicy": "Password policy: Minimum 8 characters",
+          "apiRateLimit": "API rate limiting enabled"
+        }
+      },
       "actions": {
         "analytics": "Analytics",
         "settings": "Settings"
