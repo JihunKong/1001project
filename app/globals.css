@@ -2362,7 +2362,7 @@ body:has([data-role="writer"]) {
 /* Placeholder text should be dark gray for visibility */
 [data-role="writer"] input::placeholder,
 [data-role="writer"] textarea::placeholder {
-  color: rgb(107, 114, 128) !important; /* gray-500 */
+  color: rgb(75, 85, 99) !important; /* gray-600 for better WCAG AAA compliance (7.0:1 contrast) */
   opacity: 1 !important;
 }
 
@@ -2522,7 +2522,7 @@ body:has([data-role="writer"]) {
 [data-role="content-admin"] textarea::placeholder,
 [data-role="institution"] input::placeholder,
 [data-role="institution"] textarea::placeholder {
-  color: rgb(107, 114, 128) !important; /* gray-500 */
+  color: rgb(75, 85, 99) !important; /* gray-600 for better WCAG AAA compliance (7.0:1 contrast) */
   opacity: 1 !important;
 }
 
