@@ -320,13 +320,13 @@ export default function AdminDashboard() {
             <DashboardSection title={t('dashboard.admin.sections.systemResources')} icon={Server}>
               <div className="space-y-4">
                 <DashboardProgressBar
-                  label={t('dashboard.admin.resources.diskUsage')}
+                  label={t('dashboard.admin.systemResources.diskUsage')}
                   value={systemStats.diskUsage}
                   showPercentage
                   colorScheme="default"
                 />
                 <DashboardProgressBar
-                  label={t('dashboard.admin.resources.memoryUsage')}
+                  label={t('dashboard.admin.systemResources.memoryUsage')}
                   value={systemStats.memoryUsage}
                   showPercentage
                   colorScheme="default"
@@ -334,7 +334,7 @@ export default function AdminDashboard() {
                 <div className="pt-4">
                   <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg flex items-center justify-center gap-2">
                     <Activity className="h-4 w-4" />
-                    {t('dashboard.admin.resources.viewMetrics')}
+                    {t('dashboard.admin.systemResources.viewMetrics')}
                   </button>
                 </div>
               </div>
