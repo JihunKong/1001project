@@ -373,6 +373,7 @@
     },
     "writer": {
       "submitText": {
+        "titlePlaceholder": "여기에 이야기 제목을 입력하세요...",
         "placeholder": "이야기를 들려주세요...",
         "characters": "글자",
         "words": "단어",

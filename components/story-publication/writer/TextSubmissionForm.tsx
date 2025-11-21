@@ -256,7 +256,7 @@ export default function TextSubmissionForm({
             type="text"
             id="title"
             {...register('title')}
-            placeholder=""
+            placeholder={t('dashboard.writer.submitText.titlePlaceholder')}
             className="w-full border-none focus:outline-none focus:ring-0 p-0 text-[#141414] bg-transparent"
             style={{
               fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',

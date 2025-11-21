@@ -373,6 +373,7 @@
     },
     "writer": {
       "submitText": {
+        "titlePlaceholder": "Enter your story title here...",
         "placeholder": "Tell your story...",
         "characters": "characters",
         "words": "words",
