@@ -64,11 +64,11 @@ async function main() {
   console.log('🚀 Starting migration: Adding cover images and summaries to books\n');
 
   const jsonFiles = [
-    '/Users/jihunkong/Downloads/stories_sample_part01.json',
-    '/Users/jihunkong/Downloads/stories_sample_part02.json',
-    '/Users/jihunkong/Downloads/stories_sample_part03.json',
-    '/Users/jihunkong/Downloads/stories_sample_part04a.json',
-    '/Users/jihunkong/Downloads/stories_sample_part04b.json'
+    '/tmp/stories_sample_part01.json',
+    '/tmp/stories_sample_part02.json',
+    '/tmp/stories_sample_part03.json',
+    '/tmp/stories_sample_part04a.json',
+    '/tmp/stories_sample_part04b.json'
   ];
 
   let totalStories = 0;
