@@ -32,7 +32,7 @@ export default function AnimatedBookCard({
   animationDelay = 0,
   linkHref
 }: AnimatedBookCardProps) {
-  const href = linkHref || (isAuthenticated ? `/library` : '/login');
+  const href = linkHref || `/books/${book.id}`;
 
   return (
     <ScrollAnimatedContainer
