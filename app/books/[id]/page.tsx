@@ -223,10 +223,10 @@ export default function BookDetailPage() {
           </div>
         )}
 
-        {book.contentType === 'PDF' && book.pdfKey && (
+        {book.contentType === 'PDF' && (book.pdfKey || book.coverImage) && (
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <iframe
-              src={book.pdfKey}
+              src={book.pdfKey || book.coverImage}
               className="w-full"
               style={{ height: '800px', border: 'none' }}
               title={`PDF viewer for ${book.title}`}
@@ -234,7 +234,7 @@ export default function BookDetailPage() {
           </div>
         )}
 
-        {!book.content && !book.pdfKey && (
+        {!book.content && !book.pdfKey && !book.coverImage && (
           <div className="bg-white rounded-lg shadow-sm p-8">
             <p className="text-center text-gray-600">
               Content not available for this book.
