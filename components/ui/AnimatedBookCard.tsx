@@ -24,15 +24,27 @@ interface AnimatedBookCardProps {
   isAuthenticated: boolean;
   animationDelay?: number;
   linkHref?: string;
+  userRole?: string;
+}
+
+function getReadingPath(bookId: string, userRole?: string): string {
+  if (userRole === 'LEARNER') {
+    return `/dashboard/learner/read/${bookId}`;
+  }
+  if (userRole === 'WRITER') {
+    return `/dashboard/writer/read/${bookId}`;
+  }
+  return `/books/${bookId}`;
 }
 
 export default function AnimatedBookCard({
   book,
   isAuthenticated,
   animationDelay = 0,
-  linkHref
+  linkHref,
+  userRole
 }: AnimatedBookCardProps) {
-  const href = linkHref || `/books/${book.id}`;
+  const href = linkHref || getReadingPath(book.id, userRole);
 
   return (
     <ScrollAnimatedContainer

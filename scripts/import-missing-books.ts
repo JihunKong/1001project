@@ -49,12 +49,11 @@ async function importMissingBooks() {
             authorName: 'Unknown Author',
             language: 'en',
             coverImage: `/covers/${filename}`,
-            pdfPath: `/covers/${filename}`,
             contentType: 'PDF',
             isPublished: true,
             category: ['IMPORTED'],
             ageRange: 'ALL',
-            description: `Imported from ${filename}`,
+            summary: `Imported from ${filename}`,
           }
         });
 
