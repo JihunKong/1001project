@@ -224,10 +224,13 @@ export default function BookDetailPage() {
         )}
 
         {book.contentType === 'PDF' && book.pdfKey && (
-          <div className="bg-white rounded-lg shadow-sm p-8">
-            <p className="text-center text-gray-600 py-8">
-              PDF viewer coming soon. PDF file: {book.pdfKey}
-            </p>
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <iframe
+              src={book.pdfKey}
+              className="w-full"
+              style={{ height: '800px', border: 'none' }}
+              title={`PDF viewer for ${book.title}`}
+            />
           </div>
         )}
 
