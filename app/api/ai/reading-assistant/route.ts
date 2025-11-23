@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         id: true,
         title: true,
         authorName: true,
-        summary: true,
+        content: true,
         category: true,
         language: true,
         ageRange: true,
@@ -104,10 +104,15 @@ export async function POST(request: NextRequest) {
 }
 
 function getSystemPrompt(language: string, book: any): string {
+  // Use first 2000 characters of content to avoid token limits
+  const contentExcerpt = book.content
+    ? book.content.substring(0, 2000) + (book.content.length > 2000 ? '...' : '')
+    : 'Not available';
+
   const bookInfo = `
 Book Title: ${book.title}
 Author: ${book.authorName}
-Summary: ${book.summary || 'Not available'}
+Story Content (excerpt): ${contentExcerpt}
 Categories: ${book.category?.join(', ') || 'Not specified'}
 Age Range: ${book.ageRange || 'Not specified'}
 `;
