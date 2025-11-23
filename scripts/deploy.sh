@@ -444,14 +444,15 @@ deploy() {
     UPLOAD_SUCCESS=false
 
     while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-        log "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES: Uploading $IMAGE_SIZE image..."
+        log "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES: Uploading $IMAGE_SIZE image (using rsync for resume capability)..."
 
-        if run_with_timeout 600 scp -i "$SSH_KEY" \
-               -o StrictHostKeyChecking=no \
-               -o ConnectTimeout=30 \
-               -o ServerAliveInterval=10 \
-               -o ServerAliveCountMax=3 \
-               -o Compression=yes \
+        # Use rsync instead of scp for resumable uploads
+        # --partial allows resuming interrupted uploads
+        # --progress shows upload progress
+        # --timeout=3000 allows up to 50 minutes for upload
+        if rsync -avz --progress --partial \
+               --timeout=3000 \
+               -e "ssh -i $SSH_KEY -o StrictHostKeyChecking=no -o ConnectTimeout=30 -o ServerAliveInterval=10 -o ServerAliveCountMax=3" \
                "$IMAGE_FILE" \
                "$REMOTE_USER@$REMOTE_HOST:/tmp/app-image.tar.gz"; then
             UPLOAD_SUCCESS=true
@@ -462,7 +463,7 @@ deploy() {
         RETRY_COUNT=$((RETRY_COUNT + 1))
 
         if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-            warn "Upload failed. Retrying in 10 seconds..."
+            warn "Upload failed. Retrying in 10 seconds (rsync will resume from where it left off)..."
             sleep 10
         fi
     done
