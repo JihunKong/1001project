@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
@@ -39,17 +40,26 @@ interface BookData {
 export default function BookDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { data: session } = useSession();
   const bookId = params.id as string;
-  
+
   const [book, setBook] = useState<BookData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (session?.user?.role === 'LEARNER') {
+      router.replace(`/dashboard/learner/read/${bookId}`);
+      return;
+    } else if (session?.user?.role === 'WRITER') {
+      router.replace(`/dashboard/writer/read/${bookId}`);
+      return;
+    }
+
     async function fetchBook() {
       try {
         const response = await fetch(`/api/books/${bookId}`);
-        
+
         if (!response.ok) {
           if (response.status === 404) {
             setError('Book not found');
@@ -75,7 +85,7 @@ export default function BookDetailPage() {
     if (bookId) {
       fetchBook();
     }
-  }, [bookId]);
+  }, [bookId, session, router]);
 
   const getDifficultyLabel = (score?: number): string => {
     if (!score) return 'Unknown';
