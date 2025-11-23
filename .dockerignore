@@ -59,8 +59,10 @@ docker-compose*.yml
 Dockerfile*
 !Dockerfile
 
-# Scripts
+# Scripts (but allow scripts/data for import JSON files)
 scripts/
+!scripts/data/
+!scripts/import-text-stories-from-json.ts
 
 # Infrastructure
 infrastructure/
