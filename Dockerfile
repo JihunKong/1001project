@@ -115,7 +115,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/locales ./locales
-COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 
 # Create necessary directories with proper permissions
 RUN mkdir -p uploads tmp public/generated-images public/covers && \

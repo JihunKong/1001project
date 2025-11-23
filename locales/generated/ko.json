@@ -993,7 +993,7 @@
       "label": "라이브러리",
       "description": "전체 도서 목록 보기"
     },
-    "notifications": "알림 {count}개",
+    "notifications": "알림",
     "profile": "프로필",
     "skipToMain": "메인 콘텐츠로 건너뛰기",
     "mainNavigation": "메인 네비게이션",

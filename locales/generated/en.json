@@ -993,7 +993,7 @@
       "label": "Library",
       "description": "Browse all books"
     },
-    "notifications": "{count} notifications",
+    "notifications": "Notifications",
     "profile": "Profile",
     "skipToMain": "Skip to main content",
     "mainNavigation": "Main navigation",
