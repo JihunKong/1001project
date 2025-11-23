@@ -1364,7 +1364,15 @@
     "monthsAgo": "{count}个月前"
   },
   "common": {
-    "resetLanguage": "Reset to English"
+    "resetLanguage": "Reset to English",
+    "updated": "已更新",
+    "viewAll": "查看全部",
+    "timeAgo": {
+      "minutesAgo": "{minutes}分钟前",
+      "hoursAgo": "{hours}小时前",
+      "daysAgo": "{days}天前",
+      "monthDay": "{month}月{day}日"
+    }
   },
   "language": {
     "en": "英语",

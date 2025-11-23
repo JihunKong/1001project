@@ -1379,7 +1379,15 @@
   "common": {
     "resetLanguage": "Reset to English",
     "page": "Page",
-    "of": "of"
+    "of": "of",
+    "updated": "Updated",
+    "viewAll": "View All",
+    "timeAgo": {
+      "minutesAgo": "{minutes}m ago",
+      "hoursAgo": "{hours}h ago",
+      "daysAgo": "{days}d ago",
+      "monthDay": "{month} {day}"
+    }
   },
   "language": {
     "en": "English",

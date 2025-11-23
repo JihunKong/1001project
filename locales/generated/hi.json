@@ -1364,7 +1364,15 @@
     "monthsAgo": "{count} महीने पहले"
   },
   "common": {
-    "resetLanguage": "Reset to English"
+    "resetLanguage": "Reset to English",
+    "updated": "अपडेट किया गया",
+    "viewAll": "सभी देखें",
+    "timeAgo": {
+      "minutesAgo": "{minutes}मिनट पहले",
+      "hoursAgo": "{hours}घंटे पहले",
+      "daysAgo": "{days}दिन पहले",
+      "monthDay": "{month} {day}"
+    }
   },
   "language": {
     "en": "अंग्रेज़ी",

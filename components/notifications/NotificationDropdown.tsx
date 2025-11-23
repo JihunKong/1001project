@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { Bell, X, Check, Clock, AlertCircle, Award, FileText } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Notification {
   id: string;
@@ -21,6 +22,7 @@ interface Notification {
 }
 
 export default function NotificationDropdown() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -272,7 +274,10 @@ export default function NotificationDropdown() {
             </div>
             {unreadCount > 0 && (
               <p className="text-sm text-gray-600 mt-1">
-                {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+                {unreadCount === 1
+                  ? t('notifications.dropdown.unread', { count: unreadCount })
+                  : t('notifications.dropdown.unreadPlural', { count: unreadCount })
+                }
               </p>
             )}
           </div>

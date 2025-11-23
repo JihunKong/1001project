@@ -1364,7 +1364,15 @@
     "monthsAgo": "Vor {count} Monaten"
   },
   "common": {
-    "resetLanguage": "Reset to English"
+    "resetLanguage": "Reset to English",
+    "updated": "Aktualisiert",
+    "viewAll": "Alle anzeigen",
+    "timeAgo": {
+      "minutesAgo": "Vor {minutes}m",
+      "hoursAgo": "Vor {hours}h",
+      "daysAgo": "Vor {days}T",
+      "monthDay": "{day}. {month}"
+    }
   },
   "language": {
     "en": "Englisch",

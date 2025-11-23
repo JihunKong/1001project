@@ -4,92 +4,113 @@ import * as path from 'path';
 
 const prisma = new PrismaClient();
 
+interface StoryData {
+  title: string;
+  writer?: string;
+  written_by?: string;
+  cover_image?: string;
+}
+
 async function updateCoverImages() {
   try {
-    console.log('🔍 Checking books with PDF cover images...');
+    const jsonFiles = [
+      './scripts/data/stories_sample_part01.json',
+      './scripts/data/stories_sample_part02.json',
+      './scripts/data/stories_sample_part03.json',
+      './scripts/data/stories_sample_part04.json',
+    ];
 
-    // PDF 확장자를 가진 coverImage를 가진 모든 책 조회
-    const booksWithPdfCovers = await prisma.book.findMany({
-      where: {
-        coverImage: {
-          endsWith: '.pdf'
+    // Build a map of title -> cover image path
+    const coverMap = new Map<string, string>();
+
+    for (const filePath of jsonFiles) {
+      if (!fs.existsSync(filePath)) {
+        console.log(`⚠️  File not found: ${filePath}`);
+        continue;
+      }
+
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const stories: StoryData[] = JSON.parse(fileContent);
+
+      for (const story of stories) {
+        if (story.cover_image) {
+          // Convert PDF path to JPG path
+          // Example: "images/covers/Angels_Prayer.pdf" → "/covers/Angels_Prayer.jpg"
+          let coverPath = story.cover_image
+            .replace('images/covers/', '/covers/')
+            .replace('.pdf', '.jpg');
+
+          const lowerTitle = story.title.toLowerCase();
+          coverMap.set(lowerTitle, coverPath);
         }
+      }
+    }
+
+    console.log(`📊 Found ${coverMap.size} cover images in JSON files`);
+
+    // Get books without cover images
+    const booksWithoutCovers = await prisma.book.findMany({
+      where: {
+        contentType: 'TEXT',
+        OR: [
+          { coverImage: null },
+          { coverImage: '' }
+        ]
       },
       select: {
         id: true,
         title: true,
-        coverImage: true
+        authorName: true
       }
     });
 
-    console.log(`📚 Found ${booksWithPdfCovers.length} books with PDF cover images\n`);
-
-    if (booksWithPdfCovers.length === 0) {
-      console.log('✅ No books need updating!');
-      return;
-    }
+    console.log(`\n📚 Found ${booksWithoutCovers.length} books without cover images`);
 
     let updated = 0;
-    let skipped = 0;
-    let errors = 0;
+    let notFound = 0;
 
-    for (const book of booksWithPdfCovers) {
-      if (!book.coverImage) continue;
+    for (const book of booksWithoutCovers) {
+      const lowerTitle = book.title.toLowerCase();
+      const coverPath = coverMap.get(lowerTitle);
 
-      // PDF 경로를 JPG로 변경
-      const jpgPath = book.coverImage.replace('.pdf', '.jpg');
-
-      // 로컬 파일 시스템에서 JPG 파일 존재 확인 (선택사항)
-      const localFilePath = path.join(process.cwd(), 'public', jpgPath.replace('/covers/', 'covers/'));
-
-      try {
-        // 파일이 존재하는지 확인하지 않고 바로 업데이트
-        // (서버에서 실행될 때는 Docker 컨테이너 내부이므로 파일 확인 불가)
-        await prisma.book.update({
-          where: { id: book.id },
-          data: { coverImage: jpgPath }
-        });
-
-        console.log(`✅ Updated: ${book.title}`);
-        console.log(`   ${book.coverImage} → ${jpgPath}`);
-        updated++;
-      } catch (error) {
-        console.error(`❌ Failed to update ${book.title}:`, error);
-        errors++;
+      if (coverPath) {
+        // Verify the JPG file exists on the server
+        const localPath = path.join('./public', coverPath);
+        if (fs.existsSync(localPath)) {
+          await prisma.book.update({
+            where: { id: book.id },
+            data: { coverImage: coverPath }
+          });
+          console.log(`✅ Updated: ${book.title} → ${coverPath}`);
+          updated++;
+        } else {
+          console.log(`⚠️  File not found: ${localPath} for "${book.title}"`);
+          notFound++;
+        }
+      } else {
+        console.log(`⚠️  No cover image in JSON for: ${book.title}`);
+        notFound++;
       }
     }
 
-    console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-    console.log(`📊 Update Summary`);
-    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
-    console.log(`✅ Successfully updated: ${updated}`);
-    console.log(`⏭️  Skipped: ${skipped}`);
-    console.log(`❌ Errors: ${errors}`);
-    console.log(`📚 Total books processed: ${booksWithPdfCovers.length}`);
-    console.log('');
-
-    if (errors > 0) {
-      console.log('⚠️  Some updates failed. Please check the errors above.');
-      process.exit(1);
-    } else {
-      console.log('🎉 All cover images updated successfully!');
-    }
+    console.log(`\n📊 Update Summary:`);
+    console.log(`   ✅ Updated: ${updated}`);
+    console.log(`   ⚠️  Not found: ${notFound}`);
 
   } catch (error) {
-    console.error('❌ Script failed:', error);
+    console.error('❌ Update failed:', error);
     throw error;
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// 스크립트 실행
 updateCoverImages()
   .then(() => {
-    console.log('\n✅ Script completed successfully!');
+    console.log('\n✅ Update completed successfully!');
     process.exit(0);
   })
   .catch((error) => {
-    console.error('\n❌ Script failed:', error);
+    console.error('\n❌ Update failed:', error);
     process.exit(1);
   });

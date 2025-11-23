@@ -1364,7 +1364,15 @@
     "monthsAgo": "{count}ヶ月前"
   },
   "common": {
-    "resetLanguage": "Reset to English"
+    "resetLanguage": "Reset to English",
+    "updated": "更新済み",
+    "viewAll": "すべて表示",
+    "timeAgo": {
+      "minutesAgo": "{minutes}分前",
+      "hoursAgo": "{hours}時間前",
+      "daysAgo": "{days}日前",
+      "monthDay": "{month}{day}日"
+    }
   },
   "language": {
     "en": "英語",

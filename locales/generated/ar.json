@@ -1364,7 +1364,15 @@
     "monthsAgo": "منذ {count} أشهر"
   },
   "common": {
-    "resetLanguage": "Reset to English"
+    "resetLanguage": "Reset to English",
+    "updated": "محدث",
+    "viewAll": "عرض الكل",
+    "timeAgo": {
+      "minutesAgo": "{minutes}د مضت",
+      "hoursAgo": "{hours}س مضت",
+      "daysAgo": "{days}ي مضت",
+      "monthDay": "{month} {day}"
+    }
   },
   "language": {
     "en": "الإنجليزية",

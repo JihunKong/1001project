@@ -1364,7 +1364,15 @@
     "monthsAgo": "Hace {count} meses"
   },
   "common": {
-    "resetLanguage": "Reset to English"
+    "resetLanguage": "Reset to English",
+    "updated": "Actualizado",
+    "viewAll": "Ver todo",
+    "timeAgo": {
+      "minutesAgo": "{minutes}m hace",
+      "hoursAgo": "{hours}h hace",
+      "daysAgo": "{days}d hace",
+      "monthDay": "{month} {day}"
+    }
   },
   "language": {
     "en": "Inglés",
