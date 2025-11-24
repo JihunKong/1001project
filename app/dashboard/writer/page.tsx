@@ -376,9 +376,9 @@ export default function WriterHome() {
               onClick={() => router.push('/dashboard/writer/library')}
               className="bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
             >
-              <Bookmark className="h-8 w-8 text-amber-400" />
+              <Bookmark className="h-8 w-8 text-[#141414]" />
               <span
-                className="text-amber-400"
+                className="text-[#141414]"
                 style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                   fontSize: '16px',
@@ -394,9 +394,9 @@ export default function WriterHome() {
               onClick={() => router.push('/dashboard/writer/stories')}
               className="bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
             >
-              <FileText className="h-8 w-8 text-amber-400" />
+              <FileText className="h-8 w-8 text-[#141414]" />
               <span
-                className="text-amber-400"
+                className="text-[#141414]"
                 style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                   fontSize: '16px',
@@ -412,9 +412,9 @@ export default function WriterHome() {
               onClick={() => router.push('/dashboard/writer/notifications')}
               className="bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
             >
-              <Bell className="h-8 w-8 text-amber-400" />
+              <Bell className="h-8 w-8 text-[#141414]" />
               <span
-                className="text-amber-400"
+                className="text-[#141414]"
                 style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                   fontSize: '16px',

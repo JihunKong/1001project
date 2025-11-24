@@ -30,13 +30,15 @@ interface AnnotatedStoryViewerProps {
   content: string;
   submissionId: string;
   onSuggestionClick?: (suggestionIndex: number, reviewType: string) => void;
+  enabledTypes?: Set<string>;
 }
 
 export default function AnnotatedStoryViewer({
   title,
   content,
   submissionId,
-  onSuggestionClick
+  onSuggestionClick,
+  enabledTypes = new Set(['GRAMMAR', 'STRUCTURE', 'WRITING_HELP'])
 }: AnnotatedStoryViewerProps) {
   const [aiReviews, setAiReviews] = useState<AIReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -249,6 +251,10 @@ export default function AnnotatedStoryViewer({
     const allAnnotations: Array<AIAnnotation & { reviewType: string; suggestion: string }> = [];
 
     aiReviews.forEach(review => {
+      if (!enabledTypes.has(review.reviewType)) {
+        return;
+      }
+
       if (review.annotationData && review.annotationData.length > 0) {
         review.annotationData.forEach(annotation => {
           const suggestion = review.suggestions[annotation.suggestionIndex] || 'No suggestion available';
@@ -319,7 +325,7 @@ export default function AnnotatedStoryViewer({
     if (successCount === 0 && allAnnotations.length > 0) {
       // All annotations failed to apply
     }
-  }, [editor, aiReviews, content, convertHTMLOffsetToProseMirror, findTextInDocument]);
+  }, [editor, aiReviews, content, convertHTMLOffsetToProseMirror, findTextInDocument, enabledTypes]);
 
   useEffect(() => {
     if (!editor) return;
