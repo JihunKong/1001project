@@ -649,15 +649,14 @@ deploy() {
 
         echo "✅ All required containers started successfully"
 
-        # nginx 설정 리로드 (NEW - ensure fresh config)
+        # CRITICAL: Restart nginx to load updated config file (NEW - FIX)
+        # docker compose up -d doesn't restart nginx if image unchanged
+        # but nginx-current.conf may have changed, so we must restart
         echo ""
-        echo "Reloading nginx configuration..."
-        if docker exec 1001-stories-nginx nginx -t 2>&1; then
-            docker exec 1001-stories-nginx nginx -s reload 2>&1 || echo "  (reload command sent)"
-            echo "✅ nginx configuration reloaded"
-        else
-            echo "⚠️  nginx configuration test failed (will retry after initialization)"
-        fi
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Restarting nginx to load latest configuration..."
+        docker compose restart nginx
+        echo "✅ nginx restarted with latest configuration"
 
         # 서비스 초기화 대기
         echo ""
