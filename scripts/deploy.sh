@@ -658,6 +658,16 @@ deploy() {
         docker compose restart nginx
         echo "✅ nginx restarted with latest configuration"
 
+        # CRITICAL: Clear nginx proxy cache (NEW - FIX)
+        # Old cached responses can persist after deployment
+        # Must clear cache to ensure users get latest content
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Clearing nginx proxy cache..."
+        docker exec 1001-stories-nginx sh -c 'rm -rf /var/cache/nginx/proxy_temp/* 2>/dev/null || true'
+        docker exec 1001-stories-nginx nginx -s reload
+        echo "✅ nginx cache cleared and configuration reloaded"
+
         # 서비스 초기화 대기
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
