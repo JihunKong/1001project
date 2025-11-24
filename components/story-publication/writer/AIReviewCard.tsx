@@ -36,6 +36,19 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
     }
   };
 
+  const getReviewTypeColor = (reviewType: string): string => {
+    switch (reviewType) {
+      case 'GRAMMAR':
+        return '#FBBF24';
+      case 'STRUCTURE':
+        return '#38BDF8';
+      case 'WRITING_HELP':
+        return '#A78BFA';
+      default:
+        return '#5951E7';
+    }
+  };
+
   const [reviews, setReviews] = useState<AIReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRegenerating, setIsRegenerating] = useState(false);
@@ -321,7 +334,7 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
                   className="w-full bg-white hover:bg-[#F9FAFB] py-3 px-4 transition-colors flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-[#5951E7]" />
+                    <Sparkles className="h-5 w-5" style={{ color: getReviewTypeColor(review.reviewType) }} />
                     <span style={{
                       fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                       fontSize: '16px',
@@ -343,9 +356,9 @@ export default function AIReviewCard({ submissionId }: AIReviewCardProps) {
                     )}
                   </div>
                   {expandedReview === review.id ? (
-                    <ChevronUp className="h-5 w-5 text-[#5951E7]" />
+                    <ChevronUp className="h-5 w-5" style={{ color: getReviewTypeColor(review.reviewType) }} />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-[#5951E7]" />
+                    <ChevronDown className="h-5 w-5" style={{ color: getReviewTypeColor(review.reviewType) }} />
                   )}
                 </button>
 

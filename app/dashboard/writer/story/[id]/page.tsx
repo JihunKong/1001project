@@ -10,7 +10,6 @@ import {
 } from '../../components';
 import AIReviewCard from '@/components/story-publication/writer/AIReviewCard';
 import AnnotatedStoryViewer from '@/components/story-publication/writer/AnnotatedStoryViewer';
-import AIFeedbackToggles from '@/components/story-publication/writer/AIFeedbackToggles';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface TextSubmission {
@@ -69,9 +68,6 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null);
-  const [enabledFeedbackTypes, setEnabledFeedbackTypes] = useState<Set<string>>(
-    new Set(['GRAMMAR', 'STRUCTURE', 'WRITING_HELP'])
-  );
 
   useEffect(() => {
     params.then((p) => setResolvedParams(p));
@@ -263,22 +259,18 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               <ReviewerFeedbackList feedbacks={feedbacks} />
 
               {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') ? (
-                <>
-                  <AIFeedbackToggles onToggle={setEnabledFeedbackTypes} />
-                  <div className="grid grid-cols-1 lg:grid-cols-[minmax(350px,450px)_1fr] gap-5">
-                    <div className="overflow-hidden">
-                      <AIReviewCard submissionId={submission.id} />
-                    </div>
-                    <div className="overflow-hidden">
-                      <AnnotatedStoryViewer
-                        title={submission.title || t('dashboard.writer.storyDetail.untitled')}
-                        content={submission.content}
-                        submissionId={submission.id}
-                        enabledTypes={enabledFeedbackTypes}
-                      />
-                    </div>
+                <div className="grid grid-cols-1 lg:grid-cols-[minmax(350px,450px)_1fr] gap-5">
+                  <div className="overflow-hidden">
+                    <AIReviewCard submissionId={submission.id} />
                   </div>
-                </>
+                  <div className="overflow-hidden">
+                    <AnnotatedStoryViewer
+                      title={submission.title || t('dashboard.writer.storyDetail.untitled')}
+                      content={submission.content}
+                      submissionId={submission.id}
+                    />
+                  </div>
+                </div>
               ) : (
                 <StoryContentViewer
                   title={submission.title || t('dashboard.writer.storyDetail.untitled')}
