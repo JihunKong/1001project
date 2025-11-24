@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
 
 interface AIFeedbackTogglesProps {
   onToggle: (enabledTypes: Set<string>) => void;
@@ -43,30 +42,26 @@ export default function AIFeedbackToggles({ onToggle }: AIFeedbackTogglesProps) 
 
   return (
     <div className="flex gap-3 mb-4">
-      {toggles.map((toggle) => (
-        <button
-          key={toggle.type}
-          onClick={() => toggleType(toggle.type)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#E5E5EA] bg-white hover:bg-[#F9FAFB] transition-colors"
-        >
-          <CheckCircle2
-            className={`h-5 w-5 transition-all ${
-              enabledTypes.has(toggle.type) ? 'opacity-100' : 'opacity-30'
-            }`}
-            style={{ color: toggle.color }}
-          />
-          <span
+      {toggles.map((toggle) => {
+        const isEnabled = enabledTypes.has(toggle.type);
+        return (
+          <button
+            key={toggle.type}
+            onClick={() => toggleType(toggle.type)}
+            className="px-4 py-2 rounded-lg transition-all duration-200"
             style={{
               fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
               fontSize: '16px',
-              fontWeight: 500,
-              color: toggle.color,
+              fontWeight: isEnabled ? 500 : 400,
+              color: isEnabled ? toggle.color : '#8E8E93',
+              backgroundColor: isEnabled ? `${toggle.color}15` : 'transparent',
+              border: isEnabled ? `2px solid ${toggle.color}` : '1px solid #E5E5EA',
             }}
           >
             {toggle.label}
-          </span>
-        </button>
-      ))}
+          </button>
+        );
+      })}
     </div>
   );
 }
