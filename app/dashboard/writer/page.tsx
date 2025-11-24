@@ -356,11 +356,11 @@ export default function WriterHome() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               onClick={() => router.push('/dashboard/writer/submit-text')}
-              className="bg-[#141414] hover:bg-[#1f1f1f] p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
+              className="bg-white hover:bg-[#F9FAFB] border border-[#E5E5EA] p-6 rounded-lg transition-all hover:shadow-md flex flex-col items-center gap-3"
             >
-              <PenTool className="h-8 w-8 text-amber-400" />
+              <PenTool className="h-8 w-8 text-[#141414]" />
               <span
-                className="text-amber-400"
+                className="text-[#141414]"
                 style={{
                   fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
                   fontSize: '16px',

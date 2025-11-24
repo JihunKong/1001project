@@ -23,7 +23,7 @@ export interface AIAnnotation {
 
 const SUGGESTION_COLORS = {
   GRAMMAR: '#fbbf24',
-  STRUCTURE: '#60a5fa',
+  STRUCTURE: '#38bdf8',
   WRITING_HELP: '#a78bfa'
 };
 

@@ -22,7 +22,7 @@ interface AISuggestionPopoverProps {
 
 const REVIEW_TYPE_COLORS: Record<string, string> = {
   GRAMMAR: '#fbbf24',
-  STRUCTURE: '#60a5fa',
+  STRUCTURE: '#38bdf8',
   WRITING_HELP: '#a78bfa'
 };
 

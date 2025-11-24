@@ -385,12 +385,12 @@ export default function AnnotatedStoryViewer({
         }
 
         .ai-suggestion-structure {
-          background-color: rgba(219, 234, 254, 0.6);
-          border-bottom: 2px solid #60A5FA;
+          background-color: rgba(224, 242, 254, 0.6);
+          border-bottom: 2px solid #38BDF8;
         }
 
         .ai-suggestion-structure:hover {
-          background-color: rgba(219, 234, 254, 0.8);
+          background-color: rgba(224, 242, 254, 0.8);
         }
 
         .ai-suggestion-writing_help {
