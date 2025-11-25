@@ -130,6 +130,7 @@ export default function RichTextEditor({
           {/* Text Formatting */}
           <div className="flex items-center border-r border-[#E5E5EA] pr-2 mr-2">
             <button
+              type="button"
               onClick={() => editor.chain().focus().toggleBold().run()}
               className={`p-2 rounded hover:bg-gray-200 ${
                 editor.isActive('bold') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -139,6 +140,7 @@ export default function RichTextEditor({
               <Bold className="h-4 w-4" />
             </button>
             <button
+              type="button"
               onClick={() => editor.chain().focus().toggleItalic().run()}
               className={`p-2 rounded hover:bg-gray-200 ${
                 editor.isActive('italic') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -148,6 +150,7 @@ export default function RichTextEditor({
               <Italic className="h-4 w-4" />
             </button>
             <button
+              type="button"
               onClick={() => editor.chain().focus().toggleUnderline().run()}
               className={`p-2 rounded hover:bg-gray-200 ${
                 editor.isActive('underline') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -161,6 +164,7 @@ export default function RichTextEditor({
           {/* Headings */}
           <div className="flex items-center border-r border-[#E5E5EA] pr-2 mr-2">
             <button
+              type="button"
               onClick={setParagraph}
               className={`px-3 py-2 text-sm rounded hover:bg-gray-200 ${
                 editor.isActive('paragraph') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -170,6 +174,7 @@ export default function RichTextEditor({
               P
             </button>
             <button
+              type="button"
               onClick={() => setHeading(1)}
               className={`px-3 py-2 text-sm rounded hover:bg-gray-200 ${
                 editor.isActive('heading', { level: 1 }) ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -179,6 +184,7 @@ export default function RichTextEditor({
               H1
             </button>
             <button
+              type="button"
               onClick={() => setHeading(2)}
               className={`px-3 py-2 text-sm rounded hover:bg-gray-200 ${
                 editor.isActive('heading', { level: 2 }) ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -188,6 +194,7 @@ export default function RichTextEditor({
               H2
             </button>
             <button
+              type="button"
               onClick={() => setHeading(3)}
               className={`px-3 py-2 text-sm rounded hover:bg-gray-200 ${
                 editor.isActive('heading', { level: 3 }) ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -201,6 +208,7 @@ export default function RichTextEditor({
           {/* Lists */}
           <div className="flex items-center">
             <button
+              type="button"
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               className={`p-2 rounded hover:bg-gray-200 ${
                 editor.isActive('bulletList') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -210,6 +218,7 @@ export default function RichTextEditor({
               <List className="h-4 w-4" />
             </button>
             <button
+              type="button"
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
               className={`p-2 rounded hover:bg-gray-200 ${
                 editor.isActive('orderedList') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -226,6 +235,7 @@ export default function RichTextEditor({
           {/* Quote and Separator */}
           <div className="flex items-center gap-1">
             <button
+              type="button"
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
               className={`p-2 rounded hover:bg-gray-200 ${
                 editor.isActive('blockquote') ? 'bg-gray-200 text-[#141414]' : 'text-[#8E8E93]'
@@ -235,6 +245,7 @@ export default function RichTextEditor({
               <Quote className="h-4 w-4" />
             </button>
             <button
+              type="button"
               onClick={() => editor.chain().focus().setHorizontalRule().run()}
               className="p-2 rounded hover:bg-gray-200 text-[#8E8E93]"
               title="Horizontal Rule"
@@ -246,6 +257,7 @@ export default function RichTextEditor({
           {/* Undo/Redo */}
           <div className="flex items-center gap-1">
             <button
+              type="button"
               onClick={() => editor.chain().focus().undo().run()}
               disabled={!editor.can().undo()}
               className="p-2 rounded hover:bg-gray-200 text-[#8E8E93] disabled:opacity-50 disabled:cursor-not-allowed"
@@ -254,6 +266,7 @@ export default function RichTextEditor({
               <Undo className="h-4 w-4" />
             </button>
             <button
+              type="button"
               onClick={() => editor.chain().focus().redo().run()}
               disabled={!editor.can().redo()}
               className="p-2 rounded hover:bg-gray-200 text-[#8E8E93] disabled:opacity-50 disabled:cursor-not-allowed"
