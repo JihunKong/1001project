@@ -2053,6 +2053,7 @@ model TextSubmission {
   generatedImages String[] // URLs/keys for AI-generated images
   audioGenerated  Boolean   @default(false) // TTS audio generated
   audioUrl        String? // URL to generated audio
+  contentHash     String? // SHA-256 hash for 50% content change detection
 
   // Copyright and permissions
   copyrightConfirmed Boolean @default(false)

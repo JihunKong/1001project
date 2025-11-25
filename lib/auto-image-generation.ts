@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { generateCuteCartoonImage } from '@/lib/google-genai-image';
 import { logger } from '@/lib/logger';
+import { generateContentHash } from '@/lib/content-hash';
 import * as path from 'node:path';
 
 interface GenerateImagesResult {
@@ -94,9 +95,14 @@ export async function generateImagesForSubmission(
     }
 
     if (generatedUrls.length > 0) {
+      const contentHash = submission.content ? generateContentHash(submission.content) : null;
       await prisma.textSubmission.update({
         where: { id: submissionId },
-        data: { generatedImages: generatedUrls }
+        data: {
+          generatedImages: generatedUrls,
+          thumbnailUrl: generatedUrls[0],
+          contentHash
+        }
       });
 
       result.success = true;

@@ -13,6 +13,8 @@ import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
 import { NotificationService } from '@/lib/notifications/NotificationService';
 import { NotificationType } from '@prisma/client';
 import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
+import { triggerImageGeneration } from '@/lib/auto-image-generation';
+import { generateContentHash } from '@/lib/content-hash';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -306,6 +308,21 @@ export async function POST(request: NextRequest) {
           submissionId: submission.id
         });
       });
+
+      // Trigger image generation for DRAFT with content hash (non-blocking)
+      if (sanitizedContent) {
+        const contentHash = generateContentHash(sanitizedContent);
+        prisma.textSubmission.update({
+          where: { id: submission.id },
+          data: { contentHash }
+        }).then(() => {
+          triggerImageGeneration(submission.id);
+        }).catch((error) => {
+          logger.error('Error updating content hash or triggering image generation', error, {
+            submissionId: submission.id
+          });
+        });
+      }
     }
 
     return NextResponse.json({ submission }, { status: 201 });

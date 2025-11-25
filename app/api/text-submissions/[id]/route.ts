@@ -11,6 +11,7 @@ import { logger } from '@/lib/logger';
 import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
 import { triggerImageGeneration } from '@/lib/auto-image-generation';
 import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
+import { generateContentHash, hasContentChangedSignificantly } from '@/lib/content-hash';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -153,12 +154,20 @@ export async function PUT(
     }
 
     // Sanitize content if provided
+    let shouldRegenerateImages = false;
     if (updateData.content) {
       updateData.content = purify.sanitize(updateData.content);
 
       // Recalculate word count
       const textContent = updateData.content.replace(/<[^>]*>/g, '');
       updateData.wordCount = textContent.split(/\s+/).filter((word: string) => word.length > 0).length;
+
+      // Check if content changed significantly (50%+) for image regeneration
+      if (submission.content && hasContentChangedSignificantly(submission.content, updateData.content, 0.5)) {
+        shouldRegenerateImages = true;
+        updateData.contentHash = generateContentHash(updateData.content);
+        updateData.thumbnailUrl = null;
+      }
     }
 
     const updatedSubmission = await prisma.textSubmission.update({
@@ -194,6 +203,14 @@ export async function PUT(
           });
         });
       }
+    }
+
+    // Trigger image regeneration if content changed significantly (50%+)
+    if (shouldRegenerateImages) {
+      triggerImageGeneration(updatedSubmission.id);
+      logger.info('Triggered image regeneration due to significant content change', {
+        submissionId: updatedSubmission.id
+      });
     }
 
     return NextResponse.json({ submission: updatedSubmission });
