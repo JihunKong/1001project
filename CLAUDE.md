@@ -61,6 +61,13 @@ The platform supports 12 languages with a custom i18n implementation using React
 - Italian (it)
 - Chinese (zh)
 
+**⚠️ IMPORTANT Language Priority (2025-11-25):**
+- **English is the PRIMARY language** - All UI text should be designed in English first
+- **Initial Release:** Only English (en) and Korean (ko) are actively used
+- **Translation Source:** English (`en.json`) is the source of truth for all translations
+- **Landing Page Text:** Must match the Figma design - do NOT change during i18n conversion
+- When adding new translations, always update `en.json` first, then translate to other languages
+
 ### Directory Structure
 
 ```

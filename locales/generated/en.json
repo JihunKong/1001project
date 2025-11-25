@@ -1587,15 +1587,15 @@
     }
   },
   "hero": {
-    "title": "Discover, Publish, and Share Stories from Around the World",
+    "title": "Small Voices.\nBig Dreams.\nGlobal Impact.",
     "subtitle": "Empowering Children Through Stories",
-    "description": "A global non-profit platform connecting writers, educators, and students through the power of storytelling",
-    "cta": "Explore Stories"
+    "description": "Our mission is to empower children to write, share, and learn through storytelling.",
+    "cta": "Explore Library"
   },
   "footerCta": {
-    "tag": "Join Today",
-    "title": "Start Your Story Journey",
-    "description": "Discover, create, and share stories from around the world",
+    "tag": "EMPOWER YOUNG VOICE",
+    "title": "Let's Start Our Journey",
+    "description": "Join our global community of storytellers and help preserve cultural heritage.",
     "signIn": "Sign In",
     "signUp": "Sign Up"
   },
@@ -1615,24 +1615,24 @@
   },
   "programs": {
     "kidLibrary": {
-      "title": "Kid's Library",
-      "tagline": "For Young Readers",
-      "description1": "Discover stories from children around the world. Each story is carefully curated to inspire and educate young readers.",
-      "description2": "Every story is age-appropriate and features diverse cultures and perspectives to broaden children's worldviews.",
+      "title": "Kid Library",
+      "tagline": "Stories for Young Minds",
+      "description1": "Kid Library is a global story collection where children can read and listen to stories written by kids from different cultures and backgrounds.",
+      "description2": "It's a space for creativity, learning, and imagination, designed to inspire young readers everywhere.",
       "cta": "Explore Library"
     },
     "writingVolunteer": {
       "title": "Writing Volunteer",
       "tagline": "Share Your Story",
-      "description1": "Become a writing volunteer and share your stories with children around the world. Our platform welcomes all voices.",
-      "description2": "Join our supportive community to create meaningful content that inspires the next generation.",
+      "description1": "Write a story, make an impact. Through Writing Volunteer, students become young authors, sharing their own stories with the world.",
+      "description2": "It's a chance to inspire others, build writing skills, and be part of a global storytelling community.",
       "cta": "Become a Writer"
     },
     "englishLearning": {
-      "title": "English Learning",
+      "title": "English Learning Programs",
       "tagline": "Learn Through Stories",
-      "description1": "Master English through engaging stories. Our interactive platform makes language learning fun and effective.",
-      "description2": "Track your progress, expand your vocabulary, and build confidence through real stories.",
+      "description1": "Learn English through stories that inspire. Our learning programs use real stories to help students build vocabulary, improve reading, and grow their English skills.",
+      "description2": "It's fun, engaging, and designed for every learner.",
       "cta": "Start Learning"
     }
   },
