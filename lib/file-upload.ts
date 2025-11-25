@@ -1,4 +1,4 @@
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, unlink } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 import { logger } from '@/lib/logger';
@@ -153,4 +153,27 @@ export function formatFileSize(bytes: number): string {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+export async function deleteFile(filePath: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    if (!filePath) {
+      return { success: true };
+    }
+
+    const fullPath = path.join(process.cwd(), 'public', filePath);
+
+    if (existsSync(fullPath)) {
+      await unlink(fullPath);
+      logger.info(`File deleted successfully: ${filePath}`);
+    }
+
+    return { success: true };
+  } catch (error) {
+    logger.error('File deletion error', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to delete file',
+    };
+  }
 }

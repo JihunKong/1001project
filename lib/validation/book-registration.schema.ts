@@ -86,6 +86,23 @@ export function canDirectRegisterBook(role: string): boolean {
   return ALLOWED_ROLES_FOR_DIRECT_REGISTRATION.includes(role as AllowedRole);
 }
 
+export const ALLOWED_ROLES_FOR_BOOK_EDITING = [
+  'STORY_MANAGER',
+  'BOOK_MANAGER',
+  'CONTENT_ADMIN',
+  'ADMIN',
+] as const;
+
+export type AllowedEditRole = typeof ALLOWED_ROLES_FOR_BOOK_EDITING[number];
+
+export function canEditBook(role: string): boolean {
+  return ALLOWED_ROLES_FOR_BOOK_EDITING.includes(role as AllowedEditRole);
+}
+
+export function canEditAnyBook(role: string): boolean {
+  return ALLOWED_ROLES_FOR_BOOK_EDITING.includes(role as AllowedEditRole);
+}
+
 export const MAX_PDF_SIZE_MB = 50;
 export const MAX_IMAGE_SIZE_MB = 5;
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];

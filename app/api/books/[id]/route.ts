@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma';
 import { UserRole, BookContentType, BookVisibility } from '@prisma/client';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
+import { uploadPDF, uploadCoverImage, deleteFile } from '@/lib/file-upload';
+import { canEditAnyBook } from '@/lib/validation/book-registration.schema';
 
 // Validation schema for book updates
 const UpdateBookSchema = z.object({
@@ -233,7 +235,7 @@ export async function GET(
   }
 }
 
-// PUT /api/books/[id] - Update book
+// PUT /api/books/[id] - Update book (supports both JSON and FormData)
 export async function PUT(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -241,19 +243,20 @@ export async function PUT(
   try {
     const { id } = await context.params;
 
-    // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Find existing book
     const existingBook = await prisma.book.findUnique({
       where: { id },
       select: {
         id: true,
         authorId: true,
         isPublished: true,
+        pdfKey: true,
+        coverImage: true,
+        contentType: true,
       }
     });
 
@@ -264,40 +267,112 @@ export async function PUT(
       );
     }
 
-    // Check permissions
     const canEdit = session.user.role === UserRole.ADMIN ||
+                   canEditAnyBook(session.user.role) ||
                    existingBook.authorId === session.user.id;
 
     if (!canEdit) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Parse and validate request body
-    const body = await request.json();
+    const contentType = request.headers.get('content-type') || '';
+    const isFormData = contentType.includes('multipart/form-data');
 
-    let validatedData;
-    try {
-      validatedData = UpdateBookSchema.parse(body);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
+    let validatedData: z.infer<typeof UpdateBookSchema>;
+    let pdfFile: File | null = null;
+    let coverImageFile: File | null = null;
+
+    if (isFormData) {
+      const formData = await request.formData();
+
+      pdfFile = formData.get('pdfFile') as File | null;
+      coverImageFile = formData.get('coverImage') as File | null;
+
+      const formDataObject: Record<string, unknown> = {};
+
+      const stringFields = ['title', 'subtitle', 'summary', 'content', 'authorName',
+                          'authorAlias', 'language', 'ageRange', 'readingLevel',
+                          'contentType', 'visibility', 'pageLayout'];
+
+      for (const field of stringFields) {
+        const value = formData.get(field);
+        if (value !== null && value !== '') {
+          formDataObject[field] = value as string;
+        }
+      }
+
+      const arrayFields = ['category', 'genres', 'subjects', 'tags'];
+      for (const field of arrayFields) {
+        const value = formData.get(field);
+        if (value) {
+          try {
+            formDataObject[field] = JSON.parse(value as string);
+          } catch {
+            formDataObject[field] = [];
+          }
+        }
+      }
+
+      const booleanFields = ['isPremium', 'isPublished', 'featured', 'removeCoverImage', 'removePdf'];
+      for (const field of booleanFields) {
+        const value = formData.get(field);
+        if (value !== null) {
+          formDataObject[field] = value === 'true';
+        }
+      }
+
+      const numberFields = ['price', 'previewPages'];
+      for (const field of numberFields) {
+        const value = formData.get(field);
+        if (value !== null && value !== '') {
+          formDataObject[field] = parseFloat(value as string);
+        }
+      }
+
+      try {
+        validatedData = UpdateBookSchema.parse(formDataObject);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return NextResponse.json(
+            {
+              error: 'Validation failed',
+              details: error.issues.map(err => ({
+                field: err.path.join('.'),
+                message: err.message
+              }))
+            },
+            { status: 400 }
+          );
+        }
         return NextResponse.json(
-          {
-            error: 'Validation failed',
-            details: error.issues.map(err => ({
-              field: err.path.join('.'),
-              message: err.message
-            }))
-          },
+          { error: 'Invalid request data' },
           { status: 400 }
         );
       }
-      return NextResponse.json(
-        { error: 'Invalid request data' },
-        { status: 400 }
-      );
+    } else {
+      const body = await request.json();
+      try {
+        validatedData = UpdateBookSchema.parse(body);
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return NextResponse.json(
+            {
+              error: 'Validation failed',
+              details: error.issues.map(err => ({
+                field: err.path.join('.'),
+                message: err.message
+              }))
+            },
+            { status: 400 }
+          );
+        }
+        return NextResponse.json(
+          { error: 'Invalid request data' },
+          { status: 400 }
+        );
+      }
     }
 
-    // Only admins can change publication status of published books
     if (existingBook.isPublished &&
         validatedData.isPublished === false &&
         session.user.role !== UserRole.ADMIN) {
@@ -307,16 +382,51 @@ export async function PUT(
       );
     }
 
-    // Update book
-    // Filter out undefined values for Prisma compatibility
+    let newPdfKey: string | null | undefined = undefined;
+    let newCoverImage: string | null | undefined = undefined;
+
+    if (pdfFile && pdfFile.size > 0) {
+      const pdfUploadResult = await uploadPDF(pdfFile, id);
+      if (!pdfUploadResult.success) {
+        return NextResponse.json(
+          { error: `PDF upload failed: ${pdfUploadResult.error}` },
+          { status: 500 }
+        );
+      }
+      newPdfKey = pdfUploadResult.filePath || null;
+
+      if (existingBook.pdfKey) {
+        await deleteFile(existingBook.pdfKey);
+      }
+    }
+
+    if (coverImageFile && coverImageFile.size > 0) {
+      const coverUploadResult = await uploadCoverImage(coverImageFile, id);
+      if (!coverUploadResult.success) {
+        return NextResponse.json(
+          { error: `Cover image upload failed: ${coverUploadResult.error}` },
+          { status: 500 }
+        );
+      }
+      newCoverImage = coverUploadResult.filePath || null;
+
+      if (existingBook.coverImage) {
+        await deleteFile(existingBook.coverImage);
+      }
+    }
+
     const updateData = Object.fromEntries(
-      Object.entries(validatedData).filter(([_, value]) => value !== undefined)
+      Object.entries(validatedData).filter(([key, value]) =>
+        value !== undefined && key !== 'removeCoverImage' && key !== 'removePdf'
+      )
     );
 
     const updatedBook = await prisma.book.update({
       where: { id },
       data: {
         ...updateData,
+        ...(newPdfKey !== undefined && { pdfKey: newPdfKey }),
+        ...(newCoverImage !== undefined && { coverImage: newCoverImage }),
         ...(validatedData.contentType && { contentType: validatedData.contentType as BookContentType }),
         ...(validatedData.visibility && { visibility: validatedData.visibility as BookVisibility }),
         ...(validatedData.isPublished && !existingBook.isPublished && {
@@ -330,14 +440,29 @@ export async function PUT(
         title: true,
         subtitle: true,
         summary: true,
+        content: true,
         contentType: true,
         authorName: true,
+        authorAlias: true,
+        language: true,
+        ageRange: true,
+        category: true,
+        tags: true,
+        coverImage: true,
+        pdfKey: true,
         visibility: true,
         isPremium: true,
+        price: true,
         isPublished: true,
         publishedAt: true,
         updatedAt: true,
       }
+    });
+
+    logger.info(`Book updated by ${session.user.role}`, {
+      bookId: id,
+      userId: session.user.id,
+      role: session.user.role,
     });
 
     return NextResponse.json({

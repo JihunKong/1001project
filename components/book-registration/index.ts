@@ -1,4 +1,5 @@
 export { BookRegistrationForm } from './BookRegistrationForm';
+export type { BookFormInitialData } from './BookRegistrationForm';
 export { BookTypeSelector } from './BookTypeSelector';
 export { PDFUploader } from './PDFUploader';
 export { CoverImageUploader } from './CoverImageUploader';

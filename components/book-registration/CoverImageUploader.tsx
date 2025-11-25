@@ -8,12 +8,14 @@ import { MAX_IMAGE_SIZE_MB, ALLOWED_IMAGE_TYPES } from '@/lib/validation/book-re
 interface CoverImageUploaderProps {
   onFileSelect: (file: File | null) => void;
   disabled?: boolean;
+  existingImage?: string;
 }
 
-export function CoverImageUploader({ onFileSelect, disabled }: CoverImageUploaderProps) {
+export function CoverImageUploader({ onFileSelect, disabled, existingImage }: CoverImageUploaderProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(existingImage || null);
   const [error, setError] = useState<string | null>(null);
+  const [isExisting, setIsExisting] = useState<boolean>(!!existingImage);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -38,6 +40,7 @@ export function CoverImageUploader({ onFileSelect, disabled }: CoverImageUploade
       reader.readAsDataURL(selectedFile);
 
       setFile(selectedFile);
+      setIsExisting(false);
       onFileSelect(selectedFile);
     },
     [onFileSelect]
@@ -56,6 +59,7 @@ export function CoverImageUploader({ onFileSelect, disabled }: CoverImageUploade
     setFile(null);
     setPreview(null);
     setError(null);
+    setIsExisting(false);
     onFileSelect(null);
   };
 
@@ -67,11 +71,11 @@ export function CoverImageUploader({ onFileSelect, disabled }: CoverImageUploade
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
-  if (file && preview) {
+  if (preview) {
     return (
       <div className="space-y-3">
         <label className="block text-sm font-medium text-gray-700">Cover Image (Optional)</label>
-        <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+        <div className={`border rounded-lg p-4 ${isExisting ? 'border-green-300 bg-green-50' : 'border-gray-300 bg-gray-50'}`}>
           <div className="flex items-start space-x-4">
             <div className="relative w-32 h-48 flex-shrink-0 bg-gray-200 rounded overflow-hidden">
               <Image
@@ -79,18 +83,33 @@ export function CoverImageUploader({ onFileSelect, disabled }: CoverImageUploade
                 alt="Cover preview"
                 fill
                 className="object-cover"
+                unoptimized={isExisting}
               />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="font-medium text-gray-900 truncate">{file.name}</div>
-              <div className="text-sm text-gray-500 mt-1">{formatFileSize(file.size)}</div>
+              {file ? (
+                <>
+                  <div className="font-medium text-gray-900 truncate">{file.name}</div>
+                  <div className="text-sm text-gray-500 mt-1">{formatFileSize(file.size)}</div>
+                </>
+              ) : (
+                <>
+                  <div className="font-medium text-gray-900">Current Cover Image</div>
+                  <div className="text-sm text-green-600 mt-1 flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Keeping existing
+                  </div>
+                </>
+              )}
               <button
                 type="button"
                 onClick={handleRemove}
                 disabled={disabled}
                 className="mt-3 text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
               >
-                Remove image
+                {isExisting ? 'Remove and upload new' : 'Remove image'}
               </button>
             </div>
           </div>

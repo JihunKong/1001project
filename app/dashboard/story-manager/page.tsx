@@ -190,6 +190,13 @@ export default function StoryManagerDashboard() {
             </div>
             <div className="flex items-center space-x-4">
               <Link
+                href="/dashboard/story-manager/books"
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Edit className="h-5 w-5 mr-2" />
+                Manage Books
+              </Link>
+              <Link
                 href="/dashboard/story-manager/register-book"
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >

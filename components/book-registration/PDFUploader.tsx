@@ -7,11 +7,14 @@ import { MAX_PDF_SIZE_MB } from '@/lib/validation/book-registration.schema';
 interface PDFUploaderProps {
   onFileSelect: (file: File | null) => void;
   disabled?: boolean;
+  existingFile?: string;
+  existingFileName?: string;
 }
 
-export function PDFUploader({ onFileSelect, disabled }: PDFUploaderProps) {
+export function PDFUploader({ onFileSelect, disabled, existingFile, existingFileName }: PDFUploaderProps) {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [useExisting, setUseExisting] = useState<boolean>(!!existingFile);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -47,7 +50,12 @@ export function PDFUploader({ onFileSelect, disabled }: PDFUploaderProps) {
   const handleRemove = () => {
     setFile(null);
     setError(null);
+    setUseExisting(false);
     onFileSelect(null);
+  };
+
+  const handleReplaceExisting = () => {
+    setUseExisting(false);
   };
 
   const formatFileSize = (bytes: number) => {
@@ -57,6 +65,53 @@ export function PDFUploader({ onFileSelect, disabled }: PDFUploaderProps) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
+
+  if (useExisting && existingFile) {
+    const displayFileName = existingFileName || existingFile.split('/').pop() || 'Current PDF';
+    return (
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-gray-700">
+          PDF File <span className="text-red-500">*</span>
+        </label>
+        <div className="border border-green-300 rounded-lg p-4 bg-green-50">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <svg
+                className="w-10 h-10 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+              <div>
+                <div className="font-medium text-gray-900">{displayFileName}</div>
+                <div className="text-sm text-green-600 flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Current file (keeping existing)
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleReplaceExisting}
+              disabled={disabled}
+              className="text-blue-600 hover:text-blue-800 disabled:opacity-50 text-sm font-medium"
+            >
+              Replace
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (file) {
     return (
