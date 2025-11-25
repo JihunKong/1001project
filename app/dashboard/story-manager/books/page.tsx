@@ -111,7 +111,7 @@ export default function StoryManagerBooksPage() {
                 placeholder="Search by title or author..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
               />
             </div>
             <div>
@@ -119,7 +119,7 @@ export default function StoryManagerBooksPage() {
               <select
                 value={contentTypeFilter}
                 onChange={(e) => setContentTypeFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Types</option>
                 <option value="TEXT">Text</option>
@@ -131,7 +131,7 @@ export default function StoryManagerBooksPage() {
               <select
                 value={languageFilter}
                 onChange={(e) => setLanguageFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Languages</option>
                 {uniqueLanguages.map(lang => (
@@ -215,7 +215,7 @@ export default function StoryManagerBooksPage() {
                     </button>
                     <Link
                       href={`/books/${book.id}`}
-                      className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+                      className="px-3 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                     >
                       View
                     </Link>
