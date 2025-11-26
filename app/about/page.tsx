@@ -102,8 +102,9 @@ export default function AboutPage() {
               />
             </div>
 
-            {/* Right: Seeds of Empowerment Card */}
+            {/* Right: Organization Cards */}
             <div className="space-y-6">
+              {/* Seeds of Empowerment Card */}
               <div className="bg-white rounded-xl p-6 border border-gray-100">
                 <h3
                   className="text-[#04A59D] font-semibold mb-3"
@@ -125,6 +126,31 @@ export default function AboutPage() {
                   }}
                 >
                   {t('about.whoWeAre.soe.description')}
+                </p>
+              </div>
+
+              {/* 1001 Stories Project Card */}
+              <div className="bg-white rounded-xl p-6 border border-gray-100">
+                <h3
+                  className="text-[#04A59D] font-semibold mb-3"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '24px',
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  {t('about.whoWeAre.stories.title')}
+                </h3>
+                <p
+                  className="text-[#4C4C4D]"
+                  style={{
+                    fontFamily: 'Poppins',
+                    fontSize: '16px',
+                    fontWeight: 400,
+                    lineHeight: '2em'
+                  }}
+                >
+                  {t('about.whoWeAre.stories.description')}
                 </p>
               </div>
             </div>
