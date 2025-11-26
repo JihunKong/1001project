@@ -16,9 +16,9 @@ import {
   Calendar,
   AlertCircle,
   BookOpen,
-  Edit
+  Edit,
+  SquarePen
 } from 'lucide-react';
-import { StoryManagerTabs } from '@/components/story-manager';
 
 interface TextSubmission {
   id: string;
@@ -179,28 +179,44 @@ export default function StoryManagerDashboard() {
   }
 
   return (
-    <div className="py-8">
-      <StoryManagerTabs />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.storyManager.title')}</h1>
-            <p className="mt-2 text-gray-600">
-              {t('dashboard.storyManager.subtitle')}
-            </p>
-          </div>
-          <div className="flex items-center space-x-4">
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900"
-            >
-              <option value="all">{t('dashboard.storyManager.filter.all')}</option>
-              <option value="PENDING">{t('dashboard.storyManager.filter.pending')}</option>
-              <option value="STORY_REVIEW">{t('dashboard.storyManager.filter.inReview')}</option>
-            </select>
+    <>
+      <div className="bg-white shadow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.storyManager.title')}</h1>
+              <p className="mt-1 text-sm text-gray-500">{t('dashboard.storyManager.subtitle')}</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Link
+                href="/dashboard/story-manager/books"
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <SquarePen className="h-5 w-5 mr-2" />
+                Manage Books
+              </Link>
+              <Link
+                href="/dashboard/story-manager/register-book"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <BookOpen className="h-5 w-5 mr-2" />
+                {t('dashboard.registerBook.title')}
+              </Link>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900"
+              >
+                <option value="all">{t('dashboard.storyManager.filter.all')}</option>
+                <option value="PENDING">{t('dashboard.storyManager.filter.pending')}</option>
+                <option value="STORY_REVIEW">{t('dashboard.storyManager.filter.inReview')}</option>
+              </select>
+            </div>
           </div>
         </div>
+      </div>
+      <div className="py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
@@ -377,7 +393,8 @@ export default function StoryManagerDashboard() {
             </table>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

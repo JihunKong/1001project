@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import { canDirectRegisterBook } from '@/lib/validation/book-registration.schema';
 import { BookRegistrationForm } from '@/components/book-registration';
 import { useTranslation } from '@/lib/i18n/useTranslation';
-import { StoryManagerTabs } from '@/components/story-manager';
 
 export default function StoryManagerRegisterBookPage() {
   const { data: session } = useSession();
@@ -21,7 +20,6 @@ export default function StoryManagerRegisterBookPage() {
 
   return (
     <div className="py-8">
-      <StoryManagerTabs />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.registerBook.title')}</h1>
