@@ -421,7 +421,7 @@ export default function StoryReviewPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-soe-green-400 mx-auto"></div>
           <p className="mt-4 text-gray-600">{t('dashboard.storyManager.review.loading')}</p>
@@ -432,7 +432,7 @@ export default function StoryReviewPage() {
 
   if (error || !submission) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <p className="text-red-600">{t('dashboard.storyManager.review.error.message', { error: error || t('dashboard.storyManager.review.error.notFound') })}</p>
           <Link
@@ -447,69 +447,64 @@ export default function StoryReviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Link
-                href="/dashboard/story-manager"
-                className="mr-4 bg-soe-green-400 hover:bg-soe-green-500 text-white p-2 rounded-lg inline-flex items-center"
-                aria-label="Back to Dashboard"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.storyManager.review.title')}</h1>
-                <p className="mt-1 text-sm text-gray-500">
-                  {t('dashboard.storyManager.review.subtitle')}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(submission.status)}`}>
-                {getStatusLabel(submission.status)}
-              </span>
-              {canTakeAction(submission.status) && (
-                <>
-                  <button
-                    onClick={() => {
-                      setAction('approve');
-                      setShowFeedbackForm(true);
-                    }}
-                    className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center"
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    {t('dashboard.storyManager.review.actions.approve')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setAction('revision');
-                      setShowFeedbackForm(true);
-                    }}
-                    className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg flex items-center"
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    {t('dashboard.storyManager.review.actions.requestRevision')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setAction('reject');
-                      setShowFeedbackForm(true);
-                    }}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center"
-                  >
-                    <XCircle className="h-4 w-4 mr-2" />
-                    {t('dashboard.storyManager.review.actions.reject')}
-                  </button>
-                </>
-              )}
+    <div className="py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8 flex justify-between items-center">
+          <div className="flex items-center">
+            <Link
+              href="/dashboard/story-manager"
+              className="mr-4 bg-soe-green-400 hover:bg-soe-green-500 text-white p-2 rounded-lg inline-flex items-center"
+              aria-label="Back to Dashboard"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.storyManager.review.title')}</h1>
+              <p className="mt-2 text-gray-600">
+                {t('dashboard.storyManager.review.subtitle')}
+              </p>
             </div>
           </div>
+          <div className="flex items-center space-x-3">
+            <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(submission.status)}`}>
+              {getStatusLabel(submission.status)}
+            </span>
+            {canTakeAction(submission.status) && (
+              <>
+                <button
+                  onClick={() => {
+                    setAction('approve');
+                    setShowFeedbackForm(true);
+                  }}
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center"
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  {t('dashboard.storyManager.review.actions.approve')}
+                </button>
+                <button
+                  onClick={() => {
+                    setAction('revision');
+                    setShowFeedbackForm(true);
+                  }}
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg flex items-center"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  {t('dashboard.storyManager.review.actions.requestRevision')}
+                </button>
+                <button
+                  onClick={() => {
+                    setAction('reject');
+                    setShowFeedbackForm(true);
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center"
+                >
+                  <XCircle className="h-4 w-4 mr-2" />
+                  {t('dashboard.storyManager.review.actions.reject')}
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
           {/* Main Content */}
           <div className="space-y-6">
