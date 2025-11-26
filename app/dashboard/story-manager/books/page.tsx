@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { canEditBook } from '@/lib/validation/book-registration.schema';
+import { StoryManagerTabs } from '@/components/story-manager';
 
 interface Book {
   id: string;
@@ -83,23 +84,13 @@ export default function StoryManagerBooksPage() {
 
   return (
     <div className="py-8">
+      <StoryManagerTabs />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Manage Books</h1>
-            <p className="mt-2 text-gray-600">
-              Edit and manage all published books in the library
-            </p>
-          </div>
-          <Link
-            href="/dashboard/story-manager/register-book"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Register New Book
-          </Link>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Manage Books</h1>
+          <p className="mt-2 text-gray-600">
+            Edit and manage all published books in the library
+          </p>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6 mb-6">

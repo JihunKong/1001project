@@ -134,6 +134,11 @@
     "storyManager": {
       "title": "스토리 관리자 대시보드",
       "subtitle": "스토리 제출물 검토 및 승인",
+      "tabs": {
+        "submissions": "제출물",
+        "books": "도서 관리",
+        "registerBook": "도서 등록"
+      },
       "filter": {
         "all": "모든 제출물",
         "pending": "검토 대기 중",

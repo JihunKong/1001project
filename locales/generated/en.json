@@ -134,6 +134,11 @@
     "storyManager": {
       "title": "Story Manager Dashboard",
       "subtitle": "Review and approve story submissions",
+      "tabs": {
+        "submissions": "Submissions",
+        "books": "Manage Books",
+        "registerBook": "Register Book"
+      },
       "filter": {
         "all": "All Submissions",
         "pending": "Pending Review",
