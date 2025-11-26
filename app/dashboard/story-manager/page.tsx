@@ -16,8 +16,7 @@ import {
   Calendar,
   AlertCircle,
   BookOpen,
-  Edit,
-  SquarePen
+  Edit
 } from 'lucide-react';
 
 interface TextSubmission {
@@ -188,20 +187,6 @@ export default function StoryManagerDashboard() {
               <p className="mt-1 text-sm text-gray-500">{t('dashboard.storyManager.subtitle')}</p>
             </div>
             <div className="flex items-center space-x-4">
-              <Link
-                href="/dashboard/story-manager/books"
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <SquarePen className="h-5 w-5 mr-2" />
-                Manage Books
-              </Link>
-              <Link
-                href="/dashboard/story-manager/register-book"
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <BookOpen className="h-5 w-5 mr-2" />
-                {t('dashboard.registerBook.title')}
-              </Link>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}

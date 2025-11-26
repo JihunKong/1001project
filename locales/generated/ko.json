@@ -1001,6 +1001,8 @@
     "notifications": "알림",
     "profile": "프로필",
     "manageBooks": "도서 관리",
+    "registerBook": "새 도서 등록",
+    "storyReview": "스토리 검토",
     "skipToMain": "메인 콘텐츠로 건너뛰기",
     "mainNavigation": "메인 네비게이션",
     "mobileNavigation": "모바일 내비게이션",

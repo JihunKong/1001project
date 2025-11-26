@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Bookmark, User, FileText, Users, Settings, BookOpen } from 'lucide-react';
+import { Home, Bookmark, User, FileText, Users, Settings, BookOpen, PlusCircle, FileSearch } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface NavItem {
@@ -51,6 +51,18 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           label: t('nav.home'),
           href: '/dashboard/story-manager',
           icon: Home
+        },
+        {
+          id: 'register-book',
+          label: t('nav.registerBook'),
+          href: '/dashboard/story-manager/register-book',
+          icon: PlusCircle
+        },
+        {
+          id: 'review',
+          label: t('nav.storyReview'),
+          href: '/dashboard/story-manager/reviews',
+          icon: FileSearch
         },
         {
           id: 'books',
