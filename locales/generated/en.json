@@ -1652,82 +1652,89 @@
   },
   "about": {
     "hero": {
-      "title": "Our Mission: Empowering Children Through Stories",
-      "subtitle": "Connecting voices from underserved communities with the world",
-      "scroll": "Scroll to learn more"
+      "title": "1001 Stories,",
+      "subtitle": "Empowering Communities through Storytelling",
+      "description": "A global citizenship platform for young learners, bringing stories from under-resourced communities to the world"
     },
-    "content": {
-      "vision": {
-        "title": "Our Vision",
-        "text": "We believe every child has a story worth sharing. 1001 Stories is a global non-profit platform dedicated to discovering, publishing, and sharing stories from children in underserved communities."
+    "whoWeAre": {
+      "title": "Who We Are",
+      "subtitle": "Seeds of Empowerment and the 1001 Stories Project",
+      "soe": {
+        "title": "Seeds of Empowerment",
+        "description": "SOE is a non-profit organization dedicated to empowering underserved communities through education, storytelling, and technology. By supporting grassroots projects around the world, they help amplify local voices and foster sustainable development."
       },
-      "impact": {
-        "title": "Our Impact",
-        "text": "Through our Seeds of Empowerment program, we reinvest all revenue back into supporting children's education and creative expression in underserved communities worldwide."
-      },
-      "platform": {
-        "title": "Our Platform",
-        "text": "1001 Stories connects writers, educators, and students through an innovative multi-role system that facilitates discovery, learning, and creative expression."
-      },
-      "technology": {
-        "title": "AI-Enhanced Learning",
-        "text": "Our platform leverages AI technology to provide interactive word explanations, content parsing, and educational assistance, making stories more accessible and engaging for learners worldwide."
-      },
-      "community": {
-        "title": "Our Community",
-        "text": "Join a global network of storytellers, educators, and learners committed to celebrating diversity and empowering the next generation through the power of stories."
-      }
-    },
-    "testimonial1": {
-      "quote": "1001 Stories has transformed how we approach literacy in our classroom. The diverse collection of voices helps students see themselves in the stories.",
-      "author": "Sarah Johnson",
-      "role": "Elementary School Teacher"
-    },
-    "testimonial2": {
-      "quote": "Being able to share my story and see it published gave me confidence I never knew I had. Now I help other children find their voice too.",
-      "author": "Maria Gonzalez",
-      "role": "Student Writer"
-    },
-    "stats": {
       "stories": {
-        "number": "10,000+",
-        "label": "Stories Published"
-      },
-      "countries": {
-        "number": "50+",
-        "label": "Countries Represented"
-      },
-      "students": {
-        "number": "100,000+",
-        "label": "Students Reached"
-      },
-      "languages": {
-        "number": "25+",
-        "label": "Languages Supported"
+        "title": "1001 Stories Project",
+        "description": "Our mobile storytelling program, 1001 Stories, brings meaningful learning to some of the hardest to reach populations around the world. We aim to facilitate the creation, development, and gathering of 1001 empowering stories from every participating local community."
       }
     },
-    "team": {
-      "title": "Meet Our Team",
-      "member1": {
-        "name": "Dr. Emily Chen",
-        "role": "Founder & Executive Director"
+    "benefits": {
+      "title": "Benefits",
+      "subtitle": "Why Join 1001 Stories?",
+      "benefit1": {
+        "title": "Promote Global Citizenship and Literacy",
+        "description": "Through storytelling and cultural exchange, 1001 Stories fosters global citizenship education, helping children around the world develop reading and writing skills. By publishing and sharing their stories on a global stage, we amplify young voices and inspire cross-cultural understanding."
       },
-      "member2": {
-        "name": "Michael Okonkwo",
-        "role": "Head of Global Programs"
+      "benefit2": {
+        "title": "Empower Young Learners Everywhere",
+        "description": "We raise awareness about diverse experiences and support children's dreams by offering scholarships and creating accessible educational opportunities. Our self-sustaining platform is designed to empower all young learners, regardless of their backgrounds, to thrive and grow."
+      },
+      "benefit3": {
+        "title": "Integrate AI and Personalized Learning",
+        "description": "By combining storybooks with AI-powered tools, 1001 Stories offers personalized learning experiences tailored to each student's journey. Our platform nurtures creativity, builds practical AI literacy skills, and prepares young minds for an increasingly connected and digital future."
+      }
+    },
+    "features": {
+      "title": "Our Features",
+      "subtitle": "More exciting features are on the way. Stay tuned!",
+      "library": {
+        "title": "Browse the 1001 Stories Library",
+        "description": "Discover stories written by young authors around the world. Explore different cultures, perspectives, and dreams through storytelling.",
+        "cta": "Learn More"
+      },
+      "write": {
+        "title": "Write Your Story",
+        "description": "Share your voice with the world! Write and submit your own story, inspire others, and become part of our global library.",
+        "cta": "Learn More"
+      },
+      "bookclub": {
+        "title": "Join a Book Club (Coming Soon)",
+        "description": "Find and join book clubs that match your interests. Read together, discuss ideas, and connect with young storytellers across the globe.",
+        "cta": "Learn More"
+      },
+      "goals": {
+        "title": "Set and Track Your Goals (Coming Soon)",
+        "description": "Start with a quick assessment to personalize your journey. Set learning goals based on your interests and track your progress as you grow.",
+        "cta": "Learn More"
+      }
+    },
+    "testimonials": {
+      "title": "Our Testimonials",
+      "sofia": {
+        "quote": "Before 1001 Stories, I was too shy to share my writing. Now, my story is published for everyone to read! I feel like my voice matters, and I want to write even more",
+        "attribution": "Sofia, Student (10)"
+      },
+      "ayaan": {
+        "quote": "I love reading stories from kids in other countries. It feels like I'm making new friends from around the world. 1001 Stories makes learning so much fun!",
+        "attribution": "Ayaan, Student (11)"
+      },
+      "emily": {
+        "quote": "1001 Stories gave my daughter the confidence to express herself creatively. Watching her set goals, complete her first story, and proudly share it was an unforgettable moment for our family",
+        "attribution": "Emily's Mom"
+      },
+      "david": {
+        "quote": "As a parent, I wanted something educational but also inspiring. 1001 Stories struck the perfect balance—helping my son develop literacy skills while encouraging him to think globally and dream big.",
+        "attribution": "David's Dad"
       }
     },
     "footer": {
-      "contact": {
-        "title": "Get in Touch",
-        "email": "contact@1001stories.org"
-      },
-      "social": {
-        "title": "Follow Us"
-      },
-      "newsletter": {
-        "title": "Subscribe to Our Newsletter"
-      }
+      "tagline": "Empowering young voices and inspiring the world through stories.",
+      "contactTitle": "Contact",
+      "contactEmail": "info@1001stories.org",
+      "contactForm": "Contact Form",
+      "copyright": "©2024 1001 Stories. All rights reserved",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
     }
   },
   "timeline": {
