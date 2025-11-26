@@ -152,7 +152,7 @@ export default function StoryManagerDashboard() {
 
   if (status === 'loading' || loading) {
     return (
-      <div data-role="story-manager" className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div data-role="story-manager" className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-soe-green-400 mx-auto"></div>
           <p className="mt-4 text-gray-600">{t('dashboard.common.loadingStoryQueue')}</p>
@@ -163,7 +163,7 @@ export default function StoryManagerDashboard() {
 
   if (error) {
     return (
-      <div data-role="story-manager" className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div data-role="story-manager" className="flex items-center justify-center py-20">
         <div className="text-center">
           <p className="text-red-600">{t('dashboard.common.error.prefix')}{error}</p>
           <button
@@ -178,7 +178,7 @@ export default function StoryManagerDashboard() {
   }
 
   return (
-    <div data-role="story-manager" className="min-h-screen bg-gray-50">
+    <div data-role="story-manager">
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
