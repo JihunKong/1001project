@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Bookmark, User, FileText, Users, Settings } from 'lucide-react';
+import { Home, Bookmark, User, FileText, Users, Settings, BookOpen } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface NavItem {
@@ -44,6 +44,75 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
       ];
     }
 
+    if (userRole === 'story-manager') {
+      return [
+        {
+          id: 'home',
+          label: t('nav.home'),
+          href: '/dashboard/story-manager',
+          icon: Home
+        },
+        {
+          id: 'books',
+          label: t('nav.manageBooks'),
+          href: '/dashboard/story-manager/books',
+          icon: BookOpen
+        },
+        {
+          id: 'profile',
+          label: t('nav.profile'),
+          href: '/dashboard/story-manager/profile',
+          icon: User
+        }
+      ];
+    }
+
+    if (userRole === 'book-manager') {
+      return [
+        {
+          id: 'home',
+          label: t('nav.home'),
+          href: '/dashboard/book-manager',
+          icon: Home
+        },
+        {
+          id: 'books',
+          label: t('nav.manageBooks'),
+          href: '/dashboard/book-manager/books',
+          icon: BookOpen
+        },
+        {
+          id: 'profile',
+          label: t('nav.profile'),
+          href: '/dashboard/book-manager/profile',
+          icon: User
+        }
+      ];
+    }
+
+    if (userRole === 'content-admin') {
+      return [
+        {
+          id: 'home',
+          label: t('nav.home'),
+          href: '/dashboard/content-admin',
+          icon: Home
+        },
+        {
+          id: 'books',
+          label: t('nav.manageBooks'),
+          href: '/dashboard/content-admin/books',
+          icon: BookOpen
+        },
+        {
+          id: 'profile',
+          label: t('nav.profile'),
+          href: '/dashboard/content-admin/profile',
+          icon: User
+        }
+      ];
+    }
+
     return [
       {
         id: 'home',
@@ -73,7 +142,7 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
   };
 
   const navItems = getNavItems(role);
-  const basePath = role === 'admin' ? '/dashboard/admin' : '/dashboard/writer';
+  const basePath = `/dashboard/${role}`;
 
   const isActive = (item: NavItem) => {
     if (item.href === basePath) {

@@ -8,10 +8,10 @@ export default async function RoleLayout({
   children: React.ReactNode;
   params: Promise<{ role: string }>;
 }) {
-  await params;
+  const { role } = await params;
   return (
     <div className="min-h-screen bg-gray-50">
-      <WriterLNB />
+      <WriterLNB role={role} />
       <GlobalNavigationBar />
 
       <div className="lg:ml-60 pt-[80px]">
