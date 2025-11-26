@@ -1,3 +1,5 @@
+'use client';
+
 import WriterLNB from '@/components/figma/layout/WriterLNB';
 import GlobalNavigationBar from '@/components/figma/layout/GlobalNavigationBar';
 
