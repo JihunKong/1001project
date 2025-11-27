@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Loader2, BookOpen } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Loader2, BookOpen, GripHorizontal } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 interface VocabularyPopoverProps {
@@ -18,11 +18,10 @@ interface WordExplanation {
   language: string;
 }
 
-// Helper function to calculate optimal popover position
 const calculateOptimalPosition = (
   clickPosition: { x: number; y: number },
   popoverWidth: number = 400,
-  popoverHeight: number = 500
+  popoverHeight: number = 400
 ): { top: number; left: number } => {
   const viewport = {
     width: window.innerWidth,
@@ -31,9 +30,8 @@ const calculateOptimalPosition = (
     scrollY: window.scrollY
   };
 
-  const PADDING = 20; // Distance from viewport edges
+  const PADDING = 20;
 
-  // Calculate available space in each direction
   const spaceBelow = viewport.height - (clickPosition.y - viewport.scrollY);
   const spaceAbove = clickPosition.y - viewport.scrollY;
   const spaceRight = viewport.width - (clickPosition.x - viewport.scrollX);
@@ -42,40 +40,31 @@ const calculateOptimalPosition = (
   let top = clickPosition.y;
   let left = clickPosition.x;
 
-  // Priority 1: Below word (preferred)
   if (spaceBelow >= popoverHeight + PADDING) {
     top = clickPosition.y + 10;
     left = Math.max(
       PADDING + viewport.scrollX,
       Math.min(clickPosition.x, viewport.scrollX + viewport.width - popoverWidth - PADDING)
     );
-  }
-  // Priority 2: Above word
-  else if (spaceAbove >= popoverHeight + PADDING) {
+  } else if (spaceAbove >= popoverHeight + PADDING) {
     top = clickPosition.y - popoverHeight - 10;
     left = Math.max(
       PADDING + viewport.scrollX,
       Math.min(clickPosition.x, viewport.scrollX + viewport.width - popoverWidth - PADDING)
     );
-  }
-  // Priority 3: Right of word
-  else if (spaceRight >= popoverWidth + PADDING) {
+  } else if (spaceRight >= popoverWidth + PADDING) {
     top = Math.max(
       PADDING + viewport.scrollY,
       Math.min(clickPosition.y, viewport.scrollY + viewport.height - popoverHeight - PADDING)
     );
     left = clickPosition.x + 10;
-  }
-  // Priority 4: Left of word
-  else if (spaceLeft >= popoverWidth + PADDING) {
+  } else if (spaceLeft >= popoverWidth + PADDING) {
     top = Math.max(
       PADDING + viewport.scrollY,
       Math.min(clickPosition.y, viewport.scrollY + viewport.height - popoverHeight - PADDING)
     );
     left = clickPosition.x - popoverWidth - 10;
-  }
-  // Fallback: Center of viewport
-  else {
+  } else {
     top = viewport.scrollY + (viewport.height - popoverHeight) / 2;
     left = viewport.scrollX + (viewport.width - popoverWidth) / 2;
   }
@@ -93,20 +82,76 @@ export default function VocabularyPopover({
   const [explanation, setExplanation] = useState<WordExplanation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [optimalPosition, setOptimalPosition] = useState<{ top: number; left: number }>({
-    top: position.y,
-    left: position.x
-  });
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [currentPosition, setCurrentPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [isPositionInitialized, setIsPositionInitialized] = useState(false);
+
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const POPOVER_WIDTH = 400;
 
   useEffect(() => {
-    // Calculate optimal position when component mounts or position changes
     const pos = calculateOptimalPosition(position);
-    setOptimalPosition(pos);
+    setCurrentPosition(pos);
+    setIsPositionInitialized(true);
   }, [position]);
 
   useEffect(() => {
     fetchExplanation();
   }, [word, context, language]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - currentPosition.left,
+      y: e.clientY - currentPosition.top
+    });
+  }, [currentPosition]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const newLeft = e.clientX - dragOffset.x;
+      const newTop = e.clientY - dragOffset.y;
+
+      const boundedLeft = Math.max(10, Math.min(newLeft, window.innerWidth - POPOVER_WIDTH - 10));
+      const boundedTop = Math.max(10, Math.min(newTop, window.innerHeight - 100));
+
+      setCurrentPosition({ left: boundedLeft, top: boundedTop });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
 
   const fetchExplanation = async () => {
     setLoading(true);
@@ -135,92 +180,93 @@ export default function VocabularyPopover({
     }
   };
 
-  return (
-    <>
-      {/* Overlay */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-10 z-40"
-        onClick={onClose}
-      />
+  if (!isPositionInitialized) {
+    return null;
+  }
 
-      {/* Popup */}
+  return (
+    <div
+      ref={popoverRef}
+      className={`fixed bg-white rounded-lg shadow-2xl border border-gray-200 z-50 w-[400px] max-h-[70vh] overflow-hidden flex flex-col vocabulary-popover ${isDragging ? 'cursor-grabbing select-none' : ''}`}
+      style={{
+        top: currentPosition.top,
+        left: currentPosition.left,
+        boxShadow: isDragging
+          ? '0 25px 50px -12px rgba(0, 0, 0, 0.35)'
+          : '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+        transition: isDragging ? 'none' : 'box-shadow 0.2s ease',
+      }}
+    >
       <div
-        className="fixed bg-white rounded-lg shadow-2xl border border-gray-200 z-50 w-[400px] max-h-[80vh] overflow-y-auto vocabulary-popover"
-        style={{
-          top: optimalPosition.top,
-          left: optimalPosition.left,
-        }}
+        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-t-lg flex items-center justify-between cursor-grab active:cursor-grabbing select-none"
+        onMouseDown={handleMouseDown}
       >
-        {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-purple-500 text-white p-4 rounded-t-lg flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5" />
-            <h3 className="font-semibold text-lg">Word Helper</h3>
-          </div>
-          <button
-            onClick={onClose}
-            className="hover:bg-white/20 rounded-full p-1 transition-colors"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        <div className="flex items-center gap-2">
+          <GripHorizontal className="w-4 h-4 opacity-60" />
+          <BookOpen className="w-5 h-5" />
+          <h3 className="font-semibold text-lg">Word Helper</h3>
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          className="hover:bg-white/20 rounded-full p-1 transition-colors"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      <div className="p-4 overflow-y-auto flex-1">
+        <div className="mb-4 pb-4 border-b border-gray-200">
+          <div className="text-sm text-gray-900 mb-1">Selected Word</div>
+          <div className="text-2xl font-bold text-blue-600">{word}</div>
         </div>
 
-        {/* Content */}
-        <div className="p-4">
-          {/* Selected Word */}
+        {context && (
           <div className="mb-4 pb-4 border-b border-gray-200">
-            <div className="text-sm text-gray-900 mb-1">Selected Word</div>
-            <div className="text-2xl font-bold text-blue-600">{word}</div>
+            <div className="text-sm text-gray-900 mb-2">Context</div>
+            <div className="text-sm text-gray-900 italic bg-gray-50 p-3 rounded-md">
+              &ldquo;{context}&rdquo;
+            </div>
           </div>
+        )}
 
-          {/* Context */}
-          {context && (
-            <div className="mb-4 pb-4 border-b border-gray-200">
-              <div className="text-sm text-gray-900 mb-2">Context</div>
-              <div className="text-sm text-gray-900 italic bg-gray-50 p-3 rounded-md">
-                "{context}"
-              </div>
+        <div className="mb-2">
+          <div className="text-sm text-gray-900 mb-2">Explanation</div>
+
+          {loading && (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+              <span className="ml-2 text-gray-900">Loading explanation...</span>
             </div>
           )}
 
-          {/* Explanation */}
-          <div className="mb-2">
-            <div className="text-sm text-gray-900 mb-2">Explanation</div>
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-md">
+              {error}
+            </div>
+          )}
 
-            {loading && (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                <span className="ml-2 text-gray-900">Loading explanation...</span>
-              </div>
-            )}
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-md">
-                {error}
-              </div>
-            )}
-
-            {!loading && !error && explanation && (
-              <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed">
-                <ReactMarkdown>
-                  {explanation.explanation}
-                </ReactMarkdown>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="sticky bottom-0 bg-gray-50 p-4 rounded-b-lg border-t border-gray-200">
-          <button
-            onClick={onClose}
-            className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors"
-          >
-            Got it!
-          </button>
+          {!loading && !error && explanation && (
+            <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed">
+              <ReactMarkdown>
+                {explanation.explanation}
+              </ReactMarkdown>
+            </div>
+          )}
         </div>
       </div>
-    </>
+
+      <div className="bg-gray-50 p-4 rounded-b-lg border-t border-gray-200 flex-shrink-0">
+        <button
+          onClick={onClose}
+          className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors"
+        >
+          Got it!
+        </button>
+      </div>
+    </div>
   );
 }
