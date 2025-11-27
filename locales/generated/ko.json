@@ -2312,6 +2312,7 @@
     "title": "설정",
     "description": "프로필 및 환경설정을 관리하세요",
     "backToProfile": "프로필로 돌아가기",
+    "backToDashboard": "대시보드로 돌아가기",
     "save": "변경사항 저장",
     "saving": "저장 중...",
     "cancel": "취소",

@@ -2301,6 +2301,7 @@
     "title": "Settings",
     "description": "Manage your profile and preferences",
     "backToProfile": "Back to Profile",
+    "backToDashboard": "Back to Dashboard",
     "save": "Save Changes",
     "saving": "Saving...",
     "cancel": "Cancel",

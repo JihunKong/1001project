@@ -52,7 +52,11 @@ export function SettingsPageClient({ role, initialData }: SettingsPageClientProp
   };
 
   const handleCancel = () => {
-    router.push(`/dashboard/${role}/profile`);
+    const managementRoles = ['story-manager', 'book-manager', 'content-admin'];
+    const redirectPath = managementRoles.includes(role)
+      ? `/dashboard/${role}`
+      : `/dashboard/${role}/profile`;
+    router.push(redirectPath);
   };
 
   return (

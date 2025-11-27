@@ -12,12 +12,17 @@ interface SettingsLayoutProps {
 export function SettingsLayout({ children, role }: SettingsLayoutProps) {
   const { t } = useTranslation();
 
+  const managementRoles = ['story-manager', 'book-manager', 'content-admin'];
+  const isManagementRole = managementRoles.includes(role);
+  const backHref = isManagementRole ? `/dashboard/${role}` : `/dashboard/${role}/profile`;
+  const backLabel = isManagementRole ? t('settings.backToDashboard') : t('settings.backToProfile');
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
           <Link
-            href={`/dashboard/${role}/profile`}
+            href={backHref}
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
           >
             <svg
@@ -33,7 +38,7 @@ export function SettingsLayout({ children, role }: SettingsLayoutProps) {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            {t('settings.backToProfile')}
+            {backLabel}
           </Link>
         </div>
 

@@ -15,6 +15,16 @@ export default async function ProfilePage() {
     redirect('/login?callbackUrl=/dashboard/profile');
   }
 
+  const managementRoles = ['STORY_MANAGER', 'BOOK_MANAGER', 'CONTENT_ADMIN'];
+  if (managementRoles.includes(session.user.role as string)) {
+    const rolePathMap: Record<string, string> = {
+      'STORY_MANAGER': '/dashboard/story-manager',
+      'BOOK_MANAGER': '/dashboard/book-manager',
+      'CONTENT_ADMIN': '/dashboard/content-admin',
+    };
+    redirect(rolePathMap[session.user.role as string] || '/dashboard');
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     include: {

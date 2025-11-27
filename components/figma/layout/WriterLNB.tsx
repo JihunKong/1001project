@@ -71,12 +71,6 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           icon: BookOpen
         },
         {
-          id: 'profile',
-          label: t('nav.profile'),
-          href: '/dashboard/story-manager/profile',
-          icon: User
-        },
-        {
           id: 'settings',
           label: t('nav.settings'),
           href: '/dashboard/story-manager/settings',
@@ -100,12 +94,6 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           icon: BookOpen
         },
         {
-          id: 'profile',
-          label: t('nav.profile'),
-          href: '/dashboard/book-manager/profile',
-          icon: User
-        },
-        {
           id: 'settings',
           label: t('nav.settings'),
           href: '/dashboard/book-manager/settings',
@@ -127,12 +115,6 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           label: t('nav.manageBooks'),
           href: '/dashboard/content-admin/books',
           icon: BookOpen
-        },
-        {
-          id: 'profile',
-          label: t('nav.profile'),
-          href: '/dashboard/content-admin/profile',
-          icon: User
         },
         {
           id: 'settings',
