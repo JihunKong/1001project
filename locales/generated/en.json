@@ -1093,6 +1093,7 @@
       "draft": "Draft",
       "pending": "Pending",
       "inReview": "In Review",
+      "inProgress": "In Progress",
       "needsRevision": "Needs Revision",
       "approved": "Approved",
       "published": "Published",

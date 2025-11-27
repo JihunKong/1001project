@@ -1093,6 +1093,7 @@
       "draft": "초안",
       "pending": "대기 중",
       "inReview": "검토 중",
+      "inProgress": "진행 중",
       "needsRevision": "수정 필요",
       "approved": "승인됨",
       "published": "출판됨",

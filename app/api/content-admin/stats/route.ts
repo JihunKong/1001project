@@ -46,12 +46,10 @@ export async function GET(_request: NextRequest) {
         }
       }),
 
-      // Stories that have been processed by content admin (published + rejected)
+      // Stories that have been approved by content admin (only published, not rejected)
       prisma.textSubmission.count({
         where: {
-          status: {
-            in: [TextSubmissionStatus.PUBLISHED, TextSubmissionStatus.REJECTED]
-          },
+          status: TextSubmissionStatus.PUBLISHED,
           contentAdminId: {
             not: null
           }

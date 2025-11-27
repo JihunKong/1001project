@@ -3,15 +3,17 @@
 import { useState } from 'react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
-export type SubmissionStatus = 'DRAFT' | 'PENDING' | 'STORY_REVIEW' | 'PUBLISHED' | 'NEEDS_REVISION';
+export type SubmissionStatus = 'DRAFT' | 'PENDING' | 'STORY_REVIEW' | 'IN_PROGRESS' | 'PUBLISHED' | 'NEEDS_REVISION' | 'REJECTED';
 
 interface SubmissionTabsProps {
   statusCounts: {
     DRAFT: number;
     PENDING: number;
     STORY_REVIEW: number;
+    IN_PROGRESS: number;
     PUBLISHED: number;
     NEEDS_REVISION: number;
+    REJECTED: number;
   };
   activeTab: SubmissionStatus;
   onTabChange: (status: SubmissionStatus) => void;
@@ -24,8 +26,10 @@ export default function SubmissionTabs({ statusCounts, activeTab, onTabChange }:
     { key: 'DRAFT' as const, label: t('stories.tabs.draft') },
     { key: 'PENDING' as const, label: t('stories.tabs.pending') },
     { key: 'STORY_REVIEW' as const, label: t('stories.tabs.inReview') },
+    { key: 'IN_PROGRESS' as const, label: t('stories.tabs.inProgress') },
     { key: 'PUBLISHED' as const, label: t('stories.tabs.published') },
     { key: 'NEEDS_REVISION' as const, label: t('stories.tabs.needsRevision') },
+    { key: 'REJECTED' as const, label: t('stories.tabs.rejected') },
   ];
   return (
     <div className="border-b border-[#E5E5EA]">

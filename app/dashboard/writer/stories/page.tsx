@@ -170,14 +170,27 @@ export default function WriterStories() {
     }
   };
 
-  const filteredSubmissions = submissions.filter(s => s.status === activeTab);
+  const filteredSubmissions = submissions.filter(s => {
+    if (activeTab === 'IN_PROGRESS') {
+      return ['STORY_APPROVED', 'FORMAT_REVIEW', 'CONTENT_REVIEW'].includes(s.status);
+    }
+    if (activeTab === 'PENDING') {
+      return s.status === 'PENDING' || s.status === 'SUBMITTED';
+    }
+    if (activeTab === 'STORY_REVIEW') {
+      return s.status === 'STORY_REVIEW' || s.status === 'IN_REVIEW';
+    }
+    return s.status === activeTab;
+  });
 
   const statusCounts = {
     DRAFT: submissions.filter(s => s.status === 'DRAFT').length,
     PENDING: submissions.filter(s => s.status === 'PENDING' || s.status === 'SUBMITTED').length,
     STORY_REVIEW: submissions.filter(s => s.status === 'STORY_REVIEW' || s.status === 'IN_REVIEW').length,
+    IN_PROGRESS: submissions.filter(s => ['STORY_APPROVED', 'FORMAT_REVIEW', 'CONTENT_REVIEW'].includes(s.status)).length,
     PUBLISHED: submissions.filter(s => s.status === 'PUBLISHED').length,
     NEEDS_REVISION: submissions.filter(s => s.status === 'NEEDS_REVISION').length,
+    REJECTED: submissions.filter(s => s.status === 'REJECTED').length,
   };
 
   if (status === 'loading' || loading) {
