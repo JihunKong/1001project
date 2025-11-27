@@ -75,6 +75,12 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           label: t('nav.profile'),
           href: '/dashboard/story-manager/profile',
           icon: User
+        },
+        {
+          id: 'settings',
+          label: t('nav.settings'),
+          href: '/dashboard/story-manager/settings',
+          icon: Settings
         }
       ];
     }
@@ -98,6 +104,12 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           label: t('nav.profile'),
           href: '/dashboard/book-manager/profile',
           icon: User
+        },
+        {
+          id: 'settings',
+          label: t('nav.settings'),
+          href: '/dashboard/book-manager/settings',
+          icon: Settings
         }
       ];
     }
@@ -121,6 +133,12 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           label: t('nav.profile'),
           href: '/dashboard/content-admin/profile',
           icon: User
+        },
+        {
+          id: 'settings',
+          label: t('nav.settings'),
+          href: '/dashboard/content-admin/settings',
+          icon: Settings
         }
       ];
     }
@@ -149,6 +167,12 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
         label: t('nav.myStories'),
         href: '/dashboard/writer/stories',
         icon: FileText
+      },
+      {
+        id: 'settings',
+        label: t('nav.settings'),
+        href: '/dashboard/writer/settings',
+        icon: Settings
       }
     ];
   };

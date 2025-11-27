@@ -60,13 +60,9 @@ export function ProfileCard({ user, stats }: ProfileCardProps) {
 
       {/* Edit Button */}
       <Link
-        href={`/dashboard/${role}/profile`}
+        href={`/dashboard/${role}/settings`}
         className="text-[#16A34A] font-medium transition-opacity hover:opacity-80"
         style={{ fontSize: '14px' }}
-        onClick={(e) => {
-          e.preventDefault();
-          alert(t('profile.card.editComingSoon'));
-        }}
       >
         {t('profile.card.editProfile')}
       </Link>

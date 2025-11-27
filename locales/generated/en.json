@@ -2296,5 +2296,45 @@
   },
   "circularBadge": {
     "text": "REGISTER FIRST! • REGISTER FIRST! • "
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your profile and preferences",
+    "backToProfile": "Back to Profile",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "saveSuccess": "Profile updated successfully",
+    "saveFailed": "Failed to update profile",
+    "profile": {
+      "avatar": {
+        "title": "Profile Picture",
+        "description": "Upload a profile picture (max 2MB)",
+        "remove": "Remove",
+        "error": {
+          "invalidFile": "Please select a valid image file",
+          "tooLarge": "Image size must be less than 2MB",
+          "invalidType": "File type not allowed. Use PNG, JPG, or WebP",
+          "uploadFailed": "Failed to upload avatar",
+          "deleteFailed": "Failed to delete avatar"
+        }
+      },
+      "basicInfo": {
+        "title": "Basic Information",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "displayName": "Display Name"
+      },
+      "bio": {
+        "title": "About Me",
+        "placeholder": "Tell us about yourself..."
+      },
+      "tags": {
+        "title": "Interests & Tags",
+        "placeholder": "Add a tag...",
+        "add": "Add",
+        "count": "tags"
+      }
+    }
   }
 }

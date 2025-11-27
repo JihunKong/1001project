@@ -25,6 +25,11 @@ const IMAGE_VALIDATION: FileValidation = {
   allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
 };
 
+const AVATAR_VALIDATION: FileValidation = {
+  maxSize: 2 * 1024 * 1024, // 2MB for avatars (smaller for faster loading)
+  allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+};
+
 function validateFile(file: File, validation: FileValidation): { valid: boolean; error?: string } {
   if (file.size > validation.maxSize) {
     const maxSizeMB = validation.maxSize / (1024 * 1024);
@@ -135,6 +140,53 @@ export async function uploadCoverImage(
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to upload cover image',
+    };
+  }
+}
+
+export async function uploadAvatar(
+  file: File,
+  userId: string,
+  existingAvatarUrl?: string | null
+): Promise<UploadResult> {
+  try {
+    const validation = validateFile(file, AVATAR_VALIDATION);
+    if (!validation.valid) {
+      return {
+        success: false,
+        error: validation.error,
+      };
+    }
+
+    // Delete existing avatar if it's a local file
+    if (existingAvatarUrl && existingAvatarUrl.startsWith('/avatars/')) {
+      await deleteFile(existingAvatarUrl);
+    }
+
+    const sanitizedName = sanitizeFilename(file.name);
+    const filename = `${userId}-${Date.now()}-${sanitizedName}`;
+    const uploadDir = path.join(process.cwd(), 'public', 'avatars');
+
+    await ensureDirectoryExists(uploadDir);
+
+    const filePath = path.join(uploadDir, filename);
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    await writeFile(filePath, buffer);
+
+    logger.info(`Avatar uploaded successfully: ${filename}`);
+
+    return {
+      success: true,
+      filePath: `/avatars/${filename}`,
+      publicUrl: `/avatars/${filename}`,
+    };
+  } catch (error) {
+    logger.error('Avatar upload error', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to upload avatar',
     };
   }
 }

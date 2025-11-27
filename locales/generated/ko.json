@@ -2307,5 +2307,45 @@
   },
   "circularBadge": {
     "text": "먼저 등록하세요! • 먼저 등록하세요! • "
+  },
+  "settings": {
+    "title": "설정",
+    "description": "프로필 및 환경설정을 관리하세요",
+    "backToProfile": "프로필로 돌아가기",
+    "save": "변경사항 저장",
+    "saving": "저장 중...",
+    "cancel": "취소",
+    "saveSuccess": "프로필이 성공적으로 업데이트되었습니다",
+    "saveFailed": "프로필 업데이트에 실패했습니다",
+    "profile": {
+      "avatar": {
+        "title": "프로필 사진",
+        "description": "프로필 사진 업로드 (최대 2MB)",
+        "remove": "삭제",
+        "error": {
+          "invalidFile": "유효한 이미지 파일을 선택해주세요",
+          "tooLarge": "이미지 크기는 2MB 이하여야 합니다",
+          "invalidType": "허용되지 않는 파일 형식입니다. PNG, JPG, WebP를 사용해주세요",
+          "uploadFailed": "아바타 업로드에 실패했습니다",
+          "deleteFailed": "아바타 삭제에 실패했습니다"
+        }
+      },
+      "basicInfo": {
+        "title": "기본 정보",
+        "firstName": "이름",
+        "lastName": "성",
+        "displayName": "표시 이름"
+      },
+      "bio": {
+        "title": "자기소개",
+        "placeholder": "자신에 대해 소개해주세요..."
+      },
+      "tags": {
+        "title": "관심사 및 태그",
+        "placeholder": "태그 추가...",
+        "add": "추가",
+        "count": "개의 태그"
+      }
+    }
   }
 }

@@ -8,8 +8,8 @@ const profileUpdateSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   bio: z.string().max(500).optional(),
   tags: z.array(z.string()).max(10).optional(),
-  avatarUrl: z.string().url().optional().nullable(),
-  coverImageUrl: z.string().url().optional().nullable(),
+  avatarUrl: z.string().max(500).optional().nullable(),
+  coverImageUrl: z.string().max(500).optional().nullable(),
   firstName: z.string().max(50).optional(),
   lastName: z.string().max(50).optional()
 });
