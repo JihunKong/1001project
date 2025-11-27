@@ -24,7 +24,7 @@ COPY --chown=nextjs:nodejs package*.json ./
 COPY --chown=nextjs:nodejs prisma ./prisma/
 
 # Install dependencies with cache optimization (as root first)
-RUN npm ci --only=production --no-audit --no-fund && \
+RUN npm ci --only=production --no-audit --no-fund --legacy-peer-deps && \
     npm cache clean --force
 
 # Switch to non-root user after dependency installation
@@ -40,7 +40,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install all dependencies including dev dependencies
-RUN npm ci --no-audit --no-fund && npm cache clean --force
+RUN npm ci --no-audit --no-fund --legacy-peer-deps && npm cache clean --force
 
 # Generate Prisma client in build-deps stage (with CDN fallback handling)
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
@@ -82,7 +82,7 @@ RUN npx prisma generate
 
 # Build application with optimization
 RUN npm run build && \
-    npm prune --production
+    npm prune --production --legacy-peer-deps
 
 # Stage 3: Production runner
 FROM node:20-alpine AS runner
