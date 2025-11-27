@@ -111,7 +111,11 @@ export function BookRegistrationForm({
       return;
     }
 
-    if (formData.contentType === 'TEXT' && !formData.content) {
+    // Check if TEXT content is empty (including empty HTML tags like <p></p>)
+    const isContentEmpty = !formData.content ||
+      formData.content.replace(/<[^>]*>/g, '').trim() === '';
+
+    if (formData.contentType === 'TEXT' && isContentEmpty) {
       toast.error('Content is required when content type is TEXT');
       return;
     }
@@ -160,7 +164,14 @@ export function BookRegistrationForm({
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || `Failed to ${isEditMode ? 'update' : 'register'} book`);
+        // Show detailed validation errors if available
+        if (result.details && Array.isArray(result.details)) {
+          const errorMessages = result.details.map((err: { path?: string[]; message?: string }) =>
+            err.path ? `${err.path.join('.')}: ${err.message}` : err.message
+          ).join('\n');
+          throw new Error(errorMessages || result.error || `Failed to ${isEditMode ? 'update' : 'register'} book`);
+        }
+        throw new Error(result.error || result.message || `Failed to ${isEditMode ? 'update' : 'register'} book`);
       }
 
       const successMessage = isEditMode
@@ -280,6 +291,7 @@ export function BookRegistrationForm({
           onFileSelect={setCoverImage}
           disabled={isSubmitting}
           existingImage={initialData?.coverImage}
+          pdfFile={formData.contentType === 'PDF' ? pdfFile : null}
         />
       </div>
 

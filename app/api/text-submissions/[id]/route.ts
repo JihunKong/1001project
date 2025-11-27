@@ -308,6 +308,29 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
       newStatus = TextSubmissionStatus.REJECTED;
       break;
 
+    case 'undo_reject':
+      const undoRejectAllowedRoles: UserRole[] = [UserRole.STORY_MANAGER, UserRole.BOOK_MANAGER, UserRole.CONTENT_ADMIN, UserRole.ADMIN];
+      if (!undoRejectAllowedRoles.includes(user.role)) {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+      if (submission.status !== TextSubmissionStatus.REJECTED) {
+        return NextResponse.json({ error: 'Can only undo rejection for rejected submissions' }, { status: 400 });
+      }
+      updates.finalNotes = null;
+      newStatus = TextSubmissionStatus.STORY_REVIEW;
+      break;
+
+    case 'update_revision_feedback':
+      const updateRevisionAllowedRoles: UserRole[] = [UserRole.STORY_MANAGER, UserRole.BOOK_MANAGER, UserRole.CONTENT_ADMIN, UserRole.ADMIN];
+      if (!updateRevisionAllowedRoles.includes(user.role)) {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+      if (submission.status !== TextSubmissionStatus.NEEDS_REVISION) {
+        return NextResponse.json({ error: 'Can only update feedback for submissions needing revision' }, { status: 400 });
+      }
+      updates.storyFeedback = data.feedback;
+      break;
+
     default:
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   }

@@ -81,8 +81,17 @@ export default function Modal({
     const focusableElements = modalRef.current?.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    const firstFocusable = focusableElements?.[0] as HTMLElement;
-    firstFocusable?.focus();
+
+    const textInputElement = modalRef.current?.querySelector(
+      'textarea, input[type="text"], input[type="email"], input[type="search"], input:not([type])'
+    ) as HTMLElement;
+
+    if (textInputElement) {
+      textInputElement.focus();
+    } else {
+      const firstFocusable = focusableElements?.[0] as HTMLElement;
+      firstFocusable?.focus();
+    }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);

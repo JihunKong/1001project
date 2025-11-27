@@ -109,15 +109,30 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     logger.error('AI Review error', error);
 
-    if (error instanceof Error && error.message === 'Failed to generate AI review') {
+    // Check if it's an OpenAI-related error
+    if (error instanceof Error && error.message.includes('Failed to generate AI review')) {
+      // Extract the actual error message for better debugging
+      const errorMessage = error.message.replace('Failed to generate AI review: ', '');
       return NextResponse.json(
-        { error: 'Failed to generate AI review. Please try again.' },
+        { error: `AI review failed: ${errorMessage}` },
+        { status: 500 }
+      );
+    }
+
+    // Check for API key issues
+    if (error instanceof Error && (
+      error.message.includes('API key') ||
+      error.message.includes('authentication') ||
+      error.message.includes('401')
+    )) {
+      return NextResponse.json(
+        { error: 'AI service configuration error. Please contact support.' },
         { status: 500 }
       );
     }
 
     return NextResponse.json(
-      { error: 'An unexpected error occurred' },
+      { error: error instanceof Error ? error.message : 'An unexpected error occurred' },
       { status: 500 }
     );
   }

@@ -106,6 +106,8 @@ export default function StoryReviewPage() {
   const [feedback, setFeedback] = useState('');
   const [action, setAction] = useState<'approve' | 'revision' | 'reject' | null>(null);
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [showEditRevisionModal, setShowEditRevisionModal] = useState(false);
+  const [editRevisionFeedback, setEditRevisionFeedback] = useState('');
 
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -390,6 +392,74 @@ export default function StoryReviewPage() {
     }
   };
 
+  const handleUndoReject = async () => {
+    if (!submission) return;
+
+    setSubmitting(true);
+    try {
+      const response = await fetch(`/api/text-submissions/${submission.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'undo_reject',
+          comment: 'Rejection undone by Story Manager'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to undo rejection');
+      }
+
+      const data = await response.json();
+      setSubmission(data.submission);
+      toast.success(t('dashboard.storyManager.review.toast.rejectionUndone'));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpdateRevisionFeedback = async () => {
+    if (!submission || !editRevisionFeedback.trim()) return;
+
+    setSubmitting(true);
+    try {
+      const response = await fetch(`/api/text-submissions/${submission.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'update_revision_feedback',
+          feedback: editRevisionFeedback.trim(),
+          comment: 'Revision feedback updated by Story Manager'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update revision feedback');
+      }
+
+      const data = await response.json();
+      setSubmission(data.submission);
+      setShowEditRevisionModal(false);
+      setEditRevisionFeedback('');
+      toast.success(t('dashboard.storyManager.review.toast.feedbackUpdated'));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openEditRevisionModal = () => {
+    setEditRevisionFeedback(submission?.storyFeedback || '');
+    setShowEditRevisionModal(true);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PUBLISHED': return 'bg-green-100 text-green-800';
@@ -410,6 +480,14 @@ export default function StoryReviewPage() {
 
   const canTakeAction = (status: string) => {
     return ['PENDING', 'STORY_REVIEW', 'NEEDS_REVISION'].includes(status);
+  };
+
+  const canUndoReject = (status: string) => {
+    return status === 'REJECTED';
+  };
+
+  const canEditRevision = (status: string) => {
+    return status === 'NEEDS_REVISION';
   };
 
   const filteredComments = comments.filter(comment => {
@@ -502,6 +580,25 @@ export default function StoryReviewPage() {
                   {t('dashboard.storyManager.review.actions.reject')}
                 </button>
               </>
+            )}
+            {canUndoReject(submission.status) && (
+              <button
+                onClick={handleUndoReject}
+                disabled={submitting}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center disabled:opacity-50"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                {t('dashboard.storyManager.review.actions.undoReject')}
+              </button>
+            )}
+            {canEditRevision(submission.status) && (
+              <button
+                onClick={openEditRevisionModal}
+                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg flex items-center"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                {t('dashboard.storyManager.review.actions.editRevision')}
+              </button>
             )}
           </div>
         </div>
@@ -784,6 +881,49 @@ export default function StoryReviewPage() {
                 } disabled:opacity-50`}
               >
                 {submitting ? t('dashboard.storyManager.review.modals.processing') : (action === 'approve' ? t('dashboard.storyManager.review.modals.approve.confirm') : t('dashboard.storyManager.review.modals.reject.confirm'))}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Revision Feedback Modal */}
+      {showEditRevisionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {t('dashboard.storyManager.review.modals.editRevision.title')}
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              {t('dashboard.storyManager.review.modals.editRevision.description')}
+            </p>
+            <textarea
+              value={editRevisionFeedback}
+              onChange={(e) => setEditRevisionFeedback(e.target.value)}
+              placeholder={t('dashboard.storyManager.review.modals.editRevision.placeholder')}
+              rows={6}
+              className="w-full border border-gray-300 rounded-lg p-3 text-sm text-gray-900"
+              autoComplete="off"
+              name="edit-revision-feedback"
+              data-form-type="other"
+            />
+            <div className="flex justify-end space-x-3 mt-4">
+              <button
+                onClick={() => {
+                  setShowEditRevisionModal(false);
+                  setEditRevisionFeedback('');
+                }}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                disabled={submitting}
+              >
+                {t('dashboard.storyManager.review.modals.cancel')}
+              </button>
+              <button
+                onClick={handleUpdateRevisionFeedback}
+                disabled={submitting || !editRevisionFeedback.trim()}
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg disabled:opacity-50"
+              >
+                {submitting ? t('dashboard.storyManager.review.modals.processing') : t('dashboard.storyManager.review.modals.editRevision.confirm')}
               </button>
             </div>
           </div>

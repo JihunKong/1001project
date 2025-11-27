@@ -192,6 +192,9 @@ export default function StoryReviewsPage() {
                 <option value="all">{t('dashboard.storyManager.filter.all')}</option>
                 <option value="PENDING">{t('dashboard.storyManager.filter.pending')}</option>
                 <option value="STORY_REVIEW">{t('dashboard.storyManager.filter.inReview')}</option>
+                <option value="NEEDS_REVISION">{t('dashboard.storyManager.filter.needsRevision')}</option>
+                <option value="REJECTED">{t('dashboard.storyManager.filter.rejected')}</option>
+                <option value="STORY_APPROVED">{t('dashboard.storyManager.filter.approved')}</option>
               </select>
             </div>
           </div>

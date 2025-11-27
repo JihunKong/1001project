@@ -142,7 +142,10 @@
       "filter": {
         "all": "모든 제출물",
         "pending": "검토 대기 중",
-        "inReview": "검토 중"
+        "inReview": "검토 중",
+        "needsRevision": "수정 필요",
+        "rejected": "거부됨",
+        "approved": "승인됨"
       },
       "stats": {
         "pendingReview": "검토 대기 중",
@@ -173,7 +176,9 @@
         "actions": {
           "approve": "승인",
           "requestRevision": "수정 요청",
-          "reject": "거부"
+          "reject": "거부",
+          "undoReject": "거부 취소",
+          "editRevision": "피드백 수정"
         },
         "metadata": {
           "words": "단어",
@@ -228,6 +233,12 @@
             "placeholder": "이 스토리가 거부되는 이유를 설명하세요...",
             "confirm": "거부 확인"
           },
+          "editRevision": {
+            "title": "수정 피드백 편집",
+            "description": "작성자에게 제공된 피드백을 업데이트합니다.",
+            "placeholder": "작성자를 위한 피드백을 수정하세요...",
+            "confirm": "피드백 업데이트"
+          },
           "cancel": "취소",
           "processing": "처리 중..."
         },
@@ -246,7 +257,9 @@
           "revisionRequested": "수정이 성공적으로 요청되었습니다!",
           "storyApproved": "스토리가 성공적으로 승인되었습니다!",
           "storyRejected": "스토리가 성공적으로 거부되었습니다!",
-          "loadCommentsFailed": "코멘트 로드 실패"
+          "loadCommentsFailed": "코멘트 로드 실패",
+          "rejectionUndone": "거부가 취소되었습니다! 스토리가 검토 상태로 복원되었습니다.",
+          "feedbackUpdated": "수정 피드백이 성공적으로 업데이트되었습니다!"
         },
         "statusLabels": {
           "PUBLISHED": "발행됨",
@@ -2349,5 +2362,25 @@
         "count": "개의 태그"
       }
     }
+  },
+  "manageBooks": {
+    "title": "도서 관리",
+    "description": "라이브러리의 모든 출판된 도서를 편집하고 관리합니다",
+    "search": "검색",
+    "searchPlaceholder": "제목 또는 저자로 검색...",
+    "contentType": "콘텐츠 유형",
+    "allTypes": "모든 유형",
+    "text": "텍스트",
+    "pdf": "PDF",
+    "language": "언어",
+    "allLanguages": "모든 언어",
+    "showingBooks": "{total}권 중 {filtered}권 표시",
+    "noBooksFound": "도서를 찾을 수 없습니다",
+    "tryAdjusting": "검색어나 필터를 조정해 보세요",
+    "by": "저자:",
+    "views": "조회",
+    "updated": "업데이트:",
+    "edit": "편집",
+    "view": "보기"
   }
 }

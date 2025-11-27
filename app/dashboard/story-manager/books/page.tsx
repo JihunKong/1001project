@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { canEditBook } from '@/lib/validation/book-registration.schema';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface Book {
   id: string;
@@ -26,6 +27,7 @@ interface Book {
 export default function StoryManagerBooksPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useTranslation();
   const [books, setBooks] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -85,44 +87,44 @@ export default function StoryManagerBooksPage() {
     <div className="py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Manage Books</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('manageBooks.title')}</h1>
           <p className="mt-2 text-gray-600">
-            Edit and manage all published books in the library
+            {t('manageBooks.description')}
           </p>
         </div>
 
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('manageBooks.search')}</label>
               <input
                 type="text"
-                placeholder="Search by title or author..."
+                placeholder={t('manageBooks.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Content Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('manageBooks.contentType')}</label>
               <select
                 value={contentTypeFilter}
                 onChange={(e) => setContentTypeFilter(e.target.value)}
                 className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">All Types</option>
-                <option value="TEXT">Text</option>
-                <option value="PDF">PDF</option>
+                <option value="all">{t('manageBooks.allTypes')}</option>
+                <option value="TEXT">{t('manageBooks.text')}</option>
+                <option value="PDF">{t('manageBooks.pdf')}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('manageBooks.language')}</label>
               <select
                 value={languageFilter}
                 onChange={(e) => setLanguageFilter(e.target.value)}
                 className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">All Languages</option>
+                <option value="all">{t('manageBooks.allLanguages')}</option>
                 {uniqueLanguages.map(lang => (
                   <option key={lang} value={lang}>{lang.toUpperCase()}</option>
                 ))}
@@ -134,7 +136,7 @@ export default function StoryManagerBooksPage() {
         <div className="bg-white rounded-lg shadow">
           <div className="px-6 py-4 border-b border-gray-200">
             <p className="text-sm text-gray-600">
-              Showing {filteredBooks.length} of {books.length} books
+              {t('manageBooks.showingBooks', { filtered: filteredBooks.length, total: books.length })}
             </p>
           </div>
 
@@ -143,8 +145,8 @@ export default function StoryManagerBooksPage() {
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <h3 className="mt-4 text-lg font-medium text-gray-900">No books found</h3>
-              <p className="mt-2 text-gray-500">Try adjusting your search or filters</p>
+              <h3 className="mt-4 text-lg font-medium text-gray-900">{t('manageBooks.noBooksFound')}</h3>
+              <p className="mt-2 text-gray-500">{t('manageBooks.tryAdjusting')}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
@@ -170,7 +172,7 @@ export default function StoryManagerBooksPage() {
 
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-medium text-gray-900 truncate">{book.title}</h3>
-                    <p className="text-sm text-gray-500">by {book.authorName}</p>
+                    <p className="text-sm text-gray-500">{t('manageBooks.by')} {book.authorName}</p>
                     <div className="mt-2 flex items-center gap-2">
                       <span className={`px-2 py-0.5 text-xs rounded ${
                         book.contentType === 'PDF' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
@@ -189,9 +191,9 @@ export default function StoryManagerBooksPage() {
                   </div>
 
                   <div className="flex-shrink-0 text-right text-sm text-gray-500">
-                    <div>{book.viewCount} views</div>
+                    <div>{book.viewCount} {t('manageBooks.views')}</div>
                     <div className="mt-1">
-                      Updated {new Date(book.updatedAt).toLocaleDateString()}
+                      {t('manageBooks.updated')} {new Date(book.updatedAt).toLocaleDateString()}
                     </div>
                   </div>
 
@@ -200,13 +202,13 @@ export default function StoryManagerBooksPage() {
                       onClick={() => router.push(`/dashboard/story-manager/books/${book.id}/edit`)}
                       className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                     >
-                      Edit
+                      {t('manageBooks.edit')}
                     </button>
                     <Link
                       href={`/books/${book.id}`}
                       className="px-3 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                     >
-                      View
+                      {t('manageBooks.view')}
                     </Link>
                   </div>
                 </div>

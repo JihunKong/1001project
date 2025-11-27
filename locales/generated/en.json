@@ -142,7 +142,10 @@
       "filter": {
         "all": "All Submissions",
         "pending": "Pending Review",
-        "inReview": "In Review"
+        "inReview": "In Review",
+        "needsRevision": "Needs Revision",
+        "rejected": "Rejected",
+        "approved": "Approved"
       },
       "stats": {
         "pendingReview": "Pending Review",
@@ -173,7 +176,9 @@
         "actions": {
           "approve": "Approve",
           "requestRevision": "Request Revision",
-          "reject": "Reject"
+          "reject": "Reject",
+          "undoReject": "Undo Reject",
+          "editRevision": "Edit Feedback"
         },
         "metadata": {
           "words": "words",
@@ -228,6 +233,12 @@
             "placeholder": "Explain why this story is being rejected...",
             "confirm": "Confirm Rejection"
           },
+          "editRevision": {
+            "title": "Edit Revision Feedback",
+            "description": "Update the feedback provided to the author for their revision.",
+            "placeholder": "Update your feedback for the author...",
+            "confirm": "Update Feedback"
+          },
           "cancel": "Cancel",
           "processing": "Processing..."
         },
@@ -246,7 +257,9 @@
           "revisionRequested": "Revision requested successfully!",
           "storyApproved": "Story approved successfully!",
           "storyRejected": "Story rejected successfully!",
-          "loadCommentsFailed": "Failed to load comments"
+          "loadCommentsFailed": "Failed to load comments",
+          "rejectionUndone": "Rejection undone! Story returned to review.",
+          "feedbackUpdated": "Revision feedback updated successfully!"
         },
         "statusLabels": {
           "PUBLISHED": "Published",
@@ -2338,5 +2351,25 @@
         "count": "tags"
       }
     }
+  },
+  "manageBooks": {
+    "title": "Manage Books",
+    "description": "Edit and manage all published books in the library",
+    "search": "Search",
+    "searchPlaceholder": "Search by title or author...",
+    "contentType": "Content Type",
+    "allTypes": "All Types",
+    "text": "Text",
+    "pdf": "PDF",
+    "language": "Language",
+    "allLanguages": "All Languages",
+    "showingBooks": "Showing {filtered} of {total} books",
+    "noBooksFound": "No books found",
+    "tryAdjusting": "Try adjusting your search or filters",
+    "by": "by",
+    "views": "views",
+    "updated": "Updated",
+    "edit": "Edit",
+    "view": "View"
   }
 }
