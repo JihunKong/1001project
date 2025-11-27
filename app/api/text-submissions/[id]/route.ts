@@ -205,10 +205,10 @@ export async function PUT(
       }
     }
 
-    // Trigger image regeneration if content changed significantly (50%+)
-    if (shouldRegenerateImages) {
+    const existingImages = submission.generatedImages && Array.isArray(submission.generatedImages) && submission.generatedImages.length > 0;
+    if (shouldRegenerateImages && !existingImages) {
       triggerImageGeneration(updatedSubmission.id);
-      logger.info('Triggered image regeneration due to significant content change', {
+      logger.info('Triggered image generation for draft (no existing images, significant content change)', {
         submissionId: updatedSubmission.id
       });
     }
@@ -395,8 +395,12 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
     }
   }
 
-  if (newStatus === TextSubmissionStatus.PENDING) {
+  const hasExistingImages = submission.generatedImages && Array.isArray(submission.generatedImages) && submission.generatedImages.length > 0;
+  if (newStatus === TextSubmissionStatus.PENDING && !hasExistingImages) {
     triggerImageGeneration(submission.id);
+    logger.info('Triggered image generation for PENDING submission (no existing images)', {
+      submissionId: submission.id
+    });
   }
 
   return NextResponse.json({ submission: updatedSubmission });

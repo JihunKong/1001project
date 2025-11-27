@@ -40,43 +40,78 @@ export default function AnnotatedStoryViewer({
 }: AnnotatedStoryViewerProps) {
   const [aiReviews, setAiReviews] = useState<AIReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPolling, setIsPolling] = useState(true);
+  const [pollCount, setPollCount] = useState(0);
   const [selectedSuggestion, setSelectedSuggestion] = useState<{
     annotation: AIAnnotation;
     suggestion: string;
     reviewType: string;
   } | null>(null);
 
-  useEffect(() => {
-    async function fetchAIReviews() {
-      try {
-        setIsLoading(true);
+  const MAX_POLL_COUNT = 24;
+  const POLL_INTERVAL = 5000;
 
-        const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`);
+  const fetchAIReviews = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/text-submissions/${submissionId}/ai-reviews`);
 
-        if (!response.ok) {
-          // Failed to fetch AI reviews - will show error state
-          return;
-        }
-
-        const data = await response.json();
-        const reviews = data.reviews || [];
-
-        reviews.forEach((review: AIReview) => {
-          if (!review.annotationData || review.annotationData.length === 0) {
-            // Review has no annotation data - skip
-          }
-        });
-
-        setAiReviews(reviews);
-      } catch (error) {
-        // Failed to fetch AI reviews
-      } finally {
-        setIsLoading(false);
+      if (!response.ok) {
+        return null;
       }
+
+      const data = await response.json();
+      return data.reviews || [];
+    } catch {
+      return null;
+    }
+  }, [submissionId]);
+
+  useEffect(() => {
+    async function initialFetch() {
+      setIsLoading(true);
+      const reviews = await fetchAIReviews();
+      if (reviews) {
+        setAiReviews(reviews);
+        const hasCompletedWithAnnotations = reviews.some(
+          (r: AIReview) => r.annotationData && r.annotationData.length > 0
+        );
+        if (hasCompletedWithAnnotations) {
+          setIsPolling(false);
+        }
+      }
+      setIsLoading(false);
     }
 
-    fetchAIReviews();
-  }, [submissionId]);
+    initialFetch();
+  }, [fetchAIReviews]);
+
+  useEffect(() => {
+    if (!isPolling || pollCount >= MAX_POLL_COUNT) {
+      if (pollCount >= MAX_POLL_COUNT) {
+        setIsPolling(false);
+      }
+      return;
+    }
+
+    const pollInterval = setInterval(async () => {
+      setPollCount(prev => prev + 1);
+      const reviews = await fetchAIReviews();
+
+      if (reviews) {
+        const hasCompletedWithAnnotations = reviews.some(
+          (r: AIReview) => r.annotationData && r.annotationData.length > 0
+        );
+
+        if (hasCompletedWithAnnotations) {
+          setAiReviews(reviews);
+          setIsPolling(false);
+          clearInterval(pollInterval);
+        }
+      }
+    }, POLL_INTERVAL);
+
+    return () => clearInterval(pollInterval);
+  }, [isPolling, pollCount, fetchAIReviews]);
 
   const editor = useEditor({
     extensions: [StarterKit, AISuggestionMark],
