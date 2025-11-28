@@ -258,16 +258,22 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
       break;
 
     case 'story_approve':
-      if (user.role !== UserRole.STORY_MANAGER || submission.storyManagerId !== user.id) {
+      if (user.role !== UserRole.STORY_MANAGER) {
         return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+      if (!submission.storyManagerId) {
+        updates.storyManagerId = user.id;
       }
       updates.storyFeedback = data.feedback;
       newStatus = TextSubmissionStatus.STORY_APPROVED;
       break;
 
     case 'story_needs_revision':
-      if (user.role !== UserRole.STORY_MANAGER || submission.storyManagerId !== user.id) {
+      if (user.role !== UserRole.STORY_MANAGER) {
         return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+      if (!submission.storyManagerId) {
+        updates.storyManagerId = user.id;
       }
       updates.storyFeedback = data.feedback;
       newStatus = TextSubmissionStatus.NEEDS_REVISION;
@@ -282,8 +288,11 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
       break;
 
     case 'format_decision':
-      if (user.role !== UserRole.BOOK_MANAGER || submission.bookManagerId !== user.id) {
+      if (user.role !== UserRole.BOOK_MANAGER) {
         return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+      if (!submission.bookManagerId) {
+        updates.bookManagerId = user.id;
       }
       updates.bookDecision = data.decision;
       newStatus = TextSubmissionStatus.CONTENT_REVIEW;
