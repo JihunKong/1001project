@@ -5,10 +5,15 @@ import { logger } from '@/lib/logger';
 import { getPrompts } from '@/lib/ai/prompts';
 import { SupportedLanguage } from '@/lib/i18n/language-cookie';
 
+interface ImprovementItem {
+  text: string;
+  suggestion: string;
+}
+
 interface AIFeedback {
   summary: string;
   strengths: string[];
-  improvements: string[];
+  improvements: (ImprovementItem | string)[];
   details?: any;
 }
 

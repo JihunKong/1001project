@@ -5,12 +5,17 @@ import { Sparkles, Loader2, CheckCircle, AlertTriangle, Info } from 'lucide-reac
 import toast from 'react-hot-toast';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
+interface ImprovementItem {
+  text: string;
+  suggestion: string;
+}
+
 interface AIReview {
   id: string;
   feedback: {
     summary: string;
     strengths: string[];
-    improvements: string[];
+    improvements: (ImprovementItem | string)[];
     details?: any;
   };
   suggestions: string[];
@@ -203,14 +208,19 @@ export default function AIReviewSection({ submissionId, existingReview }: AIRevi
                     {t('dashboard.admin.aiReview.improvements')}
                   </h4>
                   <ul className="space-y-1 pl-4">
-                    {review.feedback.improvements.map((improvement, index) => (
-                      <li
-                        key={index}
-                        className="text-sm text-orange-800 relative before:content-['•'] before:absolute before:-left-4 before:text-orange-600"
-                      >
-                        {improvement}
-                      </li>
-                    ))}
+                    {review.feedback.improvements.map((improvement, index) => {
+                      const text = typeof improvement === 'object' && improvement !== null && 'text' in improvement
+                        ? (improvement as ImprovementItem).text
+                        : String(improvement);
+                      return (
+                        <li
+                          key={index}
+                          className="text-sm text-orange-800 relative before:content-['•'] before:absolute before:-left-4 before:text-orange-600"
+                        >
+                          {text}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}
