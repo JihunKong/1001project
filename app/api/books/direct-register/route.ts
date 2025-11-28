@@ -9,6 +9,11 @@ import {
 } from '@/lib/validation/book-registration.schema';
 import { uploadPDF, uploadCoverImage } from '@/lib/file-upload';
 
+const getStringOrUndefined = (value: FormDataEntryValue | null): string | undefined => {
+  if (value === null || value === '') return undefined;
+  return String(value);
+};
+
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -38,22 +43,22 @@ export async function POST(req: NextRequest) {
 
     const formDataObject = {
       title: formData.get('title') as string,
-      subtitle: formData.get('subtitle') as string | undefined,
-      summary: formData.get('summary') as string | undefined,
+      subtitle: getStringOrUndefined(formData.get('subtitle')),
+      summary: getStringOrUndefined(formData.get('summary')),
       authorName: formData.get('authorName') as string,
-      authorAlias: formData.get('authorAlias') as string | undefined,
+      authorAlias: getStringOrUndefined(formData.get('authorAlias')),
       coAuthors: formData.get('coAuthors')
         ? JSON.parse(formData.get('coAuthors') as string)
         : [],
       authorAge: formData.get('authorAge')
         ? parseInt(formData.get('authorAge') as string)
         : undefined,
-      authorLocation: formData.get('authorLocation') as string | undefined,
+      authorLocation: getStringOrUndefined(formData.get('authorLocation')),
       contentType: formData.get('contentType') as 'TEXT' | 'PDF',
-      content: formData.get('content') as string | undefined,
+      content: getStringOrUndefined(formData.get('content')),
       language: (formData.get('language') as string) || 'en',
-      ageRange: formData.get('ageRange') as string | undefined,
-      readingLevel: formData.get('readingLevel') as string | undefined,
+      ageRange: getStringOrUndefined(formData.get('ageRange')),
+      readingLevel: getStringOrUndefined(formData.get('readingLevel')),
       category: formData.get('category')
         ? JSON.parse(formData.get('category') as string)
         : [],
