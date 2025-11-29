@@ -103,11 +103,19 @@ model User {
   // Achievement system relations
   userAchievements UserAchievement[]
 
+  // Favorites system
+  bookFavorites BookFavorite[]
+
   // Institution management relations
   institutionAdminOf   Institution[] @relation("InstitutionAdmins")
   institutionTeacherOf Institution[] @relation("InstitutionTeachers")
   departmentHead       Department[]  @relation("DepartmentHead")
   departmentTeacherOf  Department[]  @relation("DepartmentTeachers")
+
+  // Teacher Resource Library relations
+  teacherResources         TeacherResource[]         @relation("TeacherResourceAuthor")
+  teacherResourceFavorites TeacherResourceFavorite[] @relation("TeacherResourceFavorites")
+  resourceCollections      ResourceCollection[]      @relation("ResourceCollections")
 
   @@index([email])
   @@index([role])
@@ -698,6 +706,10 @@ model Book {
   entitlements    Entitlement[]
   publications    Publication[]
   shopProducts    ShopProduct[]
+  favorites       BookFavorite[]
+
+  // Source TextSubmission (if auto-created from publishing workflow)
+  sourceSubmission TextSubmission? @relation("PublishedBook")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -709,6 +721,22 @@ model Book {
   @@index([contentType])
   @@index([authorId])
   @@map("books")
+}
+
+// Book favorites for user library
+model BookFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  bookId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+  @@index([userId])
+  @@index([bookId])
+  @@map("book_favorites")
 }
 
 // Book chapters for sequential reading
@@ -2060,6 +2088,10 @@ model TextSubmission {
   originalWork       Boolean @default(true)
   licenseType        String? // "CC-BY", "CC-BY-SA", etc.
 
+  // Published Book relation (auto-created when status becomes PUBLISHED)
+  publishedBookId String? @unique
+  publishedBook   Book?   @relation("PublishedBook", fields: [publishedBookId], references: [id])
+
   // Relations
   author          User              @relation("AuthoredTextSubmissions", fields: [authorId], references: [id], onDelete: Cascade)
   storyManager    User?             @relation("StoryManagerReviews", fields: [storyManagerId], references: [id])
@@ -2511,4 +2543,98 @@ enum AchievementCategory {
   MILESTONE // Platform milestones
   TEACHING // Teaching achievements
   LEARNING // Learning achievements
+}
+
+// ==================================================================
+// TEACHER RESOURCE LIBRARY
+// ==================================================================
+
+enum TeacherResourceType {
+  TEXTBOOK
+  WORKSHEET
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+}
+
+model TeacherResource {
+  id          String              @id @default(cuid())
+  title       String
+  description String?             @db.Text
+  type        TeacherResourceType
+  subject     String
+  grade       String
+  fileUrl     String
+  fileSize    Int?
+  duration    Int?
+  thumbnailUrl String?
+  authorId    String
+  viewCount   Int                 @default(0)
+  downloadCount Int               @default(0)
+  likeCount   Int                 @default(0)
+  rating      Float?
+  ratingCount Int                 @default(0)
+  isPublished Boolean             @default(true)
+
+  author      User                @relation("TeacherResourceAuthor", fields: [authorId], references: [id])
+  favorites   TeacherResourceFavorite[]
+  collectionItems TeacherResourceCollectionItem[]
+
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([authorId])
+  @@index([type])
+  @@index([subject])
+  @@index([grade])
+  @@index([isPublished])
+  @@map("teacher_resources")
+}
+
+model TeacherResourceFavorite {
+  id         String   @id @default(cuid())
+  userId     String
+  resourceId String
+  createdAt  DateTime @default(now())
+
+  user       User            @relation("TeacherResourceFavorites", fields: [userId], references: [id], onDelete: Cascade)
+  resource   TeacherResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId])
+  @@index([userId])
+  @@index([resourceId])
+  @@map("teacher_resource_favorites")
+}
+
+model ResourceCollection {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  userId      String
+  isPublic    Boolean  @default(false)
+
+  user        User     @relation("ResourceCollections", fields: [userId], references: [id], onDelete: Cascade)
+  items       TeacherResourceCollectionItem[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isPublic])
+  @@map("resource_collections")
+}
+
+model TeacherResourceCollectionItem {
+  id           String   @id @default(cuid())
+  resourceId   String
+  collectionId String
+  addedAt      DateTime @default(now())
+
+  resource     TeacherResource    @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  collection   ResourceCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@unique([resourceId, collectionId])
+  @@index([collectionId])
+  @@map("teacher_resource_collection_items")
 }

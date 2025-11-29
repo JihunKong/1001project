@@ -189,18 +189,23 @@ export async function GET(request: NextRequest) {
         where.isPublished = true;
         where.visibility = 'PUBLIC';
       }
-    } else if (session.user.role === 'TEACHER') {
-      // Teachers see published books and their own drafts
+    } else if (session.user.role === 'TEACHER' || session.user.role === 'INSTITUTION') {
+      // Teachers see published books (PUBLIC, RESTRICTED, CLASSROOM) and their own drafts
       where.OR = [
-        { isPublished: true, visibility: { in: ['PUBLIC', 'CLASSROOM'] } },
+        { isPublished: true, visibility: { in: ['PUBLIC', 'RESTRICTED', 'CLASSROOM'] } },
         { authorId: session.user.id }
       ];
     } else if (session.user.role === 'WRITER') {
-      // Writers see published books (including those without authorId)
-      where.isPublished = true;
+      // Writers see published books (PUBLIC, RESTRICTED) and their own drafts
       where.OR = [
-        { authorId: null },  // Legacy/sample books without author
-        { authorId: { not: session.user.id } }  // Books by other authors
+        { isPublished: true, visibility: { in: ['PUBLIC', 'RESTRICTED'] } },
+        { authorId: session.user.id }
+      ];
+    } else if (session.user.role === 'STORY_MANAGER' || session.user.role === 'BOOK_MANAGER' || session.user.role === 'CONTENT_ADMIN') {
+      // Content managers see all published books (including RESTRICTED) and their own drafts
+      where.OR = [
+        { isPublished: true, visibility: { in: ['PUBLIC', 'RESTRICTED', 'CLASSROOM'] } },
+        { authorId: session.user.id }
       ];
     }
     // ADMIN users see all books (no additional filters)

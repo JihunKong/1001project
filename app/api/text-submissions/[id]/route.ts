@@ -12,6 +12,7 @@ import { triggerAutoAIReviews } from '@/lib/ai-review-trigger';
 import { triggerImageGeneration } from '@/lib/auto-image-generation';
 import { getLanguagePreferenceFromHeaders } from '@/lib/i18n/language-cookie';
 import { generateContentHash, hasContentChangedSignificantly } from '@/lib/content-hash';
+import { createBookFromSubmission } from '@/lib/submission-to-book';
 
 // Initialize DOMPurify for server-side HTML sanitization
 const window = new JSDOM('').window;
@@ -306,6 +307,26 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
       updates.finalNotes = data.notes;
       updates.publishedAt = new Date();
       newStatus = TextSubmissionStatus.PUBLISHED;
+
+      if (!submission.publishedBookId) {
+        try {
+          const book = await createBookFromSubmission({
+            submission,
+            visibility: 'RESTRICTED',
+            publisherId: user.id
+          });
+          updates.publishedBookId = book.id;
+          logger.info('Book auto-created from submission', {
+            submissionId: submission.id,
+            bookId: book.id,
+            title: book.title
+          });
+        } catch (bookError) {
+          logger.error('Error creating book from submission', bookError, {
+            submissionId: submission.id
+          });
+        }
+      }
       break;
 
     case 'reject':
