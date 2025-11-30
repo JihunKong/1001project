@@ -14,7 +14,8 @@ services:
       - .env.docker
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://stories_user:${DB_PASSWORD:-jsIAqnRygzHf1%2B9m46zSob%2Flhg52huI6UNiy9rQzuFc%3D}@postgres:5432/stories_db
+      # 온라인 서버 DB 연결 (로컬 테스트용)
+      - DATABASE_URL=postgresql://stories_user:stories_password_123@3.128.143.122:5432/stories_db
     volumes:
       # Hot reload mounts for development
       - ./app:/app/app
@@ -28,8 +29,7 @@ services:
     networks:
       - local-network
     depends_on:
-      postgres:
-        condition: service_healthy
+      # postgres 의존성 제거 - 온라인 DB 사용
       redis:
         condition: service_healthy
     healthcheck:
