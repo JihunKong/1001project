@@ -3,8 +3,7 @@
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { BookOpen, LogOut, LayoutDashboard, ChevronDown, Globe } from 'lucide-react';
-import { useState } from 'react';
+import { BookOpen, LogOut, LayoutDashboard } from 'lucide-react';
 import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
@@ -15,7 +14,6 @@ export default function HomePageNavigation() {
   const loading = status === 'loading';
   const isAuthenticated = !!(session?.user?.email);
   const user = session?.user;
-  const [showProgramsMenu, setShowProgramsMenu] = useState(false);
 
   const handleLogout = async () => {
     await signOut({
@@ -71,66 +69,6 @@ export default function HomePageNavigation() {
               {t('nav.aboutUs')}
             </Link>
 
-            <div
-              className="relative"
-              onMouseEnter={() => setShowProgramsMenu(true)}
-              onMouseLeave={() => setShowProgramsMenu(false)}
-            >
-              <button
-                className="flex items-center gap-1 hover:opacity-70 transition-opacity"
-                style={{
-                  fontFamily: 'Poppins',
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  color: '#2B2B2B'
-                }}
-              >
-                {t('nav.programs')}
-                <ChevronDown className="w-4 h-4" />
-              </button>
-
-              {showProgramsMenu && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2">
-                  <Link
-                    href="/programs/kid-library"
-                    className="block px-4 py-3 hover:bg-gray-50 transition-colors"
-                    style={{
-                      fontFamily: 'Poppins',
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      color: '#2B2B2B'
-                    }}
-                  >
-                    {t('programs.kidLibrary.title')}
-                  </Link>
-                  <Link
-                    href="/programs/writing-volunteer"
-                    className="block px-4 py-3 hover:bg-gray-50 transition-colors"
-                    style={{
-                      fontFamily: 'Poppins',
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      color: '#2B2B2B'
-                    }}
-                  >
-                    {t('programs.writingVolunteer.title')}
-                  </Link>
-                  <Link
-                    href="/programs/english-learning"
-                    className="block px-4 py-3 hover:bg-gray-50 transition-colors"
-                    style={{
-                      fontFamily: 'Poppins',
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      color: '#2B2B2B'
-                    }}
-                  >
-                    {t('programs.englishLearning.title')}
-                  </Link>
-                </div>
-              )}
-            </div>
-
             <Link
               href="/library"
               style={{
@@ -145,7 +83,7 @@ export default function HomePageNavigation() {
             </Link>
 
             <Link
-              href="/signup?role=writer"
+              href="/write-your-story"
               style={{
                 fontFamily: 'Poppins',
                 fontSize: '16px',
@@ -154,7 +92,7 @@ export default function HomePageNavigation() {
               }}
               className="hover:opacity-70 transition-opacity"
             >
-              {t('nav.volunteer')}
+              {t('nav.writeYourStory')}
             </Link>
           </div>
 

@@ -169,6 +169,7 @@ export default withAuth(
           pathname.startsWith('/onboarding') ||
           pathname.startsWith('/about') ||
           pathname.startsWith('/library') ||
+          pathname.startsWith('/write-your-story') ||
           pathname.startsWith('/legal') ||
           pathname.startsWith('/contact') ||
           pathname.startsWith('/help') ||

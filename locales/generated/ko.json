@@ -1037,6 +1037,7 @@
     "logout": "로그아웃",
     "language": "언어",
     "volunteer": "자원봉사",
+    "writeYourStory": "이야기 쓰기",
     "profileSettings": "프로필 설정",
     "showTutorial": "사용법 다시 보기",
     "defaultUser": "사용자",
@@ -1159,6 +1160,56 @@
   "library": {
     "title": "출판된 라이브러리",
     "subtitle": "다른 작가들의 스토리 탐색",
+    "hero": {
+      "title": "책은 손에 쥔 꿈입니다.",
+      "description": "키즈 라이브러리는 전 세계 어린이들이 다양한 문화권의 아이들이 쓴 이야기를 읽고 들을 수 있는 글로벌 스토리 컬렉션입니다. 전 세계 어린이들이 쓴 500개 이상의 이야기를 탐색하세요."
+    },
+    "cta": {
+      "explore": "라이브러리 탐색"
+    },
+    "accordion": {
+      "step1": {
+        "title": "쉬운 설정",
+        "description": "계정을 만들고 나만의 독서 모험을 시작하세요!"
+      },
+      "step2": {
+        "title": "책 선택하기",
+        "description": "직접 책을 고르거나 딱 맞는 장르를 추천받으세요."
+      },
+      "step3": {
+        "title": "지금 바로 읽기",
+        "description": "한 번의 클릭으로 새로운 이야기가 열립니다."
+      }
+    },
+    "stats": {
+      "stories": {
+        "value": "500+",
+        "label": "출판된 스토리"
+      },
+      "children": {
+        "value": "10K",
+        "label": "어린이 독자"
+      },
+      "countries": {
+        "value": "50+",
+        "label": "참여 국가"
+      },
+      "volunteers": {
+        "value": "100+",
+        "label": "자원봉사자"
+      }
+    },
+    "howItWorks": {
+      "title": "1001 Stories 이용 방법",
+      "subtitle": "스토리텔링 여정을 시작하는 세 가지 간단한 단계",
+      "step1": "다양한 문화권 어린이들의 이야기를 들어요",
+      "step2": "그 이야기를 바탕으로 다른 어린이들이 자신만의 이야기를 씁니다",
+      "step3": "전 세계 어린이들이 만든 이야기를 읽어요"
+    },
+    "bottomCta": {
+      "title": "전 세계 어린이들이 쓴 500권 이상의 책을 탐색하세요.",
+      "button": "지금 키즈 라이브러리 가기"
+    },
     "filters": {
       "all": "모든 카테고리",
       "category": "카테고리",
@@ -1172,7 +1223,7 @@
       "title": "출판된 스토리 발견",
       "description": "전 세계 다른 작가들이 출판한 스토리를 탐색하세요. 다음 스토리에 영감을 받으세요!"
     },
-    "stats": {
+    "statsOld": {
       "publishedBooks": "출판된 책",
       "featured": "추천",
       "languages": "언어",
@@ -1831,6 +1882,43 @@
         "title": "우리의 비전",
         "description": "우리는 모든 어린이가 아인슈타인의 불꽃을 지니고 있다고 믿습니다. 책은 학습을 고취하고 학습은 잠재력을 깨웁니다. 우리의 비전은 모든 어린이가 교육에 접근할 수 있는 세상, 상상력이 한계 없이 자랄 수 있는 곳입니다."
       }
+    },
+    "library": {
+      "title": "책은 손에 쥔 꿈입니다.",
+      "description": "키즈 라이브러리는 전 세계 어린이들이 다양한 문화권 아이들이 쓴 이야기를 읽고 들을 수 있는 글로벌 스토리 컬렉션입니다. 전 세계 어린이들이 쓴 500개 이상의 이야기를 탐험해 보세요.",
+      "cta": "라이브러리 둘러보기",
+      "accordion": {
+        "step1": {
+          "title": "쉬운 설정",
+          "description": "나만의 독서 모험을 시작하려면 계정을 만드세요!"
+        },
+        "step2": {
+          "title": "책 선택하기",
+          "description": "직접 책을 고르거나 맞춤 장르를 추천받으세요."
+        },
+        "step3": {
+          "title": "지금 읽기 시작",
+          "description": "한 번의 클릭으로 새로운 이야기가 펼쳐집니다."
+        }
+      },
+      "stats": {
+        "stories": {
+          "value": "500+",
+          "label": "출판된 이야기"
+        },
+        "children": {
+          "value": "10K",
+          "label": "참여 어린이"
+        },
+        "countries": {
+          "value": "50+",
+          "label": "참여 국가"
+        },
+        "volunteers": {
+          "value": "100+",
+          "label": "자원봉사자"
+        }
+      }
     }
   },
   "roles": {
@@ -2382,5 +2470,54 @@
     "updated": "업데이트:",
     "edit": "편집",
     "view": "보기"
+  },
+  "writeYourStory": {
+    "hero": {
+      "title": "마음의 숨결로 종이를 채우세요.",
+      "description": "1001 Stories의 작가 자원봉사자가 되어보세요. 창의력을 나누고, 전 세계 어린이들에게 영감을 주며, 출판 작가가 되어보세요.",
+      "cta": "글쓰기 시작"
+    },
+    "preview": {
+      "title": "이야기 쓰기",
+      "saveDraft": "임시 저장",
+      "submitReview": "검토 요청",
+      "aiReview": "AI 검토 결과",
+      "storyTitle": "어린 왕자"
+    },
+    "steps": {
+      "step1": {
+        "title": "간편한 시작",
+        "description": "몇 분 안에 계정을 만들고 글쓰기 여정을 시작하세요"
+      },
+      "step2": {
+        "title": "이야기 쓰기",
+        "description": "AI 도움이 있는 직관적인 에디터로 이야기를 작성하세요"
+      },
+      "step3": {
+        "title": "작가 되기",
+        "description": "출판되어 전 세계 어린이들과 이야기를 공유하세요"
+      }
+    },
+    "howItWorks": {
+      "title": "1001 Stories 작동 방식",
+      "subtitle": "스토리텔링 여정을 시작하는 세 가지 간단한 단계",
+      "step1": "다양한 문화의 어린이들의 이야기를 듣습니다",
+      "step2": "그 이야기를 바탕으로 다른 어린이들이 자신만의 이야기를 씁니다",
+      "step3": "전 세계 어린이들이 만든 이야기를 읽습니다"
+    },
+    "stats": {
+      "stories": "출판된 이야기",
+      "children": "함께한 어린이",
+      "countries": "참여 국가",
+      "volunteers": "자원봉사자"
+    },
+    "dashboard": {
+      "title": "이야기 쓰기",
+      "subtitle": "글쓰기 대시보드가 기다리고 있습니다"
+    },
+    "cta": {
+      "title": "전 세계 어린이들이 쓴 500권 이상의 책을 탐험하세요.",
+      "button": "Kid Library 바로가기"
+    }
   }
 }
