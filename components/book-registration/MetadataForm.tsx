@@ -56,7 +56,7 @@ export function MetadataForm({ data, onChange, disabled }: MetadataFormProps) {
           value={data.language || 'en'}
           onChange={(e) => onChange('language', e.target.value)}
           disabled={disabled}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
         >
           <option value="en">English</option>
           <option value="ko">Korean (한국어)</option>
@@ -81,7 +81,7 @@ export function MetadataForm({ data, onChange, disabled }: MetadataFormProps) {
           value={data.ageRange || ''}
           onChange={(e) => onChange('ageRange', e.target.value)}
           disabled={disabled}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
         >
           <option value="">Select age range</option>
           {AGE_RANGES.map(range => (
@@ -128,7 +128,7 @@ export function MetadataForm({ data, onChange, disabled }: MetadataFormProps) {
           onChange={(e) => handleTagsChange(e.target.value)}
           disabled={disabled}
           placeholder="adventure, friendship, courage"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
         />
         <p className="text-xs text-gray-500 mt-1">
           Separate tags with commas
@@ -143,7 +143,7 @@ export function MetadataForm({ data, onChange, disabled }: MetadataFormProps) {
           value={data.visibility || 'PUBLIC'}
           onChange={(e) => onChange('visibility', e.target.value)}
           disabled={disabled}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
         >
           <option value="PUBLIC">Public - Anyone can read</option>
           <option value="RESTRICTED">Restricted - Requires permission</option>
@@ -178,7 +178,7 @@ export function MetadataForm({ data, onChange, disabled }: MetadataFormProps) {
             min="0"
             step="0.01"
             placeholder="9.99"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
           />
         </div>
       )}
