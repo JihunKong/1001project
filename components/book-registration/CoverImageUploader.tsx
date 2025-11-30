@@ -6,7 +6,9 @@ import Image from 'next/image';
 import { pdfjs } from 'react-pdf';
 import { MAX_IMAGE_SIZE_MB } from '@/lib/validation/book-registration.schema';
 
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+if (typeof window !== 'undefined') {
+  pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+}
 
 interface CoverImageUploaderProps {
   onFileSelect: (file: File | null) => void;
@@ -23,6 +25,11 @@ export function CoverImageUploader({ onFileSelect, disabled, existingImage, pdfF
   const [isExtractingFromPdf, setIsExtractingFromPdf] = useState(false);
 
   const extractCoverFromPdf = async (pdf: File) => {
+    if (typeof window === 'undefined') {
+      console.warn('PDF extraction not available in SSR');
+      return;
+    }
+
     setIsExtractingFromPdf(true);
     setError(null);
 

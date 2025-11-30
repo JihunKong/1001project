@@ -13,7 +13,7 @@ interface GlobalNavigationBarProps {
 }
 
 export default function GlobalNavigationBar({ className = '' }: GlobalNavigationBarProps) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { t } = useTranslation();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -100,7 +100,7 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
                   {session?.user?.name || t('common.writer')}
                 </p>
                 <p className="text-xs text-figma-gray-inactive">
-                  {session?.user?.role || 'WRITER'}
+                  {status === 'loading' ? '' : (session?.user?.role || 'WRITER')}
                 </p>
               </div>
               <ChevronDown className={`w-5 h-5 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
