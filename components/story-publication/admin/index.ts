@@ -3,4 +3,8 @@ export { default as CommentPopup } from './CommentPopup';
 export { default as CommentThread } from './CommentThread';
 export { default as RevisionRequestModal } from './RevisionRequestModal';
 export type { RevisionRequestData } from './RevisionRequestModal';
+export { default as BookManagerRevisionModal } from './BookManagerRevisionModal';
+export type { BookManagerRevisionData } from './BookManagerRevisionModal';
+export { default as ContentAdminRevisionModal } from './ContentAdminRevisionModal';
+export type { ContentAdminRevisionData } from './ContentAdminRevisionModal';
 export { default as AIReviewSection } from './AIReviewSection';

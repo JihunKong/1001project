@@ -38,7 +38,8 @@
         "title": "Title",
         "submitter": "Submitter",
         "dueDate": "Due Date",
-        "class": "Class"
+        "class": "Class",
+        "format": "Format"
       }
     },
     "learner": {
@@ -296,6 +297,44 @@
         "emptySubtitle": "Check back later for approved stories",
         "pendingDecision": "Pending Decision",
         "autoApproved": "Auto-approved"
+      },
+      "revisionModal": {
+        "title": "Request Story Revision",
+        "story": "Story",
+        "sendTo": "Send Revision Request To",
+        "priority": "Priority Level",
+        "dueDate": "Due Date (Optional)",
+        "dueDateHint": "Set a target completion date for this revision",
+        "revisionTypes": "Revision Types (Select all that apply)",
+        "notes": "Detailed Revision Notes",
+        "notesPlaceholder": "Explain what needs to be revised and provide specific guidance...",
+        "charsNeeded": "{count} more characters required",
+        "charCount": "{count} characters",
+        "minChars": "Minimum 20 characters required",
+        "guidelinesTitle": "Revision Request Guidelines",
+        "guideline1": "Be specific about format requirements",
+        "guideline2": "Explain why the current format is unsuitable",
+        "guideline3": "Suggest alternative publication approaches if applicable",
+        "guideline4": "Consider the author's original intent",
+        "cancel": "Cancel",
+        "submit": "Request Revision",
+        "submitting": "Requesting Revision..."
+      },
+      "decide": {
+        "title": "Format Decision",
+        "subtitle": "Choose the publication format for this approved story",
+        "actions": {
+          "requestRevision": "Request Revision"
+        },
+        "comments": {
+          "title": "Comments",
+          "empty": "No comments yet",
+          "filter": {
+            "all": "All ({count})",
+            "open": "Open ({count})",
+            "resolved": "Resolved ({count})"
+          }
+        }
       }
     },
     "contentAdmin": {
@@ -323,6 +362,45 @@
         "emptySubtitle": "Check back later for stories ready for publication",
         "notDecided": "Not decided",
         "autoAssigned": "Auto-assigned"
+      },
+      "revisionModal": {
+        "title": "Request Content Revision",
+        "story": "Story",
+        "sendTo": "Send Revision Request To",
+        "priority": "Priority Level",
+        "dueDate": "Due Date (Optional)",
+        "dueDateHint": "Set a target completion date for this revision",
+        "revisionTypes": "Revision Types (Select all that apply)",
+        "notes": "Detailed Revision Notes",
+        "notesPlaceholder": "Explain what needs to be revised for publication approval...",
+        "charsNeeded": "{count} more characters required",
+        "charCount": "{count} characters",
+        "minChars": "Minimum 20 characters required",
+        "guidelinesTitle": "Content Review Guidelines",
+        "guideline1": "Be specific about content policy requirements",
+        "guideline2": "Explain why the content does not meet publication standards",
+        "guideline3": "Provide actionable steps for improvement",
+        "guideline4": "Consider the target audience appropriateness",
+        "cancel": "Cancel",
+        "submit": "Request Revision",
+        "submitting": "Requesting Revision..."
+      },
+      "review": {
+        "title": "Final Content Review",
+        "subtitle": "Final approval and publication decision",
+        "actions": {
+          "publish": "Publish",
+          "requestRevision": "Request Revision"
+        },
+        "comments": {
+          "title": "Comments",
+          "empty": "No comments yet",
+          "filter": {
+            "all": "All ({count})",
+            "open": "Open ({count})",
+            "resolved": "Resolved ({count})"
+          }
+        }
       }
     },
     "admin": {
@@ -1016,6 +1094,8 @@
     "manageBooks": "Manage Books",
     "registerBook": "Register Book",
     "storyReview": "Story Review",
+    "formatReview": "Format Review",
+    "contentReview": "Content Review",
     "skipToMain": "Skip to main content",
     "mainNavigation": "Main navigation",
     "mobileNavigation": "Mobile navigation",

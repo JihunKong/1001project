@@ -38,7 +38,8 @@
         "title": "제목",
         "submitter": "제출자",
         "dueDate": "마감일",
-        "class": "수업"
+        "class": "수업",
+        "format": "포맷"
       }
     },
     "learner": {
@@ -296,6 +297,44 @@
         "emptySubtitle": "나중에 승인된 스토리를 확인하세요",
         "pendingDecision": "결정 대기 중",
         "autoApproved": "자동 승인됨"
+      },
+      "revisionModal": {
+        "title": "스토리 수정 요청",
+        "story": "스토리",
+        "sendTo": "수정 요청 대상",
+        "priority": "우선순위",
+        "dueDate": "마감일 (선택사항)",
+        "dueDateHint": "이 수정 완료 목표 날짜를 설정하세요",
+        "revisionTypes": "수정 유형 (해당하는 모든 항목 선택)",
+        "notes": "상세 수정 노트",
+        "notesPlaceholder": "수정이 필요한 사항과 구체적인 가이드를 제공하세요...",
+        "charsNeeded": "{count}자 더 필요합니다",
+        "charCount": "{count}자",
+        "minChars": "최소 20자 이상 필요합니다",
+        "guidelinesTitle": "수정 요청 가이드라인",
+        "guideline1": "형식 요구 사항을 구체적으로 설명하세요",
+        "guideline2": "현재 형식이 적합하지 않은 이유를 설명하세요",
+        "guideline3": "해당되는 경우 대안적인 출판 방법을 제안하세요",
+        "guideline4": "저자의 원래 의도를 고려하세요",
+        "cancel": "취소",
+        "submit": "수정 요청",
+        "submitting": "수정 요청 중..."
+      },
+      "decide": {
+        "title": "형식 결정",
+        "subtitle": "승인된 스토리의 출판 형식을 선택하세요",
+        "actions": {
+          "requestRevision": "수정 요청"
+        },
+        "comments": {
+          "title": "댓글",
+          "empty": "댓글이 없습니다",
+          "filter": {
+            "all": "전체 ({count})",
+            "open": "열림 ({count})",
+            "resolved": "해결됨 ({count})"
+          }
+        }
       }
     },
     "contentAdmin": {
@@ -323,6 +362,45 @@
         "emptySubtitle": "나중에 출판 준비가 완료된 스토리를 확인하세요",
         "notDecided": "결정되지 않음",
         "autoAssigned": "자동 할당됨"
+      },
+      "revisionModal": {
+        "title": "콘텐츠 수정 요청",
+        "story": "스토리",
+        "sendTo": "수정 요청 대상",
+        "priority": "우선순위",
+        "dueDate": "마감일 (선택사항)",
+        "dueDateHint": "이 수정 완료 목표 날짜를 설정하세요",
+        "revisionTypes": "수정 유형 (해당하는 모든 항목 선택)",
+        "notes": "상세 수정 노트",
+        "notesPlaceholder": "출판 승인을 위해 수정이 필요한 사항을 설명하세요...",
+        "charsNeeded": "{count}자 더 필요합니다",
+        "charCount": "{count}자",
+        "minChars": "최소 20자 이상 필요합니다",
+        "guidelinesTitle": "콘텐츠 검토 가이드라인",
+        "guideline1": "콘텐츠 정책 요구 사항을 구체적으로 설명하세요",
+        "guideline2": "콘텐츠가 출판 기준을 충족하지 않는 이유를 설명하세요",
+        "guideline3": "개선을 위한 실행 가능한 단계를 제공하세요",
+        "guideline4": "대상 독자의 적합성을 고려하세요",
+        "cancel": "취소",
+        "submit": "수정 요청",
+        "submitting": "수정 요청 중..."
+      },
+      "review": {
+        "title": "최종 콘텐츠 검토",
+        "subtitle": "최종 승인 및 출판 결정",
+        "actions": {
+          "publish": "출판",
+          "requestRevision": "수정 요청"
+        },
+        "comments": {
+          "title": "댓글",
+          "empty": "댓글이 없습니다",
+          "filter": {
+            "all": "전체 ({count})",
+            "open": "열림 ({count})",
+            "resolved": "해결됨 ({count})"
+          }
+        }
       }
     },
     "admin": {
@@ -1016,6 +1094,8 @@
     "manageBooks": "도서 관리",
     "registerBook": "새 도서 등록",
     "storyReview": "스토리 검토",
+    "formatReview": "포맷 검토",
+    "contentReview": "콘텐츠 검토",
     "skipToMain": "메인 콘텐츠로 건너뛰기",
     "mainNavigation": "메인 네비게이션",
     "mobileNavigation": "모바일 내비게이션",

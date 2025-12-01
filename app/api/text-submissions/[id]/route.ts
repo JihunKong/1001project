@@ -145,7 +145,7 @@ export async function PUT(
     }
 
     // Handle content updates (only by author or in draft state)
-    const editableStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.DRAFT, TextSubmissionStatus.NEEDS_REVISION];
+    const editableStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.DRAFT, TextSubmissionStatus.NEEDS_REVISION, TextSubmissionStatus.REJECTED];
     const canEdit =
       submission.authorId === user.id &&
       editableStatuses.includes(submission.status);
@@ -347,7 +347,40 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
         return NextResponse.json({ error: 'Can only undo rejection for rejected submissions' }, { status: 400 });
       }
       updates.finalNotes = null;
-      newStatus = TextSubmissionStatus.STORY_REVIEW;
+      newStatus = TextSubmissionStatus.DRAFT;
+      break;
+
+    case 'resubmit':
+      if (submission.authorId !== user.id) {
+        return NextResponse.json({ error: 'Only the author can resubmit' }, { status: 403 });
+      }
+      if (submission.status !== TextSubmissionStatus.REJECTED && submission.status !== TextSubmissionStatus.NEEDS_REVISION) {
+        return NextResponse.json({ error: 'Can only resubmit rejected or revision-needed submissions' }, { status: 400 });
+      }
+      updates.finalNotes = null;
+      newStatus = TextSubmissionStatus.PENDING;
+      break;
+
+    case 'bm_needs_revision':
+      if (user.role !== UserRole.BOOK_MANAGER && user.role !== UserRole.ADMIN) {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+      if (submission.status !== TextSubmissionStatus.FORMAT_REVIEW && submission.status !== TextSubmissionStatus.STORY_APPROVED) {
+        return NextResponse.json({ error: 'Cannot request revision at this stage' }, { status: 400 });
+      }
+      updates.bookDecision = data.feedback;
+      newStatus = TextSubmissionStatus.NEEDS_REVISION;
+      break;
+
+    case 'ca_needs_revision':
+      if (user.role !== UserRole.CONTENT_ADMIN && user.role !== UserRole.ADMIN) {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
+      }
+      if (submission.status !== TextSubmissionStatus.CONTENT_REVIEW) {
+        return NextResponse.json({ error: 'Cannot request revision at this stage' }, { status: 400 });
+      }
+      updates.finalNotes = data.feedback;
+      newStatus = TextSubmissionStatus.FORMAT_REVIEW;
       break;
 
     case 'update_revision_feedback':

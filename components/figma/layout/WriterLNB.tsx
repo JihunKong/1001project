@@ -88,6 +88,18 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           icon: Home
         },
         {
+          id: 'register-book',
+          label: t('nav.registerBook'),
+          href: '/dashboard/book-manager/register-book',
+          icon: PlusCircle
+        },
+        {
+          id: 'review',
+          label: t('nav.formatReview'),
+          href: '/dashboard/book-manager/reviews',
+          icon: FileSearch
+        },
+        {
           id: 'books',
           label: t('nav.manageBooks'),
           href: '/dashboard/book-manager/books',
@@ -109,6 +121,18 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
           label: t('nav.home'),
           href: '/dashboard/content-admin',
           icon: Home
+        },
+        {
+          id: 'register-book',
+          label: t('nav.registerBook'),
+          href: '/dashboard/content-admin/register-book',
+          icon: PlusCircle
+        },
+        {
+          id: 'review',
+          label: t('nav.contentReview'),
+          href: '/dashboard/content-admin/reviews',
+          icon: FileSearch
         },
         {
           id: 'books',

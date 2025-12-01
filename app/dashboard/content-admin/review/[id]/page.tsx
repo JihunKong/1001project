@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { useParams, useRouter } from 'next/navigation';
@@ -16,9 +16,41 @@ import {
   Package,
   MessageSquare,
   Star,
-  Tag
+  Tag,
+  AlertTriangle,
+  Filter,
+  CheckCircle,
+  RotateCcw
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from '@/lib/i18n/useTranslation';
+import {
+  CommentableTextEditor,
+  CommentPopup,
+  ContentAdminRevisionModal,
+  AIReviewSection,
+  type ContentAdminRevisionData
+} from '@/components/story-publication/admin';
+
+interface Comment {
+  id: string;
+  content: string;
+  highlightedText: string;
+  startOffset: number;
+  endOffset: number;
+  authorId: string;
+  status: 'OPEN' | 'RESOLVED' | 'ARCHIVED';
+  isResolved: boolean;
+  resolved?: boolean;
+  createdAt: string;
+  author: {
+    id: string;
+    name: string | null;
+    email: string;
+    role: string;
+  };
+  replies?: Comment[];
+}
 
 interface TextSubmission {
   id: string;
@@ -71,6 +103,7 @@ interface TextSubmission {
 }
 
 export default function ContentAdminReviewPage() {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const params = useParams();
   const router = useRouter();
@@ -82,7 +115,14 @@ export default function ContentAdminReviewPage() {
   const [action, setAction] = useState<'approve' | 'reject' | null>(null);
   const [showActionForm, setShowActionForm] = useState(false);
 
-  // Redirect if not authenticated or not a content admin
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
+  const [commentFilter, setCommentFilter] = useState<'all' | 'open' | 'resolved'>('all');
+
+  const [showRevisionModal, setShowRevisionModal] = useState(false);
+  const [revisionSubmitting, setRevisionSubmitting] = useState(false);
+
   useEffect(() => {
     if (status === 'loading') return;
     if (!session) {
@@ -93,7 +133,6 @@ export default function ContentAdminReviewPage() {
     }
   }, [session, status]);
 
-  // Fetch submission details
   useEffect(() => {
     const fetchSubmission = async () => {
       try {
@@ -104,7 +143,6 @@ export default function ContentAdminReviewPage() {
         const data = await response.json();
         setSubmission(data.submission);
 
-        // Set existing notes if any
         if (data.submission.finalNotes) {
           setNotes(data.submission.finalNotes);
         }
@@ -120,6 +158,175 @@ export default function ContentAdminReviewPage() {
     }
   }, [session, params.id]);
 
+  const fetchComments = useCallback(async () => {
+    if (!params.id) return;
+    setCommentsLoading(true);
+    try {
+      const response = await fetch(`/api/text-submissions/${params.id}/comments`);
+      if (response.ok) {
+        const data = await response.json();
+        setComments(data.comments || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch comments:', err);
+    } finally {
+      setCommentsLoading(false);
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    if (session?.user?.role === 'CONTENT_ADMIN' && params.id) {
+      fetchComments();
+    }
+  }, [session, params.id, fetchComments]);
+
+  const handleAddComment = async (
+    highlightedText: string,
+    startOffset: number,
+    endOffset: number,
+    content: string
+  ) => {
+    try {
+      const response = await fetch(`/api/text-submissions/${params.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content,
+          startOffset,
+          endOffset,
+          selectedText: highlightedText,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to add comment');
+
+      toast.success(t('contentAdmin.review.comments.added'));
+      fetchComments();
+    } catch (err) {
+      toast.error(t('contentAdmin.review.comments.addError'));
+    }
+  };
+
+  const handleCommentClick = (comment: Comment) => {
+    setSelectedComment(selectedComment?.id === comment.id ? null : comment);
+  };
+
+  const handleSidebarCommentClick = (comment: Comment) => {
+    setSelectedComment(selectedComment?.id === comment.id ? null : comment);
+  };
+
+  const handleReplyToComment = async (commentId: string, content: string) => {
+    try {
+      const response = await fetch(`/api/text-submissions/${params.id}/comments/${commentId}/replies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+
+      if (!response.ok) throw new Error('Failed to add reply');
+
+      toast.success(t('contentAdmin.review.comments.replyAdded'));
+      fetchComments();
+    } catch (err) {
+      toast.error(t('contentAdmin.review.comments.replyError'));
+    }
+  };
+
+  const handleResolveComment = async (commentId: string, isResolved: boolean) => {
+    try {
+      const response = await fetch(`/api/text-submissions/${params.id}/comments/${commentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolved: isResolved }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update comment');
+
+      toast.success(isResolved
+        ? t('contentAdmin.review.comments.resolved')
+        : t('contentAdmin.review.comments.reopened'));
+      fetchComments();
+    } catch (err) {
+      toast.error(t('contentAdmin.review.comments.resolveError'));
+    }
+  };
+
+  const handleEditComment = async (commentId: string, content: string) => {
+    try {
+      const response = await fetch(`/api/text-submissions/${params.id}/comments/${commentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+
+      if (!response.ok) throw new Error('Failed to edit comment');
+
+      toast.success(t('contentAdmin.review.comments.edited'));
+      fetchComments();
+    } catch (err) {
+      toast.error(t('contentAdmin.review.comments.editError'));
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const response = await fetch(`/api/text-submissions/${params.id}/comments/${commentId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) throw new Error('Failed to delete comment');
+
+      toast.success(t('contentAdmin.review.comments.deleted'));
+      setSelectedComment(null);
+      fetchComments();
+    } catch (err) {
+      toast.error(t('contentAdmin.review.comments.deleteError'));
+    }
+  };
+
+  const handleRevisionRequest = async (data: ContentAdminRevisionData) => {
+    if (!submission) return;
+
+    setRevisionSubmitting(true);
+    try {
+      let actionType = 'ca_needs_revision';
+      if (data.targetRole === 'STORY_MANAGER') {
+        actionType = 'story_needs_revision';
+      } else if (data.targetRole === 'WRITER') {
+        actionType = 'ca_needs_revision';
+      }
+
+      const response = await fetch(`/api/text-submissions/${submission.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: actionType,
+          feedback: data.notes,
+          comment: `Revision requested by Content Admin: ${data.revisionTypes.join(', ') || 'General revision'}`,
+          metadata: {
+            priority: data.priority,
+            dueDate: data.dueDate,
+            revisionTypes: data.revisionTypes,
+            targetRole: data.targetRole,
+          }
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to request revision');
+
+      const responseData = await response.json();
+      setSubmission(responseData.submission);
+      setShowRevisionModal(false);
+
+      toast.success(t('contentAdmin.review.actions.revisionRequested'));
+      setTimeout(() => router.push('/dashboard/content-admin'), 1500);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('contentAdmin.review.actions.revisionError'));
+    } finally {
+      setRevisionSubmitting(false);
+    }
+  };
+
   const handleFinalAction = async (actionType: 'approve' | 'reject') => {
     if (!submission) return;
 
@@ -127,9 +334,7 @@ export default function ContentAdminReviewPage() {
     try {
       const response = await fetch(`/api/text-submissions/${submission.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: actionType === 'approve' ? 'final_approve' : 'reject',
           notes: notes.trim() || undefined,
@@ -137,9 +342,7 @@ export default function ContentAdminReviewPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to process final action');
-      }
+      if (!response.ok) throw new Error('Failed to process final action');
 
       const data = await response.json();
       setSubmission(data.submission);
@@ -148,15 +351,11 @@ export default function ContentAdminReviewPage() {
 
       toast.success(
         actionType === 'approve'
-          ? 'Story published successfully!'
-          : 'Story rejected successfully!'
+          ? t('contentAdmin.review.actions.publishSuccess')
+          : t('contentAdmin.review.actions.rejectSuccess')
       );
 
-      // Redirect back to dashboard after a short delay
-      setTimeout(() => {
-        router.push('/dashboard/content-admin');
-      }, 2000);
-
+      setTimeout(() => router.push('/dashboard/content-admin'), 2000);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -164,8 +363,8 @@ export default function ContentAdminReviewPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
+  const getStatusColor = (submissionStatus: string) => {
+    switch (submissionStatus) {
       case 'PUBLISHED': return 'bg-green-100 text-green-800';
       case 'CONTENT_REVIEW': return 'bg-yellow-100 text-yellow-800';
       case 'REJECTED': return 'bg-red-100 text-red-800';
@@ -182,16 +381,25 @@ export default function ContentAdminReviewPage() {
     }
   };
 
-  const canTakeAction = (status: string) => {
-    return status === 'CONTENT_REVIEW';
+  const canTakeAction = (submissionStatus: string) => {
+    return submissionStatus === 'CONTENT_REVIEW';
   };
+
+  const filteredComments = comments.filter(comment => {
+    if (commentFilter === 'open') return !comment.isResolved;
+    if (commentFilter === 'resolved') return comment.isResolved;
+    return true;
+  });
+
+  const openCommentsCount = comments.filter(c => !c.isResolved).length;
+  const resolvedCommentsCount = comments.filter(c => c.isResolved).length;
 
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-soe-green-400 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading story details...</p>
+          <p className="mt-4 text-gray-600">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -201,12 +409,12 @@ export default function ContentAdminReviewPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600">Error: {error || 'Submission not found'}</p>
+          <p className="text-red-600">{t('common.error')}: {error || 'Submission not found'}</p>
           <Link
             href="/dashboard/content-admin"
             className="mt-4 inline-block px-4 py-2 bg-soe-green-400 text-white rounded hover:bg-soe-green-500"
           >
-            Back to Dashboard
+            {t('common.backToDashboard')}
           </Link>
         </div>
       </div>
@@ -226,10 +434,8 @@ export default function ContentAdminReviewPage() {
                 <ArrowLeft className="h-6 w-6" />
               </Link>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Final Content Review</h1>
-                <p className="mt-1 text-sm text-gray-500">
-                  Final approval and publication decision
-                </p>
+                <h1 className="text-3xl font-bold text-gray-900">{t('contentAdmin.review.title')}</h1>
+                <p className="mt-1 text-sm text-gray-500">{t('contentAdmin.review.subtitle')}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -247,6 +453,13 @@ export default function ContentAdminReviewPage() {
               {canTakeAction(submission.status) && (
                 <>
                   <button
+                    onClick={() => setShowRevisionModal(true)}
+                    className="bg-[#FF9500] hover:bg-[#FF8C00] text-white px-4 py-2 rounded-lg flex items-center"
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    {t('contentAdmin.review.actions.requestRevision')}
+                  </button>
+                  <button
                     onClick={() => {
                       setAction('approve');
                       setShowActionForm(true);
@@ -254,7 +467,7 @@ export default function ContentAdminReviewPage() {
                     className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <Star className="h-4 w-4 mr-2" />
-                    Publish
+                    {t('contentAdmin.review.actions.publish')}
                   </button>
                   <button
                     onClick={() => {
@@ -264,7 +477,7 @@ export default function ContentAdminReviewPage() {
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <XCircle className="h-4 w-4 mr-2" />
-                    Reject
+                    {t('contentAdmin.review.actions.reject')}
                   </button>
                 </>
               )}
@@ -275,9 +488,7 @@ export default function ContentAdminReviewPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Story Details */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="border-b border-gray-200 pb-4 mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">{submission.title}</h2>
@@ -310,7 +521,6 @@ export default function ContentAdminReviewPage() {
                   )}
                 </div>
 
-                {/* Categories and Tags */}
                 {((submission.category || []).length > 0 || submission.tags.length > 0) && (
                   <div className="mt-4 space-y-2">
                     {(submission.category || []).length > 0 && (
@@ -338,30 +548,30 @@ export default function ContentAdminReviewPage() {
                 )}
               </div>
 
-              {/* Summary */}
               {submission.summary && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Summary</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('contentAdmin.review.summary')}</h3>
                   <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">{submission.summary}</p>
                 </div>
               )}
 
-              {/* Story Content */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Story Content</h3>
-                <div
-                  className="prose max-w-none text-gray-700 bg-gray-50 p-6 rounded-lg"
-                  dangerouslySetInnerHTML={{ __html: submission.content }}
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('contentAdmin.review.content')}</h3>
+                <CommentableTextEditor
+                  content={submission.content}
+                  comments={comments}
+                  onAddComment={handleAddComment}
+                  onCommentClick={handleCommentClick}
+                  readOnly={!canTakeAction(submission.status)}
                 />
               </div>
             </div>
 
-            {/* Previous Feedback */}
             {submission.storyFeedback && (
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <MessageSquare className="h-5 w-5 mr-2" />
-                  Story Manager Feedback
+                  {t('contentAdmin.review.storyFeedback')}
                 </h3>
                 <div className="bg-soe-green-50 border border-soe-green-200 p-4 rounded-lg">
                   <p className="text-gray-700">{submission.storyFeedback}</p>
@@ -369,12 +579,11 @@ export default function ContentAdminReviewPage() {
               </div>
             )}
 
-            {/* Final Notes */}
             {submission.finalNotes && (
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <Shield className="h-5 w-5 mr-2" />
-                  Content Admin Notes
+                  {t('contentAdmin.review.adminNotes')}
                 </h3>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
                   <p className="text-gray-700">{submission.finalNotes}</p>
@@ -383,57 +592,118 @@ export default function ContentAdminReviewPage() {
             )}
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Author Information */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Author Information</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  {t('contentAdmin.review.comments.title')}
+                </h3>
+                <div className="flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-gray-400" />
+                  <select
+                    value={commentFilter}
+                    onChange={(e) => setCommentFilter(e.target.value as 'all' | 'open' | 'resolved')}
+                    className="text-sm border-gray-200 rounded-lg"
+                  >
+                    <option value="all">{t('contentAdmin.review.comments.all')} ({comments.length})</option>
+                    <option value="open">{t('contentAdmin.review.comments.open')} ({openCommentsCount})</option>
+                    <option value="resolved">{t('contentAdmin.review.comments.resolved')} ({resolvedCommentsCount})</option>
+                  </select>
+                </div>
+              </div>
+
+              {commentsLoading ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-soe-green-400 mx-auto"></div>
+                </div>
+              ) : filteredComments.length > 0 ? (
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {filteredComments.map((comment) => (
+                    <div
+                      key={comment.id}
+                      onClick={() => handleSidebarCommentClick(comment)}
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                        comment.isResolved
+                          ? 'bg-gray-50 border-gray-200'
+                          : 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <span className="text-sm font-medium text-gray-900">{comment.author.name}</span>
+                        {comment.isResolved ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{comment.content}</p>
+                      {comment.replies && comment.replies.length > 0 && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          {comment.replies.length} {t('contentAdmin.review.comments.replies')}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-4">
+                  {t('contentAdmin.review.comments.noComments')}
+                </p>
+              )}
+            </div>
+
+            <AIReviewSection
+              submissionId={submission.id}
+            />
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('contentAdmin.review.authorInfo')}</h3>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-500">Author Alias:</span>
+                  <span className="text-sm text-gray-500">{t('contentAdmin.review.authorAlias')}:</span>
                   <p className="font-medium text-gray-900">{submission.authorAlias}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Real Name:</span>
+                  <span className="text-sm text-gray-500">{t('contentAdmin.review.realName')}:</span>
                   <p className="font-medium text-gray-900">{submission.author.name}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Email:</span>
+                  <span className="text-sm text-gray-500">{t('contentAdmin.review.email')}:</span>
                   <p className="font-medium text-gray-900">{submission.author.email}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">Visibility:</span>
+                  <span className="text-sm text-gray-500">{t('contentAdmin.review.visibility')}:</span>
                   <p className="font-medium text-gray-900">{submission.visibility}</p>
                 </div>
                 {submission.targetAudience && (
                   <div>
-                    <span className="text-sm text-gray-500">Target Audience:</span>
+                    <span className="text-sm text-gray-500">{t('contentAdmin.review.targetAudience')}:</span>
                     <p className="font-medium text-gray-900">{submission.targetAudience}</p>
                   </div>
                 )}
                 {submission.licenseType && (
                   <div>
-                    <span className="text-sm text-gray-500">License:</span>
+                    <span className="text-sm text-gray-500">{t('contentAdmin.review.license')}:</span>
                     <p className="font-medium text-gray-900">{submission.licenseType}</p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Review Team */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Review Team</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('contentAdmin.review.reviewTeam')}</h3>
               <div className="space-y-4">
                 {submission.storyManager && (
                   <div>
-                    <span className="text-sm text-gray-500">Story Manager:</span>
+                    <span className="text-sm text-gray-500">{t('contentAdmin.review.storyManager')}:</span>
                     <p className="font-medium text-gray-900">{submission.storyManager.name}</p>
                     <p className="text-sm text-gray-500">{submission.storyManager.email}</p>
                   </div>
                 )}
                 {submission.bookManager && (
                   <div>
-                    <span className="text-sm text-gray-500">Book Manager:</span>
+                    <span className="text-sm text-gray-500">{t('contentAdmin.review.bookManager')}:</span>
                     <p className="font-medium text-gray-900">{submission.bookManager.name}</p>
                     <p className="text-sm text-gray-500">{submission.bookManager.email}</p>
                   </div>
@@ -441,9 +711,8 @@ export default function ContentAdminReviewPage() {
               </div>
             </div>
 
-            {/* Workflow History */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Review History</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('contentAdmin.review.history')}</h3>
               <div className="space-y-3">
                 {submission.workflowHistory.length > 0 ? (
                   submission.workflowHistory.map((entry) => (
@@ -463,7 +732,7 @@ export default function ContentAdminReviewPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500">No history available</p>
+                  <p className="text-sm text-gray-500">{t('contentAdmin.review.noHistory')}</p>
                 )}
               </div>
             </div>
@@ -471,13 +740,48 @@ export default function ContentAdminReviewPage() {
         </div>
       </div>
 
-      {/* Action Modal */}
+      {selectedComment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-lg w-full max-h-[80vh] overflow-auto">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">{t('contentAdmin.review.comments.title')}</h3>
+              <button
+                onClick={() => setSelectedComment(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-4">
+              <CommentPopup
+                comment={selectedComment}
+                currentUserId={session?.user?.id || ''}
+                currentUserRole={session?.user?.role || 'CONTENT_ADMIN'}
+                submissionAuthorId={submission.author.id}
+                onReply={handleReplyToComment}
+                onResolve={handleResolveComment}
+                onEdit={handleEditComment}
+                onDelete={handleDeleteComment}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ContentAdminRevisionModal
+        isOpen={showRevisionModal}
+        onClose={() => setShowRevisionModal(false)}
+        onSubmit={handleRevisionRequest}
+        isSubmitting={revisionSubmitting}
+        submissionTitle={submission.title}
+      />
+
       {showActionForm && action && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {action === 'approve' && 'Publish Story'}
-              {action === 'reject' && 'Reject Story'}
+              {action === 'approve' && t('contentAdmin.review.modal.publishTitle')}
+              {action === 'reject' && t('contentAdmin.review.modal.rejectTitle')}
             </h3>
 
             <textarea
@@ -485,8 +789,8 @@ export default function ContentAdminReviewPage() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder={
                 action === 'approve'
-                  ? 'Optional: Add publication notes...'
-                  : 'Explain why this story is being rejected...'
+                  ? t('contentAdmin.review.modal.publishPlaceholder')
+                  : t('contentAdmin.review.modal.rejectPlaceholder')
               }
               rows={4}
               className="w-full border border-gray-300 rounded-lg p-3 text-sm"
@@ -502,7 +806,7 @@ export default function ContentAdminReviewPage() {
                 className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                 disabled={submitting}
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={() => handleFinalAction(action)}
@@ -513,7 +817,12 @@ export default function ContentAdminReviewPage() {
                     : 'bg-red-600 hover:bg-red-700'
                 } disabled:opacity-50`}
               >
-                {submitting ? 'Processing...' : `Confirm ${action === 'approve' ? 'Publication' : 'Rejection'}`}
+                {submitting
+                  ? t('common.processing')
+                  : action === 'approve'
+                    ? t('contentAdmin.review.modal.confirmPublish')
+                    : t('contentAdmin.review.modal.confirmReject')
+                }
               </button>
             </div>
           </div>
