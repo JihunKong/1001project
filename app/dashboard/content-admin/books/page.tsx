@@ -5,6 +5,7 @@ import { redirect, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
+import toast from 'react-hot-toast';
 import { canEditBook } from '@/lib/validation/book-registration.schema';
 
 interface Book {
@@ -31,6 +32,8 @@ export default function ContentAdminBooksPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [contentTypeFilter, setContentTypeFilter] = useState<string>('all');
   const [languageFilter, setLanguageFilter] = useState<string>('all');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; title: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -60,6 +63,31 @@ export default function ContentAdminBooksPage() {
       console.error('Failed to fetch books:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteConfirm) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/books/${deleteConfirm.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        toast.success('Book deleted successfully');
+        setBooks(books.filter(b => b.id !== deleteConfirm.id));
+        setDeleteConfirm(null);
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to delete book');
+      }
+    } catch (error) {
+      console.error('Failed to delete book:', error);
+      toast.error('Failed to delete book');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -215,10 +243,16 @@ export default function ContentAdminBooksPage() {
                     </button>
                     <Link
                       href={`/books/${book.id}`}
-                      className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+                      className="px-3 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                     >
                       View
                     </Link>
+                    <button
+                      onClick={() => setDeleteConfirm({ id: book.id, title: book.title })}
+                      className="px-3 py-2 text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}
@@ -226,6 +260,36 @@ export default function ContentAdminBooksPage() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Confirm Delete
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete &ldquo;{deleteConfirm.title}&rdquo;? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                disabled={isDeleting}
+                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

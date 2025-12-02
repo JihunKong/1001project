@@ -151,7 +151,7 @@ export default function Modal({
         )}
 
         {/* Body */}
-        <div className="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+        <div className="px-6 py-4 max-h-[calc(100vh-120px)] overflow-y-auto">
           {children}
         </div>
       </div>

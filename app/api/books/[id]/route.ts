@@ -479,7 +479,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/books/[id] - Delete book (Admin only)
+// DELETE /api/books/[id] - Delete book (Admin and Content Admin)
 export async function DELETE(
   _request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -493,8 +493,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Only admins can delete books
-    if (session.user.role !== UserRole.ADMIN) {
+    // Only admins and content admins can delete books
+    if (session.user.role !== UserRole.ADMIN && session.user.role !== UserRole.CONTENT_ADMIN) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

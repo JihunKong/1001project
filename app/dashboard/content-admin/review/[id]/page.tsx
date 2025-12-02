@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -126,12 +125,14 @@ export default function ContentAdminReviewPage() {
   useEffect(() => {
     if (status === 'loading') return;
     if (!session) {
-      redirect('/login');
+      router.replace('/login');
+      return;
     }
     if (session.user?.role !== 'CONTENT_ADMIN') {
-      redirect('/dashboard');
+      router.replace('/dashboard');
+      return;
     }
-  }, [session, status]);
+  }, [session, status, router]);
 
   useEffect(() => {
     const fetchSubmission = async () => {
