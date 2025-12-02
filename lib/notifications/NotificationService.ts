@@ -3,6 +3,7 @@ import { NotificationType, TextSubmissionStatus, UserRole } from '@prisma/client
 import { EmailService } from './EmailService';
 import { broadcastNotification, broadcastStatusChange } from '@/lib/notifications/sse-broadcast';
 import { logger } from '@/lib/logger';
+import { queueEmailNotification } from '@/lib/queue/emailQueue';
 
 export interface NotificationData {
   submissionId?: string;
@@ -250,7 +251,7 @@ export class NotificationService {
     };
   }
 
-  // Send email notification
+  // Send email notification via background queue
   private async sendEmailNotification(userId: string, notification: any, data?: NotificationData) {
     try {
       const user = await prisma.user.findUnique({
@@ -262,15 +263,18 @@ export class NotificationService {
 
       const emailTemplate = this.getEmailTemplate(notification.type, notification.title, notification.message, data);
 
-      await this.emailService.sendNotificationEmail(
-        user.email,
-        user.name || 'Writer',
-        emailTemplate.subject,
-        emailTemplate.html,
-        emailTemplate.text
-      );
+      // Queue email instead of sending synchronously
+      await queueEmailNotification({
+        to: user.email,
+        name: user.name || 'Writer',
+        subject: emailTemplate.subject,
+        html: emailTemplate.html,
+        text: emailTemplate.text
+      });
+
+      logger.info(`[NotificationService] Email queued for ${user.email}`);
     } catch (error) {
-      logger.error('Error sending email notification', error);
+      logger.error('Error queueing email notification', error);
     }
   }
 

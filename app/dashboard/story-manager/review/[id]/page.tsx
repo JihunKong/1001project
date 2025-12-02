@@ -526,6 +526,16 @@ export default function StoryReviewPage() {
 
   return (
     <div className="py-8">
+      {/* Processing Overlay */}
+      {submitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 text-center shadow-xl">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-soe-green-400 border-t-transparent mx-auto mb-4"></div>
+            <p className="text-lg font-semibold text-gray-900">처리 중입니다...</p>
+            <p className="text-sm text-gray-600 mt-2">이 창을 닫지 마세요</p>
+          </div>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex justify-between items-center">
           <div className="flex items-center">
