@@ -204,7 +204,7 @@ export default function ContentAdminDashboard() {
                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 <Edit className="h-5 w-5 mr-2" />
-                Manage Books
+                {t('nav.manageBooks')}
               </Link>
               <Link
                 href="/dashboard/content-admin/register-book"
@@ -401,7 +401,7 @@ export default function ContentAdminDashboard() {
                           <div className="flex items-center">
                             {getStatusIcon(submission.status)}
                             <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(submission.status)}`}>
-                              {submission.status.replace('_', ' ')}
+                              {t(`status.${submission.status}`)}
                             </span>
                           </div>
                           {submission.publishedAt && (

@@ -388,18 +388,62 @@
       "review": {
         "title": "최종 콘텐츠 검토",
         "subtitle": "최종 승인 및 출판 결정",
+        "summary": "요약",
+        "content": "본문",
+        "storyFeedback": "스토리 매니저 피드백",
+        "adminNotes": "관리자 메모",
+        "authorInfo": "작가 정보",
+        "authorAlias": "필명",
+        "realName": "실명",
+        "email": "이메일",
+        "visibility": "공개 설정",
+        "targetAudience": "대상 독자",
+        "license": "라이선스",
+        "reviewTeam": "검토팀",
+        "storyManager": "스토리 매니저",
+        "bookManager": "북 매니저",
+        "history": "검토 이력",
+        "noHistory": "검토 이력이 없습니다",
         "actions": {
           "publish": "출판",
-          "requestRevision": "수정 요청"
+          "reject": "거절",
+          "requestRevision": "수정 요청",
+          "revisionRequested": "수정 요청이 완료되었습니다",
+          "revisionError": "수정 요청에 실패했습니다",
+          "publishSuccess": "스토리가 출판되었습니다",
+          "rejectSuccess": "스토리가 거절되었습니다"
         },
         "comments": {
           "title": "댓글",
           "empty": "댓글이 없습니다",
+          "added": "댓글이 추가되었습니다",
+          "addError": "댓글 추가에 실패했습니다",
+          "replyAdded": "답글이 추가되었습니다",
+          "replyError": "답글 추가에 실패했습니다",
+          "resolved": "댓글이 해결되었습니다",
+          "reopened": "댓글이 다시 열렸습니다",
+          "resolveError": "댓글 상태 변경에 실패했습니다",
+          "edited": "댓글이 수정되었습니다",
+          "editError": "댓글 수정에 실패했습니다",
+          "deleted": "댓글이 삭제되었습니다",
+          "deleteError": "댓글 삭제에 실패했습니다",
+          "replies": "답글",
+          "noComments": "댓글이 없습니다",
+          "all": "전체",
+          "open": "열림",
           "filter": {
             "all": "전체 ({count})",
             "open": "열림 ({count})",
             "resolved": "해결됨 ({count})"
           }
+        },
+        "modal": {
+          "publishTitle": "출판 확인",
+          "rejectTitle": "거절 확인",
+          "publishPlaceholder": "출판 관련 메모를 추가하세요...",
+          "rejectPlaceholder": "거절 사유를 입력하세요...",
+          "confirmPublish": "스토리 출판",
+          "confirmReject": "스토리 거절"
         }
       }
     },
@@ -1491,7 +1535,8 @@
       "rejected": "스토리가 승인되지 않았습니다"
     },
     "STORY_REVIEW": "스토리 검토",
-    "STORY_APPROVED": "스토리 승인됨"
+    "STORY_APPROVED": "스토리 승인됨",
+    "CONTENT_REVIEW": "콘텐츠 검토"
   },
   "form": {
     "title": "제목",

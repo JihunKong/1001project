@@ -388,18 +388,62 @@
       "review": {
         "title": "Final Content Review",
         "subtitle": "Final approval and publication decision",
+        "summary": "Summary",
+        "content": "Content",
+        "storyFeedback": "Story Manager Feedback",
+        "adminNotes": "Admin Notes",
+        "authorInfo": "Author Information",
+        "authorAlias": "Author Alias",
+        "realName": "Real Name",
+        "email": "Email",
+        "visibility": "Visibility",
+        "targetAudience": "Target Audience",
+        "license": "License",
+        "reviewTeam": "Review Team",
+        "storyManager": "Story Manager",
+        "bookManager": "Book Manager",
+        "history": "Review History",
+        "noHistory": "No review history available",
         "actions": {
           "publish": "Publish",
-          "requestRevision": "Request Revision"
+          "reject": "Reject",
+          "requestRevision": "Request Revision",
+          "revisionRequested": "Revision requested successfully",
+          "revisionError": "Failed to request revision",
+          "publishSuccess": "Story published successfully",
+          "rejectSuccess": "Story rejected"
         },
         "comments": {
           "title": "Comments",
           "empty": "No comments yet",
+          "added": "Comment added successfully",
+          "addError": "Failed to add comment",
+          "replyAdded": "Reply added successfully",
+          "replyError": "Failed to add reply",
+          "resolved": "Comment resolved",
+          "reopened": "Comment reopened",
+          "resolveError": "Failed to update comment",
+          "edited": "Comment edited successfully",
+          "editError": "Failed to edit comment",
+          "deleted": "Comment deleted",
+          "deleteError": "Failed to delete comment",
+          "replies": "replies",
+          "noComments": "No comments yet",
+          "all": "All",
+          "open": "Open",
           "filter": {
             "all": "All ({count})",
             "open": "Open ({count})",
             "resolved": "Resolved ({count})"
           }
+        },
+        "modal": {
+          "publishTitle": "Confirm Publication",
+          "rejectTitle": "Confirm Rejection",
+          "publishPlaceholder": "Add any notes for publication...",
+          "rejectPlaceholder": "Explain the reason for rejection...",
+          "confirmPublish": "Publish Story",
+          "confirmReject": "Reject Story"
         }
       }
     },
@@ -1491,7 +1535,8 @@
       "rejected": "Your story was not approved"
     },
     "STORY_REVIEW": "Story Review",
-    "STORY_APPROVED": "Story Approved"
+    "STORY_APPROVED": "Story Approved",
+    "CONTENT_REVIEW": "Content Review"
   },
   "form": {
     "title": "Title",

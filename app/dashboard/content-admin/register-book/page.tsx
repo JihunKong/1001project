@@ -7,8 +7,16 @@ import { BookRegistrationForm } from '@/components/book-registration';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function ContentAdminRegisterBookPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { t } = useTranslation();
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (!session?.user) {
     redirect('/login');

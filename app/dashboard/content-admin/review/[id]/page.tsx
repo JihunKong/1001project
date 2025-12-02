@@ -200,10 +200,10 @@ export default function ContentAdminReviewPage() {
 
       if (!response.ok) throw new Error('Failed to add comment');
 
-      toast.success(t('contentAdmin.review.comments.added'));
+      toast.success(t('dashboard.contentAdmin.review.comments.added'));
       fetchComments();
     } catch (err) {
-      toast.error(t('contentAdmin.review.comments.addError'));
+      toast.error(t('dashboard.contentAdmin.review.comments.addError'));
     }
   };
 
@@ -225,10 +225,10 @@ export default function ContentAdminReviewPage() {
 
       if (!response.ok) throw new Error('Failed to add reply');
 
-      toast.success(t('contentAdmin.review.comments.replyAdded'));
+      toast.success(t('dashboard.contentAdmin.review.comments.replyAdded'));
       fetchComments();
     } catch (err) {
-      toast.error(t('contentAdmin.review.comments.replyError'));
+      toast.error(t('dashboard.contentAdmin.review.comments.replyError'));
     }
   };
 
@@ -243,11 +243,11 @@ export default function ContentAdminReviewPage() {
       if (!response.ok) throw new Error('Failed to update comment');
 
       toast.success(isResolved
-        ? t('contentAdmin.review.comments.resolved')
-        : t('contentAdmin.review.comments.reopened'));
+        ? t('dashboard.contentAdmin.review.comments.resolved')
+        : t('dashboard.contentAdmin.review.comments.reopened'));
       fetchComments();
     } catch (err) {
-      toast.error(t('contentAdmin.review.comments.resolveError'));
+      toast.error(t('dashboard.contentAdmin.review.comments.resolveError'));
     }
   };
 
@@ -261,10 +261,10 @@ export default function ContentAdminReviewPage() {
 
       if (!response.ok) throw new Error('Failed to edit comment');
 
-      toast.success(t('contentAdmin.review.comments.edited'));
+      toast.success(t('dashboard.contentAdmin.review.comments.edited'));
       fetchComments();
     } catch (err) {
-      toast.error(t('contentAdmin.review.comments.editError'));
+      toast.error(t('dashboard.contentAdmin.review.comments.editError'));
     }
   };
 
@@ -276,11 +276,11 @@ export default function ContentAdminReviewPage() {
 
       if (!response.ok) throw new Error('Failed to delete comment');
 
-      toast.success(t('contentAdmin.review.comments.deleted'));
+      toast.success(t('dashboard.contentAdmin.review.comments.deleted'));
       setSelectedComment(null);
       fetchComments();
     } catch (err) {
-      toast.error(t('contentAdmin.review.comments.deleteError'));
+      toast.error(t('dashboard.contentAdmin.review.comments.deleteError'));
     }
   };
 
@@ -318,10 +318,10 @@ export default function ContentAdminReviewPage() {
       setSubmission(responseData.submission);
       setShowRevisionModal(false);
 
-      toast.success(t('contentAdmin.review.actions.revisionRequested'));
+      toast.success(t('dashboard.contentAdmin.review.actions.revisionRequested'));
       setTimeout(() => router.push('/dashboard/content-admin'), 1500);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t('contentAdmin.review.actions.revisionError'));
+      toast.error(err instanceof Error ? err.message : t('dashboard.contentAdmin.review.actions.revisionError'));
     } finally {
       setRevisionSubmitting(false);
     }
@@ -351,8 +351,8 @@ export default function ContentAdminReviewPage() {
 
       toast.success(
         actionType === 'approve'
-          ? t('contentAdmin.review.actions.publishSuccess')
-          : t('contentAdmin.review.actions.rejectSuccess')
+          ? t('dashboard.contentAdmin.review.actions.publishSuccess')
+          : t('dashboard.contentAdmin.review.actions.rejectSuccess')
       );
 
       setTimeout(() => router.push('/dashboard/content-admin'), 2000);
@@ -434,8 +434,8 @@ export default function ContentAdminReviewPage() {
                 <ArrowLeft className="h-6 w-6" />
               </Link>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">{t('contentAdmin.review.title')}</h1>
-                <p className="mt-1 text-sm text-gray-500">{t('contentAdmin.review.subtitle')}</p>
+                <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.contentAdmin.review.title')}</h1>
+                <p className="mt-1 text-sm text-gray-500">{t('dashboard.contentAdmin.review.subtitle')}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -457,7 +457,7 @@ export default function ContentAdminReviewPage() {
                     className="bg-[#FF9500] hover:bg-[#FF8C00] text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <RotateCcw className="h-4 w-4 mr-2" />
-                    {t('contentAdmin.review.actions.requestRevision')}
+                    {t('dashboard.contentAdmin.review.actions.requestRevision')}
                   </button>
                   <button
                     onClick={() => {
@@ -467,7 +467,7 @@ export default function ContentAdminReviewPage() {
                     className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <Star className="h-4 w-4 mr-2" />
-                    {t('contentAdmin.review.actions.publish')}
+                    {t('dashboard.contentAdmin.review.actions.publish')}
                   </button>
                   <button
                     onClick={() => {
@@ -477,7 +477,7 @@ export default function ContentAdminReviewPage() {
                     className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center"
                   >
                     <XCircle className="h-4 w-4 mr-2" />
-                    {t('contentAdmin.review.actions.reject')}
+                    {t('dashboard.contentAdmin.review.actions.reject')}
                   </button>
                 </>
               )}
@@ -550,13 +550,13 @@ export default function ContentAdminReviewPage() {
 
               {submission.summary && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('contentAdmin.review.summary')}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('dashboard.contentAdmin.review.summary')}</h3>
                   <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">{submission.summary}</p>
                 </div>
               )}
 
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('contentAdmin.review.content')}</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.contentAdmin.review.content')}</h3>
                 <CommentableTextEditor
                   content={submission.content}
                   comments={comments}
@@ -571,7 +571,7 @@ export default function ContentAdminReviewPage() {
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <MessageSquare className="h-5 w-5 mr-2" />
-                  {t('contentAdmin.review.storyFeedback')}
+                  {t('dashboard.contentAdmin.review.storyFeedback')}
                 </h3>
                 <div className="bg-soe-green-50 border border-soe-green-200 p-4 rounded-lg">
                   <p className="text-gray-700">{submission.storyFeedback}</p>
@@ -583,7 +583,7 @@ export default function ContentAdminReviewPage() {
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <Shield className="h-5 w-5 mr-2" />
-                  {t('contentAdmin.review.adminNotes')}
+                  {t('dashboard.contentAdmin.review.adminNotes')}
                 </h3>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
                   <p className="text-gray-700">{submission.finalNotes}</p>
@@ -597,7 +597,7 @@ export default function ContentAdminReviewPage() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                   <MessageSquare className="h-5 w-5 mr-2" />
-                  {t('contentAdmin.review.comments.title')}
+                  {t('dashboard.contentAdmin.review.comments.title')}
                 </h3>
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gray-400" />
@@ -606,9 +606,9 @@ export default function ContentAdminReviewPage() {
                     onChange={(e) => setCommentFilter(e.target.value as 'all' | 'open' | 'resolved')}
                     className="text-sm border-gray-200 rounded-lg"
                   >
-                    <option value="all">{t('contentAdmin.review.comments.all')} ({comments.length})</option>
-                    <option value="open">{t('contentAdmin.review.comments.open')} ({openCommentsCount})</option>
-                    <option value="resolved">{t('contentAdmin.review.comments.resolved')} ({resolvedCommentsCount})</option>
+                    <option value="all">{t('dashboard.contentAdmin.review.comments.all')} ({comments.length})</option>
+                    <option value="open">{t('dashboard.contentAdmin.review.comments.open')} ({openCommentsCount})</option>
+                    <option value="resolved">{t('dashboard.contentAdmin.review.comments.resolved')} ({resolvedCommentsCount})</option>
                   </select>
                 </div>
               </div>
@@ -640,7 +640,7 @@ export default function ContentAdminReviewPage() {
                       <p className="text-sm text-gray-600 mt-1 line-clamp-2">{comment.content}</p>
                       {comment.replies && comment.replies.length > 0 && (
                         <p className="text-xs text-gray-500 mt-2">
-                          {comment.replies.length} {t('contentAdmin.review.comments.replies')}
+                          {comment.replies.length} {t('dashboard.contentAdmin.review.comments.replies')}
                         </p>
                       )}
                     </div>
@@ -648,7 +648,7 @@ export default function ContentAdminReviewPage() {
                 </div>
               ) : (
                 <p className="text-sm text-gray-500 text-center py-4">
-                  {t('contentAdmin.review.comments.noComments')}
+                  {t('dashboard.contentAdmin.review.comments.noComments')}
                 </p>
               )}
             </div>
@@ -658,33 +658,33 @@ export default function ContentAdminReviewPage() {
             />
 
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('contentAdmin.review.authorInfo')}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.contentAdmin.review.authorInfo')}</h3>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm text-gray-500">{t('contentAdmin.review.authorAlias')}:</span>
+                  <span className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.authorAlias')}:</span>
                   <p className="font-medium text-gray-900">{submission.authorAlias}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">{t('contentAdmin.review.realName')}:</span>
+                  <span className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.realName')}:</span>
                   <p className="font-medium text-gray-900">{submission.author.name}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">{t('contentAdmin.review.email')}:</span>
+                  <span className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.email')}:</span>
                   <p className="font-medium text-gray-900">{submission.author.email}</p>
                 </div>
                 <div>
-                  <span className="text-sm text-gray-500">{t('contentAdmin.review.visibility')}:</span>
+                  <span className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.visibility')}:</span>
                   <p className="font-medium text-gray-900">{submission.visibility}</p>
                 </div>
                 {submission.targetAudience && (
                   <div>
-                    <span className="text-sm text-gray-500">{t('contentAdmin.review.targetAudience')}:</span>
+                    <span className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.targetAudience')}:</span>
                     <p className="font-medium text-gray-900">{submission.targetAudience}</p>
                   </div>
                 )}
                 {submission.licenseType && (
                   <div>
-                    <span className="text-sm text-gray-500">{t('contentAdmin.review.license')}:</span>
+                    <span className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.license')}:</span>
                     <p className="font-medium text-gray-900">{submission.licenseType}</p>
                   </div>
                 )}
@@ -692,18 +692,18 @@ export default function ContentAdminReviewPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('contentAdmin.review.reviewTeam')}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.contentAdmin.review.reviewTeam')}</h3>
               <div className="space-y-4">
                 {submission.storyManager && (
                   <div>
-                    <span className="text-sm text-gray-500">{t('contentAdmin.review.storyManager')}:</span>
+                    <span className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.storyManager')}:</span>
                     <p className="font-medium text-gray-900">{submission.storyManager.name}</p>
                     <p className="text-sm text-gray-500">{submission.storyManager.email}</p>
                   </div>
                 )}
                 {submission.bookManager && (
                   <div>
-                    <span className="text-sm text-gray-500">{t('contentAdmin.review.bookManager')}:</span>
+                    <span className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.bookManager')}:</span>
                     <p className="font-medium text-gray-900">{submission.bookManager.name}</p>
                     <p className="text-sm text-gray-500">{submission.bookManager.email}</p>
                   </div>
@@ -712,7 +712,7 @@ export default function ContentAdminReviewPage() {
             </div>
 
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('contentAdmin.review.history')}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.contentAdmin.review.history')}</h3>
               <div className="space-y-3">
                 {submission.workflowHistory.length > 0 ? (
                   submission.workflowHistory.map((entry) => (
@@ -732,7 +732,7 @@ export default function ContentAdminReviewPage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500">{t('contentAdmin.review.noHistory')}</p>
+                  <p className="text-sm text-gray-500">{t('dashboard.contentAdmin.review.noHistory')}</p>
                 )}
               </div>
             </div>
@@ -744,7 +744,7 @@ export default function ContentAdminReviewPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-lg w-full max-h-[80vh] overflow-auto">
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-lg font-semibold">{t('contentAdmin.review.comments.title')}</h3>
+              <h3 className="text-lg font-semibold">{t('dashboard.contentAdmin.review.comments.title')}</h3>
               <button
                 onClick={() => setSelectedComment(null)}
                 className="text-gray-500 hover:text-gray-700"
@@ -780,8 +780,8 @@ export default function ContentAdminReviewPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {action === 'approve' && t('contentAdmin.review.modal.publishTitle')}
-              {action === 'reject' && t('contentAdmin.review.modal.rejectTitle')}
+              {action === 'approve' && t('dashboard.contentAdmin.review.modal.publishTitle')}
+              {action === 'reject' && t('dashboard.contentAdmin.review.modal.rejectTitle')}
             </h3>
 
             <textarea
@@ -789,8 +789,8 @@ export default function ContentAdminReviewPage() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder={
                 action === 'approve'
-                  ? t('contentAdmin.review.modal.publishPlaceholder')
-                  : t('contentAdmin.review.modal.rejectPlaceholder')
+                  ? t('dashboard.contentAdmin.review.modal.publishPlaceholder')
+                  : t('dashboard.contentAdmin.review.modal.rejectPlaceholder')
               }
               rows={4}
               className="w-full border border-gray-300 rounded-lg p-3 text-sm"
@@ -820,8 +820,8 @@ export default function ContentAdminReviewPage() {
                 {submitting
                   ? t('common.processing')
                   : action === 'approve'
-                    ? t('contentAdmin.review.modal.confirmPublish')
-                    : t('contentAdmin.review.modal.confirmReject')
+                    ? t('dashboard.contentAdmin.review.modal.confirmPublish')
+                    : t('dashboard.contentAdmin.review.modal.confirmReject')
                 }
               </button>
             </div>
