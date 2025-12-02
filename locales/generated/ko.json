@@ -1321,7 +1321,11 @@
       "volunteers": {
         "value": "100+",
         "label": "자원봉사자"
-      }
+      },
+      "publishedBooks": "출판된 책",
+      "featured": "추천",
+      "languages": "언어",
+      "premium": "프리미엄"
     },
     "howItWorks": {
       "title": "1001 Stories 이용 방법",

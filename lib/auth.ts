@@ -275,7 +275,7 @@ export const authOptions: NextAuthOptions = {
         if (session?.user && token) {
           logger.debug('Creating session', { email: session.user.email, tokenId: token.id });
           session.user.id = token.id as string
-          session.user.role = (token.role as UserRole) || UserRole.LEARNER
+          session.user.role = (token.role as UserRole) || UserRole.WRITER
           session.user.emailVerified = token.emailVerified as Date | null
           logger.debug('Session created successfully', { email: session.user.email, role: session.user.role });
         }
@@ -291,7 +291,7 @@ export const authOptions: NextAuthOptions = {
         if (user) {
           logger.debug('Creating JWT token', { email: user.email, role: (user as { role?: UserRole }).role });
           token.id = user.id
-          token.role = (user as { role?: UserRole }).role || UserRole.LEARNER
+          token.role = (user as { role?: UserRole }).role || UserRole.WRITER
           token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified
           logger.debug('JWT token created successfully', { email: user.email });
         }

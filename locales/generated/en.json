@@ -1321,7 +1321,11 @@
       "volunteers": {
         "value": "100+",
         "label": "Volunteers"
-      }
+      },
+      "publishedBooks": "Published Books",
+      "featured": "Featured",
+      "languages": "Languages",
+      "premium": "Premium"
     },
     "howItWorks": {
       "title": "How 1001 Stories Works",
