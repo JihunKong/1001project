@@ -644,7 +644,7 @@ export default function StoryReviewPage() {
                         ))}
                       </div>
                     )}
-                    {submission.tags.length > 0 && (
+                    {submission.tags?.length > 0 && (
                       <div className="flex flex-wrap gap-2">
                         <span className="text-sm text-gray-500">{t('dashboard.storyManager.review.metadata.tags')}</span>
                         {submission.tags.map((tag, index) => (
@@ -794,7 +794,7 @@ export default function StoryReviewPage() {
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.storyManager.review.workflowHistory.title')}</h3>
               <div className="space-y-3">
-                {submission.workflowHistory.length > 0 ? (
+                {submission.workflowHistory?.length > 0 ? (
                   submission.workflowHistory.map((entry) => (
                     <div key={entry.id} className="border-l-2 border-gray-200 pl-4 pb-3">
                       <div className="flex items-center justify-between">
