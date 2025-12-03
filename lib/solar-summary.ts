@@ -1,4 +1,5 @@
 import { logger } from './logger';
+import OpenAI from 'openai';
 
 interface SummaryGenerationOptions {
   title: string;
@@ -23,10 +24,10 @@ Please write the summary in the same language as the content. Make it warm, invi
 export async function generateBookSummary(
   options: SummaryGenerationOptions
 ): Promise<SummaryGenerationResult> {
-  const apiKey = process.env.UPSTAGE_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
-    logger.error('[SOLAR-SUMMARY] UPSTAGE_API_KEY environment variable is not set');
+    logger.error('[SUMMARY-GEN] OPENAI_API_KEY environment variable is not set');
     return {
       success: false,
       error: 'API key not configured'
@@ -46,62 +47,46 @@ export async function generateBookSummary(
       .replace('{title}', title)
       .replace('{content}', truncatedContent);
 
-    logger.info('[SOLAR-SUMMARY] Generating summary', {
+    logger.info('[SUMMARY-GEN] Generating summary with GPT-4o-mini', {
       title,
       contentLength: content.length,
       truncated: content.length > maxLength
     });
 
-    const response = await fetch('https://api.upstage.ai/v1/solar/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'solar-pro2',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a skilled children\'s book editor who writes warm, engaging summaries that capture the essence of stories while appealing to young readers.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 500,
-      }),
+    const openai = new OpenAI({
+      apiKey: apiKey,
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      logger.error('[SOLAR-SUMMARY] API request failed', {
-        status: response.status,
-        error: errorText
-      });
-      return {
-        success: false,
-        error: `API request failed: ${response.status}`
-      };
-    }
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a skilled children\'s book editor who writes warm, engaging summaries that capture the essence of stories while appealing to young readers.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 500,
+    });
 
-    const result = await response.json();
-
-    if (!result.choices || !result.choices[0]?.message?.content) {
-      logger.error('[SOLAR-SUMMARY] Invalid API response', { result });
+    if (!response.choices || !response.choices[0]?.message?.content) {
+      logger.error('[SUMMARY-GEN] Invalid API response', { response });
       return {
         success: false,
         error: 'Invalid response from API'
       };
     }
 
-    const summary = result.choices[0].message.content.trim();
+    const summary = response.choices[0].message.content.trim();
 
-    logger.info('[SOLAR-SUMMARY] Summary generated successfully', {
+    logger.info('[SUMMARY-GEN] Summary generated successfully', {
       title,
-      summaryLength: summary.length
+      summaryLength: summary.length,
+      model: 'gpt-4o-mini'
     });
 
     return {
@@ -110,7 +95,7 @@ export async function generateBookSummary(
     };
 
   } catch (error) {
-    logger.error('[SOLAR-SUMMARY] Error generating summary', error);
+    logger.error('[SUMMARY-GEN] Error generating summary', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred'
