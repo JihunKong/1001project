@@ -33,7 +33,7 @@ Visit `http://localhost:3000`
 - **Frontend**: Next.js 15.4.6, React 19, TailwindCSS
 - **Backend**: Next.js API Routes, NextAuth.js
 - **Database**: PostgreSQL with Prisma ORM
-- **AI**: OpenAI (image generation, TTS), Upstage (chatbot, parsing)
+- **AI**: OpenAI GPT (image generation, TTS, AI Review)
 - **Deployment**: Docker Compose on AWS EC2
 
 ## 📁 Project Structure
@@ -82,7 +82,6 @@ EMAIL_FROM="noreply@1001stories.org"
 
 # AI Integration
 OPENAI_API_KEY="your-openai-api-key"
-UPSTAGE_API_KEY="your-upstage-api-key"
 ```
 
 ### Docker Development
@@ -239,7 +238,7 @@ This project is licensed under the MIT License.
 ## 🙏 Acknowledgments
 
 - Built for Seeds of Empowerment non-profit
-- Powered by OpenAI and Upstage AI
+- Powered by OpenAI GPT
 - Deployed on AWS EC2
 
 ## 📞 Support

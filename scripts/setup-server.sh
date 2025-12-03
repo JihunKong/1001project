@@ -401,7 +401,6 @@ EMAIL_FROM="noreply@1001stories.org"
 
 # AI Configuration
 OPENAI_API_KEY="your-openai-api-key"
-UPSTAGE_API_KEY="your-upstage-api-key"
 
 # Application Settings
 NODE_ENV="production"

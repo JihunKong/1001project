@@ -319,12 +319,6 @@ variable "openai_integration_enabled" {
   default     = true
 }
 
-variable "upstage_integration_enabled" {
-  description = "Enable Upstage service integration"
-  type        = bool
-  default     = true
-}
-
 variable "external_webhook_urls" {
   description = "List of external webhook URLs for notifications"
   type        = list(string)

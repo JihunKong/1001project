@@ -1226,7 +1226,6 @@ resource "aws_secretsmanager_secret_version" "app_secrets" {
     NEXTAUTH_SECRET = random_password.nextauth_secret.result
     REDIS_URL = aws_elasticache_replication_group.redis.configuration_endpoint_address
     OPENAI_API_KEY = var.openai_api_key
-    UPSTAGE_API_KEY = var.upstage_api_key
   })
 }
 ```

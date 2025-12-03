@@ -95,11 +95,6 @@ aws secretsmanager create-secret \
     --secret-string "your-openai-api-key-here"
 
 aws secretsmanager create-secret \
-    --name "1001-stories/upstage-api-key" \
-    --description "Upstage API key for 1001 Stories" \
-    --secret-string "your-upstage-api-key-here"
-
-aws secretsmanager create-secret \
     --name "1001-stories/smtp-password" \
     --description "SMTP password for email service" \
     --secret-string "your-smtp-password-here"
@@ -176,7 +171,6 @@ alert_email = "admin@1001stories.org"
 
 # Secrets Manager ARNs
 openai_api_key_secret_arn = "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:1001-stories/openai-api-key"
-upstage_api_key_secret_arn = "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:1001-stories/upstage-api-key"
 smtp_password_secret_arn = "arn:aws:secretsmanager:us-east-1:ACCOUNT:secret:1001-stories/smtp-password"
 
 # Performance settings
@@ -361,10 +355,6 @@ cat > task-definition-update.json << EOF
         {
           "name": "OPENAI_API_KEY",
           "valueFrom": "$(terraform output -raw openai_secret_arn)"
-        },
-        {
-          "name": "UPSTAGE_API_KEY",
-          "valueFrom": "$(terraform output -raw upstage_secret_arn)"
         },
         {
           "name": "SMTP_PASSWORD",

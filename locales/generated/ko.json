@@ -468,7 +468,7 @@
           "tts": "Text-to-Speech",
           "ttsDesc": "Convert text to audio narration",
           "chatbot": "AI Chatbot",
-          "chatbotDesc": "Educational assistant powered by Upstage AI"
+          "chatbotDesc": "Educational assistant powered by OpenAI"
         },
         "services": {
           "title": "Services Status",

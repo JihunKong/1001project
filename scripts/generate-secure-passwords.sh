@@ -67,8 +67,6 @@ REDIS_PASSWORD=${REDIS_PASSWORD}
 
 # AI Services (Optional - will work without these)
 OPENAI_API_KEY=\${OPENAI_API_KEY}
-UPSTAGE_API_KEY=\${UPSTAGE_API_KEY}
-UPSTAGE_BASE_URL=https://api.upstage.ai/v1
 
 # Feature Flags
 ENABLE_AI_FEATURES=false

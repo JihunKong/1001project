@@ -262,7 +262,6 @@ module "ecs" {
   # Secrets from AWS Secrets Manager
   secrets = {
     OPENAI_API_KEY  = var.openai_api_key_secret_arn
-    UPSTAGE_API_KEY = var.upstage_api_key_secret_arn
     SMTP_PASSWORD   = var.smtp_password_secret_arn
   }
 

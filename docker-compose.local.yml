@@ -5,7 +5,6 @@ services:
       dockerfile: Dockerfile
       args:
         - OPENAI_API_KEY=sk-dummy-key-for-docker-build-only
-        - UPSTAGE_API_KEY=dummy-key-for-docker-build-only
     container_name: 1001-stories-app-local
     restart: unless-stopped
     ports:

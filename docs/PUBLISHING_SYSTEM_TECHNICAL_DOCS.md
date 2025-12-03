@@ -43,8 +43,7 @@ graph TB
     H --> H1[Local Storage /public/books/]
     H --> H2[Future: AWS S3]
 
-    I --> I1[OpenAI GPT - Images & TTS]
-    I --> I2[Upstage - Educational Chatbot]
+    I --> I1[OpenAI GPT - Images, TTS & AI Review]
 ```
 
 ---
@@ -1113,99 +1112,6 @@ export class TTSService {
 }
 ```
 
-#### Upstage Integration (Educational Features)
-
-**Environment Variables**:
-```env
-UPSTAGE_API_KEY=your_upstage_api_key
-ENABLE_CHATBOT=true
-```
-
-**Content Parsing Service**:
-```typescript
-export class ContentParsingService {
-  async parseContent(
-    content: string,
-    proficiencyLevel: string
-  ): Promise<string> {
-    if (!process.env.ENABLE_CHATBOT) return content;
-
-    try {
-      const response = await fetch('https://api.upstage.ai/v1/solar/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.UPSTAGE_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'solar-1-mini-chat',
-          messages: [
-            {
-              role: 'system',
-              content: `You are an ESL content adapter. Simplify the following text for ${proficiencyLevel} English learners while preserving the story's meaning and engaging elements.`
-            },
-            {
-              role: 'user',
-              content: content
-            }
-          ],
-          max_tokens: 2000
-        })
-      });
-
-      const data = await response.json();
-      return data.choices[0]?.message?.content || content;
-
-    } catch (error) {
-      console.error('Content parsing failed:', error);
-      return content; // Return original content on failure
-    }
-  }
-}
-```
-
-**Educational Chatbot Service**:
-```typescript
-export class EducationalChatbot {
-  async answerQuestion(
-    question: string,
-    bookContext: string,
-    userAge?: number
-  ): Promise<string> {
-    try {
-      const response = await fetch('https://api.upstage.ai/v1/solar/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.UPSTAGE_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'solar-1-mini-chat',
-          messages: [
-            {
-              role: 'system',
-              content: `You are a helpful educational assistant for children's stories. Answer questions about the story in a way appropriate for ${userAge ? `${userAge}-year-old` : 'young'} readers. Be encouraging and educational.`
-            },
-            {
-              role: 'user',
-              content: `Story context: ${bookContext}\n\nQuestion: ${question}`
-            }
-          ],
-          max_tokens: 500
-        })
-      });
-
-      const data = await response.json();
-      return data.choices[0]?.message?.content || "I'm sorry, I couldn't understand your question. Could you try asking it differently?";
-
-    } catch (error) {
-      console.error('Chatbot error:', error);
-      return "I'm having trouble right now. Please try again later!";
-    }
-  }
-}
-```
-
 ### ESL Features Integration
 
 #### Vocabulary Support System
@@ -1281,14 +1187,14 @@ export class VocabularyService {
 export class ReadingComprehensionService {
   async generateQuestions(content: string, ageRange: string): Promise<ComprehensionQuestion[]> {
     try {
-      const response = await fetch('https://api.upstage.ai/v1/solar/chat/completions', {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.UPSTAGE_API_KEY}`,
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'solar-1-mini-chat',
+          model: 'gpt-4o-mini',
           messages: [
             {
               role: 'system',
@@ -1348,12 +1254,10 @@ EMAIL_FROM="noreply@1001stories.org"
 
 # AI Integration
 OPENAI_API_KEY="your-openai-api-key"
-UPSTAGE_API_KEY="your-upstage-api-key"
 
 # Feature Flags
 ENABLE_AI_IMAGES="true"
 ENABLE_TTS="true"
-ENABLE_CHATBOT="true"
 
 # File Storage (when migrating to S3)
 AWS_REGION="us-east-1"
@@ -1690,7 +1594,7 @@ export async function GET() {
 
   try {
     // AI services health check
-    if (process.env.OPENAI_API_KEY && process.env.UPSTAGE_API_KEY) {
+    if (process.env.OPENAI_API_KEY) {
       checks.ai_services = true;
     }
   } catch (error) {

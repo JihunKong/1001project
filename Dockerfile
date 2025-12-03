@@ -55,7 +55,6 @@ RUN apk add --no-cache libc6-compat python3 make g++
 
 # Build arguments for API keys (required for build)
 ARG OPENAI_API_KEY
-ARG UPSTAGE_API_KEY
 
 # Set build environment
 ENV NODE_ENV=production

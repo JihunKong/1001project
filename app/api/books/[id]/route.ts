@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { UserRole, BookContentType, BookVisibility } from '@prisma/client';
 import { z } from 'zod';
 import { logger } from '@/lib/logger';
-import { uploadPDF, uploadCoverImage, deleteFile } from '@/lib/file-upload';
+import { uploadCoverImage, deleteFile } from '@/lib/file-upload';
 import { canEditAnyBook } from '@/lib/validation/book-registration.schema';
 
 // Validation schema for book updates
@@ -28,8 +28,7 @@ const UpdateBookSchema = z.object({
     .min(100, 'Content must be at least 100 characters')
     .max(100000, 'Content must be less than 100,000 characters')
     .optional(),
-  contentType: z.enum(['TEXT', 'PDF', 'EPUB', 'AUDIO', 'MULTIMEDIA', 'INTERACTIVE'])
-    .optional(),
+  contentType: z.literal('TEXT').optional(),
   authorName: z.string()
     .min(1, 'Author name is required')
     .max(100, 'Author name must be less than 100 characters')
@@ -279,13 +278,10 @@ export async function PUT(
     const isFormData = contentType.includes('multipart/form-data');
 
     let validatedData: z.infer<typeof UpdateBookSchema>;
-    let pdfFile: File | null = null;
     let coverImageFile: File | null = null;
 
     if (isFormData) {
       const formData = await request.formData();
-
-      pdfFile = formData.get('pdfFile') as File | null;
       coverImageFile = formData.get('coverImage') as File | null;
 
       const formDataObject: Record<string, unknown> = {};
@@ -382,23 +378,7 @@ export async function PUT(
       );
     }
 
-    let newPdfKey: string | null | undefined = undefined;
     let newCoverImage: string | null | undefined = undefined;
-
-    if (pdfFile && pdfFile.size > 0) {
-      const pdfUploadResult = await uploadPDF(pdfFile, id);
-      if (!pdfUploadResult.success) {
-        return NextResponse.json(
-          { error: `PDF upload failed: ${pdfUploadResult.error}` },
-          { status: 500 }
-        );
-      }
-      newPdfKey = pdfUploadResult.filePath || null;
-
-      if (existingBook.pdfKey) {
-        await deleteFile(existingBook.pdfKey);
-      }
-    }
 
     if (coverImageFile && coverImageFile.size > 0) {
       const coverUploadResult = await uploadCoverImage(coverImageFile, id);
@@ -425,9 +405,8 @@ export async function PUT(
       where: { id },
       data: {
         ...updateData,
-        ...(newPdfKey !== undefined && { pdfKey: newPdfKey }),
         ...(newCoverImage !== undefined && { coverImage: newCoverImage }),
-        ...(validatedData.contentType && { contentType: validatedData.contentType as BookContentType }),
+        contentType: 'TEXT' as BookContentType,
         ...(validatedData.visibility && { visibility: validatedData.visibility as BookVisibility }),
         ...(validatedData.isPublished && !existingBook.isPublished && {
           publishedAt: new Date(),

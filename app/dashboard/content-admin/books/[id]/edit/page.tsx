@@ -58,7 +58,6 @@ export default function ContentAdminBookEditPage({ params }: PageProps) {
         summary: data.summary,
         authorName: data.authorName,
         authorAlias: data.authorAlias,
-        contentType: data.contentType,
         content: data.content,
         language: data.language,
         ageRange: data.ageRange,
@@ -68,7 +67,6 @@ export default function ContentAdminBookEditPage({ params }: PageProps) {
         isPremium: data.isPremium,
         price: data.price,
         coverImage: data.coverImage,
-        pdfKey: data.pdfKey,
       });
     } catch (err) {
       console.error('Error fetching book:', err);

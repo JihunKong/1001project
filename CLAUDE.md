@@ -14,9 +14,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Database:** PostgreSQL with Prisma ORM
 - **Deployment:** Docker Compose (Local Development Priority)
 - **Authentication:** NextAuth.js with email magic links
-- **AI Integration:** 
-  - GPT Model - Image generation for text-only stories, TTS functionality
-  - Upstage Model - Educational chatbot, content parsing
+- **AI Integration:**
+  - OpenAI GPT - Image generation for text-only stories, TTS functionality, AI Review
 
 ### Core Features in Production
 1. **User Authentication** - Email-based magic link authentication
@@ -600,13 +599,11 @@ EMAIL_SERVER_PASSWORD="your-app-password"
 EMAIL_FROM="noreply@1001stories.org"
 
 # AI Integration
-OPENAI_API_KEY="your-openai-api-key"  # For GPT image generation & TTS
-UPSTAGE_API_KEY="your-upstage-api-key"  # For educational chatbot & parsing
+OPENAI_API_KEY="your-openai-api-key"  # For GPT image generation, TTS, AI Review
 
 # Feature Flags
 ENABLE_AI_IMAGES="true"
 ENABLE_TTS="true"
-ENABLE_CHATBOT="true"
 ```
 
 ## Key Implementation Notes
@@ -810,7 +807,7 @@ docker-compose logs app  # View logs
 ### Reading Enhancement Tools
 1. **Content Parsing** - Adjust text complexity by proficiency level
 2. **Vocabulary Support** - Click/hover for word explanations
-3. **AI Chatbot** - Upstage-powered Q&A about content
+3. **AI Chatbot** - AI-powered Q&A about content
 4. **Discussion Features** - Questions and answers about texts
 5. **Book Club** - Collaborative reading and discussion
 

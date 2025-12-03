@@ -298,7 +298,6 @@ docker-compose exec postgres pg_stat_activity
 - `NEXTAUTH_URL` - Application base URL
 - `EMAIL_SERVER_*` - SMTP configuration
 - `OPENAI_API_KEY` - OpenAI API access
-- `UPSTAGE_API_KEY` - Upstage API access
 
 ### Optional Environment Variables
 - `AWS_*` - S3 storage configuration

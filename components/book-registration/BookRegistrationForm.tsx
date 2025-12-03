@@ -1,11 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookContentType } from '@prisma/client';
 import toast from 'react-hot-toast';
-import { BookTypeSelector } from './BookTypeSelector';
-import { PDFUploader } from './PDFUploader';
 import { CoverImageUploader } from './CoverImageUploader';
 import { MetadataForm } from './MetadataForm';
 import RichTextEditor from '@/components/ui/RichTextEditor';
@@ -19,7 +16,6 @@ export interface BookFormInitialData {
   summary?: string;
   authorName?: string;
   authorAlias?: string;
-  contentType?: BookContentType;
   content?: string;
   language?: string;
   ageRange?: string;
@@ -29,7 +25,6 @@ export interface BookFormInitialData {
   isPremium?: boolean;
   price?: number;
   coverImage?: string;
-  pdfKey?: string;
 }
 
 interface BookRegistrationFormProps {
@@ -48,7 +43,6 @@ export function BookRegistrationForm({
   const router = useRouter();
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
 
@@ -56,9 +50,6 @@ export function BookRegistrationForm({
 
   const [formData, setFormData] = useState<Partial<BookRegistrationInput>>(() => {
     if (initialData) {
-      const contentTypeValue = initialData.contentType === 'TEXT' || initialData.contentType === 'PDF'
-        ? initialData.contentType
-        : 'TEXT';
       const visibilityValue = initialData.visibility === 'PUBLIC' || initialData.visibility === 'RESTRICTED' || initialData.visibility === 'CLASSROOM'
         ? initialData.visibility
         : 'PUBLIC';
@@ -68,7 +59,7 @@ export function BookRegistrationForm({
         summary: initialData.summary || '',
         authorName: initialData.authorName || '',
         authorAlias: initialData.authorAlias || '',
-        contentType: contentTypeValue,
+        contentType: 'TEXT',
         content: initialData.content || '',
         language: initialData.language || 'en',
         ageRange: initialData.ageRange || '',
@@ -151,18 +142,12 @@ export function BookRegistrationForm({
       return;
     }
 
-    const hasExistingPdf = isEditMode && initialData?.pdfKey;
-    if (formData.contentType === 'PDF' && !pdfFile && !hasExistingPdf) {
-      toast.error('PDF file is required when content type is PDF');
-      return;
-    }
-
     // Check if TEXT content is empty (including empty HTML tags like <p></p>)
     const isContentEmpty = !formData.content ||
       formData.content.replace(/<[^>]*>/g, '').trim() === '';
 
-    if (formData.contentType === 'TEXT' && isContentEmpty) {
-      toast.error('Content is required when content type is TEXT');
+    if (isContentEmpty) {
+      toast.error('Content is required');
       return;
     }
 
@@ -187,10 +172,6 @@ export function BookRegistrationForm({
           }
         }
       });
-
-      if (pdfFile) {
-        submitFormData.append('pdfFile', pdfFile);
-      }
 
       if (coverImage) {
         submitFormData.append('coverImage', coverImage);
@@ -337,39 +318,22 @@ export function BookRegistrationForm({
       <div className="bg-white rounded-lg shadow p-6 space-y-6">
         <h2 className="text-xl font-semibold text-gray-900">Content</h2>
 
-        <BookTypeSelector
-          value={formData.contentType || 'TEXT'}
-          onChange={(type) => handleFieldChange('contentType', type)}
-          disabled={isSubmitting || isEditMode}
-        />
-
-        {formData.contentType === 'PDF' && (
-          <PDFUploader
-            onFileSelect={setPdfFile}
-            disabled={isSubmitting}
-            existingFile={initialData?.pdfKey}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Story Content <span className="text-red-500">*</span>
+          </label>
+          <RichTextEditor
+            content={formData.content || ''}
+            onChange={(value) => handleFieldChange('content', value)}
+            placeholder="Write your story here..."
+            readOnly={isSubmitting}
           />
-        )}
-
-        {formData.contentType === 'TEXT' && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Story Content <span className="text-red-500">*</span>
-            </label>
-            <RichTextEditor
-              content={formData.content || ''}
-              onChange={(value) => handleFieldChange('content', value)}
-              placeholder="Write your story here..."
-              readOnly={isSubmitting}
-            />
-          </div>
-        )}
+        </div>
 
         <CoverImageUploader
           onFileSelect={setCoverImage}
           disabled={isSubmitting}
           existingImage={initialData?.coverImage}
-          pdfFile={formData.contentType === 'PDF' ? pdfFile : null}
           bookId={isEditMode ? bookId : undefined}
           bookTitle={formData.title}
         />

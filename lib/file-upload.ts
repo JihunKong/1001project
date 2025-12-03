@@ -15,11 +15,6 @@ export interface FileValidation {
   allowedTypes: string[];
 }
 
-const PDF_VALIDATION: FileValidation = {
-  maxSize: 50 * 1024 * 1024, // 50MB
-  allowedTypes: ['application/pdf'],
-};
-
 const IMAGE_VALIDATION: FileValidation = {
   maxSize: 5 * 1024 * 1024, // 5MB
   allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
@@ -59,47 +54,6 @@ function sanitizeFilename(filename: string): string {
 async function ensureDirectoryExists(dirPath: string): Promise<void> {
   if (!existsSync(dirPath)) {
     await mkdir(dirPath, { recursive: true });
-  }
-}
-
-export async function uploadPDF(
-  file: File,
-  bookId: string
-): Promise<UploadResult> {
-  try {
-    const validation = validateFile(file, PDF_VALIDATION);
-    if (!validation.valid) {
-      return {
-        success: false,
-        error: validation.error,
-      };
-    }
-
-    const sanitizedName = sanitizeFilename(file.name);
-    const filename = `${bookId}-${Date.now()}-${sanitizedName}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'books');
-
-    await ensureDirectoryExists(uploadDir);
-
-    const filePath = path.join(uploadDir, filename);
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    await writeFile(filePath, buffer);
-
-    logger.info(`PDF uploaded successfully: ${filename}`);
-
-    return {
-      success: true,
-      filePath: `/books/${filename}`,
-      publicUrl: `/books/${filename}`,
-    };
-  } catch (error) {
-    logger.error('PDF upload error', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to upload PDF',
-    };
   }
 }
 
@@ -189,10 +143,6 @@ export async function uploadAvatar(
       error: error instanceof Error ? error.message : 'Failed to upload avatar',
     };
   }
-}
-
-export function isPDFFile(file: File): boolean {
-  return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
 }
 
 export function isImageFile(file: File): boolean {

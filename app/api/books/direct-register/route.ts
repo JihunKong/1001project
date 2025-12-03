@@ -7,7 +7,7 @@ import {
   bookRegistrationSchema,
   canDirectRegisterBook,
 } from '@/lib/validation/book-registration.schema';
-import { uploadPDF, uploadCoverImage } from '@/lib/file-upload';
+import { uploadCoverImage } from '@/lib/file-upload';
 
 const getStringOrUndefined = (value: FormDataEntryValue | null): string | undefined => {
   if (value === null || value === '') return undefined;
@@ -37,8 +37,6 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
-
-    const pdfFile = formData.get('pdfFile') as File | null;
     const coverImageFile = formData.get('coverImage') as File | null;
 
     const formDataObject = {
@@ -54,8 +52,8 @@ export async function POST(req: NextRequest) {
         ? parseInt(formData.get('authorAge') as string)
         : undefined,
       authorLocation: getStringOrUndefined(formData.get('authorLocation')),
-      contentType: formData.get('contentType') as 'TEXT' | 'PDF',
-      content: getStringOrUndefined(formData.get('content')),
+      contentType: 'TEXT' as const,
+      content: formData.get('content') as string,
       language: (formData.get('language') as string) || 'en',
       ageRange: getStringOrUndefined(formData.get('ageRange')),
       readingLevel: getStringOrUndefined(formData.get('readingLevel')),
@@ -95,29 +93,8 @@ export async function POST(req: NextRequest) {
     }
 
     const data = validation.data;
-
-    if (data.contentType === 'PDF' && !pdfFile) {
-      return NextResponse.json(
-        { error: 'PDF file is required when content type is PDF' },
-        { status: 400 }
-      );
-    }
-
     const bookId = `book-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-
-    let pdfKey: string | null = null;
     let coverImage: string | null = null;
-
-    if (pdfFile) {
-      const pdfUploadResult = await uploadPDF(pdfFile, bookId);
-      if (!pdfUploadResult.success) {
-        return NextResponse.json(
-          { error: `PDF upload failed: ${pdfUploadResult.error}` },
-          { status: 500 }
-        );
-      }
-      pdfKey = pdfUploadResult.filePath || null;
-    }
 
     if (coverImageFile) {
       const coverUploadResult = await uploadCoverImage(coverImageFile, bookId);
@@ -142,9 +119,8 @@ export async function POST(req: NextRequest) {
         coAuthors: data.coAuthors,
         authorAge: data.authorAge,
         authorLocation: data.authorLocation,
-        contentType: data.contentType,
+        contentType: 'TEXT',
         content: data.content,
-        pdfKey: pdfKey,
         coverImage: coverImage,
         language: data.language,
         ageRange: data.ageRange,

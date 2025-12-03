@@ -17,12 +17,9 @@ export const bookRegistrationSchema = z.object({
 
   authorLocation: z.string().max(100).optional(),
 
-  contentType: z.enum(['TEXT', 'PDF'], {
-    required_error: 'Content type is required',
-    invalid_type_error: 'Content type must be TEXT or PDF',
-  }),
+  contentType: z.literal('TEXT').default('TEXT'),
 
-  content: z.string().optional(),
+  content: z.string().min(1, 'Content is required'),
 
   language: z.string().min(2).max(10).default('en'),
 
@@ -48,17 +45,6 @@ export const bookRegistrationSchema = z.object({
 
   previewPages: z.number().int().min(0).default(10),
 }).refine(
-  (data) => {
-    if (data.contentType === 'TEXT' && !data.content) {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: 'Content is required when content type is TEXT',
-    path: ['content'],
-  }
-).refine(
   (data) => {
     if (data.isPremium && !data.price) {
       return false;
@@ -103,6 +89,5 @@ export function canEditAnyBook(role: string): boolean {
   return ALLOWED_ROLES_FOR_BOOK_EDITING.includes(role as AllowedEditRole);
 }
 
-export const MAX_PDF_SIZE_MB = 50;
 export const MAX_IMAGE_SIZE_MB = 5;
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];

@@ -51,11 +51,6 @@ variable "openai_api_key_secret_arn" {
   type        = string
 }
 
-variable "upstage_api_key_secret_arn" {
-  description = "ARN of Upstage API key in AWS Secrets Manager"
-  type        = string
-}
-
 variable "smtp_password_secret_arn" {
   description = "ARN of SMTP password in AWS Secrets Manager"
   type        = string
