@@ -156,6 +156,8 @@ services:
       - ./certbot/www:/var/www/certbot:ro
       - ./nginx/logs:/var/log/nginx:rw
       - nginx_cache:/var/cache/nginx:rw
+      - ./public/covers:/var/www/covers:ro
+      - ./public/generated-images:/var/www/generated-images:ro
     networks:
       - app-network
     depends_on:
