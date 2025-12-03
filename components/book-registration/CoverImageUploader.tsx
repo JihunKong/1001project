@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { pdfjs } from 'react-pdf';
 import { MAX_IMAGE_SIZE_MB } from '@/lib/validation/book-registration.schema';
+import toast from 'react-hot-toast';
 
 if (typeof window !== 'undefined') {
   pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
@@ -15,14 +16,18 @@ interface CoverImageUploaderProps {
   disabled?: boolean;
   existingImage?: string;
   pdfFile?: File | null;
+  bookId?: string;
+  bookTitle?: string;
+  onAIGenerated?: (imageUrl: string) => void;
 }
 
-export function CoverImageUploader({ onFileSelect, disabled, existingImage, pdfFile }: CoverImageUploaderProps) {
+export function CoverImageUploader({ onFileSelect, disabled, existingImage, pdfFile, bookId, bookTitle, onAIGenerated }: CoverImageUploaderProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(existingImage || null);
   const [error, setError] = useState<string | null>(null);
   const [isExisting, setIsExisting] = useState<boolean>(!!existingImage);
   const [isExtractingFromPdf, setIsExtractingFromPdf] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   const extractCoverFromPdf = async (pdf: File) => {
     if (typeof window === 'undefined') {
@@ -76,6 +81,46 @@ export function CoverImageUploader({ onFileSelect, disabled, existingImage, pdfF
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to extract cover from PDF');
       setIsExtractingFromPdf(false);
+    }
+  };
+
+  const generateAICover = async () => {
+    if (!bookId) {
+      toast.error('Book ID is required for AI cover generation');
+      return;
+    }
+
+    setIsGeneratingAI(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/books/${bookId}/generate-cover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate cover');
+      }
+
+      const imageUrl = data.coverImage + '?t=' + Date.now();
+      setPreview(imageUrl);
+      setIsExisting(true);
+      setFile(null);
+      toast.success('Cover image generated successfully!');
+
+      if (onAIGenerated) {
+        onAIGenerated(imageUrl);
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate AI cover';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsGeneratingAI(false);
     }
   };
 
@@ -261,6 +306,47 @@ export function CoverImageUploader({ onFileSelect, disabled, existingImage, pdfF
           </div>
           <p className="mt-1.5 text-xs text-blue-600">
             Click to automatically use the first page of your PDF as the cover image
+          </p>
+        </div>
+      )}
+
+      {bookId && !preview && (
+        <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <span className="text-sm text-purple-800">
+                Generate cover with AI{bookTitle ? ` for "${bookTitle}"` : ''}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={generateAICover}
+              disabled={disabled || isGeneratingAI}
+              className="px-3 py-1.5 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
+            >
+              {isGeneratingAI ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  </svg>
+                  <span>Generate with AI</span>
+                </>
+              )}
+            </button>
+          </div>
+          <p className="mt-1.5 text-xs text-purple-600">
+            Use Gemini AI to create a unique cover image based on the book content
           </p>
         </div>
       )}

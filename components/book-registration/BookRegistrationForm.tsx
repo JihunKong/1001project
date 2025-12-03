@@ -292,6 +292,8 @@ export function BookRegistrationForm({
           disabled={isSubmitting}
           existingImage={initialData?.coverImage}
           pdfFile={formData.contentType === 'PDF' ? pdfFile : null}
+          bookId={isEditMode ? bookId : undefined}
+          bookTitle={formData.title}
         />
       </div>
 

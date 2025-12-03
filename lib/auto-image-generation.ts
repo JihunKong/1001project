@@ -20,6 +20,8 @@ export async function generateImagesForSubmission(
     errors: []
   };
 
+  console.log('[AUTO-IMAGE] generateImagesForSubmission started', { submissionId, maxImages });
+
   try {
     const submission = await prisma.textSubmission.findUnique({
       where: { id: submissionId },
@@ -33,14 +35,18 @@ export async function generateImagesForSubmission(
 
     if (!submission) {
       result.errors.push('Submission not found');
+      console.error('[AUTO-IMAGE] Submission not found:', submissionId);
       return result;
     }
+
+    console.log('[AUTO-IMAGE] Submission found:', { id: submission.id, title: submission.title });
 
     if (!submission.title && !submission.summary) {
       result.errors.push('Submission has no title or summary to generate images from');
       logger.warn('Skipping image generation for submission without title/summary', {
         submissionId
       });
+      console.warn('[AUTO-IMAGE] No title/summary for:', submissionId);
       return result;
     }
 
@@ -49,6 +55,7 @@ export async function generateImagesForSubmission(
       title: submission.title,
       maxImages
     });
+    console.log('[AUTO-IMAGE] Starting generation for:', submission.title);
 
     const prompts = generateImagePrompts(submission, maxImages);
     const generatedUrls: string[] = [];
@@ -162,10 +169,31 @@ function extractTextFromHTML(html: string): string {
 
 export async function triggerImageGeneration(submissionId: string): Promise<void> {
   logger.info('triggerImageGeneration called', { submissionId });
+  console.log('[AUTO-IMAGE] triggerImageGeneration called for submission:', submissionId);
 
-  generateImagesForSubmission(submissionId, 3).catch((error) => {
-    logger.error('Background image generation failed', error, {
-      submissionId
+  generateImagesForSubmission(submissionId, 3)
+    .then((result) => {
+      if (result.success) {
+        logger.info('Background image generation completed successfully', {
+          submissionId,
+          imageCount: result.imageUrls.length
+        });
+        console.log('[AUTO-IMAGE] Success! Generated', result.imageUrls.length, 'images for:', submissionId);
+      } else {
+        logger.warn('Background image generation completed with errors', {
+          submissionId,
+          errors: result.errors
+        });
+        console.warn('[AUTO-IMAGE] Completed with errors:', result.errors);
+      }
+    })
+    .catch((error) => {
+      logger.error('Background image generation failed', error, {
+        submissionId,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error'
+      });
+      console.error('[AUTO-IMAGE] Background generation FAILED for:', submissionId);
+      console.error('[AUTO-IMAGE] Error:', error instanceof Error ? error.message : error);
+      console.error('[AUTO-IMAGE] Stack:', error instanceof Error ? error.stack : undefined);
     });
-  });
 }
