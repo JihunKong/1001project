@@ -84,30 +84,33 @@ export function BookRegistrationForm({
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const hasValidContent = formData.contentType === 'TEXT' && formData.content &&
+    formData.content.replace(/<[^>]*>/g, '').trim().length >= 50;
+
   const generateAISummary = async () => {
-    if (!isEditMode || !bookId) {
-      toast.error('Summary generation is only available when editing an existing book');
-      return;
-    }
-
-    const hasContent = formData.contentType === 'TEXT' && formData.content &&
-      formData.content.replace(/<[^>]*>/g, '').trim() !== '';
-
-    if (!hasContent) {
-      toast.error('Book content is required to generate a summary');
+    if (!hasValidContent) {
+      toast.error(t('dashboard.registerBook.ai.contentRequired'));
       return;
     }
 
     setIsGeneratingSummary(true);
-    const loadingToast = toast.loading('Generating summary with AI...');
+    const loadingToast = toast.loading(t('dashboard.registerBook.ai.generating'));
 
     try {
-      const response = await fetch(`/api/books/${bookId}/generate-summary`, {
+      const endpoint = isEditMode && bookId
+        ? `/api/books/${bookId}/generate-summary`
+        : '/api/ai/generate-summary-preview';
+
+      const body = isEditMode && bookId
+        ? {}
+        : { title: formData.title || 'Untitled', content: formData.content };
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(body),
       });
 
       const result = await response.json();
@@ -117,11 +120,11 @@ export function BookRegistrationForm({
       }
 
       handleFieldChange('summary', result.summary);
-      toast.success('Summary generated successfully!', { id: loadingToast });
+      toast.success(t('dashboard.registerBook.ai.summarySuccess'), { id: loadingToast });
     } catch (error) {
       console.error('Summary generation error:', error);
       toast.error(
-        error instanceof Error ? error.message : 'Failed to generate summary',
+        error instanceof Error ? error.message : t('dashboard.registerBook.ai.error'),
         { id: loadingToast }
       );
     } finally {
@@ -273,11 +276,11 @@ export function BookRegistrationForm({
             <label className="block text-sm font-medium text-gray-700">
               Summary
             </label>
-            {isEditMode && formData.contentType === 'TEXT' && (
+            {formData.contentType === 'TEXT' && (
               <button
                 type="button"
                 onClick={generateAISummary}
-                disabled={isSubmitting || isGeneratingSummary}
+                disabled={isSubmitting || isGeneratingSummary || !hasValidContent}
                 className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-purple-700 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isGeneratingSummary ? (
@@ -286,14 +289,14 @@ export function BookRegistrationForm({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Generating...
+                    {t('dashboard.registerBook.ai.generating')}
                   </>
                 ) : (
                   <>
                     <svg className="-ml-0.5 mr-1.5 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    Generate with AI
+                    {t('dashboard.registerBook.ai.generateSummary')}
                   </>
                 )}
               </button>
@@ -307,9 +310,12 @@ export function BookRegistrationForm({
             placeholder="Brief description of the book"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
           />
-          {isEditMode && formData.contentType === 'TEXT' && (
+          {formData.contentType === 'TEXT' && (
             <p className="mt-1 text-xs text-gray-500">
-              Click &quot;Generate with AI&quot; to create a summary based on the story content using Solar Pro 2.
+              {hasValidContent
+                ? t('dashboard.registerBook.ai.summaryHint')
+                : t('dashboard.registerBook.ai.enterContentFirst')
+              }
             </p>
           )}
         </div>
@@ -336,6 +342,8 @@ export function BookRegistrationForm({
           existingImage={initialData?.coverImage}
           bookId={isEditMode ? bookId : undefined}
           bookTitle={formData.title}
+          bookContent={formData.content}
+          bookSummary={formData.summary}
         />
       </div>
 

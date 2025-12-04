@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { MAX_IMAGE_SIZE_MB } from '@/lib/validation/book-registration.schema';
 import toast from 'react-hot-toast';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface CoverImageUploaderProps {
   onFileSelect: (file: File | null) => void;
@@ -12,15 +13,20 @@ interface CoverImageUploaderProps {
   existingImage?: string;
   bookId?: string;
   bookTitle?: string;
+  bookContent?: string;
+  bookSummary?: string;
   onAIGenerated?: (imageUrl: string) => void;
 }
 
-export function CoverImageUploader({ onFileSelect, disabled, existingImage, bookId, bookTitle, onAIGenerated }: CoverImageUploaderProps) {
+export function CoverImageUploader({ onFileSelect, disabled, existingImage, bookId, bookTitle, bookContent, bookSummary, onAIGenerated }: CoverImageUploaderProps) {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(existingImage || null);
   const [error, setError] = useState<string | null>(null);
   const [isExisting, setIsExisting] = useState<boolean>(!!existingImage);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+
+  const hasValidContent = bookContent && bookContent.replace(/<[^>]*>/g, '').trim().length >= 50;
 
   const generateAICover = async () => {
     if (!bookId) {
@@ -48,17 +54,75 @@ export function CoverImageUploader({ onFileSelect, disabled, existingImage, book
       setPreview(imageUrl);
       setIsExisting(true);
       setFile(null);
-      toast.success('Cover image generated successfully!');
+      toast.success(t('dashboard.registerBook.ai.coverSuccess'));
 
       if (onAIGenerated) {
         onAIGenerated(imageUrl);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to generate AI cover';
+      const errorMessage = err instanceof Error ? err.message : t('dashboard.registerBook.ai.error');
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
       setIsGeneratingAI(false);
+    }
+  };
+
+  const generateAICoverPreview = async () => {
+    if (!bookTitle) {
+      toast.error(t('dashboard.registerBook.ai.contentRequired'));
+      return;
+    }
+
+    if (!hasValidContent && !bookSummary) {
+      toast.error(t('dashboard.registerBook.ai.contentRequired'));
+      return;
+    }
+
+    setIsGeneratingAI(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/ai/generate-cover-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: bookTitle,
+          summary: bookSummary,
+          content: bookContent,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate cover');
+      }
+
+      const dataUrl = `data:image/png;base64,${data.base64Data}`;
+      setPreview(dataUrl);
+      setIsExisting(false);
+
+      const blob = await fetch(dataUrl).then(r => r.blob());
+      const generatedFile = new File([blob], 'ai-cover.png', { type: 'image/png' });
+      setFile(generatedFile);
+      onFileSelect(generatedFile);
+
+      toast.success(t('dashboard.registerBook.ai.coverSuccess'));
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('dashboard.registerBook.ai.error');
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
+  const handleGenerateCover = () => {
+    if (bookId) {
+      generateAICover();
+    } else {
+      generateAICoverPreview();
     }
   };
 
@@ -207,7 +271,7 @@ export function CoverImageUploader({ onFileSelect, disabled, existingImage, book
       </div>
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      {bookId && !preview && (
+      {!preview && (
         <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -215,13 +279,16 @@ export function CoverImageUploader({ onFileSelect, disabled, existingImage, book
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
               <span className="text-sm text-purple-800">
-                Generate cover with AI{bookTitle ? ` for "${bookTitle}"` : ''}
+                {hasValidContent || bookId
+                  ? (bookTitle ? `${t('dashboard.registerBook.ai.generateCover')} "${bookTitle}"` : t('dashboard.registerBook.ai.generateCover'))
+                  : t('dashboard.registerBook.ai.enterContentFirst')
+                }
               </span>
             </div>
             <button
               type="button"
-              onClick={generateAICover}
-              disabled={disabled || isGeneratingAI}
+              onClick={handleGenerateCover}
+              disabled={disabled || isGeneratingAI || (!bookId && !hasValidContent)}
               className="px-3 py-1.5 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1"
             >
               {isGeneratingAI ? (
@@ -230,20 +297,23 @@ export function CoverImageUploader({ onFileSelect, disabled, existingImage, book
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Generating...</span>
+                  <span>{t('dashboard.registerBook.ai.generating')}</span>
                 </>
               ) : (
                 <>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
-                  <span>Generate with AI</span>
+                  <span>{t('dashboard.registerBook.ai.generateCover')}</span>
                 </>
               )}
             </button>
           </div>
           <p className="mt-1.5 text-xs text-purple-600">
-            Use Gemini AI to create a unique cover image based on the book content
+            {hasValidContent || bookId
+              ? t('dashboard.registerBook.ai.coverHint')
+              : t('dashboard.registerBook.ai.autoGenerateHint')
+            }
           </p>
         </div>
       )}

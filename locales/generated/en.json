@@ -447,6 +447,37 @@
         }
       }
     },
+    "registerBook": {
+      "title": "Register New Book",
+      "subtitle": "Add a new book to the library",
+      "ai": {
+        "enterContentFirst": "Please enter the content first",
+        "autoGenerateHint": "Once content is entered, AI can generate automatically",
+        "contentRequired": "Content is required for AI generation (minimum 50 characters)",
+        "summaryHint": "Click 'Generate with AI' to create a summary based on the story content",
+        "coverHint": "Use AI to create a unique cover image based on the book content",
+        "generateSummary": "Generate with AI",
+        "generateCover": "Generate with AI",
+        "generating": "Generating...",
+        "summarySuccess": "Summary generated successfully!",
+        "coverSuccess": "Cover image generated successfully!",
+        "error": "Failed to generate. Please try again."
+      },
+      "form": {
+        "title": "Title",
+        "titlePlaceholder": "Enter book title",
+        "subtitle": "Subtitle",
+        "subtitlePlaceholder": "Enter subtitle (optional)",
+        "summary": "Summary",
+        "summaryPlaceholder": "Enter a brief summary of the book",
+        "content": "Story Content",
+        "contentPlaceholder": "Write or paste the story content here",
+        "coverImage": "Cover Image",
+        "submit": "Register Book",
+        "submitting": "Registering...",
+        "cancel": "Cancel"
+      }
+    },
     "admin": {
       "title": "Admin Dashboard",
       "subtitle": "System overview and management for {name}",
