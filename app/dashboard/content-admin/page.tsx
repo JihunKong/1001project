@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import { ActivityFeed } from '@/components/dashboard';
 import {
   CheckCircle,
   XCircle,
@@ -435,6 +436,11 @@ export default function ContentAdminDashboard() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Activity Feed */}
+        <div className="mt-8">
+          <ActivityFeed limit={10} days={7} />
         </div>
       </div>
     </div>

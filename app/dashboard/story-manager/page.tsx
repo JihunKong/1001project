@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import { ActivityFeed } from '@/components/dashboard';
 import {
   FileText,
   Clock,
@@ -50,6 +51,7 @@ interface Stats {
 
 export default function StoryManagerDashboard() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [submissions, setSubmissions] = useState<TextSubmission[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -301,7 +303,11 @@ export default function StoryManagerDashboard() {
                   submissions.map((submission) => {
                     const priority = getPriorityLevel(submission);
                     return (
-                      <tr key={submission.id} className="hover:bg-gray-50">
+                      <tr
+                        key={submission.id}
+                        className="hover:bg-gray-50 cursor-pointer"
+                        onClick={() => router.push(`/dashboard/story-manager/review/${submission.id}`)}
+                      >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
                             {t(`dashboard.common.priority.${priority}`).toUpperCase()}
@@ -348,13 +354,13 @@ export default function StoryManagerDashboard() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center text-sm text-gray-500">
+                          <div className="flex items-center text-sm text-gray-900">
                             <Calendar className="h-4 w-4 mr-1" />
                             {new Date(submission.createdAt).toLocaleDateString()}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
+                          <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
                             <Link
                               href={`/dashboard/story-manager/review/${submission.id}`}
                               className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
@@ -376,6 +382,11 @@ export default function StoryManagerDashboard() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Activity Feed */}
+          <div className="mt-8">
+            <ActivityFeed limit={10} days={7} />
           </div>
         </div>
         </div>

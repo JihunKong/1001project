@@ -40,6 +40,34 @@
         "dueDate": "Due Date",
         "class": "Class",
         "format": "Format"
+      },
+      "activityFeed": {
+        "title": "Recent Activity",
+        "refresh": "Refresh",
+        "empty": "No recent activity",
+        "actions": {
+          "requestedRevision": "requested revision for",
+          "approved": "approved",
+          "submitted": "submitted",
+          "resubmitted": "resubmitted",
+          "startedReview": "started reviewing",
+          "sentToBookManager": "sent to Book Manager",
+          "published": "published",
+          "statusChanged": "updated status for"
+        },
+        "roles": {
+          "storyManager": "Story Manager",
+          "bookManager": "Book Manager",
+          "contentAdmin": "Content Admin",
+          "admin": "Admin",
+          "writer": "Writer"
+        },
+        "time": {
+          "justNow": "Just now",
+          "minutesAgo": "{count}m ago",
+          "hoursAgo": "{count}h ago",
+          "daysAgo": "{count}d ago"
+        }
       }
     },
     "learner": {
@@ -887,7 +915,32 @@
       "feedback": {
         "title": "Reviewer's Feedback",
         "noFeedback": "No feedback yet",
-        "noFeedbackMessage": "No feedback yet. Once your story is reviewed, feedback will appear here."
+        "noFeedbackMessage": "No feedback yet. Once your story is reviewed, feedback will appear here.",
+        "storyManager": "Story Manager"
+      },
+      "revisionTimeline": {
+        "title": "Revision History",
+        "requestedRevision": "Requested revision",
+        "approvedStory": "Approved story",
+        "submitted": "Submitted story",
+        "resubmitted": "Resubmitted story",
+        "startedReview": "Started review",
+        "sentToBookManager": "Sent to Book Manager",
+        "published": "Published story",
+        "statusChanged": "Status changed",
+        "roles": {
+          "storyManager": "Story Manager",
+          "bookManager": "Book Manager",
+          "contentAdmin": "Content Admin",
+          "admin": "Admin",
+          "writer": "Writer"
+        },
+        "time": {
+          "justNow": "Just now",
+          "minutesAgo": "{count}m ago",
+          "hoursAgo": "{count}h ago",
+          "daysAgo": "{count}d ago"
+        }
       },
       "timeline": {
         "title": "Publishing Status",

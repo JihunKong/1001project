@@ -6,7 +6,8 @@ import { ArrowLeft, Loader2, Edit } from 'lucide-react';
 import {
   StoryTrackingCard,
   ReviewerFeedbackList,
-  StoryContentViewer
+  StoryContentViewer,
+  RevisionTimeline
 } from '../../components';
 import AIReviewCard from '@/components/story-publication/writer/AIReviewCard';
 import AnnotatedStoryViewer from '@/components/story-publication/writer/AnnotatedStoryViewer';
@@ -23,7 +24,13 @@ interface TextSubmission {
   targetAudience?: string;
   updatedAt: string;
   createdAt: string;
+  storyFeedback?: string;
   author: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  storyManager?: {
     id: string;
     name: string;
     email: string;
@@ -180,19 +187,39 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   const reviewerRoles = ['STORY_MANAGER', 'BOOK_MANAGER', 'CONTENT_ADMIN', 'ADMIN'];
-  const feedbacks = submission.comments
-    ?.filter(comment => {
-      const isReviewer = reviewerRoles.includes(comment.author.role);
-      const isNotAuthor = comment.author.id !== submission.author.id;
-      return isReviewer && isNotAuthor;
-    })
-    .map(comment => ({
-      id: comment.id,
-      authorName: comment.author.name || comment.author.email,
-      authorEmail: comment.author.email,
-      content: comment.content,
-      createdAt: comment.createdAt
-    })) || [];
+
+  // Get the latest feedback date from workflow history for storyFeedback
+  const getStoryFeedbackDate = () => {
+    const feedbackHistory = submission.workflowHistory?.find(
+      h => h.toStatus === 'NEEDS_REVISION' || h.toStatus === 'STORY_APPROVED'
+    );
+    return feedbackHistory?.createdAt || submission.updatedAt;
+  };
+
+  const feedbacks = [
+    // Include storyFeedback from Story Manager if exists
+    ...(submission.storyFeedback ? [{
+      id: 'story-feedback',
+      authorName: submission.storyManager?.name || t('dashboard.writer.feedback.storyManager'),
+      authorEmail: submission.storyManager?.email || '',
+      content: submission.storyFeedback,
+      createdAt: getStoryFeedbackDate()
+    }] : []),
+    // Include inline comments from reviewers
+    ...(submission.comments
+      ?.filter(comment => {
+        const isReviewer = reviewerRoles.includes(comment.author.role);
+        const isNotAuthor = comment.author.id !== submission.author.id;
+        return isReviewer && isNotAuthor;
+      })
+      .map(comment => ({
+        id: comment.id,
+        authorName: comment.author.name || comment.author.email,
+        authorEmail: comment.author.email,
+        content: comment.content,
+        createdAt: comment.createdAt
+      })) || [])
+  ];
 
   return (
     <div key={resolvedParams?.id || 'loading'} className="min-h-screen bg-[#F9FAFB] pb-20 lg:pb-4">
@@ -257,6 +284,10 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
               />
 
               <ReviewerFeedbackList feedbacks={feedbacks} />
+
+              {submission.workflowHistory && submission.workflowHistory.length > 0 && (
+                <RevisionTimeline workflowHistory={submission.workflowHistory} />
+              )}
 
               {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') ? (
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(350px,450px)_1fr] gap-5">

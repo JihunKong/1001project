@@ -40,6 +40,34 @@
         "dueDate": "마감일",
         "class": "수업",
         "format": "포맷"
+      },
+      "activityFeed": {
+        "title": "최근 활동",
+        "refresh": "새로고침",
+        "empty": "최근 활동 없음",
+        "actions": {
+          "requestedRevision": "수정 요청",
+          "approved": "승인",
+          "submitted": "제출",
+          "resubmitted": "재제출",
+          "startedReview": "검토 시작",
+          "sentToBookManager": "북 매니저에게 전송",
+          "published": "출판",
+          "statusChanged": "상태 변경"
+        },
+        "roles": {
+          "storyManager": "스토리 매니저",
+          "bookManager": "북 매니저",
+          "contentAdmin": "콘텐츠 관리자",
+          "admin": "관리자",
+          "writer": "작가"
+        },
+        "time": {
+          "justNow": "방금 전",
+          "minutesAgo": "{count}분 전",
+          "hoursAgo": "{count}시간 전",
+          "daysAgo": "{count}일 전"
+        }
       }
     },
     "learner": {
@@ -887,7 +915,32 @@
       "feedback": {
         "title": "검토자 피드백",
         "noFeedback": "아직 피드백이 없습니다",
-        "noFeedbackMessage": "아직 피드백이 없습니다. 스토리가 검토되면 여기에 피드백이 표시됩니다."
+        "noFeedbackMessage": "아직 피드백이 없습니다. 스토리가 검토되면 여기에 피드백이 표시됩니다.",
+        "storyManager": "스토리 매니저"
+      },
+      "revisionTimeline": {
+        "title": "수정 이력",
+        "requestedRevision": "수정 요청",
+        "approvedStory": "스토리 승인",
+        "submitted": "스토리 제출",
+        "resubmitted": "스토리 재제출",
+        "startedReview": "검토 시작",
+        "sentToBookManager": "북 매니저에게 전송",
+        "published": "스토리 출판",
+        "statusChanged": "상태 변경",
+        "roles": {
+          "storyManager": "스토리 매니저",
+          "bookManager": "북 매니저",
+          "contentAdmin": "콘텐츠 관리자",
+          "admin": "관리자",
+          "writer": "작가"
+        },
+        "time": {
+          "justNow": "방금 전",
+          "minutesAgo": "{count}분 전",
+          "hoursAgo": "{count}시간 전",
+          "daysAgo": "{count}일 전"
+        }
       },
       "timeline": {
         "title": "출판 상태",
