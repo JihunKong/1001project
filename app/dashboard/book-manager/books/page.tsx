@@ -215,7 +215,7 @@ export default function BookManagerBooksPage() {
                     </button>
                     <Link
                       href={`/books/${book.id}`}
-                      className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"
+                      className="px-3 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100"
                     >
                       View
                     </Link>
