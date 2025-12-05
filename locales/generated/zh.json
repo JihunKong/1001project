@@ -703,7 +703,10 @@
       "feedback": {
         "title": "Reviewer's Feedback",
         "noFeedback": "No feedback yet",
-        "noFeedbackMessage": "No feedback yet. Once your story is reviewed, feedback will appear here."
+        "noFeedbackMessage": "No feedback yet. Once your story is reviewed, feedback will appear here.",
+        "storyManager": "Story Manager",
+        "bookManager": "Book Manager",
+        "contentAdmin": "Content Admin"
       },
       "timeline": {
         "title": "Publishing Status",
@@ -1411,6 +1414,11 @@
       "hoursAgo": "{hours}小时前",
       "daysAgo": "{days}天前",
       "monthDay": "{month}月{day}日"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View"
     }
   },
   "language": {

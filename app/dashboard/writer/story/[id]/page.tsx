@@ -25,12 +25,24 @@ interface TextSubmission {
   updatedAt: string;
   createdAt: string;
   storyFeedback?: string;
+  bookDecision?: string;
+  finalNotes?: string;
   author: {
     id: string;
     name: string;
     email: string;
   };
   storyManager?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  bookManager?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  contentAdmin?: {
     id: string;
     name: string;
     email: string;
@@ -188,13 +200,17 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
 
   const reviewerRoles = ['STORY_MANAGER', 'BOOK_MANAGER', 'CONTENT_ADMIN', 'ADMIN'];
 
-  // Get the latest feedback date from workflow history for storyFeedback
-  const getStoryFeedbackDate = () => {
+  // Get the latest feedback date from workflow history for different roles
+  const getFeedbackDate = (role: string, fallbackStatus: string[]) => {
     const feedbackHistory = submission.workflowHistory?.find(
-      h => h.toStatus === 'NEEDS_REVISION' || h.toStatus === 'STORY_APPROVED'
+      h => fallbackStatus.includes(h.toStatus) && h.performedBy?.role === role
     );
     return feedbackHistory?.createdAt || submission.updatedAt;
   };
+
+  const getStoryFeedbackDate = () => getFeedbackDate('STORY_MANAGER', ['NEEDS_REVISION', 'STORY_APPROVED']);
+  const getBookDecisionDate = () => getFeedbackDate('BOOK_MANAGER', ['NEEDS_REVISION', 'FORMAT_REVIEW', 'CONTENT_REVIEW']);
+  const getFinalNotesDate = () => getFeedbackDate('CONTENT_ADMIN', ['NEEDS_REVISION', 'PUBLISHED', 'REJECTED']);
 
   const feedbacks = [
     // Include storyFeedback from Story Manager if exists
@@ -204,6 +220,22 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
       authorEmail: submission.storyManager?.email || '',
       content: submission.storyFeedback,
       createdAt: getStoryFeedbackDate()
+    }] : []),
+    // Include bookDecision from Book Manager if exists
+    ...(submission.bookDecision ? [{
+      id: 'book-decision',
+      authorName: submission.bookManager?.name || t('dashboard.writer.feedback.bookManager'),
+      authorEmail: submission.bookManager?.email || '',
+      content: submission.bookDecision,
+      createdAt: getBookDecisionDate()
+    }] : []),
+    // Include finalNotes from Content Admin if exists
+    ...(submission.finalNotes ? [{
+      id: 'final-notes',
+      authorName: submission.contentAdmin?.name || t('dashboard.writer.feedback.contentAdmin'),
+      authorEmail: submission.contentAdmin?.email || '',
+      content: submission.finalNotes,
+      createdAt: getFinalNotesDate()
     }] : []),
     // Include inline comments from reviewers
     ...(submission.comments
@@ -255,7 +287,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 {t('dashboard.writer.storyDetail.title')}
               </h1>
 
-              {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION') && (
+              {(submission.status === 'DRAFT' || submission.status === 'NEEDS_REVISION' || submission.status === 'REJECTED') && (
                 <button
                   onClick={() => router.push(`/dashboard/writer/submit-text?edit=${submission.id}`)}
                   className="flex items-center gap-2 px-4 py-3 bg-white hover:bg-[#F9FAFB] border border-[#141414] text-[#141414] rounded-full transition-colors"

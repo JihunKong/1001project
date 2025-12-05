@@ -358,7 +358,33 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
         return NextResponse.json({ error: 'Can only resubmit rejected or revision-needed submissions' }, { status: 400 });
       }
       updates.finalNotes = null;
-      newStatus = TextSubmissionStatus.PENDING;
+
+      // Determine which queue to return to based on who requested the revision
+      if (submission.status === TextSubmissionStatus.NEEDS_REVISION) {
+        const lastRevisionRequest = await prisma.workflowHistory.findFirst({
+          where: {
+            textSubmissionId: submission.id,
+            toStatus: TextSubmissionStatus.NEEDS_REVISION
+          },
+          orderBy: { createdAt: 'desc' },
+          include: {
+            performedBy: { select: { role: true } }
+          }
+        });
+
+        if (lastRevisionRequest?.performedBy?.role === UserRole.STORY_MANAGER) {
+          newStatus = TextSubmissionStatus.STORY_REVIEW;
+        } else if (lastRevisionRequest?.performedBy?.role === UserRole.BOOK_MANAGER) {
+          newStatus = TextSubmissionStatus.FORMAT_REVIEW;
+        } else if (lastRevisionRequest?.performedBy?.role === UserRole.CONTENT_ADMIN) {
+          newStatus = TextSubmissionStatus.CONTENT_REVIEW;
+        } else {
+          newStatus = TextSubmissionStatus.PENDING;
+        }
+      } else {
+        // For REJECTED status, go back to PENDING for fresh review
+        newStatus = TextSubmissionStatus.PENDING;
+      }
       break;
 
     case 'bm_needs_revision':
@@ -380,7 +406,8 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
         return NextResponse.json({ error: 'Cannot request revision at this stage' }, { status: 400 });
       }
       updates.finalNotes = data.feedback;
-      newStatus = TextSubmissionStatus.FORMAT_REVIEW;
+      updates.contentAdminId = user.id;
+      newStatus = TextSubmissionStatus.NEEDS_REVISION;
       break;
 
     case 'update_revision_feedback':

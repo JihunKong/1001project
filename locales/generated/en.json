@@ -885,7 +885,9 @@
         "title": "Reviewer's Feedback",
         "noFeedback": "No feedback yet",
         "noFeedbackMessage": "No feedback yet. Once your story is reviewed, feedback will appear here.",
-        "storyManager": "Story Manager"
+        "storyManager": "Story Manager",
+        "bookManager": "Book Manager",
+        "contentAdmin": "Content Admin"
       },
       "revisionTimeline": {
         "title": "Revision History",
@@ -1682,6 +1684,11 @@
       "hoursAgo": "{hours}h ago",
       "daysAgo": "{days}d ago",
       "monthDay": "{month} {day}"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View"
     }
   },
   "language": {
