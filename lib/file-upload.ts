@@ -45,10 +45,29 @@ function validateFile(file: File, validation: FileValidation): { valid: boolean;
 }
 
 function sanitizeFilename(filename: string): string {
-  return filename
-    .replace(/[^a-zA-Z0-9.-]/g, '_')
+  // Extract extension safely
+  const lastDotIndex = filename.lastIndexOf('.');
+  const name = lastDotIndex > 0 ? filename.slice(0, lastDotIndex) : filename;
+  const extension = lastDotIndex > 0 ? filename.slice(lastDotIndex) : '';
+
+  // Sanitize name (no dots allowed in name to prevent traversal)
+  const sanitizedName = name
+    .replace(/[^a-zA-Z0-9_-]/g, '_')
     .replace(/_{2,}/g, '_')
     .toLowerCase();
+
+  // Sanitize extension (only allow alphanumeric)
+  const sanitizedExtension = extension
+    .toLowerCase()
+    .replace(/[^a-z0-9.]/g, '');
+
+  // Validate extension is safe
+  const dangerousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.pif', '.com', '.dll', '.vbs', '.js', '.jar', '.app', '.php', '.phtml'];
+  if (dangerousExtensions.includes(sanitizedExtension)) {
+    return sanitizedName + '.blocked';
+  }
+
+  return sanitizedName + sanitizedExtension;
 }
 
 async function ensureDirectoryExists(dirPath: string): Promise<void> {

@@ -12,8 +12,8 @@ const CSP_DIRECTIVES = {
   'default-src': ["'self'"],
   'script-src': [
     "'self'",
-    "'unsafe-inline'", // Required for Next.js
-    "'unsafe-eval'", // Required for development
+    "'unsafe-inline'", // Required for Next.js hydration
+    // Note: 'unsafe-eval' only added in development mode
     'https://cdn.jsdelivr.net',
     'https://www.googletagmanager.com',
     'https://www.google-analytics.com',

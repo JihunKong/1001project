@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { logger } from '@/lib/logger';
 import { uploadCoverImage, deleteFile } from '@/lib/file-upload';
 import { canEditAnyBook } from '@/lib/validation/book-registration.schema';
+import { safeParseJSONArray } from '@/lib/security-middleware';
 
 // Validation schema for book updates
 const UpdateBookSchema = z.object({
@@ -301,11 +302,7 @@ export async function PUT(
       for (const field of arrayFields) {
         const value = formData.get(field);
         if (value) {
-          try {
-            formDataObject[field] = JSON.parse(value as string);
-          } catch {
-            formDataObject[field] = [];
-          }
+          formDataObject[field] = safeParseJSONArray(value as string);
         }
       }
 

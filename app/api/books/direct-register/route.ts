@@ -8,6 +8,7 @@ import {
   canDirectRegisterBook,
 } from '@/lib/validation/book-registration.schema';
 import { uploadCoverImage } from '@/lib/file-upload';
+import { safeParseJSONArray } from '@/lib/security-middleware';
 
 const getStringOrUndefined = (value: FormDataEntryValue | null): string | undefined => {
   if (value === null || value === '') return undefined;
@@ -45,9 +46,7 @@ export async function POST(req: NextRequest) {
       summary: getStringOrUndefined(formData.get('summary')),
       authorName: formData.get('authorName') as string,
       authorAlias: getStringOrUndefined(formData.get('authorAlias')),
-      coAuthors: formData.get('coAuthors')
-        ? JSON.parse(formData.get('coAuthors') as string)
-        : [],
+      coAuthors: safeParseJSONArray(formData.get('coAuthors') as string | null),
       authorAge: formData.get('authorAge')
         ? parseInt(formData.get('authorAge') as string)
         : undefined,
@@ -57,18 +56,10 @@ export async function POST(req: NextRequest) {
       language: (formData.get('language') as string) || 'en',
       ageRange: getStringOrUndefined(formData.get('ageRange')),
       readingLevel: getStringOrUndefined(formData.get('readingLevel')),
-      category: formData.get('category')
-        ? JSON.parse(formData.get('category') as string)
-        : [],
-      genres: formData.get('genres')
-        ? JSON.parse(formData.get('genres') as string)
-        : [],
-      subjects: formData.get('subjects')
-        ? JSON.parse(formData.get('subjects') as string)
-        : [],
-      tags: formData.get('tags')
-        ? JSON.parse(formData.get('tags') as string)
-        : [],
+      category: safeParseJSONArray(formData.get('category') as string | null),
+      genres: safeParseJSONArray(formData.get('genres') as string | null),
+      subjects: safeParseJSONArray(formData.get('subjects') as string | null),
+      tags: safeParseJSONArray(formData.get('tags') as string | null),
       visibility: (formData.get('visibility') as 'PUBLIC' | 'RESTRICTED' | 'CLASSROOM') || 'PUBLIC',
       isPremium: formData.get('isPremium') === 'true',
       price: formData.get('price')

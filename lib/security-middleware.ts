@@ -384,6 +384,101 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
+/**
+ * SECURITY: Safe JSON parsing with schema validation
+ * Prevents JSON injection attacks by validating against a schema
+ */
+export function safeParseJSON<T>(
+  jsonString: string,
+  schema: z.ZodSchema<T>,
+  options?: { logErrors?: boolean; fallback?: T }
+): { success: true; data: T } | { success: false; error: string } {
+  try {
+    // First, ensure it's a valid JSON string
+    if (typeof jsonString !== 'string' || jsonString.trim() === '') {
+      return { success: false, error: 'Invalid JSON input: empty or not a string' };
+    }
+
+    // Check for suspicious patterns before parsing
+    const suspiciousPatterns = [
+      /__proto__/i,      // Prototype pollution
+      /constructor/i,    // Constructor access
+      /\$\{.*\}/,        // Template injection
+      /<script/i,        // XSS attempt
+      /javascript:/i,    // JavaScript protocol
+    ];
+
+    for (const pattern of suspiciousPatterns) {
+      if (pattern.test(jsonString)) {
+        logSecurityEvent('SUSPICIOUS_JSON_CONTENT', {
+          pattern: pattern.toString(),
+          inputLength: jsonString.length
+        }, 'HIGH');
+        return { success: false, error: 'JSON contains suspicious patterns' };
+      }
+    }
+
+    // Parse the JSON
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(jsonString);
+    } catch (parseError) {
+      if (options?.logErrors) {
+        logSecurityEvent('JSON_PARSE_ERROR', {
+          error: parseError instanceof Error ? parseError.message : 'Unknown parse error'
+        });
+      }
+      return { success: false, error: 'Invalid JSON format' };
+    }
+
+    // Validate against schema
+    const validated = schema.safeParse(parsed);
+    if (!validated.success) {
+      const errorMessage = validated.error.issues.map(i => i.message).join(', ');
+      if (options?.logErrors) {
+        logSecurityEvent('JSON_VALIDATION_FAILED', {
+          errors: validated.error.issues
+        });
+      }
+      return { success: false, error: `Validation failed: ${errorMessage}` };
+    }
+
+    return { success: true, data: validated.data };
+  } catch (error) {
+    logSecurityEvent('SAFE_JSON_PARSE_ERROR', {
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }, 'HIGH');
+    return { success: false, error: 'Failed to process JSON' };
+  }
+}
+
+/**
+ * SECURITY: Helper to safely parse array JSON with validation
+ */
+export function safeParseJSONArray(
+  jsonString: string | null | undefined,
+  options?: { maxLength?: number; allowedTypes?: ('string' | 'number')[] }
+): string[] {
+  if (!jsonString) return [];
+
+  const maxLength = options?.maxLength ?? 100;
+  const allowedTypes = options?.allowedTypes ?? ['string'];
+
+  const arraySchema = z.array(
+    z.union([z.string(), z.number()])
+      .refine(val => {
+        const valType = typeof val === 'number' ? 'number' : 'string';
+        return allowedTypes.includes(valType as 'string' | 'number');
+      })
+  ).max(maxLength);
+
+  const result = safeParseJSON(jsonString, arraySchema);
+  if (result.success) {
+    return result.data.map(String);
+  }
+  return [];
+}
+
 const securityMiddleware = {
   SecuritySchemas,
   enhancedRateLimit,
@@ -393,6 +488,8 @@ const securityMiddleware = {
   validateRequest,
   validateCSRFToken,
   addSecurityHeaders,
+  safeParseJSON,
+  safeParseJSONArray,
 };
 
 export default securityMiddleware;
