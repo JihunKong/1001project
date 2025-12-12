@@ -364,12 +364,25 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
         const lastRevisionRequest = await prisma.workflowHistory.findFirst({
           where: {
             textSubmissionId: submission.id,
-            toStatus: TextSubmissionStatus.NEEDS_REVISION
+            toStatus: TextSubmissionStatus.NEEDS_REVISION,
+            performedById: {
+              not: submission.authorId
+            }
           },
           orderBy: { createdAt: 'desc' },
           include: {
             performedBy: { select: { role: true } }
           }
+        });
+
+        console.log('[Resubmit Debug]', {
+          submissionId: submission.id,
+          authorId: submission.authorId,
+          lastRevisionRequest: lastRevisionRequest ? {
+            id: lastRevisionRequest.id,
+            performedById: lastRevisionRequest.performedById,
+            performedByRole: lastRevisionRequest.performedBy?.role
+          } : null
         });
 
         if (lastRevisionRequest?.performedBy?.role === UserRole.STORY_MANAGER) {
@@ -379,7 +392,7 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
         } else if (lastRevisionRequest?.performedBy?.role === UserRole.CONTENT_ADMIN) {
           newStatus = TextSubmissionStatus.CONTENT_REVIEW;
         } else {
-          newStatus = TextSubmissionStatus.PENDING;
+          newStatus = TextSubmissionStatus.STORY_REVIEW;
         }
       } else {
         // For REJECTED status, go back to PENDING for fresh review
