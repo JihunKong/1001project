@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     const stories = submissions.map((submission) => {
       const wordCount = submission.content
-        ? submission.content.split(/\s+/).filter(word => word.length > 0).length
+        ? submission.content.replace(/<[^>]*>/g, '').trim().split(/\s+/).filter(word => word.length > 0).length
         : 0;
 
       return {

@@ -159,8 +159,8 @@ export async function PUT(
     if (updateData.content) {
       updateData.content = purify.sanitize(updateData.content);
 
-      // Recalculate word count
-      const textContent = updateData.content.replace(/<[^>]*>/g, '');
+      // Recalculate word count (trim to match frontend calculation)
+      const textContent = updateData.content.replace(/<[^>]*>/g, '').trim();
       updateData.wordCount = textContent.split(/\s+/).filter((word: string) => word.length > 0).length;
 
       // Check if content changed significantly (50%+) for image regeneration

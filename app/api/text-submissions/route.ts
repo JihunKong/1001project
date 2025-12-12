@@ -240,8 +240,8 @@ export async function POST(request: NextRequest) {
     // Normalize author alias with fallbacks
     const normalizedAuthorAlias = normalizeAuthorAlias(validatedData.authorAlias, session);
 
-    // Calculate word count
-    const textContent = sanitizedContent.replace(/<[^>]*>/g, '');
+    // Calculate word count (trim to match frontend calculation)
+    const textContent = sanitizedContent.replace(/<[^>]*>/g, '').trim();
     const wordCount = textContent.split(/\s+/).filter(word => word.length > 0).length;
 
     // Create text submission using validated data
