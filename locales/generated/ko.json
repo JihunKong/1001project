@@ -220,7 +220,8 @@
         "sections": {
           "summary": "요약",
           "storyContent": "스토리 내용 (텍스트를 클릭하여 코멘트 추가)",
-          "previousFeedback": "이전 피드백"
+          "previousFeedback": "이전 피드백",
+          "bookManagerDecision": "북 매니저 결정"
         },
         "comments": {
           "title": "코멘트",

@@ -622,7 +622,7 @@ export default function FormatDecisionPage() {
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Add any additional notes about this format decision..."
                   rows={3}
-                  className="w-full border border-gray-300 rounded-lg p-3 text-sm"
+                  className="w-full border border-gray-300 rounded-lg p-3 text-sm text-[#141414]"
                 />
               </div>
 

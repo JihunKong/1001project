@@ -78,6 +78,7 @@ interface TextSubmission {
     email: string;
   };
   storyFeedback?: string;
+  bookDecision?: string;
   aiReviews?: AIReview[];
   workflowHistory: Array<{
     id: string;
@@ -697,6 +698,18 @@ export default function StoryReviewPage() {
                 </h3>
                 <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
                   <p className="text-gray-700">{submission.storyFeedback}</p>
+                </div>
+              </div>
+            )}
+
+            {submission.bookDecision && (
+              <div className="bg-white rounded-lg shadow p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <MessageSquare className="h-5 w-5 mr-2 text-blue-600" />
+                  {t('dashboard.storyManager.review.sections.bookManagerDecision')}
+                </h3>
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                  <p className="text-gray-700">{submission.bookDecision}</p>
                 </div>
               </div>
             )}

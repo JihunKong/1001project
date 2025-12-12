@@ -235,7 +235,7 @@ export default function BookManagerRevisionModal({
             placeholder={t('dashboard.bookManager.revisionModal.notesPlaceholder')}
             rows={6}
             disabled={isSubmitting}
-            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-soe-green-500 disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`w-full px-4 py-3 border rounded-lg text-[#141414] focus:outline-none focus:ring-2 focus:ring-soe-green-500 disabled:opacity-50 disabled:cursor-not-allowed ${
               showValidation && !isValid
                 ? 'border-red-500'
                 : 'border-[#E5E5EA]'

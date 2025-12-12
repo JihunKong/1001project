@@ -383,7 +383,8 @@ export default function ContentAdminReviewPage() {
   };
 
   const canTakeAction = (submissionStatus: string) => {
-    return submissionStatus === 'CONTENT_REVIEW';
+    const actionableStatuses = ['CONTENT_REVIEW', 'NEEDS_REVISION'];
+    return actionableStatuses.includes(submissionStatus);
   };
 
   const filteredComments = comments.filter(comment => {
@@ -794,7 +795,7 @@ export default function ContentAdminReviewPage() {
                   : t('dashboard.contentAdmin.review.modal.rejectPlaceholder')
               }
               rows={4}
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm"
+              className="w-full border border-gray-300 rounded-lg p-3 text-sm text-[#141414]"
               required={action === 'reject'}
             />
 

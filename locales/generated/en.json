@@ -220,7 +220,8 @@
         "sections": {
           "summary": "Summary",
           "storyContent": "Story Content (Click text to add comments)",
-          "previousFeedback": "Previous Feedback"
+          "previousFeedback": "Previous Feedback",
+          "bookManagerDecision": "Book Manager's Decision"
         },
         "comments": {
           "title": "Comments",
