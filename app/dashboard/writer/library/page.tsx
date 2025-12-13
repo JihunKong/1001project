@@ -27,6 +27,7 @@ export default function WriterLibraryPage() {
   const { t } = useTranslation();
 
   const [books, setBooks] = useState<Book[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<FilterState>({});
@@ -35,11 +36,24 @@ export default function WriterLibraryPage() {
     sortBy: 'createdAt',
     sortOrder: 'desc'
   });
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [showFilters, setShowFilters] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const limit = 20;
+
+  const fetchFavorites = useCallback(async () => {
+    try {
+      const response = await fetch('/api/books/favorites');
+      if (response.ok) {
+        const data = await response.json();
+        const ids = new Set<string>((data.books || []).map((b: { id: string }) => b.id));
+        setFavoriteIds(ids);
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    }
+  }, []);
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
@@ -73,13 +87,33 @@ export default function WriterLibraryPage() {
     }
   }, [page, currentSort, searchTerm, filters]);
 
+  const handleFavoriteToggle = useCallback((bookId: string, isFavorited: boolean) => {
+    setFavoriteIds(prev => {
+      const newSet = new Set(prev);
+      if (isFavorited) {
+        newSet.add(bookId);
+      } else {
+        newSet.delete(bookId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const booksWithFavorites = useMemo(() => {
+    return books.map(book => ({
+      ...book,
+      isFavorited: favoriteIds.has(book.id)
+    }));
+  }, [books, favoriteIds]);
+
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/login?callbackUrl=/dashboard/writer/library');
     } else if (status === 'authenticated') {
       fetchBooks();
+      fetchFavorites();
     }
-  }, [status, router, fetchBooks]);
+  }, [status, router, fetchBooks, fetchFavorites]);
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -103,7 +137,7 @@ export default function WriterLibraryPage() {
     const categoryMap: { [key: string]: Book[] } = {};
     const featuredBooks: Book[] = [];
 
-    books.forEach((book) => {
+    booksWithFavorites.forEach((book) => {
       if (book.featured) {
         featuredBooks.push(book);
       }
@@ -126,7 +160,7 @@ export default function WriterLibraryPage() {
     });
 
     return { categories: categoryMap, featured: featuredBooks };
-  }, [books]);
+  }, [booksWithFavorites]);
 
   const getLibraryStats = () => {
     return {
@@ -250,7 +284,7 @@ export default function WriterLibraryPage() {
             )}
 
             {/* Books Display */}
-            {books.length === 0 ? (
+            {booksWithFavorites.length === 0 ? (
               <EmptyState
                 type={hasActiveFilters ? 'filtered' : 'no-books'}
                 onReset={hasActiveFilters ? handleResetFilters : undefined}
@@ -259,8 +293,9 @@ export default function WriterLibraryPage() {
               <>
                 {viewMode === 'list' ? (
                   <BookListView
-                    books={books}
+                    books={booksWithFavorites}
                     getLinkHref={(book) => `/dashboard/writer/read/${book.id}`}
+                    onFavoriteToggle={handleFavoriteToggle}
                   />
                 ) : (
                   <div className="space-y-20">
@@ -271,6 +306,7 @@ export default function WriterLibraryPage() {
                         books={booksByCategory.featured}
                         showViewAll={false}
                         getBookHref={(bookId) => `/dashboard/writer/read/${bookId}`}
+                        onFavoriteToggle={handleFavoriteToggle}
                       />
                     )}
 
@@ -282,13 +318,14 @@ export default function WriterLibraryPage() {
                         books={categoryBooks}
                         viewAllHref={`/dashboard/writer/library?category=${encodeURIComponent(category)}`}
                         getBookHref={(bookId) => `/dashboard/writer/read/${bookId}`}
+                        onFavoriteToggle={handleFavoriteToggle}
                       />
                     ))}
 
                     {/* Fallback: If no categories, show all books in grid */}
                     {Object.keys(booksByCategory.categories).length === 0 && booksByCategory.featured.length === 0 && (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        {books.map((book) => (
+                        {booksWithFavorites.map((book) => (
                           <AnimatedBookCard
                             key={book.id}
                             book={{

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Clock, Eye, Heart, Star, BookOpen, Globe, Users } from 'lucide-react';
+import { FavoriteButton } from './FavoriteButton';
 
 export interface Book {
   id: string;
@@ -26,11 +27,13 @@ export interface Book {
   isPremium: boolean;
   featured: boolean;
   contentType?: string;
+  isFavorited?: boolean;
 }
 
 interface BookListViewProps {
   books: Book[];
   getLinkHref?: (book: Book) => string;
+  onFavoriteToggle?: (bookId: string, isFavorited: boolean) => void;
 }
 
 const getDifficultyLabel = (score?: number): string => {
@@ -47,7 +50,7 @@ const getDifficultyColor = (score?: number): string => {
   return 'text-red-600';
 };
 
-export default function BookListView({ books, getLinkHref }: BookListViewProps) {
+export default function BookListView({ books, getLinkHref, onFavoriteToggle }: BookListViewProps) {
   const getHref = (book: Book) => {
     if (getLinkHref) {
       return getLinkHref(book);
@@ -77,6 +80,15 @@ export default function BookListView({ books, getLinkHref }: BookListViewProps) 
                 <BookOpen className="w-12 h-12 text-gray-400" />
               </div>
             )}
+            {/* Favorite Button */}
+            <div className="absolute top-2 left-2 z-10">
+              <FavoriteButton
+                bookId={book.id}
+                isFavorited={book.isFavorited || false}
+                onToggle={(newState) => onFavoriteToggle?.(book.id, newState)}
+                size="sm"
+              />
+            </div>
             {book.isPremium && (
               <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
                 Premium

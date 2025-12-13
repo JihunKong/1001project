@@ -9,6 +9,7 @@ interface Book {
   title: string;
   authorName: string;
   coverImage?: string;
+  isFavorited?: boolean;
 }
 
 interface CategorySectionProps {
@@ -17,6 +18,7 @@ interface CategorySectionProps {
   viewAllHref?: string;
   showViewAll?: boolean;
   getBookHref?: (bookId: string) => string;
+  onFavoriteToggle?: (bookId: string, isFavorited: boolean) => void;
 }
 
 export default function CategorySection({
@@ -24,7 +26,8 @@ export default function CategorySection({
   books,
   viewAllHref,
   showViewAll = true,
-  getBookHref
+  getBookHref,
+  onFavoriteToggle
 }: CategorySectionProps) {
   const { t } = useTranslation();
 
@@ -71,6 +74,8 @@ export default function CategorySection({
             authorName={book.authorName}
             coverImage={book.coverImage}
             href={getBookHref ? getBookHref(book.id) : undefined}
+            isFavorited={book.isFavorited}
+            onFavoriteToggle={onFavoriteToggle}
           />
         ))}
       </div>

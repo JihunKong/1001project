@@ -1423,6 +1423,12 @@
       "languages": "Languages",
       "premium": "Premium"
     },
+    "favorite": {
+      "add": "Add to Favorites",
+      "remove": "Remove from Favorites",
+      "added": "Added to favorites!",
+      "removed": "Removed from favorites"
+    },
     "howItWorks": {
       "title": "How 1001 Stories Works",
       "subtitle": "Three simple steps to start your storytelling journey",

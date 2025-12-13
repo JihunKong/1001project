@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { BookOpen } from 'lucide-react';
+import { FavoriteButton } from './FavoriteButton';
 
 interface LibraryGridCardProps {
   id: string;
@@ -10,6 +11,8 @@ interface LibraryGridCardProps {
   authorName: string;
   coverImage?: string;
   href?: string;
+  isFavorited?: boolean;
+  onFavoriteToggle?: (bookId: string, isFavorited: boolean) => void;
 }
 
 export default function LibraryGridCard({
@@ -17,7 +20,9 @@ export default function LibraryGridCard({
   title,
   authorName,
   coverImage,
-  href
+  href,
+  isFavorited = false,
+  onFavoriteToggle
 }: LibraryGridCardProps) {
   const linkHref = href || `/books/${id}`;
 
@@ -39,6 +44,15 @@ export default function LibraryGridCard({
               <BookOpen className="w-16 h-16 text-gray-400" />
             </div>
           )}
+          {/* Favorite Button Overlay */}
+          <div className="absolute top-2 right-2 z-10">
+            <FavoriteButton
+              bookId={id}
+              isFavorited={isFavorited}
+              onToggle={(newState) => onFavoriteToggle?.(id, newState)}
+              size="sm"
+            />
+          </div>
         </div>
 
         {/* Book Info */}

@@ -1423,6 +1423,12 @@
       "languages": "언어",
       "premium": "프리미엄"
     },
+    "favorite": {
+      "add": "즐겨찾기에 추가",
+      "remove": "즐겨찾기에서 삭제",
+      "added": "즐겨찾기에 추가되었습니다!",
+      "removed": "즐겨찾기에서 삭제되었습니다"
+    },
     "howItWorks": {
       "title": "1001 Stories 이용 방법",
       "subtitle": "스토리텔링 여정을 시작하는 세 가지 간단한 단계",
