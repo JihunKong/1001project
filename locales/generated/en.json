@@ -1493,6 +1493,10 @@
       "readBook": "Read Book",
       "viewDetails": "Details"
     },
+    "viewAll": "View all",
+    "categories": {
+      "featured": "Featured Stories"
+    },
     "contentType": {
       "text": "Text",
       "pdf": "PDF",

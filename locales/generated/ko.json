@@ -1493,6 +1493,10 @@
       "readBook": "책 읽기",
       "viewDetails": "상세정보"
     },
+    "viewAll": "전체 보기",
+    "categories": {
+      "featured": "추천 이야기"
+    },
     "contentType": {
       "text": "텍스트",
       "pdf": "PDF",

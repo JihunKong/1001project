@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { BookOpen } from 'lucide-react';
@@ -14,6 +14,7 @@ import {
   ViewModeToggle,
   BookListView,
   EmptyState,
+  CategorySection,
   type Book,
   type FilterState,
   type SortOption,
@@ -97,6 +98,35 @@ export default function WriterLibraryPage() {
   };
 
   const hasActiveFilters = Object.keys(filters).length > 0 || searchTerm.length > 0;
+
+  const booksByCategory = useMemo(() => {
+    const categoryMap: { [key: string]: Book[] } = {};
+    const featuredBooks: Book[] = [];
+
+    books.forEach((book) => {
+      if (book.featured) {
+        featuredBooks.push(book);
+      }
+
+      if (book.category && book.category.length > 0) {
+        book.category.forEach((cat: string) => {
+          if (!categoryMap[cat]) {
+            categoryMap[cat] = [];
+          }
+          categoryMap[cat].push(book);
+        });
+      } else if (book.educationalCategories && book.educationalCategories.length > 0) {
+        book.educationalCategories.forEach((cat: string) => {
+          if (!categoryMap[cat]) {
+            categoryMap[cat] = [];
+          }
+          categoryMap[cat].push(book);
+        });
+      }
+    });
+
+    return { categories: categoryMap, featured: featuredBooks };
+  }, [books]);
 
   const getLibraryStats = () => {
     return {
@@ -233,28 +263,54 @@ export default function WriterLibraryPage() {
                     getLinkHref={(book) => `/dashboard/writer/read/${book.id}`}
                   />
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {books.map((book) => (
-                      <AnimatedBookCard
-                        key={book.id}
-                        book={{
-                          id: book.id,
-                          title: book.title,
-                          authorName: book.authorName,
-                          description: book.summary,
-                          coverImage: book.coverImage,
-                          language: book.language,
-                          difficultyLevel: book.readingLevel || 'BEGINNER',
-                          ageGroup: book.ageRange || '5-8',
-                          pageCount: 0,
-                          averageRating: book.rating || 0,
-                          ratingCount: 0
-                        }}
-                        isAuthenticated={true}
-                        animationDelay={0}
-                        userRole={session?.user?.role}
+                  <div className="space-y-20">
+                    {/* Featured Books Section */}
+                    {booksByCategory.featured.length > 0 && (
+                      <CategorySection
+                        title={t('library.categories.featured') || 'Featured Stories'}
+                        books={booksByCategory.featured}
+                        showViewAll={false}
+                        getBookHref={(bookId) => `/dashboard/writer/read/${bookId}`}
+                      />
+                    )}
+
+                    {/* Category Sections */}
+                    {Object.entries(booksByCategory.categories).map(([category, categoryBooks]) => (
+                      <CategorySection
+                        key={category}
+                        title={category}
+                        books={categoryBooks}
+                        viewAllHref={`/dashboard/writer/library?category=${encodeURIComponent(category)}`}
+                        getBookHref={(bookId) => `/dashboard/writer/read/${bookId}`}
                       />
                     ))}
+
+                    {/* Fallback: If no categories, show all books in grid */}
+                    {Object.keys(booksByCategory.categories).length === 0 && booksByCategory.featured.length === 0 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        {books.map((book) => (
+                          <AnimatedBookCard
+                            key={book.id}
+                            book={{
+                              id: book.id,
+                              title: book.title,
+                              authorName: book.authorName,
+                              description: book.summary,
+                              coverImage: book.coverImage,
+                              language: book.language,
+                              difficultyLevel: book.readingLevel || 'BEGINNER',
+                              ageGroup: book.ageRange || '5-8',
+                              pageCount: 0,
+                              averageRating: book.rating || 0,
+                              ratingCount: 0
+                            }}
+                            isAuthenticated={true}
+                            animationDelay={0}
+                            userRole={session?.user?.role}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </>

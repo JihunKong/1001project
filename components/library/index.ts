@@ -11,3 +11,7 @@ export { default as BookListView } from './BookListView';
 export type { Book } from './BookListView';
 
 export { default as EmptyState } from './EmptyState';
+
+export { default as LibraryGridCard } from './LibraryGridCard';
+
+export { default as CategorySection } from './CategorySection';
