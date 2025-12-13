@@ -489,12 +489,17 @@ export async function DELETE(
 
     // Soft delete by updating visibility and adding deleted flag
     // In a full implementation, you might want a deletedAt field
+    // Prevent duplicate [DELETED] prefix if already deleted
+    const newTitle = book.title.startsWith('[DELETED]')
+      ? book.title
+      : `[DELETED] ${book.title}`;
+
     await prisma.book.update({
       where: { id },
       data: {
         visibility: 'PRIVATE',
         isPublished: false,
-        title: `[DELETED] ${book.title}`,
+        title: newTitle,
         updatedAt: new Date(),
       }
     });

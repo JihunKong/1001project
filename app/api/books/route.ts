@@ -210,6 +210,11 @@ export async function GET(request: NextRequest) {
     }
     // ADMIN users see all books (no additional filters)
 
+    // Filter out deleted books for all roles (including ADMIN)
+    where.NOT = {
+      title: { startsWith: '[DELETED]' }
+    };
+
     // Apply secure search filter
     if (search) {
       const searchQuery = buildSecureSearchQuery(search);
