@@ -1419,6 +1419,10 @@
       "edit": "Edit",
       "delete": "Delete",
       "view": "View"
+    },
+    "buttons": {
+      "dismiss": "Dispensar",
+      "accept": "Aceitar"
     }
   },
   "language": {

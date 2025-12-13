@@ -1419,6 +1419,10 @@
       "edit": "Edit",
       "delete": "Delete",
       "view": "View"
+    },
+    "buttons": {
+      "dismiss": "关闭",
+      "accept": "接受"
     }
   },
   "language": {

@@ -1419,6 +1419,10 @@
       "edit": "Edit",
       "delete": "Delete",
       "view": "View"
+    },
+    "buttons": {
+      "dismiss": "閉じる",
+      "accept": "受け入れる"
     }
   },
   "language": {

@@ -1419,6 +1419,10 @@
       "edit": "Edit",
       "delete": "Delete",
       "view": "View"
+    },
+    "buttons": {
+      "dismiss": "खारिज करें",
+      "accept": "स्वीकार करें"
     }
   },
   "language": {
