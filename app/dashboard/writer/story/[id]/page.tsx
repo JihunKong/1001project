@@ -307,7 +307,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
 
             <div className="space-y-5">
               {/* Two-column layout for cards (Figma design) */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
                 {/* Left Column: Story Info + Publishing Status */}
                 <div className="space-y-5">
                   <StoryTrackingCard
@@ -323,7 +323,7 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
 
                 {/* Right Column: Reviewer's Feedback */}
-                <div>
+                <div className="h-full">
                   <ReviewerFeedbackList feedbacks={feedbacks} />
                 </div>
               </div>

@@ -21,7 +21,7 @@ export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackList
 
   if (!feedbacks || feedbacks.length === 0) {
     return (
-      <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-full max-h-[687px]">
+      <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-full h-full">
         <div className="flex items-center gap-2 mb-6">
           <MessageSquare className="w-5 h-5 text-[#141414]" />
           <h3
@@ -52,7 +52,7 @@ export default function ReviewerFeedbackList({ feedbacks }: ReviewerFeedbackList
   }
 
   return (
-    <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-full max-h-[687px] flex flex-col">
+    <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-full h-full flex flex-col">
       <div className="flex items-center gap-2 mb-6">
         <MessageSquare className="w-5 h-5 text-[#141414]" />
         <h3

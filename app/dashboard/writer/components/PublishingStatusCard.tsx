@@ -55,8 +55,8 @@ export default function PublishingStatusCard({ currentStatus }: PublishingStatus
   };
 
   return (
-    <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 h-full">
-      <div className="flex flex-col gap-10 h-full">
+    <div className="bg-white border border-[#E5E5EA] rounded-lg p-6">
+      <div className="flex flex-col gap-10">
         <h3
           className="text-[#141414]"
           style={{
@@ -69,7 +69,7 @@ export default function PublishingStatusCard({ currentStatus }: PublishingStatus
           {t('dashboard.writer.publishingStatus.title')}
         </h3>
 
-        <div className="relative flex-1">
+        <div className="relative">
           {WORKFLOW_STEPS.map((step, index) => {
             const isActive = currentStep >= step.number;
             const isCurrent = currentStep === step.number;
@@ -82,7 +82,7 @@ export default function PublishingStatusCard({ currentStatus }: PublishingStatus
                     <StepCircle number={step.number} isActive={isActive} />
                     {!isLast && (
                       <div
-                        className={`absolute left-1/2 -translate-x-1/2 top-10 w-0 h-[50px] border-l border-dashed ${
+                        className={`absolute left-1/2 -translate-x-1/2 top-10 w-0 h-[44px] border-l border-dashed ${
                           isActive ? 'border-[#141414]' : 'border-[#D1D1D6]'
                         }`}
                       />
@@ -119,7 +119,7 @@ export default function PublishingStatusCard({ currentStatus }: PublishingStatus
                   </div>
                 </div>
 
-                {!isLast && <div className="h-[50px]" />}
+                {!isLast && <div className="h-[44px]" />}
               </div>
             );
           })}
