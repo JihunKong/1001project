@@ -165,7 +165,7 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
       {
         id: 'mypage',
         label: t('nav.myPage'),
-        href: '/profile',
+        href: '/dashboard/writer/profile',
         icon: User
       },
       {
