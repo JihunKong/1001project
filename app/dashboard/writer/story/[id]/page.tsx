@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, Edit } from 'lucide-react';
 import {
   StoryTrackingCard,
+  PublishingStatusCard,
   ReviewerFeedbackList,
   StoryContentViewer,
   RevisionTimeline
@@ -305,17 +306,27 @@ export default function StoryDetailPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div className="space-y-5">
-              <StoryTrackingCard
-                title={submission.title || t('dashboard.writer.storyDetail.untitled')}
-                description={submission.summary || submission.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
-                thumbnailUrl={submission.generatedImages?.[0]}
-                status={submission.status}
-                submissionDate={submission.createdAt}
-                targetAudience={submission.targetAudience}
-                wordCount={submission.wordCount || undefined}
-              />
+              {/* Two-column layout for cards (Figma design) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {/* Left Column: Story Info + Publishing Status */}
+                <div className="space-y-5">
+                  <StoryTrackingCard
+                    title={submission.title || t('dashboard.writer.storyDetail.untitled')}
+                    description={submission.summary || submission.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'}
+                    thumbnailUrl={submission.generatedImages?.[0]}
+                    status={submission.status}
+                    submissionDate={submission.createdAt}
+                    targetAudience={submission.targetAudience}
+                    wordCount={submission.wordCount || undefined}
+                  />
+                  <PublishingStatusCard currentStatus={submission.status} />
+                </div>
 
-              <ReviewerFeedbackList feedbacks={feedbacks} />
+                {/* Right Column: Reviewer's Feedback */}
+                <div>
+                  <ReviewerFeedbackList feedbacks={feedbacks} />
+                </div>
+              </div>
 
               {submission.workflowHistory && submission.workflowHistory.length > 0 && (
                 <RevisionTimeline workflowHistory={submission.workflowHistory} />

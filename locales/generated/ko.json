@@ -870,6 +870,32 @@
         "targetAgeGroup": "대상 연령",
         "wordCount": "단어 수"
       },
+      "publishingStatus": {
+        "title": "출판 상태",
+        "step1": {
+          "label": "제출"
+        },
+        "step2": {
+          "label": "검토 중"
+        },
+        "step3": {
+          "label": "최종 승인"
+        },
+        "step4": {
+          "label": "출판됨"
+        },
+        "message": {
+          "DRAFT": "스토리가 초안 상태입니다. 준비되면 제출하세요.",
+          "PENDING": "스토리가 제출되었습니다. 팀에서 곧 검토할 예정입니다.",
+          "STORY_REVIEW": "스토리 팀에서 검토 중입니다.",
+          "NEEDS_REVISION": "피드백에 따라 스토리를 수정해 주세요.",
+          "STORY_APPROVED": "스토리가 승인되었습니다! 형식 검토로 이동합니다.",
+          "FORMAT_REVIEW": "최적의 출판 형식을 결정하고 있습니다.",
+          "CONTENT_REVIEW": "최종 콘텐츠 검토가 진행 중입니다.",
+          "APPROVED": "승인 완료! 출판을 준비하고 있습니다.",
+          "PUBLISHED": "축하합니다! 스토리가 출판되었습니다."
+        }
+      },
       "storyCard": {
         "status": {
           "needRevision": "수정 필요",

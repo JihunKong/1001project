@@ -870,6 +870,32 @@
         "targetAgeGroup": "Target Age Group",
         "wordCount": "Word Count"
       },
+      "publishingStatus": {
+        "title": "Publishing Status",
+        "step1": {
+          "label": "Submission"
+        },
+        "step2": {
+          "label": "Under Review"
+        },
+        "step3": {
+          "label": "Final Approval"
+        },
+        "step4": {
+          "label": "Published"
+        },
+        "message": {
+          "DRAFT": "Your story is in draft. Submit when ready.",
+          "PENDING": "Your story has been submitted. Our team will review it shortly.",
+          "STORY_REVIEW": "Your story is being reviewed by our story team.",
+          "NEEDS_REVISION": "Please revise your story based on feedback.",
+          "STORY_APPROVED": "Story approved! Moving to format review.",
+          "FORMAT_REVIEW": "Determining the best format for publication.",
+          "CONTENT_REVIEW": "Final content review in progress.",
+          "APPROVED": "Approved! Preparing for publication.",
+          "PUBLISHED": "Congratulations! Your story is now published."
+        }
+      },
       "storyCard": {
         "status": {
           "needRevision": "Need Revision",
