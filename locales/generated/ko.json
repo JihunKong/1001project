@@ -1316,7 +1316,8 @@
       }
     },
     "users": "Users",
-    "settings": "Settings"
+    "settings": "Settings",
+    "myPage": "내 페이지"
   },
   "stories": {
     "title": "내 스토리",
@@ -2747,6 +2748,52 @@
     "cta": {
       "title": "전 세계 어린이들이 쓴 500권 이상의 책을 탐험하세요.",
       "button": "Kid Library 바로가기"
+    }
+  },
+  "myPage": {
+    "greeting": "안녕하세요, {name}님",
+    "tabs": {
+      "myStories": "내 스토리",
+      "myLibrary": "내 도서관"
+    },
+    "stories": {
+      "filters": {
+        "draft": "초안",
+        "published": "출판됨"
+      },
+      "status": {
+        "draft": "초안",
+        "published": "출판됨",
+        "inReview": "검토 중"
+      },
+      "editedJustNow": "방금 수정됨",
+      "editedHoursAgo": "{hours}시간 전 수정됨",
+      "editedDaysAgo": "{days}일 전 수정됨",
+      "viewBook": "책 보기",
+      "continueWriting": "계속 쓰기",
+      "untitled": "제목 없는 스토리",
+      "startNewStory": {
+        "title": "새 스토리 시작하기",
+        "description": "상상력이 기다리고 있어요! 글쓰기를 시작해볼까요?",
+        "button": "새 책 쓰기"
+      }
+    },
+    "library": {
+      "filters": {
+        "purchased": "구매한 책",
+        "favorites": "즐겨찾기"
+      },
+      "byAuthor": "작가: {author}",
+      "keepReading": "계속 읽기",
+      "empty": "아직 도서관에 책이 없습니다"
+    },
+    "achievements": {
+      "title": "업적",
+      "myBadges": "내 배지",
+      "nextMilestone": "다음 마일스톤"
+    },
+    "profile": {
+      "editProfile": "프로필 수정"
     }
   }
 }

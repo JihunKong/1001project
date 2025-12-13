@@ -163,9 +163,9 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
         icon: Bookmark
       },
       {
-        id: 'profile',
-        label: t('nav.profile'),
-        href: '/dashboard/writer/profile',
+        id: 'mypage',
+        label: t('nav.myPage'),
+        href: '/profile',
         icon: User
       },
       {

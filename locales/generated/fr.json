@@ -1078,7 +1078,8 @@
       "description": "Browse all books"
     },
     "users": "Users",
-    "settings": "Settings"
+    "settings": "Settings",
+    "myPage": "Ma page"
   },
   "stories": {
     "title": "Mes Histoires",
@@ -2243,5 +2244,51 @@
   },
   "circularBadge": {
     "text": "REGISTER FIRST! • REGISTER FIRST! • "
+  },
+  "myPage": {
+    "greeting": "Hello, {name}",
+    "tabs": {
+      "myStories": "My Stories",
+      "myLibrary": "My Library"
+    },
+    "stories": {
+      "filters": {
+        "draft": "Draft",
+        "published": "Published"
+      },
+      "status": {
+        "draft": "Draft",
+        "published": "Published",
+        "inReview": "In Review"
+      },
+      "editedJustNow": "Edited just now",
+      "editedHoursAgo": "Edited {hours}h ago",
+      "editedDaysAgo": "Edited {days}d ago",
+      "viewBook": "View Book",
+      "continueWriting": "Continue Writing",
+      "untitled": "Untitled Story",
+      "startNewStory": {
+        "title": "Start Your Next Story",
+        "description": "Your imagination is waiting! Let's start writing.",
+        "button": "Write a New Book"
+      }
+    },
+    "library": {
+      "filters": {
+        "purchased": "Purchased",
+        "favorites": "Favorites"
+      },
+      "byAuthor": "by. {author}",
+      "keepReading": "Keep Reading",
+      "empty": "No books in your library yet"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "myBadges": "My Badges",
+      "nextMilestone": "Next Milestone"
+    },
+    "profile": {
+      "editProfile": "Edit profile"
+    }
   }
 }

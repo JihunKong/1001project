@@ -161,13 +161,13 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
 
             {/* Menu items */}
             <Link
-              href="/dashboard/profile"
+              href="/profile"
               className="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
               role="menuitem"
               onClick={() => setIsOpen(false)}
             >
               <UserIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-              {t('nav.profileSettings')}
+              {t('nav.myPage')}
             </Link>
 
             {onTriggerOnboarding && (
@@ -597,12 +597,12 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
 
                   {/* Mobile user actions */}
                   <Link
-                    href="/dashboard/profile"
+                    href="/profile"
                     className="flex items-center px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                     role="menuitem"
                   >
                     <UserIcon className="w-5 h-5 mr-3" />
-                    {t('nav.profileSettings')}
+                    {t('nav.myPage')}
                   </Link>
 
                   {onTriggerOnboarding && (
