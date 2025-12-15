@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import toast from 'react-hot-toast';
 
@@ -27,15 +27,15 @@ export function FavoriteButton({
   const [isLoading, setIsLoading] = useState(false);
 
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-5 w-5',
-    lg: 'h-6 w-6',
+    sm: 'h-5 w-5',
+    md: 'h-6 w-6',
+    lg: 'h-7 w-7',
   };
 
   const buttonSizeClasses = {
-    sm: 'p-1',
-    md: 'p-1.5',
-    lg: 'p-2',
+    sm: 'p-1.5',
+    md: 'p-2',
+    lg: 'p-2.5',
   };
 
   const handleToggle = async (e: React.MouseEvent) => {
@@ -79,11 +79,11 @@ export function FavoriteButton({
       disabled={isLoading}
       className={`
         inline-flex items-center gap-1.5 rounded-full
-        transition-all duration-200
+        transition-all duration-200 shadow-md
         ${buttonSizeClasses[size]}
         ${isFavorited
-          ? 'text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30'
-          : 'text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600'
+          ? 'text-yellow-500 hover:text-yellow-600 bg-white hover:bg-yellow-50 border-2 border-yellow-400'
+          : 'text-gray-500 hover:text-yellow-500 bg-white hover:bg-gray-50 border border-gray-200'
         }
         ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         ${className}
@@ -91,7 +91,7 @@ export function FavoriteButton({
       title={isFavorited ? t('library.favorite.remove') : t('library.favorite.add')}
       aria-label={isFavorited ? t('library.favorite.remove') : t('library.favorite.add')}
     >
-      <Heart
+      <Star
         className={`${sizeClasses[size]} ${isFavorited ? 'fill-current' : ''}`}
       />
       {showLabel && (
