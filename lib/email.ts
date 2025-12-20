@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer'
 import { isEmailServiceConfigured } from './auth-demo'
 import { logger } from '@/lib/logger'
+import { SupportedLanguage } from './i18n/language-cookie'
+import { getEmailVerificationTranslations, EmailVerificationTranslations } from './i18n/server-translations'
 
 // Create reusable transporter only if email service is configured
 const createTransporter = () => {
@@ -210,6 +212,126 @@ const getWelcomeEmailHtml = (name: string, role: string) => {
       </body>
     </html>
   `
+}
+
+const getLocalizedVerificationEmailHtml = (url: string, translations: EmailVerificationTranslations) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>${translations.subject}</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .container {
+            background: linear-gradient(135deg, #91C549 0%, #7AB339 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+          }
+          .content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-top: 20px;
+          }
+          .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+          }
+          h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+          }
+          .greeting {
+            font-size: 18px;
+            color: #525252;
+            margin-bottom: 16px;
+          }
+          .button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #91C549 0%, #7AB339 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 20px 0;
+          }
+          .footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #666;
+          }
+          .link {
+            color: #91C549;
+            word-break: break-all;
+            font-size: 12px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="logo">1001 Stories</div>
+          <div class="content">
+            <h1>${translations.title}</h1>
+            <p class="greeting">${translations.greeting}</p>
+            <p>${translations.message}</p>
+            <a href="${url}" class="button">${translations.buttonText}</a>
+            <p style="margin-top: 30px; font-size: 14px; color: #666;">
+              ${translations.linkNote}
+            </p>
+            <p class="link">${url}</p>
+            <div class="footer">
+              <p>${translations.expireNote}</p>
+              <p>${translations.ignoreNote}</p>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  `
+}
+
+export async function sendLocalizedVerificationEmail(
+  email: string,
+  url: string,
+  language: SupportedLanguage = 'en'
+): Promise<{ success: boolean; messageId?: string; message?: string }> {
+  const transporter = createTransporter();
+  const translations = getEmailVerificationTranslations(language);
+
+  if (!transporter) {
+    logger.info(`[Email Service Disabled] Verification email for ${email} (${language})`, { url });
+    logger.info('To enable email sending, configure SMTP settings in .env.local');
+    return { success: false, message: 'Email service not configured' };
+  }
+
+  try {
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM || '"1001 Stories" <noreply@1001stories.org>',
+      to: email,
+      subject: translations.subject,
+      html: getLocalizedVerificationEmailHtml(url, translations),
+    })
+
+    logger.info("Localized verification email sent", { messageId: info.messageId, language })
+    return { success: true, messageId: info.messageId }
+  } catch (error) {
+    logger.error("Error sending localized verification email", error)
+    logger.info(`Fallback - Verification link for ${email}`, { url });
+    return { success: false, message: 'Failed to send verification email' };
+  }
 }
 
 // Send verification email

@@ -1939,14 +1939,42 @@
       "tagline": "어린 마음을 위한 이야기",
       "description1": "어린이 도서관은 다양한 문화와 배경을 가진 아이들이 쓴 이야기를 읽고 들을 수 있는 글로벌 이야기 컬렉션입니다.",
       "description2": "어린 독자들에게 영감을 주기 위해 설계된 창의성, 학습, 상상력을 위한 공간입니다.",
-      "cta": "도서관 탐색"
+      "cta": "도서관 탐색",
+      "accordion": {
+        "step1": {
+          "title": "이야기 둘러보기",
+          "description": "전 세계의 이야기 컬렉션을 탐색하세요"
+        },
+        "step2": {
+          "title": "이야기 선택하기",
+          "description": "관심사와 읽기 수준에 맞는 이야기를 선택하세요"
+        },
+        "step3": {
+          "title": "읽기 시작",
+          "description": "인터랙티브 기능과 함께 읽고 배우는 즐거움을 경험하세요"
+        }
+      }
     },
     "writingVolunteer": {
       "title": "작가 자원봉사",
       "tagline": "당신의 이야기를 나누세요",
       "description1": "이야기를 쓰고 영향을 미치세요. 작가 자원봉사를 통해 학생들은 자신만의 이야기를 세상과 공유하는 어린 작가가 됩니다.",
       "description2": "다른 사람들에게 영감을 주고, 글쓰기 실력을 키우며, 글로벌 스토리텔링 커뮤니티의 일원이 될 기회입니다.",
-      "cta": "작가 되기"
+      "cta": "작가 되기",
+      "accordion": {
+        "step1": {
+          "title": "이야기 만들기",
+          "description": "쉽게 사용할 수 있는 편집기로 자신만의 이야기를 작성하세요"
+        },
+        "step2": {
+          "title": "피드백 받기",
+          "description": "커뮤니티와 멘토로부터 도움이 되는 피드백을 받으세요"
+        },
+        "step3": {
+          "title": "세상과 공유하기",
+          "description": "이야기를 출판하고 전 세계 독자들에게 영감을 주세요"
+        }
+      }
     },
     "englishLearning": {
       "title": "영어 학습 프로그램",
@@ -2381,6 +2409,8 @@
           }
         },
         "terms": {
+          "label": "",
+          "suffix": "에 동의합니다",
           "validation": {
             "required": "이용약관에 동의해주세요"
           }
@@ -2800,6 +2830,43 @@
     },
     "profile": {
       "editProfile": "프로필 수정"
+    }
+  },
+  "email": {
+    "verification": {
+      "subject": "이메일 인증 - 1001 Stories",
+      "title": "이메일 주소 인증",
+      "greeting": "1001 Stories에 오신 것을 환영합니다!",
+      "message": "아래 버튼을 클릭하여 이메일 주소를 인증하고 여정을 시작하세요.",
+      "buttonText": "이메일 인증하기",
+      "linkNote": "또는 아래 링크를 브라우저에 복사하여 붙여넣으세요:",
+      "expireNote": "이 링크는 보안상의 이유로 24시간 후에 만료됩니다.",
+      "ignoreNote": "1001 Stories에 계정을 만들지 않으셨다면 이 이메일을 무시하셔도 됩니다."
+    }
+  },
+  "verifyEmail": {
+    "title": "이메일 인증",
+    "subtitle": "인증 링크를 다음 주소로 보냈습니다",
+    "checkInbox": "받은편지함을 확인하고 링크를 클릭하세요.",
+    "checkSpam": "메일이 보이지 않나요? 스팸 폴더를 확인해주세요.",
+    "resendButton": "인증 이메일 재발송",
+    "resendSuccess": "인증 이메일을 보냈습니다! 받은편지함을 확인하세요.",
+    "sending": "발송 중...",
+    "waitSeconds": "{seconds}초 대기",
+    "alreadyVerified": "이미 인증하셨나요? 로그인하기",
+    "backToLogin": "로그인으로 돌아가기",
+    "errors": {
+      "rateLimited": "잠시 후 다시 요청해주세요.",
+      "sendFailed": "인증 이메일 발송에 실패했습니다. 다시 시도해주세요.",
+      "networkError": "네트워크 오류입니다. 인터넷 연결을 확인해주세요.",
+      "invalidTitle": "유효하지 않은 인증 링크",
+      "invalidMessage": "이 인증 링크는 유효하지 않거나 이미 사용되었습니다. 새 링크를 요청해주세요.",
+      "expiredTitle": "링크 만료",
+      "expiredMessage": "이 인증 링크는 만료되었습니다. 새 인증 이메일을 요청해주세요.",
+      "userNotFoundTitle": "사용자를 찾을 수 없음",
+      "userNotFoundMessage": "이 인증 링크와 연결된 계정을 찾을 수 없습니다.",
+      "serverTitle": "서버 오류",
+      "serverMessage": "서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
     }
   }
 }

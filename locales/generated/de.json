@@ -2289,5 +2289,42 @@
     "profile": {
       "editProfile": "Edit profile"
     }
+  },
+  "email": {
+    "verification": {
+      "subject": "Bestätige deine E-Mail - 1001 Stories",
+      "title": "Bestätige deine E-Mail-Adresse",
+      "greeting": "Willkommen bei 1001 Stories!",
+      "message": "Klicke auf den Button, um deine E-Mail zu bestätigen und loszulegen.",
+      "buttonText": "E-Mail Bestätigen",
+      "linkNote": "Oder kopiere diesen Link in deinen Browser:",
+      "expireNote": "Dieser Link läuft aus Sicherheitsgründen in 24 Stunden ab.",
+      "ignoreNote": "Wenn du kein Konto bei 1001 Stories erstellt hast, ignoriere diese E-Mail."
+    }
+  },
+  "verifyEmail": {
+    "title": "Bestätige Deine E-Mail",
+    "subtitle": "Wir haben einen Bestätigungslink gesendet an",
+    "checkInbox": "Überprüfe deinen Posteingang und klicke auf den Link.",
+    "checkSpam": "Nicht gefunden? Überprüfe deinen Spam-Ordner.",
+    "resendButton": "Bestätigungs-E-Mail Erneut Senden",
+    "resendSuccess": "E-Mail gesendet! Überprüfe deinen Posteingang.",
+    "sending": "Wird gesendet...",
+    "waitSeconds": "Warte {seconds}s",
+    "alreadyVerified": "Bereits bestätigt? Anmelden",
+    "backToLogin": "Zurück zur Anmeldung",
+    "errors": {
+      "rateLimited": "Bitte warte, bevor du eine weitere E-Mail anforderst.",
+      "sendFailed": "Senden fehlgeschlagen. Versuche es erneut.",
+      "networkError": "Netzwerkfehler. Überprüfe deine Verbindung.",
+      "invalidTitle": "Ungültiger Bestätigungslink",
+      "invalidMessage": "Dieser Link ist ungültig oder wurde bereits verwendet.",
+      "expiredTitle": "Link Abgelaufen",
+      "expiredMessage": "Dieser Link ist abgelaufen. Fordere eine neue E-Mail an.",
+      "userNotFoundTitle": "Benutzer Nicht Gefunden",
+      "userNotFoundMessage": "Kein Konto mit diesem Link verknüpft.",
+      "serverTitle": "Serverfehler",
+      "serverMessage": "Ein Fehler ist aufgetreten. Versuche es später erneut."
+    }
   }
 }

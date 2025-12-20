@@ -134,13 +134,13 @@ export default function SignupPage() {
     if (!formData.passwordConfirm) {
       errors.push({
         field: 'passwordConfirm',
-        message: t('auth.common.form.passwordConfirm.validation.required'),
+        message: t('auth.signup.form.passwordConfirm.validation.required'),
         code: 'REQUIRED'
       });
     } else if (formData.password !== formData.passwordConfirm) {
       errors.push({
         field: 'passwordConfirm',
-        message: t('auth.common.form.passwordConfirm.validation.mismatch'),
+        message: t('auth.signup.form.passwordConfirm.validation.mismatch'),
         code: 'PASSWORD_MISMATCH'
       });
     }
@@ -418,7 +418,7 @@ export default function SignupPage() {
                   htmlFor="passwordConfirm"
                   className="block text-sm font-normal text-[#737373] mb-2"
                 >
-                  {t('auth.common.form.passwordConfirm.label')}
+                  {t('auth.signup.form.passwordConfirm.label')}
                 </label>
                 <input
                   id="passwordConfirm"
@@ -436,7 +436,7 @@ export default function SignupPage() {
                     transition-colors duration-200
                     ${getFieldError('passwordConfirm') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
                   `}
-                  placeholder={t('auth.common.form.passwordConfirm.placeholder')}
+                  placeholder={t('auth.signup.form.passwordConfirm.placeholder')}
                   aria-invalid={!!getFieldError('passwordConfirm')}
                   aria-describedby={getFieldError('passwordConfirm') ? 'passwordConfirm-error' : undefined}
                 />
@@ -450,6 +450,39 @@ export default function SignupPage() {
                   </p>
                 )}
               </div>
+
+              {/* Terms Acceptance Checkbox */}
+              <div className="flex items-start gap-3 pt-4">
+                <input
+                  id="termsAccepted"
+                  name="termsAccepted"
+                  type="checkbox"
+                  checked={formData.termsAccepted}
+                  onChange={handleInputChange}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-[#91C549] focus:ring-[#91C549]"
+                  aria-describedby={getFieldError('termsAccepted') ? 'terms-error' : undefined}
+                />
+                <label htmlFor="termsAccepted" className="text-sm text-[#737373]">
+                  {t('auth.signup.form.terms.label')}
+                  <Link href="/terms" className="underline hover:text-[#2B2B2B]">
+                    {t('auth.common.footer.termsLink')}
+                  </Link>
+                  {' '}{t('auth.common.footer.termsConnector')}{' '}
+                  <Link href="/privacy" className="underline hover:text-[#2B2B2B]">
+                    {t('auth.common.footer.privacyLink')}
+                  </Link>
+                  {t('auth.signup.form.terms.suffix')}
+                </label>
+              </div>
+              {getFieldError('termsAccepted') && (
+                <p
+                  id="terms-error"
+                  role="alert"
+                  className="mt-1 text-sm text-red-600"
+                >
+                  {getFieldError('termsAccepted')?.message}
+                </p>
+              )}
 
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-3 pt-8">

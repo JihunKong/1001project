@@ -2284,5 +2284,42 @@
     "profile": {
       "editProfile": "Edit profile"
     }
+  },
+  "email": {
+    "verification": {
+      "subject": "メール認証 - 1001 Stories",
+      "title": "メールアドレスを認証",
+      "greeting": "1001 Storiesへようこそ！",
+      "message": "下のボタンをクリックしてメールを認証し、旅を始めましょう。",
+      "buttonText": "メールを認証",
+      "linkNote": "またはこのリンクをブラウザにコピーしてください：",
+      "expireNote": "このリンクはセキュリティのため24時間で有効期限が切れます。",
+      "ignoreNote": "1001 Storiesでアカウントを作成していない場合は、このメールを無視してください。"
+    }
+  },
+  "verifyEmail": {
+    "title": "メールを認証",
+    "subtitle": "認証リンクを送信しました",
+    "checkInbox": "受信トレイを確認し、リンクをクリックしてください。",
+    "checkSpam": "見つからない場合は、迷惑メールフォルダを確認してください。",
+    "resendButton": "認証メールを再送信",
+    "resendSuccess": "認証メールを送信しました！受信トレイを確認してください。",
+    "sending": "送信中...",
+    "waitSeconds": "{seconds}秒待ってください",
+    "alreadyVerified": "認証済み？ログイン",
+    "backToLogin": "ログインに戻る",
+    "errors": {
+      "rateLimited": "しばらく待ってから再度お試しください。",
+      "sendFailed": "メール送信に失敗しました。再試行してください。",
+      "networkError": "ネットワークエラー。接続を確認してください。",
+      "invalidTitle": "無効な認証リンク",
+      "invalidMessage": "このリンクは無効または使用済みです。新しいリンクをリクエストしてください。",
+      "expiredTitle": "リンク期限切れ",
+      "expiredMessage": "このリンクは期限切れです。新しい認証メールをリクエストしてください。",
+      "userNotFoundTitle": "ユーザーが見つかりません",
+      "userNotFoundMessage": "このリンクに関連付けられたアカウントが見つかりません。",
+      "serverTitle": "サーバーエラー",
+      "serverMessage": "問題が発生しました。後でもう一度お試しください。"
+    }
   }
 }

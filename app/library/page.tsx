@@ -15,21 +15,21 @@ const accordionItems: AccordionItemData[] = [
     stepNumber: '01',
     titleKey: 'library.accordion.step1.title',
     descriptionKey: 'library.accordion.step1.description',
-    image: '/landing/library/accordion-step1.jpg'
+    image: '/landing/library/accordion-1.png'
   },
   {
     id: 'step2',
     stepNumber: '02',
     titleKey: 'library.accordion.step2.title',
     descriptionKey: 'library.accordion.step2.description',
-    image: '/landing/library/accordion-step2.jpg'
+    image: '/landing/library/accordion-2.png'
   },
   {
     id: 'step3',
     stepNumber: '03',
     titleKey: 'library.accordion.step3.title',
     descriptionKey: 'library.accordion.step3.description',
-    image: '/landing/library/accordion-step3.jpg'
+    image: '/landing/library/accordion-3.png'
   }
 ];
 
@@ -41,9 +41,9 @@ const stats = [
 ];
 
 const howItWorksSteps = [
-  { number: '1', colorClass: 'bg-green-500', image: '/landing/library/how-it-works-1.jpg', textKey: 'library.howItWorks.step1' },
-  { number: '2', colorClass: 'bg-amber-500', image: '/landing/library/how-it-works-2.jpg', textKey: 'library.howItWorks.step2' },
-  { number: '3', colorClass: 'bg-blue-400', image: '/landing/library/how-it-works-3.jpg', textKey: 'library.howItWorks.step3' }
+  { number: '1', colorClass: 'bg-green-500', image: '/landing/library/how-it-works-1.png', textKey: 'library.howItWorks.step1' },
+  { number: '2', colorClass: 'bg-amber-500', image: '/landing/library/how-it-works-2.png', textKey: 'library.howItWorks.step2' },
+  { number: '3', colorClass: 'bg-blue-400', image: '/landing/library/how-it-works-3.png', textKey: 'library.howItWorks.step3' }
 ];
 
 export default function LibraryPage() {

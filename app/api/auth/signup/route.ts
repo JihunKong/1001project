@@ -12,6 +12,8 @@ import {
 } from '@/lib/coppa';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
+import { sendLocalizedVerificationEmail } from '@/lib/email';
+import { getLanguagePreferenceFromHeaders, SupportedLanguage } from '@/lib/i18n/language-cookie';
 
 // Validation schema for user registration
 const SignupSchema = z.object({
@@ -322,9 +324,33 @@ export async function POST(request: NextRequest) {
       return user;
     });
 
+    const verificationToken = crypto.randomUUID();
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await prisma.verificationToken.create({
+      data: {
+        identifier: validatedData.email,
+        token: verificationToken,
+        expires,
+      },
+    });
+
+    const cookieHeader = request.headers.get('cookie');
+    const language = getLanguagePreferenceFromHeaders(cookieHeader) as SupportedLanguage;
+
+    const verificationUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${verificationToken}`;
+
+    try {
+      await sendLocalizedVerificationEmail(validatedData.email, verificationUrl, language);
+      logger.info('Verification email sent during signup', { email: validatedData.email, language });
+    } catch (emailError) {
+      logger.error('Failed to send verification email during signup', emailError);
+    }
+
     return NextResponse.json({
       message: 'User registration successful',
       user: result,
+      requiresEmailVerification: true,
       nextStep: 'email_verification'
     }, { status: 201 });
 

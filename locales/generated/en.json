@@ -1936,14 +1936,42 @@
       "tagline": "Stories for Young Minds",
       "description1": "Kid Library is a global story collection where children can read and listen to stories written by kids from different cultures and backgrounds.",
       "description2": "It's a space for creativity, learning, and imagination, designed to inspire young readers everywhere.",
-      "cta": "Explore Library"
+      "cta": "Explore Library",
+      "accordion": {
+        "step1": {
+          "title": "Browse Stories",
+          "description": "Explore our collection of stories from around the world"
+        },
+        "step2": {
+          "title": "Choose Your Story",
+          "description": "Select stories that match your interests and reading level"
+        },
+        "step3": {
+          "title": "Start Reading",
+          "description": "Enjoy reading and learning with interactive features"
+        }
+      }
     },
     "writingVolunteer": {
       "title": "Writing Volunteer",
       "tagline": "Share Your Story",
       "description1": "Write a story, make an impact. Through Writing Volunteer, students become young authors, sharing their own stories with the world.",
       "description2": "It's a chance to inspire others, build writing skills, and be part of a global storytelling community.",
-      "cta": "Become a Writer"
+      "cta": "Become a Writer",
+      "accordion": {
+        "step1": {
+          "title": "Create Your Story",
+          "description": "Write and craft your unique story using our easy-to-use editor"
+        },
+        "step2": {
+          "title": "Get Feedback",
+          "description": "Receive helpful feedback from our community and mentors"
+        },
+        "step3": {
+          "title": "Share with the World",
+          "description": "Publish your story and inspire readers around the globe"
+        }
+      }
     },
     "englishLearning": {
       "title": "English Learning Programs",
@@ -2378,6 +2406,8 @@
           }
         },
         "terms": {
+          "label": "I agree to the ",
+          "suffix": " to use 1001 Stories",
           "validation": {
             "required": "You must accept the terms of service"
           }
@@ -2797,6 +2827,43 @@
     },
     "profile": {
       "editProfile": "Edit profile"
+    }
+  },
+  "email": {
+    "verification": {
+      "subject": "Verify your email - 1001 Stories",
+      "title": "Verify your email address",
+      "greeting": "Welcome to 1001 Stories!",
+      "message": "Click the button below to verify your email address and start your journey.",
+      "buttonText": "Verify Email",
+      "linkNote": "Or copy and paste this link in your browser:",
+      "expireNote": "This link will expire in 24 hours for security reasons.",
+      "ignoreNote": "If you didn't create an account with 1001 Stories, you can safely ignore this email."
+    }
+  },
+  "verifyEmail": {
+    "title": "Verify Your Email",
+    "subtitle": "We sent a verification link to",
+    "checkInbox": "Check your inbox and click the link to continue.",
+    "checkSpam": "Not seeing it? Check your spam folder.",
+    "resendButton": "Resend Verification Email",
+    "resendSuccess": "Verification email sent! Check your inbox.",
+    "sending": "Sending...",
+    "waitSeconds": "Wait {seconds}s",
+    "alreadyVerified": "Already verified? Log in",
+    "backToLogin": "Back to Login",
+    "errors": {
+      "rateLimited": "Please wait before requesting another email.",
+      "sendFailed": "Failed to send verification email. Please try again.",
+      "networkError": "Network error. Please check your connection.",
+      "invalidTitle": "Invalid Verification Link",
+      "invalidMessage": "This verification link is invalid or has already been used. Please request a new one.",
+      "expiredTitle": "Link Expired",
+      "expiredMessage": "This verification link has expired. Please request a new verification email.",
+      "userNotFoundTitle": "User Not Found",
+      "userNotFoundMessage": "We couldn't find an account associated with this verification link.",
+      "serverTitle": "Server Error",
+      "serverMessage": "Something went wrong on our end. Please try again later."
     }
   }
 }

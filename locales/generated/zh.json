@@ -2284,5 +2284,42 @@
     "profile": {
       "editProfile": "Edit profile"
     }
+  },
+  "email": {
+    "verification": {
+      "subject": "验证您的邮箱 - 1001 Stories",
+      "title": "验证您的邮箱地址",
+      "greeting": "欢迎来到1001 Stories！",
+      "message": "点击下面的按钮验证您的邮箱并开始您的旅程。",
+      "buttonText": "验证邮箱",
+      "linkNote": "或复制此链接到浏览器：",
+      "expireNote": "此链接将在24小时后过期。",
+      "ignoreNote": "如果您没有在1001 Stories创建账户，请忽略此邮件。"
+    }
+  },
+  "verifyEmail": {
+    "title": "验证您的邮箱",
+    "subtitle": "我们已发送验证链接到",
+    "checkInbox": "请检查收件箱并点击链接继续。",
+    "checkSpam": "没看到？请检查垃圾邮件文件夹。",
+    "resendButton": "重新发送验证邮件",
+    "resendSuccess": "验证邮件已发送！请检查收件箱。",
+    "sending": "发送中...",
+    "waitSeconds": "请等待{seconds}秒",
+    "alreadyVerified": "已验证？登录",
+    "backToLogin": "返回登录",
+    "errors": {
+      "rateLimited": "请稍后再请求另一封邮件。",
+      "sendFailed": "发送失败。请重试。",
+      "networkError": "网络错误。请检查连接。",
+      "invalidTitle": "无效的验证链接",
+      "invalidMessage": "此链接无效或已被使用。请请求新的链接。",
+      "expiredTitle": "链接已过期",
+      "expiredMessage": "此链接已过期。请请求新的验证邮件。",
+      "userNotFoundTitle": "未找到用户",
+      "userNotFoundMessage": "找不到与此链接关联的账户。",
+      "serverTitle": "服务器错误",
+      "serverMessage": "出了点问题。请稍后重试。"
+    }
   }
 }

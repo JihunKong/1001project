@@ -2288,5 +2288,42 @@
     "profile": {
       "editProfile": "Edit profile"
     }
+  },
+  "email": {
+    "verification": {
+      "subject": "Verifica la tua email - 1001 Stories",
+      "title": "Verifica il tuo indirizzo email",
+      "greeting": "Benvenuto su 1001 Stories!",
+      "message": "Clicca il pulsante qui sotto per verificare la tua email e iniziare il viaggio.",
+      "buttonText": "Verifica Email",
+      "linkNote": "Oppure copia questo link nel browser:",
+      "expireNote": "Questo link scadrà tra 24 ore per motivi di sicurezza.",
+      "ignoreNote": "Se non hai creato un account su 1001 Stories, ignora questa email."
+    }
+  },
+  "verifyEmail": {
+    "title": "Verifica la Tua Email",
+    "subtitle": "Abbiamo inviato un link di verifica a",
+    "checkInbox": "Controlla la posta in arrivo e clicca sul link per continuare.",
+    "checkSpam": "Non lo vedi? Controlla la cartella spam.",
+    "resendButton": "Reinvia Email di Verifica",
+    "resendSuccess": "Email inviata! Controlla la posta.",
+    "sending": "Invio in corso...",
+    "waitSeconds": "Attendi {seconds}s",
+    "alreadyVerified": "Già verificato? Accedi",
+    "backToLogin": "Torna al Login",
+    "errors": {
+      "rateLimited": "Attendi prima di richiedere un'altra email.",
+      "sendFailed": "Invio fallito. Riprova.",
+      "networkError": "Errore di rete. Controlla la connessione.",
+      "invalidTitle": "Link di Verifica Non Valido",
+      "invalidMessage": "Questo link non è valido o è già stato usato.",
+      "expiredTitle": "Link Scaduto",
+      "expiredMessage": "Questo link è scaduto. Richiedi una nuova email.",
+      "userNotFoundTitle": "Utente Non Trovato",
+      "userNotFoundMessage": "Nessun account associato a questo link.",
+      "serverTitle": "Errore del Server",
+      "serverMessage": "Qualcosa è andato storto. Riprova più tardi."
+    }
   }
 }

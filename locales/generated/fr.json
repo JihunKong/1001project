@@ -2290,5 +2290,42 @@
     "profile": {
       "editProfile": "Edit profile"
     }
+  },
+  "email": {
+    "verification": {
+      "subject": "Vérifiez votre email - 1001 Stories",
+      "title": "Vérifiez votre adresse email",
+      "greeting": "Bienvenue sur 1001 Stories !",
+      "message": "Cliquez sur le bouton ci-dessous pour vérifier votre email et commencer votre aventure.",
+      "buttonText": "Vérifier l'Email",
+      "linkNote": "Ou copiez ce lien dans votre navigateur :",
+      "expireNote": "Ce lien expirera dans 24 heures pour des raisons de sécurité.",
+      "ignoreNote": "Si vous n'avez pas créé de compte sur 1001 Stories, ignorez cet email."
+    }
+  },
+  "verifyEmail": {
+    "title": "Vérifiez Votre Email",
+    "subtitle": "Nous avons envoyé un lien de vérification à",
+    "checkInbox": "Vérifiez votre boîte de réception et cliquez sur le lien.",
+    "checkSpam": "Vous ne le voyez pas ? Vérifiez vos spams.",
+    "resendButton": "Renvoyer l'Email de Vérification",
+    "resendSuccess": "Email envoyé ! Vérifiez votre boîte de réception.",
+    "sending": "Envoi en cours...",
+    "waitSeconds": "Patientez {seconds}s",
+    "alreadyVerified": "Déjà vérifié ? Se connecter",
+    "backToLogin": "Retour à la Connexion",
+    "errors": {
+      "rateLimited": "Veuillez patienter avant de demander un autre email.",
+      "sendFailed": "Échec de l'envoi. Réessayez.",
+      "networkError": "Erreur réseau. Vérifiez votre connexion.",
+      "invalidTitle": "Lien de Vérification Invalide",
+      "invalidMessage": "Ce lien est invalide ou déjà utilisé. Demandez-en un nouveau.",
+      "expiredTitle": "Lien Expiré",
+      "expiredMessage": "Ce lien a expiré. Demandez un nouvel email de vérification.",
+      "userNotFoundTitle": "Utilisateur Non Trouvé",
+      "userNotFoundMessage": "Aucun compte associé à ce lien.",
+      "serverTitle": "Erreur Serveur",
+      "serverMessage": "Un problème est survenu. Réessayez plus tard."
+    }
   }
 }

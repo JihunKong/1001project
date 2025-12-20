@@ -83,6 +83,23 @@ export default withAuth(
         return NextResponse.redirect(loginUrl);
       }
 
+      // Check email verification for password-based users (non-OAuth)
+      // OAuth users (Google) have emailVerified set automatically
+      if (token && !token.emailVerified) {
+        // Check for redirect loop
+        const verifyTrackingKey = `${clientId}-verify-email`;
+        if (!isRedirectLoop(verifyTrackingKey)) {
+          const verifyUrl = new URL('/verify-email', req.url);
+          verifyUrl.searchParams.set('email', token.email as string);
+          return NextResponse.redirect(verifyUrl);
+        }
+        // If redirect loop detected, allow access to prevent lockup
+        logger.warn('Email verification redirect loop detected, allowing access', {
+          email: token.email,
+          pathname,
+        });
+      }
+
       // Check if user has completed onboarding (except for learner/parent roles)
       if (pathname.startsWith('/dashboard') && !pathname.startsWith('/dashboard/learner') && !pathname.startsWith('/dashboard/parent')) {
         // For now, skip onboarding check for non-learner roles
@@ -175,6 +192,7 @@ export default withAuth(
           pathname.startsWith('/help') ||
           pathname.startsWith('/privacy') ||
           pathname.startsWith('/terms') ||
+          pathname.startsWith('/verify-email') ||
           pathname.startsWith('/demo') ||
           pathname.startsWith('/_next') ||
           pathname.startsWith('/favicon') ||

@@ -5,6 +5,56 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import HorizontalAccordion from './HorizontalAccordion';
+import { AccordionItemData } from './HorizontalAccordion/types';
+
+const libraryAccordionItems: AccordionItemData[] = [
+  {
+    id: 'library-step1',
+    stepNumber: '01',
+    titleKey: 'programs.kidLibrary.accordion.step1.title',
+    descriptionKey: 'programs.kidLibrary.accordion.step1.description',
+    image: '/landing/library/accordion-1.png'
+  },
+  {
+    id: 'library-step2',
+    stepNumber: '02',
+    titleKey: 'programs.kidLibrary.accordion.step2.title',
+    descriptionKey: 'programs.kidLibrary.accordion.step2.description',
+    image: '/landing/library/accordion-2.png'
+  },
+  {
+    id: 'library-step3',
+    stepNumber: '03',
+    titleKey: 'programs.kidLibrary.accordion.step3.title',
+    descriptionKey: 'programs.kidLibrary.accordion.step3.description',
+    image: '/landing/library/accordion-3.png'
+  }
+];
+
+const writeYourStoryAccordionItems: AccordionItemData[] = [
+  {
+    id: 'write-step1',
+    stepNumber: '01',
+    titleKey: 'programs.writingVolunteer.accordion.step1.title',
+    descriptionKey: 'programs.writingVolunteer.accordion.step1.description',
+    image: '/landing/write-your-story/accordion-1.png'
+  },
+  {
+    id: 'write-step2',
+    stepNumber: '02',
+    titleKey: 'programs.writingVolunteer.accordion.step2.title',
+    descriptionKey: 'programs.writingVolunteer.accordion.step2.description',
+    image: '/landing/write-your-story/accordion-2.png'
+  },
+  {
+    id: 'write-step3',
+    stepNumber: '03',
+    titleKey: 'programs.writingVolunteer.accordion.step3.title',
+    descriptionKey: 'programs.writingVolunteer.accordion.step3.description',
+    image: '/landing/write-your-story/accordion-3.png'
+  }
+];
 
 const ProgramSections: React.FC = () => {
   const { t } = useTranslation();
@@ -28,6 +78,14 @@ const ProgramSections: React.FC = () => {
                 height: '367px'
               }}
             />
+
+            {/* Horizontal Accordion */}
+            <div className="px-8 md:px-12 pt-8">
+              <HorizontalAccordion
+                items={libraryAccordionItems}
+                autoPlayInterval={5000}
+              />
+            </div>
 
             {/* Content with Overlap */}
             <div className="relative mt-8 px-8 md:px-12 pb-12">
@@ -137,6 +195,14 @@ const ProgramSections: React.FC = () => {
                 height: '367px'
               }}
             />
+
+            {/* Horizontal Accordion */}
+            <div className="px-8 md:px-12 pt-8">
+              <HorizontalAccordion
+                items={writeYourStoryAccordionItems}
+                autoPlayInterval={5000}
+              />
+            </div>
 
             {/* Content with Overlap */}
             <div className="relative mt-8 px-8 md:px-12 pb-12">

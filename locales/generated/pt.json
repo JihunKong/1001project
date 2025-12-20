@@ -2285,5 +2285,42 @@
     "profile": {
       "editProfile": "Edit profile"
     }
+  },
+  "email": {
+    "verification": {
+      "subject": "Verifique seu email - 1001 Stories",
+      "title": "Verifique seu endereço de email",
+      "greeting": "Bem-vindo ao 1001 Stories!",
+      "message": "Clique no botão abaixo para verificar seu email e começar sua jornada.",
+      "buttonText": "Verificar Email",
+      "linkNote": "Ou copie este link no seu navegador:",
+      "expireNote": "Este link expira em 24 horas por razões de segurança.",
+      "ignoreNote": "Se você não criou uma conta no 1001 Stories, ignore este email."
+    }
+  },
+  "verifyEmail": {
+    "title": "Verifique Seu Email",
+    "subtitle": "Enviamos um link de verificação para",
+    "checkInbox": "Verifique sua caixa de entrada e clique no link para continuar.",
+    "checkSpam": "Não encontrou? Verifique a pasta de spam.",
+    "resendButton": "Reenviar Email de Verificação",
+    "resendSuccess": "Email enviado! Verifique sua caixa de entrada.",
+    "sending": "Enviando...",
+    "waitSeconds": "Aguarde {seconds}s",
+    "alreadyVerified": "Já verificou? Fazer login",
+    "backToLogin": "Voltar ao Login",
+    "errors": {
+      "rateLimited": "Aguarde antes de solicitar outro email.",
+      "sendFailed": "Falha ao enviar. Tente novamente.",
+      "networkError": "Erro de rede. Verifique sua conexão.",
+      "invalidTitle": "Link de Verificação Inválido",
+      "invalidMessage": "Este link é inválido ou já foi usado. Solicite um novo.",
+      "expiredTitle": "Link Expirado",
+      "expiredMessage": "Este link expirou. Solicite um novo email de verificação.",
+      "userNotFoundTitle": "Usuário Não Encontrado",
+      "userNotFoundMessage": "Não encontramos uma conta associada a este link.",
+      "serverTitle": "Erro do Servidor",
+      "serverMessage": "Algo deu errado. Tente novamente mais tarde."
+    }
   }
 }
