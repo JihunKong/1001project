@@ -212,6 +212,16 @@ export const authOptions: NextAuthOptions = {
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        profile(profile) {
+          return {
+            id: profile.sub,
+            name: profile.name,
+            email: profile.email,
+            image: profile.picture,
+            emailVerified: profile.email_verified ? new Date() : null,
+            role: UserRole.WRITER,
+          };
+        }
       })
     ] : []),
   ],
@@ -258,6 +268,15 @@ export const authOptions: NextAuthOptions = {
             if (!existingAccount) {
               logger.security(`OAuth account linking blocked - manual linking required`, { email: user.email });
               return '/auth/error?error=AccountLinkingRequired';
+            }
+
+            // Google OAuth 사용자의 emailVerified 업데이트 (Google은 이미 이메일 인증을 완료함)
+            if (!existingUser.emailVerified) {
+              await prisma.user.update({
+                where: { id: existingUser.id },
+                data: { emailVerified: new Date() }
+              });
+              logger.auth('Updated emailVerified for Google OAuth user', { email: user.email });
             }
           }
         } catch (error) {

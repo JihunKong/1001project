@@ -135,8 +135,8 @@ export async function GET(request: NextRequest) {
         break;
 
       case UserRole.STORY_MANAGER:
-        // Can see submissions ready for story review
-        const storyManagerStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.PENDING, TextSubmissionStatus.STORY_REVIEW];
+        // Can see submissions ready for story review + rejected ones
+        const storyManagerStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.PENDING, TextSubmissionStatus.STORY_REVIEW, TextSubmissionStatus.REJECTED];
         if (status && (storyManagerStatuses as TextSubmissionStatus[]).includes(status)) {
           // Filter by specific status within allowed range
           where.status = status;
@@ -147,8 +147,8 @@ export async function GET(request: NextRequest) {
         break;
 
       case UserRole.BOOK_MANAGER:
-        // Can see submissions ready for format review
-        const bookManagerStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.STORY_APPROVED, TextSubmissionStatus.FORMAT_REVIEW];
+        // Can see submissions ready for format review + rejected ones
+        const bookManagerStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.STORY_APPROVED, TextSubmissionStatus.FORMAT_REVIEW, TextSubmissionStatus.REJECTED];
         if (status && (bookManagerStatuses as TextSubmissionStatus[]).includes(status)) {
           // Filter by specific status within allowed range
           where.status = status;

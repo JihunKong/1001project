@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" fill="none">
+  <!-- Background Circle -->
+  <circle cx="150" cy="150" r="140" fill="white" fill-opacity="0.1"/>
+
+  <!-- Open Book -->
+  <g transform="translate(60, 100)">
+    <!-- Left page -->
+    <path d="M90 0 L10 10 Q0 12 0 25 L0 110 Q0 120 10 118 L90 100 Z" fill="white" fill-opacity="0.95"/>
+    <!-- Right page -->
+    <path d="M90 0 L170 10 Q180 12 180 25 L180 110 Q180 120 170 118 L90 100 Z" fill="white" fill-opacity="0.9"/>
+    <!-- Book spine -->
+    <path d="M88 0 L92 0 L92 100 L88 100 Z" fill="white" fill-opacity="0.7"/>
+
+    <!-- Lines on left page -->
+    <line x1="20" y1="30" x2="75" y2="27" stroke="#91C549" stroke-width="3" stroke-linecap="round"/>
+    <line x1="20" y1="45" x2="70" y2="42" stroke="#91C549" stroke-width="3" stroke-linecap="round"/>
+    <line x1="20" y1="60" x2="65" y2="57" stroke="#04A59D" stroke-width="3" stroke-linecap="round"/>
+    <line x1="20" y1="75" x2="60" y2="73" stroke="#04A59D" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Lines on right page -->
+    <line x1="105" y1="27" x2="160" y2="30" stroke="#91C549" stroke-width="3" stroke-linecap="round"/>
+    <line x1="110" y1="42" x2="160" y2="45" stroke="#91C549" stroke-width="3" stroke-linecap="round"/>
+    <line x1="115" y1="57" x2="160" y2="60" stroke="#04A59D" stroke-width="3" stroke-linecap="round"/>
+    <line x1="120" y1="73" x2="160" y2="75" stroke="#04A59D" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Stars decoration -->
+  <g fill="white" fill-opacity="0.8">
+    <path d="M50 60 L53 68 L61 68 L55 73 L57 81 L50 76 L43 81 L45 73 L39 68 L47 68 Z"/>
+    <path d="M250 80 L252 86 L258 86 L253 90 L255 96 L250 92 L245 96 L247 90 L242 86 L248 86 Z"/>
+    <path d="M230 200 L232 206 L238 206 L233 210 L235 216 L230 212 L225 216 L227 210 L222 206 L228 206 Z"/>
+    <path d="M70 220 L72 226 L78 226 L73 230 L75 236 L70 232 L65 236 L67 230 L62 226 L68 226 Z"/>
+  </g>
+
+  <!-- Floating pages -->
+  <g transform="translate(200, 50) rotate(15)">
+    <rect x="0" y="0" width="35" height="45" rx="3" fill="white" fill-opacity="0.7"/>
+    <line x1="5" y1="10" x2="30" y2="10" stroke="#91C549" stroke-width="2"/>
+    <line x1="5" y1="18" x2="28" y2="18" stroke="#91C549" stroke-width="2"/>
+    <line x1="5" y1="26" x2="25" y2="26" stroke="#04A59D" stroke-width="2"/>
+  </g>
+
+  <g transform="translate(35, 130) rotate(-20)">
+    <rect x="0" y="0" width="30" height="40" rx="3" fill="white" fill-opacity="0.6"/>
+    <line x1="5" y1="10" x2="25" y2="10" stroke="#04A59D" stroke-width="2"/>
+    <line x1="5" y1="18" x2="22" y2="18" stroke="#04A59D" stroke-width="2"/>
+  </g>
+
+  <!-- Pencil -->
+  <g transform="translate(220, 150) rotate(45)">
+    <rect x="0" y="0" width="8" height="60" fill="#FFD93D"/>
+    <polygon points="4,60 0,70 8,70" fill="#FFD93D"/>
+    <polygon points="4,68 2,75 6,75" fill="#2D2D2D"/>
+    <rect x="0" y="0" width="8" height="8" fill="#FF6B6B"/>
+  </g>
+</svg>

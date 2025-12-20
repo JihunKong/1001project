@@ -24,6 +24,7 @@ services:
       - ./uploads:/app/uploads:rw
       - ./prisma:/app/prisma:ro
       - ./public/books:/app/public/books:ro
+      - ./public/images:/app/public/images:ro
       - ./public/generated-images:/app/public/generated-images:rw
       - ./public/covers:/app/public/covers:rw
     networks:
@@ -157,6 +158,7 @@ services:
       - ./nginx/logs:/var/log/nginx:rw
       - nginx_cache:/var/cache/nginx:rw
       - ./public/covers:/var/www/covers:ro
+      - ./public/images:/var/www/images:ro
       - ./public/generated-images:/var/www/generated-images:ro
     networks:
       - app-network

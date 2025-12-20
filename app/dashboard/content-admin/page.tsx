@@ -304,25 +304,25 @@ export default function ContentAdminDashboard() {
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="hidden lg:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('dashboard.common.table.priority')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('dashboard.common.table.storyDetails')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="hidden md:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('dashboard.common.table.author')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('dashboard.contentAdmin.queue.formatDecision')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('dashboard.contentAdmin.queue.decidedBy')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('dashboard.common.table.status')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('dashboard.common.table.actions')}
                   </th>
                 </tr>
@@ -343,17 +343,17 @@ export default function ContentAdminDashboard() {
                     const priority = getPriorityLevel(submission);
                     return (
                       <tr key={submission.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden lg:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
                             {t(`dashboard.common.priority.${priority}`).toUpperCase()}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="max-w-xs">
+                        <td className="px-2 sm:px-4 py-4">
+                          <div className="max-w-[150px] sm:max-w-[200px] lg:max-w-xs">
                             <div className="text-sm font-medium text-gray-900 truncate">
                               {submission.title}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-500 truncate">
                               {t('dashboard.storyManager.queue.words', { words: submission.wordCount })} • {submission.language}
                               {submission.ageRange && ` • ${t('dashboard.storyManager.queue.ages', { ageRange: submission.ageRange })}`}
                             </div>
@@ -371,16 +371,16 @@ export default function ContentAdminDashboard() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden md:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <User className="h-4 w-4 text-gray-400 mr-2" />
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{submission.authorAlias}</div>
-                              <div className="text-sm text-gray-500">{submission.author.name}</div>
+                            <div className="max-w-[120px] lg:max-w-[160px]">
+                              <div className="text-sm font-medium text-gray-900 truncate">{submission.authorAlias}</div>
+                              <div className="text-sm text-gray-500 truncate">{submission.author.name}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             {getFormatIcon(submission.bookDecision || '')}
                             <span className="ml-2 text-sm font-medium">
@@ -388,20 +388,20 @@ export default function ContentAdminDashboard() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
                           {submission.bookManager ? (
-                            <div className="text-sm">
-                              <div className="font-medium text-gray-900">{submission.bookManager.name}</div>
-                              <div className="text-gray-500">{submission.bookManager.email}</div>
+                            <div className="text-sm max-w-[140px]">
+                              <div className="font-medium text-gray-900 truncate">{submission.bookManager.name}</div>
+                              <div className="text-gray-500 truncate">{submission.bookManager.email}</div>
                             </div>
                           ) : (
                             <span className="text-gray-400">{t('dashboard.contentAdmin.queue.autoAssigned')}</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-2 sm:px-4 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             {getStatusIcon(submission.status)}
-                            <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(submission.status)}`}>
+                            <span className={`ml-1 sm:ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(submission.status)}`}>
                               {t(`status.${submission.status}`)}
                             </span>
                           </div>
@@ -412,19 +412,19 @@ export default function ContentAdminDashboard() {
                             </div>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
                             <Link
                               href={`/dashboard/content-admin/review/${submission.id}`}
                               className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
                             >
                               <Eye className="h-4 w-4 mr-1" />
-                              {submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}
+                              <span className="hidden sm:inline">{submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}</span>
                             </Link>
                             {submission.finalNotes && (
                               <button className="text-soe-green-600 hover:text-soe-green-900 flex items-center">
                                 <AlertTriangle className="h-4 w-4 mr-1" />
-                                {t('dashboard.common.actions.notes')}
+                                <span className="hidden sm:inline">{t('dashboard.common.actions.notes')}</span>
                               </button>
                             )}
                           </div>
