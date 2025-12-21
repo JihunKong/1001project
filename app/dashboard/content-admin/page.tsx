@@ -381,9 +381,12 @@ export default function ContentAdminDashboard() {
                           </div>
                         </td>
                         <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
+                          <div
+                            className="flex items-center max-w-[120px]"
+                            title={submission.bookDecision || t('dashboard.contentAdmin.queue.notDecided')}
+                          >
                             {getFormatIcon(submission.bookDecision || '')}
-                            <span className="ml-2 text-sm font-medium">
+                            <span className="ml-2 text-sm font-medium truncate">
                               {submission.bookDecision || t('dashboard.contentAdmin.queue.notDecided')}
                             </span>
                           </div>
