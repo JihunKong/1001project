@@ -272,25 +272,25 @@ export default function ContentAdminReviewsPage() {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden lg:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('dashboard.common.table.priority')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('dashboard.common.table.storyDetails')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden md:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('dashboard.common.table.author')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('dashboard.common.table.status')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('dashboard.common.table.format')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('dashboard.common.table.submitted')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {t('dashboard.common.table.actions')}
                     </th>
                   </tr>
@@ -311,13 +311,13 @@ export default function ContentAdminReviewsPage() {
                       const priority = getPriorityLevel(submission);
                       return (
                         <tr key={submission.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="hidden lg:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
                               {t(`dashboard.common.priority.${priority}`).toUpperCase()}
                             </span>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="max-w-xs">
+                          <td className="px-2 sm:px-4 py-4">
+                            <div className="max-w-[150px] sm:max-w-[200px] lg:max-w-xs">
                               <div className="text-sm font-medium text-gray-900 truncate">
                                 {submission.title}
                               </div>
@@ -339,16 +339,16 @@ export default function ContentAdminReviewsPage() {
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <User className="h-4 w-4 text-gray-400 mr-2" />
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">{submission.authorAlias}</div>
-                                <div className="text-sm text-gray-500">{submission.author.name}</div>
+                          <td className="hidden md:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                            <div className="flex items-center max-w-[120px]">
+                              <User className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
+                              <div className="truncate">
+                                <div className="text-sm font-medium text-gray-900 truncate">{submission.authorAlias}</div>
+                                <div className="text-sm text-gray-500 truncate">{submission.author.name}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-2 sm:px-4 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               {getStatusIcon(submission.status)}
                               <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(submission.status)}`}>
@@ -356,7 +356,7 @@ export default function ContentAdminReviewsPage() {
                               </span>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
                             {submission.bookDecision ? (
                               <div className="flex items-center">
                                 {getFormatIcon(submission.bookDecision)}
@@ -366,25 +366,29 @@ export default function ContentAdminReviewsPage() {
                               <span className="text-sm text-gray-400">-</span>
                             )}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
                             <div className="flex items-center text-sm text-gray-500">
                               <Calendar className="h-4 w-4 mr-1" />
                               {new Date(submission.createdAt).toLocaleDateString()}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex space-x-2">
+                          <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center space-x-1 sm:space-x-2">
                               <Link
                                 href={`/dashboard/content-admin/review/${submission.id}`}
                                 className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
+                                title={t('dashboard.common.actions.review')}
                               >
-                                <Eye className="h-4 w-4 mr-1" />
-                                {t('dashboard.common.actions.review')}
+                                <Eye className="h-4 w-4 xl:mr-1" />
+                                <span className="hidden xl:inline">{t('dashboard.common.actions.review')}</span>
                               </Link>
                               {(submission.storyFeedback || submission.finalNotes) && (
-                                <button className="text-soe-green-600 hover:text-soe-green-900 flex items-center">
-                                  <MessageSquare className="h-4 w-4 mr-1" />
-                                  {t('dashboard.common.actions.feedback')}
+                                <button
+                                  className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
+                                  title={t('dashboard.common.actions.feedback')}
+                                >
+                                  <MessageSquare className="h-4 w-4 xl:mr-1" />
+                                  <span className="hidden xl:inline">{t('dashboard.common.actions.feedback')}</span>
                                 </button>
                               )}
                             </div>
