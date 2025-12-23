@@ -422,16 +422,16 @@ export default function ContentAdminDashboard() {
                               className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
                               title={submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}
                             >
-                              <Eye className="h-4 w-4 sm:mr-1" />
-                              <span className="hidden lg:inline">{submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}</span>
+                              <Eye className="h-4 w-4 xl:mr-1" />
+                              <span className="hidden xl:inline">{submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}</span>
                             </Link>
                             {submission.finalNotes && (
                               <button
                                 className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
                                 title={t('dashboard.common.actions.notes')}
                               >
-                                <AlertTriangle className="h-4 w-4 sm:mr-1" />
-                                <span className="hidden lg:inline">{t('dashboard.common.actions.notes')}</span>
+                                <AlertTriangle className="h-4 w-4 xl:mr-1" />
+                                <span className="hidden xl:inline">{t('dashboard.common.actions.notes')}</span>
                               </button>
                             )}
                           </div>
