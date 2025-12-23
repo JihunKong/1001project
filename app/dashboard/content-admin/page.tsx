@@ -416,18 +416,22 @@ export default function ContentAdminDashboard() {
                           )}
                         </td>
                         <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-sm font-medium">
-                          <div className="flex space-x-2">
+                          <div className="flex items-center space-x-1 sm:space-x-2">
                             <Link
                               href={`/dashboard/content-admin/review/${submission.id}`}
                               className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
+                              title={submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}
                             >
-                              <Eye className="h-4 w-4 mr-1" />
-                              <span className="hidden sm:inline">{submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}</span>
+                              <Eye className="h-4 w-4 sm:mr-1" />
+                              <span className="hidden lg:inline">{submission.status === 'CONTENT_REVIEW' ? t('dashboard.common.actions.review') : t('dashboard.common.actions.view')}</span>
                             </Link>
                             {submission.finalNotes && (
-                              <button className="text-soe-green-600 hover:text-soe-green-900 flex items-center">
-                                <AlertTriangle className="h-4 w-4 mr-1" />
-                                <span className="hidden sm:inline">{t('dashboard.common.actions.notes')}</span>
+                              <button
+                                className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
+                                title={t('dashboard.common.actions.notes')}
+                              >
+                                <AlertTriangle className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden lg:inline">{t('dashboard.common.actions.notes')}</span>
                               </button>
                             )}
                           </div>
