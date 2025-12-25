@@ -343,7 +343,7 @@ export default function ContentAdminDashboard() {
                     const priority = getPriorityLevel(submission);
                     return (
                       <tr key={submission.id} className="hover:bg-gray-50">
-                        <td className="hidden lg:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                        <td className="hidden lg:table-cell px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
                             {t(`dashboard.common.priority.${priority}`).toUpperCase()}
                           </span>
@@ -371,7 +371,7 @@ export default function ContentAdminDashboard() {
                             )}
                           </div>
                         </td>
-                        <td className="hidden md:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                        <td className="hidden md:table-cell px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                           <div className="flex items-center">
                             <User className="h-4 w-4 text-gray-400 mr-2" />
                             <div className="max-w-[120px] lg:max-w-[160px]">
@@ -380,7 +380,7 @@ export default function ContentAdminDashboard() {
                             </div>
                           </div>
                         </td>
-                        <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                        <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                           <div
                             className="flex items-center max-w-[120px]"
                             title={submission.bookDecision || t('dashboard.contentAdmin.queue.notDecided')}
@@ -391,7 +391,7 @@ export default function ContentAdminDashboard() {
                             </span>
                           </div>
                         </td>
-                        <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                        <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                           {submission.bookManager ? (
                             <div className="text-sm max-w-[140px]">
                               <div className="font-medium text-gray-900 truncate">{submission.bookManager.name}</div>
@@ -401,10 +401,10 @@ export default function ContentAdminDashboard() {
                             <span className="text-gray-400">{t('dashboard.contentAdmin.queue.autoAssigned')}</span>
                           )}
                         </td>
-                        <td className="px-2 sm:px-4 py-4 whitespace-nowrap">
+                        <td className="px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                           <div className="flex items-center">
                             {getStatusIcon(submission.status)}
-                            <span className={`ml-1 sm:ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(submission.status)}`}>
+                            <span className={`ml-1 sm:ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full truncate max-w-[90px] ${getStatusColor(submission.status)}`}>
                               {t(`status.${submission.status}`)}
                             </span>
                           </div>
@@ -415,7 +415,7 @@ export default function ContentAdminDashboard() {
                             </div>
                           )}
                         </td>
-                        <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden text-sm font-medium">
                           <div className="flex items-center space-x-1 sm:space-x-2">
                             <Link
                               href={`/dashboard/content-admin/review/${submission.id}`}

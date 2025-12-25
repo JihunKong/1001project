@@ -311,7 +311,7 @@ export default function ContentAdminReviewsPage() {
                       const priority = getPriorityLevel(submission);
                       return (
                         <tr key={submission.id} className="hover:bg-gray-50">
-                          <td className="hidden lg:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                          <td className="hidden lg:table-cell px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(priority)}`}>
                               {t(`dashboard.common.priority.${priority}`).toUpperCase()}
                             </span>
@@ -339,7 +339,7 @@ export default function ContentAdminReviewsPage() {
                               )}
                             </div>
                           </td>
-                          <td className="hidden md:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                          <td className="hidden md:table-cell px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                             <div className="flex items-center max-w-[120px]">
                               <User className="h-4 w-4 text-gray-400 mr-2 flex-shrink-0" />
                               <div className="truncate">
@@ -348,15 +348,15 @@ export default function ContentAdminReviewsPage() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-2 sm:px-4 py-4 whitespace-nowrap">
+                          <td className="px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                             <div className="flex items-center">
                               {getStatusIcon(submission.status)}
-                              <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(submission.status)}`}>
+                              <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full truncate max-w-[90px] ${getStatusColor(submission.status)}`}>
                                 {submission.status.replace('_', ' ')}
                               </span>
                             </div>
                           </td>
-                          <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                          <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                             {submission.bookDecision ? (
                               <div className="flex items-center">
                                 {getFormatIcon(submission.bookDecision)}
@@ -366,13 +366,13 @@ export default function ContentAdminReviewsPage() {
                               <span className="text-sm text-gray-400">-</span>
                             )}
                           </td>
-                          <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap">
+                          <td className="hidden xl:table-cell px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                             <div className="flex items-center text-sm text-gray-500">
                               <Calendar className="h-4 w-4 mr-1" />
                               {new Date(submission.createdAt).toLocaleDateString()}
                             </div>
                           </td>
-                          <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-sm font-medium">
+                          <td className="px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden text-sm font-medium">
                             <div className="flex items-center space-x-1 sm:space-x-2">
                               <Link
                                 href={`/dashboard/content-admin/review/${submission.id}`}
