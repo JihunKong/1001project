@@ -272,10 +272,10 @@ export default function ContentAdminReviewsPage() {
               <table className="w-full table-fixed">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="hidden lg:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[80px]">
+                    <th className="hidden lg:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[70px]">
                       {t('dashboard.common.table.priority')}
                     </th>
-                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[25%]">
                       {t('dashboard.common.table.storyDetails')}
                     </th>
                     <th className="hidden md:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[100px] lg:w-[130px]">
@@ -284,13 +284,13 @@ export default function ContentAdminReviewsPage() {
                     <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[90px] sm:w-[110px]">
                       {t('dashboard.common.table.status')}
                     </th>
-                    <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[70px]">
+                    <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[60px]">
                       {t('dashboard.common.table.format')}
                     </th>
                     <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[90px]">
                       {t('dashboard.common.table.submitted')}
                     </th>
-                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[50px] xl:w-[90px]">
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[50px] xl:w-[80px]">
                       {t('dashboard.common.table.actions')}
                     </th>
                   </tr>
@@ -317,7 +317,7 @@ export default function ContentAdminReviewsPage() {
                             </span>
                           </td>
                           <td className="px-2 sm:px-4 py-4">
-                            <div className="max-w-[150px] sm:max-w-[200px] lg:max-w-xs">
+                            <div className="max-w-[120px] sm:max-w-[150px] lg:max-w-[180px]">
                               <div className="text-sm font-medium text-gray-900 truncate">
                                 {submission.title}
                               </div>

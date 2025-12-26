@@ -301,7 +301,7 @@ export default function ContentAdminDashboard() {
             <h2 className="text-lg font-medium text-gray-900">{t('dashboard.contentAdmin.queue.title')}</h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full table-fixed">
+            <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="hidden lg:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[80px]">
@@ -310,7 +310,7 @@ export default function ContentAdminDashboard() {
                   <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     {t('dashboard.common.table.storyDetails')}
                   </th>
-                  <th className="hidden md:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[100px] lg:w-[140px]">
+                  <th className="hidden md:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[140px] lg:w-[180px]">
                     {t('dashboard.common.table.author')}
                   </th>
                   <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[100px]">
@@ -319,7 +319,7 @@ export default function ContentAdminDashboard() {
                   <th className="hidden xl:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[120px]">
                     {t('dashboard.contentAdmin.queue.decidedBy')}
                   </th>
-                  <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[90px] sm:w-[110px]">
+                  <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[120px] sm:w-[140px]">
                     {t('dashboard.common.table.status')}
                   </th>
                   <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[50px] xl:w-[90px]">
@@ -349,7 +349,7 @@ export default function ContentAdminDashboard() {
                           </span>
                         </td>
                         <td className="px-2 sm:px-4 py-4">
-                          <div className="max-w-[150px] sm:max-w-[200px] lg:max-w-xs">
+                          <div className="max-w-[120px] sm:max-w-[150px] lg:max-w-[180px]">
                             <div className="text-sm font-medium text-gray-900 truncate">
                               {submission.title}
                             </div>
@@ -404,7 +404,7 @@ export default function ContentAdminDashboard() {
                         <td className="px-2 sm:px-4 py-4 whitespace-nowrap overflow-hidden">
                           <div className="flex items-center">
                             {getStatusIcon(submission.status)}
-                            <span className={`ml-1 sm:ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full truncate max-w-[90px] ${getStatusColor(submission.status)}`}>
+                            <span className={`ml-1 sm:ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(submission.status)}`}>
                               {t(`status.${submission.status}`)}
                             </span>
                           </div>
