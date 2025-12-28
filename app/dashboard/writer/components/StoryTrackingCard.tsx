@@ -86,8 +86,8 @@ export default function StoryTrackingCard({
   return (
     <div className="bg-white border border-[#E5E5EA] rounded-lg p-6 w-full">
       <div className="space-y-10">
-        <div className="flex justify-between items-start">
-          <div className="flex gap-6">
+        <div className="flex justify-between items-start gap-4">
+          <div className="flex gap-6 min-w-0 flex-1">
             {thumbnailUrl ? (
               <div className="relative w-[120px] h-[100px] flex-shrink-0">
                 <Image
@@ -115,7 +115,7 @@ export default function StoryTrackingCard({
               </div>
             )}
 
-            <div className="flex-1 space-y-2">
+            <div className="flex-1 min-w-0 space-y-2">
               <h3
                 className="text-[#141414] truncate"
                 style={{
@@ -149,7 +149,7 @@ export default function StoryTrackingCard({
           </div>
 
           <div
-            className="flex items-center gap-2 px-2 py-1.5 rounded"
+            className="flex items-center gap-2 px-2 py-1.5 rounded flex-shrink-0 whitespace-nowrap"
             style={{ backgroundColor: statusStyles.bg }}
           >
             <div

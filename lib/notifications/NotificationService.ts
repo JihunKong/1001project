@@ -124,7 +124,7 @@ export class NotificationService {
       );
 
       // Send notifications to relevant reviewers if needed
-      await this.notifyReviewers(submission, newStatus, performedBy);
+      await this.notifyReviewers(submission, newStatus, performedBy, additionalData);
 
     } catch (error) {
       logger.error('Error handling status change', error);
@@ -167,38 +167,61 @@ export class NotificationService {
   }
 
   // Notify relevant reviewers about status changes
-  private async notifyReviewers(submission: any, newStatus: TextSubmissionStatus, performedBy: any) {
+  private async notifyReviewers(submission: any, newStatus: TextSubmissionStatus, performedBy: any, additionalData?: any) {
     const reviewerNotifications: Array<{ userId: string; title: string; message: string; }> = [];
+    const isResubmit = additionalData?.action === 'resubmit';
 
     switch (newStatus) {
       case TextSubmissionStatus.PENDING:
-        // Notify admins/content admins about new submission
+        // Notify admins/content admins about new or resubmitted story
         const admins = await this.getAdminsAndContentAdmins();
         reviewerNotifications.push(...admins.map(admin => ({
           userId: admin.id,
-          title: 'New Story Submission',
-          message: `"${submission.title}" by ${submission.author.name} is awaiting story manager assignment.`
+          title: isResubmit ? 'Story Resubmitted' : 'New Story Submission',
+          message: isResubmit
+            ? `"${submission.title}" by ${submission.author.name} has been revised and resubmitted for review.`
+            : `"${submission.title}" by ${submission.author.name} is awaiting story manager assignment.`
         })));
         break;
 
       case TextSubmissionStatus.STORY_REVIEW:
-        // Notify assigned story manager
-        if (submission.storyManagerId) {
-          reviewerNotifications.push({
-            userId: submission.storyManagerId,
-            title: 'Story Review Assigned',
-            message: `You've been assigned to review "${submission.title}" by ${submission.author.name}.`
-          });
+        if (isResubmit) {
+          // For resubmissions, notify assigned Story Manager with resubmit message
+          if (submission.storyManagerId) {
+            reviewerNotifications.push({
+              userId: submission.storyManagerId,
+              title: 'Story Revised and Resubmitted',
+              message: `"${submission.title}" has been revised by ${submission.author.name} and is ready for your review.`
+            });
+          } else {
+            // If no Story Manager assigned, notify all Story Managers
+            const storyManagers = await this.getStoryManagers();
+            reviewerNotifications.push(...storyManagers.map(sm => ({
+              userId: sm.id,
+              title: 'Story Revised and Resubmitted',
+              message: `"${submission.title}" has been revised by ${submission.author.name} and needs review.`
+            })));
+          }
+        } else {
+          // Regular assignment notification
+          if (submission.storyManagerId) {
+            reviewerNotifications.push({
+              userId: submission.storyManagerId,
+              title: 'Story Review Assigned',
+              message: `You've been assigned to review "${submission.title}" by ${submission.author.name}.`
+            });
+          }
         }
         break;
 
       case TextSubmissionStatus.FORMAT_REVIEW:
-        // Notify assigned book manager
         if (submission.bookManagerId) {
           reviewerNotifications.push({
             userId: submission.bookManagerId,
-            title: 'Format Review Required',
-            message: `"${submission.title}" needs format decision after story approval.`
+            title: isResubmit ? 'Story Revised and Resubmitted' : 'Format Review Required',
+            message: isResubmit
+              ? `"${submission.title}" has been revised by ${submission.author.name} and is ready for format review.`
+              : `"${submission.title}" needs format decision after story approval.`
           });
         }
         break;
@@ -208,8 +231,10 @@ export class NotificationService {
         const contentAdmins = await this.getContentAdmins();
         reviewerNotifications.push(...contentAdmins.map(admin => ({
           userId: admin.id,
-          title: 'Final Review Required',
-          message: `"${submission.title}" is ready for final approval and publishing.`
+          title: isResubmit ? 'Story Revised and Resubmitted' : 'Final Review Required',
+          message: isResubmit
+            ? `"${submission.title}" has been revised by ${submission.author.name} and is ready for final review.`
+            : `"${submission.title}" is ready for final approval and publishing.`
         })));
         break;
     }
@@ -475,6 +500,13 @@ export class NotificationService {
   private async getContentAdmins() {
     return await prisma.user.findMany({
       where: { role: UserRole.CONTENT_ADMIN },
+      select: { id: true, name: true, email: true }
+    });
+  }
+
+  private async getStoryManagers() {
+    return await prisma.user.findMany({
+      where: { role: UserRole.STORY_MANAGER },
       select: { id: true, name: true, email: true }
     });
   }

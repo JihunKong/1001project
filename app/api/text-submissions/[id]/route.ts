@@ -78,8 +78,8 @@ export async function GET(
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const storyManagerStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.PENDING, TextSubmissionStatus.STORY_REVIEW];
-    const bookManagerStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.STORY_APPROVED, TextSubmissionStatus.FORMAT_REVIEW];
+    const storyManagerStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.PENDING, TextSubmissionStatus.STORY_REVIEW, TextSubmissionStatus.REJECTED];
+    const bookManagerStatuses: TextSubmissionStatus[] = [TextSubmissionStatus.STORY_APPROVED, TextSubmissionStatus.FORMAT_REVIEW, TextSubmissionStatus.REJECTED];
 
     const canAccess =
       submission.authorId === user.id ||
