@@ -7,6 +7,7 @@ import { UserRole } from "@prisma/client"
 import { isDemoEmail, getOrCreateDemoUser, isEmailServiceConfigured } from "@/lib/auth-demo"
 import { createSecureAuthAdapter } from "@/lib/auth-adapter"
 import { logger } from "@/lib/logger"
+import { generateLinkToken } from "@/lib/auth-link-token"
 import bcrypt from "bcryptjs"
 
 // Password security constants
@@ -127,10 +128,24 @@ export const authOptions: NextAuthOptions = {
             logger.security(`Failed login attempt`, { email: credentials.email });
             return null;
           }
-          
+
+          // Check if user has Google OAuth linked - if so, block password login
+          const googleAccount = await prisma.account.findFirst({
+            where: {
+              userId: user.id,
+              provider: 'google'
+            }
+          });
+
+          if (googleAccount) {
+            logger.security(`Password login blocked - Google OAuth linked`, { email: credentials.email });
+            // Throw specific error that can be caught and handled
+            throw new Error('GoogleLinkedAccount');
+          }
+
           // Allow all roles to use password login
           logger.auth(`Successful password login`, { role: user.role, email: user.email });
-          
+
           return {
             id: user.id,
             email: user.email,
@@ -139,6 +154,10 @@ export const authOptions: NextAuthOptions = {
             emailVerified: user.emailVerified,
           };
         } catch (error) {
+          // Re-throw GoogleLinkedAccount error for special handling
+          if (error instanceof Error && error.message === 'GoogleLinkedAccount') {
+            throw error;
+          }
           logger.error("Credentials authentication error", error);
           return null;
         }
@@ -266,8 +285,25 @@ export const authOptions: NextAuthOptions = {
             });
 
             if (!existingAccount) {
-              logger.security(`OAuth account linking blocked - manual linking required`, { email: user.email });
-              return '/auth/error?error=AccountLinkingRequired';
+              logger.security(`OAuth account linking blocked - redirecting to link page`, { email: user.email });
+
+              // Generate link token with OAuth credentials for secure account linking
+              const linkToken = generateLinkToken({
+                userId: existingUser.id,
+                email: user.email,
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                accessToken: account.access_token,
+                refreshToken: account.refresh_token,
+                expiresAt: account.expires_at,
+                tokenType: account.token_type,
+                scope: account.scope,
+                idToken: account.id_token,
+              });
+
+              const encodedEmail = encodeURIComponent(user.email);
+              const encodedToken = encodeURIComponent(linkToken);
+              return `/auth/link-account?email=${encodedEmail}&provider=${account.provider}&token=${encodedToken}`;
             }
 
             // Google OAuth 사용자의 emailVerified 업데이트 (Google은 이미 이메일 인증을 완료함)

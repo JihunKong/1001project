@@ -2385,7 +2385,9 @@
       },
       "errors": {
         "authenticationError": "Authentication Error",
-        "invalidCredentials": "Invalid email or password. Please try again."
+        "invalidCredentials": "Invalid email or password. Please try again.",
+        "googleLinkedAccount": "This account uses Google sign-in. Please sign in with Google.",
+        "googleLoginHint": "If you previously signed in with Google, please use the Google sign-in button below."
       }
     },
     "signup": {
@@ -2454,6 +2456,21 @@
         "success": "Check your email! We sent you a magic link to sign in.",
         "emailRequired": "Please enter your email address",
         "failed": "Failed to send magic link. Please try again."
+      }
+    },
+    "linkAccount": {
+      "title": "Link Your Account",
+      "existingAccount": "An account with {email} already exists.",
+      "confirmLink": "Would you like to link your {provider} account?",
+      "linkButton": "Link Account",
+      "linking": "Linking account...",
+      "cancel": "Cancel",
+      "success": "Account linked successfully!",
+      "redirecting": "Redirecting to dashboard...",
+      "helpText": "Need help with account linking?",
+      "errors": {
+        "invalidParams": "Invalid or missing link parameters.",
+        "linkFailed": "Failed to link account. Please try again."
       }
     },
     "errors": {

@@ -18,6 +18,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+  const errorParam = searchParams.get('error');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -32,6 +33,15 @@ function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [showGoogleHint, setShowGoogleHint] = useState(false);
+
+  // Handle URL error params
+  useEffect(() => {
+    if (errorParam === 'GoogleLinkedAccount') {
+      setMessage(t('auth.login.errors.googleLinkedAccount'));
+      setShowGoogleHint(true);
+    }
+  }, [errorParam, t]);
 
   // Accessibility and UX state
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -132,6 +142,7 @@ function LoginForm() {
 
       if (result?.error) {
         setMessage(t('auth.login.errors.invalidCredentials'));
+        setShowGoogleHint(true);
       } else if (result?.ok) {
         router.push(callbackUrl);
       }
@@ -196,6 +207,11 @@ function LoginForm() {
                   <div>
                     <h3 className="text-sm font-medium">{t('auth.login.errors.authenticationError')}</h3>
                     <p className="text-sm mt-1">{message}</p>
+                    {showGoogleHint && (
+                      <p className="text-sm mt-2 text-blue-600">
+                        {t('auth.login.errors.googleLoginHint')}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

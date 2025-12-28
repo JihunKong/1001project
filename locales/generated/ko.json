@@ -2388,7 +2388,9 @@
       },
       "errors": {
         "authenticationError": "인증 오류",
-        "invalidCredentials": "이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요."
+        "invalidCredentials": "이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요.",
+        "googleLinkedAccount": "Google 인증이 완료된 계정입니다. Google 로그인을 진행하세요.",
+        "googleLoginHint": "Google로 로그인하신 적이 있다면, 아래 Google 로그인 버튼을 사용해주세요."
       }
     },
     "signup": {
@@ -2457,6 +2459,21 @@
         "success": "이메일을 확인해주세요! 로그인 매직 링크를 보내드렸습니다.",
         "emailRequired": "이메일 주소를 입력해주세요",
         "failed": "매직 링크 전송에 실패했습니다. 다시 시도해주세요."
+      }
+    },
+    "linkAccount": {
+      "title": "계정 연동하기",
+      "existingAccount": "{email} 이메일로 기존 계정이 있습니다.",
+      "confirmLink": "{provider} 계정을 연동하시겠습니까?",
+      "linkButton": "계정 연동하기",
+      "linking": "계정 연동 중...",
+      "cancel": "취소",
+      "success": "계정이 성공적으로 연동되었습니다!",
+      "redirecting": "대시보드로 이동 중...",
+      "helpText": "계정 연동에 도움이 필요하신가요?",
+      "errors": {
+        "invalidParams": "잘못되거나 누락된 링크 매개변수입니다.",
+        "linkFailed": "계정 연동에 실패했습니다. 다시 시도해주세요."
       }
     },
     "errors": {
