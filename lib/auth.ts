@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
       name: `__Secure-next-auth.pkce.code_verifier`,
       options: {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
         secure: true,
         maxAge: 900
@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
       name: `__Secure-next-auth.state`,
       options: {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
         secure: true,
         maxAge: 900
@@ -76,7 +76,7 @@ export const authOptions: NextAuthOptions = {
       name: `__Host-next-auth.nonce`,
       options: {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
         secure: true
       }
@@ -394,7 +394,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days for regular users
     updateAge: 2 * 60 * 60, // Refresh session every 2 hours
   },
-  
+
   debug: process.env.NODE_ENV === "development",
 }
 
