@@ -53,13 +53,15 @@ WORKDIR /app
 # Security: Update and install build essentials
 RUN apk add --no-cache libc6-compat python3 make g++
 
-# Build arguments for API keys (required for build)
+# Build arguments for API keys and URLs (required for build)
 ARG OPENAI_API_KEY
+ARG NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
 
 # Set build environment
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV SKIP_ENV_VALIDATION=1
+ENV NEXTAUTH_URL=${NEXTAUTH_URL}
 
 # Security: Create build user
 RUN addgroup --system --gid 1001 nodejs && \
@@ -140,11 +142,13 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 EXPOSE 3000
 
 # Environment variables
+# Note: HOSTNAME=0.0.0.0 is for server binding only, NOT for URL generation
 ENV NODE_ENV=production \
     HOSTNAME="0.0.0.0" \
     PORT=3000 \
     NEXT_TELEMETRY_DISABLED=1 \
-    NPM_CONFIG_CACHE=/tmp/.npm
+    NPM_CONFIG_CACHE=/tmp/.npm \
+    NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
 
 # Security: Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
