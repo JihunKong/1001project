@@ -15,21 +15,25 @@ import {
   BookListView,
   EmptyState,
   CategorySection,
+  LibraryModeSelector,
   type Book,
   type FilterState,
   type SortOption,
-  type ViewMode
+  type ViewMode,
+  type LibraryMode
 } from '@/components/library';
 
 export default function WriterLibraryPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const [books, setBooks] = useState<Book[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [libraryMode, setLibraryMode] = useState<LibraryMode>('english');
+  const [translatedBookCount, setTranslatedBookCount] = useState<number>(0);
   const [filters, setFilters] = useState<FilterState>({});
   const [currentSort, setCurrentSort] = useState<SortOption>({
     label: t('library.sort.recentlyPublished') || 'Newest First',
@@ -64,8 +68,10 @@ export default function WriterLibraryPage() {
         sortBy: currentSort.sortBy,
         sortOrder: currentSort.sortOrder,
         published: 'true',
+        libraryType: libraryMode,
+        userLanguage: language,
         ...(searchTerm && { search: searchTerm }),
-        ...(filters.language && { language: filters.language }),
+        ...(filters.language && libraryMode === 'english' && { language: filters.language }),
         ...(filters.country && { country: filters.country }),
         ...(filters.educationalCategory && { educationalCategory: filters.educationalCategory }),
         ...(filters.ageRange && { ageRange: filters.ageRange }),
@@ -85,7 +91,28 @@ export default function WriterLibraryPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, currentSort, searchTerm, filters]);
+  }, [page, currentSort, searchTerm, filters, libraryMode, language]);
+
+  const fetchTranslatedBookCount = useCallback(async () => {
+    if (language === 'en') {
+      setTranslatedBookCount(0);
+      return;
+    }
+    try {
+      const params = new URLSearchParams({
+        libraryType: 'localized',
+        userLanguage: language,
+        limit: '1',
+      });
+      const response = await fetch(`/api/books?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTranslatedBookCount(data.pagination?.totalCount || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching translated book count:', error);
+    }
+  }, [language]);
 
   const handleFavoriteToggle = useCallback((bookId: string, isFavorited: boolean) => {
     setFavoriteIds(prev => {
@@ -112,8 +139,14 @@ export default function WriterLibraryPage() {
     } else if (status === 'authenticated') {
       fetchBooks();
       fetchFavorites();
+      fetchTranslatedBookCount();
     }
-  }, [status, router, fetchBooks, fetchFavorites]);
+  }, [status, router, fetchBooks, fetchFavorites, fetchTranslatedBookCount]);
+
+  const handleLibraryModeChange = (mode: LibraryMode) => {
+    setLibraryMode(mode);
+    setPage(1);
+  };
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -226,6 +259,18 @@ export default function WriterLibraryPage() {
             <div className="text-sm text-figma-gray-inactive mt-1">{t('library.stats.premium')}</div>
           </Card>
         </div>
+
+        {/* Library Mode Selector - Only show for non-English users */}
+        {language !== 'en' && (
+          <div className="mb-6">
+            <LibraryModeSelector
+              currentMode={libraryMode}
+              onModeChange={handleLibraryModeChange}
+              userLanguage={language}
+              translatedBookCount={translatedBookCount}
+            />
+          </div>
+        )}
 
         {/* Main Content with Filters */}
         <div className="flex flex-col lg:flex-row gap-6">

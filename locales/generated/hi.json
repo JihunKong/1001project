@@ -1294,6 +1294,19 @@
       "footer": {
         "note": "All stories are published with permission from the authors. Revenue supports the Seeds of Empowerment program."
       }
+    },
+    "mode": {
+      "english": "अंग्रेजी पुस्तकालय",
+      "localized": "{language} में पुस्तकें",
+      "sameAsEnglish": "पहले कोई अलग भाषा चुनें",
+      "englishDesc": "शब्दावली समर्थन के साथ मूल सामग्री",
+      "localizedDesc": "आपकी भाषा में अनुवादित कहानियाँ"
+    },
+    "translation": {
+      "aiGenerated": "AI द्वारा अनुवादित",
+      "humanReviewed": "मानव द्वारा समीक्षित",
+      "noTranslation": "अनुवाद उपलब्ध नहीं",
+      "quality": "अनुवाद गुणवत्ता"
     }
   },
   "notification": {

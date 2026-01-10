@@ -105,6 +105,7 @@ export default function RevisionRequestModal({
       size="lg"
       closeOnBackdropClick={!isSubmitting}
       closeOnEscape={!isSubmitting}
+      data-testid="revision-modal"
     >
       <div className="space-y-6">
         {/* Submission Info */}
@@ -199,6 +200,7 @@ export default function RevisionRequestModal({
             Detailed Revision Notes <span className="text-red-600">*</span>
           </label>
           <textarea
+            data-testid="revision-notes-input"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Explain what needs to be revised and provide specific guidance for the author..."
@@ -259,6 +261,7 @@ export default function RevisionRequestModal({
           </button>
           <button
             type="button"
+            data-testid="revision-submit-button"
             onClick={handleSubmit}
             disabled={isSubmitting || !isValid}
             className="flex-1 px-4 py-3 bg-[#FF9500] text-white rounded-lg font-medium hover:bg-[#FF8C00] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"

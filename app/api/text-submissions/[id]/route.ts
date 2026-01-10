@@ -434,6 +434,20 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
       updates.storyFeedback = data.feedback;
       break;
 
+    case 'claim':
+      if (user.role !== UserRole.STORY_MANAGER) {
+        return NextResponse.json({ error: 'Only Story Managers can claim submissions' }, { status: 403 });
+      }
+      if (submission.status !== TextSubmissionStatus.PENDING) {
+        return NextResponse.json({ error: 'Can only claim PENDING submissions' }, { status: 400 });
+      }
+      if (submission.storyManagerId) {
+        return NextResponse.json({ error: 'Submission already assigned' }, { status: 400 });
+      }
+      updates.storyManagerId = user.id;
+      newStatus = TextSubmissionStatus.STORY_REVIEW;
+      break;
+
     default:
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   }

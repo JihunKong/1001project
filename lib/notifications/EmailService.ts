@@ -126,6 +126,225 @@ export class EmailService {
     await this.sendNotificationEmail(to, recipientName, subject, html, text);
   }
 
+  // COPPA Compliance: Send parental consent email
+  async sendParentalConsentEmail(data: {
+    parentEmail: string;
+    parentName?: string;
+    childName: string;
+    childEmail: string;
+    childAge: number;
+    consentUrl: string;
+    expirationDate: Date;
+  }): Promise<void> {
+    const subject = `[Action Required] Parental Consent for ${data.childName}'s 1001 Stories Account`;
+    const recipientName = data.parentName || 'Parent/Guardian';
+
+    const html = this.createParentalConsentEmailHTML(data);
+    const text = this.createParentalConsentEmailText(data);
+
+    try {
+      const mailOptions = {
+        from: {
+          name: '1001 Stories',
+          address: process.env.EMAIL_FROM || process.env.EMAIL_SERVER_USER || 'noreply@1001stories.org'
+        },
+        to: data.parentEmail,
+        subject,
+        html,
+        text,
+        headers: {
+          'X-Category': 'parental-consent',
+          'X-Priority': '1'
+        }
+      };
+
+      await this.transporter.sendMail(mailOptions);
+      logger.info(`Parental consent email sent to ${data.parentEmail}`, {
+        childEmail: data.childEmail,
+        childAge: data.childAge
+      });
+    } catch (error) {
+      logger.error('Error sending parental consent email', error);
+      throw error;
+    }
+  }
+
+  // Create parental consent email HTML
+  private createParentalConsentEmailHTML(data: {
+    parentName?: string;
+    childName: string;
+    childEmail: string;
+    childAge: number;
+    consentUrl: string;
+    expirationDate: Date;
+  }): string {
+    const expirationFormatted = data.expirationDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Parental Consent Required</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+              <div style="background: linear-gradient(135deg, #16a34a 0%, #059669 100%); padding: 20px; border-radius: 12px 12px 0 0;">
+                <h1 style="color: white; font-size: 28px; margin: 0; font-weight: bold;">1001 Stories</h1>
+                <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0 0; font-size: 16px;">Empowering Young Voices</p>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div style="background: white; border-radius: 0 0 12px 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+              <h2 style="color: #1f2937; font-size: 24px; margin: 0 0 24px 0;">
+                👋 Hello ${data.parentName || 'Parent/Guardian'},
+              </h2>
+
+              <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+                Your child has requested to create an account on 1001 Stories, an educational platform
+                where children can read and share stories from around the world.
+              </p>
+
+              <!-- Child Info Card -->
+              <div style="background: #f0f9ff; border: 1px solid #bae6fd; padding: 24px; margin: 24px 0; border-radius: 8px;">
+                <h3 style="color: #0c4a6e; font-size: 18px; margin: 0 0 16px 0;">📋 Account Information</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Child's Name:</td>
+                    <td style="padding: 8px 0; color: #0c4a6e; font-weight: 600; font-size: 14px;">${data.childName}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Child's Email:</td>
+                    <td style="padding: 8px 0; color: #0c4a6e; font-weight: 600; font-size: 14px;">${data.childEmail}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; color: #64748b; font-size: 14px;">Age:</td>
+                    <td style="padding: 8px 0; color: #0c4a6e; font-weight: 600; font-size: 14px;">${data.childAge} years old</td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- Data Collection Notice -->
+              <div style="background: #fefce8; border: 1px solid #fde047; padding: 24px; margin: 24px 0; border-radius: 8px;">
+                <h3 style="color: #854d0e; font-size: 18px; margin: 0 0 16px 0;">🔒 Data We Collect</h3>
+                <p style="color: #713f12; font-size: 14px; line-height: 1.6; margin: 0 0 12px 0;">
+                  Under COPPA (Children's Online Privacy Protection Act), we need your consent to collect
+                  limited information from your child:
+                </p>
+                <ul style="color: #713f12; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 24px;">
+                  <li>Name and email address (for account creation)</li>
+                  <li>Reading progress and learning preferences</li>
+                  <li>Stories they write or submit (optional)</li>
+                </ul>
+              </div>
+
+              <!-- What We DON'T Do -->
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 24px; margin: 24px 0; border-radius: 8px;">
+                <h3 style="color: #166534; font-size: 18px; margin: 0 0 16px 0;">✅ Our Commitment</h3>
+                <ul style="color: #166534; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 24px;">
+                  <li>We do NOT share your child's data with third parties for marketing</li>
+                  <li>We do NOT use behavioral tracking or targeted advertising</li>
+                  <li>We do NOT collect location data or photos</li>
+                  <li>You can request data deletion at any time</li>
+                </ul>
+              </div>
+
+              <!-- CTA Buttons -->
+              <div style="text-align: center; margin: 36px 0;">
+                <a href="${data.consentUrl}&action=approve"
+                   style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #059669 100%); color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin-right: 12px; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);">
+                  ✓ I Give Consent
+                </a>
+                <a href="${data.consentUrl}&action=deny"
+                   style="display: inline-block; background: #f3f4f6; color: #6b7280; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; border: 1px solid #e5e7eb;">
+                  ✗ I Do Not Consent
+                </a>
+              </div>
+
+              <!-- Expiration Warning -->
+              <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 16px; margin: 24px 0; border-radius: 8px; text-align: center;">
+                <p style="color: #dc2626; font-size: 14px; margin: 0;">
+                  ⏰ This consent request expires on <strong>${expirationFormatted}</strong>
+                </p>
+              </div>
+
+              <!-- Footer -->
+              <div style="border-top: 1px solid #e5e7eb; padding-top: 24px; margin-top: 36px;">
+                <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 0 0 16px 0;">
+                  Questions? Contact us at <a href="mailto:support@1001stories.org" style="color: #16a34a;">support@1001stories.org</a>
+                </p>
+                <p style="color: #9ca3af; font-size: 12px; text-align: center; margin: 0;">
+                  1001 Stories is committed to protecting children's privacy.
+                  Read our <a href="${process.env.NEXTAUTH_URL}/privacy" style="color: #6b7280;">Privacy Policy</a>.
+                </p>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+
+  // Create parental consent email text version
+  private createParentalConsentEmailText(data: {
+    parentName?: string;
+    childName: string;
+    childEmail: string;
+    childAge: number;
+    consentUrl: string;
+    expirationDate: Date;
+  }): string {
+    const expirationFormatted = data.expirationDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    let text = `Hello ${data.parentName || 'Parent/Guardian'},\n\n`;
+    text += `Your child has requested to create an account on 1001 Stories, `;
+    text += `an educational platform where children can read and share stories from around the world.\n\n`;
+
+    text += `ACCOUNT INFORMATION\n`;
+    text += `-------------------\n`;
+    text += `Child's Name: ${data.childName}\n`;
+    text += `Child's Email: ${data.childEmail}\n`;
+    text += `Age: ${data.childAge} years old\n\n`;
+
+    text += `DATA WE COLLECT (COPPA Compliance)\n`;
+    text += `----------------------------------\n`;
+    text += `- Name and email address (for account creation)\n`;
+    text += `- Reading progress and learning preferences\n`;
+    text += `- Stories they write or submit (optional)\n\n`;
+
+    text += `OUR COMMITMENT\n`;
+    text += `--------------\n`;
+    text += `- We do NOT share your child's data with third parties for marketing\n`;
+    text += `- We do NOT use behavioral tracking or targeted advertising\n`;
+    text += `- We do NOT collect location data or photos\n`;
+    text += `- You can request data deletion at any time\n\n`;
+
+    text += `TO GIVE CONSENT:\n`;
+    text += `${data.consentUrl}&action=approve\n\n`;
+
+    text += `TO DENY CONSENT:\n`;
+    text += `${data.consentUrl}&action=deny\n\n`;
+
+    text += `⚠️ This consent request expires on ${expirationFormatted}\n\n`;
+
+    text += `Questions? Contact us at support@1001stories.org\n\n`;
+    text += `Privacy Policy: ${process.env.NEXTAUTH_URL}/privacy\n`;
+
+    return text;
+  }
+
   // Create status change email HTML
   private createStatusChangeEmailHTML(data: {
     recipientName: string;

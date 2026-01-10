@@ -1294,6 +1294,19 @@
       "footer": {
         "note": "All stories are published with permission from the authors. Revenue supports the Seeds of Empowerment program."
       }
+    },
+    "mode": {
+      "english": "Biblioteca inglese",
+      "localized": "Libri in {language}",
+      "sameAsEnglish": "Prima seleziona un'altra lingua",
+      "englishDesc": "Contenuto originale con supporto vocabolario",
+      "localizedDesc": "Storie tradotte nella tua lingua"
+    },
+    "translation": {
+      "aiGenerated": "Tradotto dall'IA",
+      "humanReviewed": "Revisionato da umani",
+      "noTranslation": "Nessuna traduzione disponibile",
+      "quality": "Qualità della traduzione"
     }
   },
   "notification": {

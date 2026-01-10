@@ -17,7 +17,7 @@ async function loadTranslations(lang: SupportedLanguage, signal?: AbortSignal): 
   }
 
   try {
-    const response = await fetch(`/api/translations/${lang}`, { signal });
+    const response = await fetch(`/api/i18n/${lang}`, { signal });
     if (!response.ok) {
       throw new Error(`Failed to load translations for ${lang}`);
     }

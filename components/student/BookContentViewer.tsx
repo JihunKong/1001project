@@ -6,6 +6,7 @@ import VocabularyPopover from './VocabularyPopover';
 interface BookContentViewerProps {
   content: string;
   language: string;
+  enableVocabularyPopup?: boolean;
 }
 
 interface SelectedWord {
@@ -14,10 +15,16 @@ interface SelectedWord {
   position: { x: number; y: number };
 }
 
-export default function BookContentViewer({ content, language }: BookContentViewerProps) {
+export default function BookContentViewer({
+  content,
+  language,
+  enableVocabularyPopup = true
+}: BookContentViewerProps) {
   const [selectedWord, setSelectedWord] = useState<SelectedWord | null>(null);
 
   useEffect(() => {
+    if (!enableVocabularyPopup) return;
+
     // Add word selection listener
     const container = document.getElementById('book-content');
     if (!container) return;
@@ -55,7 +62,7 @@ export default function BookContentViewer({ content, language }: BookContentView
     return () => {
       container.removeEventListener('mouseup', handleTextSelection as any);
     };
-  }, []);
+  }, [enableVocabularyPopup]);
 
   const getSurroundingContext = (range: Range): string => {
     try {
@@ -111,7 +118,7 @@ export default function BookContentViewer({ content, language }: BookContentView
         }}
       />
 
-      {selectedWord && (
+      {enableVocabularyPopup && selectedWord && (
         <VocabularyPopover
           word={selectedWord.word}
           context={selectedWord.context}

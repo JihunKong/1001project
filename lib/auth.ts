@@ -332,6 +332,9 @@ export const authOptions: NextAuthOptions = {
           session.user.id = token.id as string
           session.user.role = (token.role as UserRole) || UserRole.WRITER
           session.user.emailVerified = token.emailVerified as Date | null
+          session.user.isMinor = token.isMinor as boolean | undefined
+          session.user.parentalConsentStatus = token.parentalConsentStatus as string | undefined
+          session.user.coppaCompliant = token.coppaCompliant as boolean | undefined
           logger.debug('Session created successfully', { email: session.user.email, role: session.user.role });
         }
         return session
@@ -341,15 +344,51 @@ export const authOptions: NextAuthOptions = {
       }
     },
     
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       try {
         if (user) {
           logger.debug('Creating JWT token', { email: user.email, role: (user as { role?: UserRole }).role });
           token.id = user.id
           token.role = (user as { role?: UserRole }).role || UserRole.WRITER
           token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified
+
+          const { prisma } = await import("@/lib/prisma");
+          const profile = await prisma.profile.findUnique({
+            where: { userId: user.id },
+            select: {
+              isMinor: true,
+              parentalConsentStatus: true,
+              coppaCompliant: true,
+            }
+          });
+
+          if (profile) {
+            token.isMinor = profile.isMinor;
+            token.parentalConsentStatus = profile.parentalConsentStatus;
+            token.coppaCompliant = profile.coppaCompliant;
+          }
+
           logger.debug('JWT token created successfully', { email: user.email });
         }
+
+        if (trigger === 'update') {
+          const { prisma } = await import("@/lib/prisma");
+          const profile = await prisma.profile.findUnique({
+            where: { userId: token.id as string },
+            select: {
+              isMinor: true,
+              parentalConsentStatus: true,
+              coppaCompliant: true,
+            }
+          });
+
+          if (profile) {
+            token.isMinor = profile.isMinor;
+            token.parentalConsentStatus = profile.parentalConsentStatus;
+            token.coppaCompliant = profile.coppaCompliant;
+          }
+        }
+
         return token
       } catch (error) {
         logger.error('JWT callback error', error);
@@ -444,10 +483,26 @@ declare module "next-auth" {
       image?: string | null
       role: UserRole
       emailVerified: Date | null
+      // COPPA Compliance fields
+      isMinor?: boolean
+      parentalConsentStatus?: string
+      coppaCompliant?: boolean
     }
   }
-  
+
   interface User {
     role: UserRole
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string
+    role: UserRole
+    emailVerified?: Date | null
+    // COPPA Compliance fields
+    isMinor?: boolean
+    parentalConsentStatus?: string
+    coppaCompliant?: boolean
   }
 }

@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { Toaster } from 'react-hot-toast';
 import DirectionUpdater from '@/components/i18n/DirectionUpdater';
 import { NotificationProvider } from '@/components/providers/NotificationProvider';
+import { CookieConsent } from '@/components/CookieConsent';
 
 export default function Providers({
   children,
@@ -17,6 +18,7 @@ export default function Providers({
         {children}
       </NotificationProvider>
       <Toaster />
+      <CookieConsent />
     </SessionProvider>
   );
 }

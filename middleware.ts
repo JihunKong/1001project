@@ -100,6 +100,44 @@ export default withAuth(
         });
       }
 
+      // COPPA Compliance: Block minors without parental consent from restricted content
+      const isMinor = token?.isMinor === true;
+      const hasParentalConsent = token?.parentalConsentStatus === 'GRANTED' || token?.coppaCompliant === true;
+
+      if (isMinor && !hasParentalConsent) {
+        // Paths that require parental consent for minors
+        const restrictedPaths = [
+          '/api/text-submissions',
+          '/api/chat',
+          '/api/ai-review',
+          '/dashboard/learner/submit',
+          '/dashboard/writer/submit',
+          '/dashboard/writer/new-story',
+        ];
+
+        // Check if current path is restricted
+        const isRestrictedPath = restrictedPaths.some(path => pathname.startsWith(path));
+
+        if (isRestrictedPath) {
+          // Check for redirect loop
+          const consentTrackingKey = `${clientId}-consent-required`;
+          if (!isRedirectLoop(consentTrackingKey)) {
+            logger.security('Minor without parental consent blocked from restricted content', {
+              email: token.email,
+              pathname,
+              isMinor,
+              parentalConsentStatus: token.parentalConsentStatus,
+            });
+            return NextResponse.redirect(new URL('/consent-required', req.url));
+          }
+          // If redirect loop detected, allow access to prevent lockup
+          logger.warn('Consent required redirect loop detected, allowing access', {
+            email: token.email,
+            pathname,
+          });
+        }
+      }
+
       // Check if user has completed onboarding (except for learner/parent roles)
       if (pathname.startsWith('/dashboard') && !pathname.startsWith('/dashboard/learner') && !pathname.startsWith('/dashboard/parent')) {
         // For now, skip onboarding check for non-learner roles
@@ -194,6 +232,9 @@ export default withAuth(
           pathname.startsWith('/terms') ||
           pathname.startsWith('/verify-email') ||
           pathname.startsWith('/demo') ||
+          pathname.startsWith('/consent-required') ||
+          pathname.startsWith('/parental-consent') ||
+          pathname.startsWith('/auth/link-account') ||
           pathname.startsWith('/_next') ||
           pathname.startsWith('/favicon') ||
           pathname === '/manifest.json' ||

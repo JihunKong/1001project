@@ -15,3 +15,9 @@ export { default as EmptyState } from './EmptyState';
 export { default as LibraryGridCard } from './LibraryGridCard';
 
 export { default as CategorySection } from './CategorySection';
+
+export { LibraryModeSelector } from './LibraryModeSelector';
+export type { LibraryMode } from './LibraryModeSelector';
+
+export { LibraryTabs } from './LibraryTabs';
+export type { LibraryTab } from './LibraryTabs';

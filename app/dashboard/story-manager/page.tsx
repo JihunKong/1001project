@@ -17,7 +17,8 @@ import {
   Calendar,
   AlertCircle,
   BookOpen,
-  Edit
+  Edit,
+  HandIcon
 } from 'lucide-react';
 
 interface TextSubmission {
@@ -58,6 +59,7 @@ export default function StoryManagerDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [claimingId, setClaimingId] = useState<string | null>(null);
 
   // Redirect if not authenticated or not a story manager
   useEffect(() => {
@@ -106,6 +108,41 @@ export default function StoryManagerDashboard() {
       fetchData();
     }
   }, [session, selectedStatus]);
+
+  const handleClaim = async (submissionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setClaimingId(submissionId);
+    try {
+      const res = await fetch(`/api/text-submissions/${submissionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'claim' })
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to claim submission');
+      }
+      setSubmissions(prev =>
+        prev.map(sub =>
+          sub.id === submissionId
+            ? { ...sub, status: 'STORY_REVIEW' }
+            : sub
+        )
+      );
+      if (stats) {
+        setStats({
+          ...stats,
+          pendingReview: stats.pendingReview - 1,
+          reviewInProgress: stats.reviewInProgress + 1
+        });
+      }
+      router.push(`/dashboard/story-manager/review/${submissionId}`);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to claim submission');
+    } finally {
+      setClaimingId(null);
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -362,13 +399,26 @@ export default function StoryManagerDashboard() {
                         </td>
                         <td className="px-2 sm:px-4 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-                            <Link
-                              href={`/dashboard/story-manager/review/${submission.id}`}
-                              className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
-                            >
-                              <Eye className="h-4 w-4 mr-1" />
-                              <span className="hidden sm:inline">{t('dashboard.common.actions.review')}</span>
-                            </Link>
+                            {submission.status === 'PENDING' ? (
+                              <button
+                                onClick={(e) => handleClaim(submission.id, e)}
+                                disabled={claimingId === submission.id}
+                                className="bg-soe-green-500 hover:bg-soe-green-600 text-white px-3 py-1 rounded flex items-center disabled:opacity-50"
+                              >
+                                <HandIcon className="h-4 w-4 mr-1" />
+                                <span className="hidden sm:inline">
+                                  {claimingId === submission.id ? t('dashboard.common.actions.claiming') : t('dashboard.common.actions.claim')}
+                                </span>
+                              </button>
+                            ) : (
+                              <Link
+                                href={`/dashboard/story-manager/review/${submission.id}`}
+                                className="text-soe-green-600 hover:text-soe-green-900 flex items-center"
+                              >
+                                <Eye className="h-4 w-4 mr-1" />
+                                <span className="hidden sm:inline">{t('dashboard.common.actions.review')}</span>
+                              </Link>
+                            )}
                             {submission.storyFeedback && (
                               <button className="text-soe-green-600 hover:text-soe-green-900 flex items-center">
                                 <MessageSquare className="h-4 w-4 mr-1" />

@@ -174,35 +174,29 @@ export function generateParentalConsentData(
 }
 
 /**
- * Validate parental consent token (basic implementation)
+ * Validate parental consent token format
  */
 export function validateConsentToken(token: string): boolean {
-  // This is a basic implementation. In production, you'd want to:
-  // 1. Store tokens in database with expiration
-  // 2. Use cryptographic signing
-  // 3. Include additional security measures
-  
-  if (!token || token.length < 10) {
+  if (!token || token.length < 32) {
     return false;
   }
-  
-  // For now, just check if it's a valid format
-  return /^[a-zA-Z0-9]{20,}$/.test(token);
+
+  return /^[a-zA-Z0-9_-]{32,64}$/.test(token);
 }
 
 /**
- * Generate a secure consent token
+ * Generate a cryptographically secure consent token
  */
 export function generateConsentToken(): string {
-  // Generate a random token for parental consent
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let token = '';
-  
-  for (let i = 0; i < 32; i++) {
-    token += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  
-  return token;
+  const crypto = require('crypto');
+  return crypto.randomBytes(32).toString('base64url');
+}
+
+/**
+ * Calculate token expiration date (7 days from now)
+ */
+export function getConsentTokenExpiration(): Date {
+  return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 }
 
 /**

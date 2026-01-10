@@ -19,7 +19,9 @@
         "reject": "Reject",
         "view": "View",
         "feedback": "Feedback",
-        "notes": "Notes"
+        "notes": "Notes",
+        "claim": "Claim",
+        "claiming": "Claiming..."
       },
       "priority": {
         "high": "HIGH",
@@ -1430,6 +1432,19 @@
       "added": "Added to favorites!",
       "removed": "Removed from favorites"
     },
+    "mode": {
+      "english": "English Library",
+      "localized": "Books in {language}",
+      "sameAsEnglish": "Select a different language first",
+      "englishDesc": "Original content with vocabulary support",
+      "localizedDesc": "Stories translated to your language"
+    },
+    "translation": {
+      "aiGenerated": "AI Translated",
+      "humanReviewed": "Human Reviewed",
+      "noTranslation": "No translation available",
+      "quality": "Translation Quality"
+    },
     "howItWorks": {
       "title": "How 1001 Stories Works",
       "subtitle": "Three simple steps to start your storytelling journey",
@@ -2422,6 +2437,18 @@
             "required": "Password confirmation is required",
             "mismatch": "Passwords do not match"
           }
+        },
+        "dataConsent": {
+          "title": "Data Privacy Preferences",
+          "aiService": {
+            "label": "AI-Enhanced Learning Features",
+            "description": "Allow us to use AI services (OpenAI) to generate images for stories, provide text-to-speech, and enhance your learning experience."
+          },
+          "dataTransfer": {
+            "label": "International Data Transfer",
+            "description": "Allow your data to be processed on servers outside your country (US) for AI features and service improvement."
+          },
+          "optionalNotice": "These are optional. You can use 1001 Stories without these features, but some AI-powered features will be unavailable."
         }
       },
       "links": {
@@ -3157,6 +3184,28 @@
     "footer": {
       "contactPrivacyTeam": "Contact Privacy Team",
       "viewTerms": "View Terms of Service"
+    }
+  },
+  "cookieConsent": {
+    "title": "Cookie Settings",
+    "description": "We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking \"Accept All\", you consent to our use of cookies.",
+    "customize": "Customize",
+    "essentialOnly": "Essential Only",
+    "acceptAll": "Accept All",
+    "customizeTitle": "Cookie Preferences",
+    "savePreferences": "Save Preferences",
+    "required": "Required",
+    "essential": {
+      "title": "Essential Cookies",
+      "description": "These cookies are necessary for the website to function and cannot be disabled. They include session management, authentication, and security features."
+    },
+    "analytics": {
+      "title": "Analytics Cookies",
+      "description": "These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously."
+    },
+    "marketing": {
+      "title": "Marketing Cookies",
+      "description": "These cookies are used to track visitors across websites to display relevant advertisements."
     }
   }
 }

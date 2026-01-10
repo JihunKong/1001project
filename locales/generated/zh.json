@@ -1294,6 +1294,19 @@
       "footer": {
         "note": "All stories are published with permission from the authors. Revenue supports the Seeds of Empowerment program."
       }
+    },
+    "mode": {
+      "english": "英语图书馆",
+      "localized": "{language}书籍",
+      "sameAsEnglish": "请先选择其他语言",
+      "englishDesc": "带词汇支持的原版内容",
+      "localizedDesc": "翻译成您语言的故事"
+    },
+    "translation": {
+      "aiGenerated": "AI翻译",
+      "humanReviewed": "人工审核",
+      "noTranslation": "暂无翻译",
+      "quality": "翻译质量"
     }
   },
   "notification": {

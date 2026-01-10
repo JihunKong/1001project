@@ -14,6 +14,7 @@ import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 import { sendLocalizedVerificationEmail } from '@/lib/email';
 import { getLanguagePreferenceFromHeaders, SupportedLanguage } from '@/lib/i18n/language-cookie';
+import { EmailService } from '@/lib/notifications/EmailService';
 
 // Validation schema for user registration
 const SignupSchema = z.object({
@@ -70,6 +71,9 @@ const SignupSchema = z.object({
   // Terms acceptance
   termsAccepted: z.boolean()
     .refine(val => val === true, 'You must accept the terms and conditions'),
+  // PIPA/GDPR Data Processing Consents (optional)
+  aiServiceConsent: z.boolean().optional().default(false),
+  dataTransferConsent: z.boolean().optional().default(false),
 });
 
 export async function POST(request: NextRequest) {
@@ -229,25 +233,49 @@ export async function POST(request: NextRequest) {
             parentalConsentStatus: ageVerification ? ageVerification.parentalConsentStatus : ParentalConsentStatus.NOT_REQUIRED,
             parentEmail: validatedData.parentEmail || null,
             parentName: validatedData.parentName || null,
+            // PIPA/GDPR consent fields
+            aiServiceConsent: validatedData.aiServiceConsent || false,
+            dataTransferConsent: validatedData.dataTransferConsent || false,
+            aiServiceConsentDate: validatedData.aiServiceConsent ? new Date() : null,
+            dataTransferConsentDate: validatedData.dataTransferConsent ? new Date() : null,
           }
         });
 
-        // Store parental consent token in user profile for now
-        // TODO: Implement dedicated ParentalConsentRequest table
+        // Store parental consent token securely in user profile
         await tx.profile.update({
           where: { userId: user.id },
           data: {
             parentalConsentRequired: true,
             parentalConsentStatus: 'PENDING',
-            // Store consent token in a simple way for now
+            parentalConsentToken: consentToken,
+            parentalConsentTokenExp: consentData.expirationDate,
           }
         });
 
         return user;
       });
 
-      // TODO: Send parental consent email using consentData
-      // For now, return response indicating parental consent is required
+      // COPPA Compliance: Send parental consent email
+      try {
+        const emailService = new EmailService();
+        await emailService.sendParentalConsentEmail({
+          parentEmail: validatedData.parentEmail!,
+          parentName: validatedData.parentName,
+          childName: validatedData.name,
+          childEmail: validatedData.email,
+          childAge: ageVerification.age,
+          consentUrl: consentData.consentUrl,
+          expirationDate: consentData.expirationDate,
+        });
+        logger.info('Parental consent email sent successfully', {
+          parentEmail: validatedData.parentEmail,
+          childEmail: validatedData.email,
+          childAge: ageVerification.age
+        });
+      } catch (emailError) {
+        logger.error('Failed to send parental consent email', emailError);
+      }
+
       return NextResponse.json({
         message: 'Account pending parental consent',
         user: pendingUser,
@@ -297,6 +325,11 @@ export async function POST(request: NextRequest) {
           isMinor: ageVerification ? ageVerification.isMinor : false,
           ageVerificationStatus: ageVerification ? ageVerification.ageVerificationStatus : AgeVerificationStatus.PENDING,
           parentalConsentStatus: ageVerification ? ageVerification.parentalConsentStatus : ParentalConsentStatus.NOT_REQUIRED,
+          // PIPA/GDPR consent fields
+          aiServiceConsent: validatedData.aiServiceConsent || false,
+          dataTransferConsent: validatedData.dataTransferConsent || false,
+          aiServiceConsentDate: validatedData.aiServiceConsent ? new Date() : null,
+          dataTransferConsentDate: validatedData.dataTransferConsent ? new Date() : null,
         }
       });
 

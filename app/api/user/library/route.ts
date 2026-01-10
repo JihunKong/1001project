@@ -39,7 +39,7 @@ export async function GET(request: Request) {
         id: fav.book.id,
         title: fav.book.title,
         authorName: fav.book.authorName,
-        coverImage: fav.book.coverImage,
+        coverUrl: fav.book.coverImage,
         language: fav.book.language,
         ageRange: fav.book.ageRange,
         progress: fav.book.readingProgress[0]?.percentComplete || 0,

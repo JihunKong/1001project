@@ -24,7 +24,9 @@ export default function SignupPage() {
     email: '',
     password: '',
     passwordConfirm: '',
-    termsAccepted: false
+    termsAccepted: false,
+    aiServiceConsent: false,
+    dataTransferConsent: false,
   });
 
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
@@ -483,6 +485,59 @@ export default function SignupPage() {
                   {getFieldError('termsAccepted')?.message}
                 </p>
               )}
+
+              {/* Data Privacy Consents - PIPA/COPPA Compliance */}
+              <div className="pt-4 space-y-4 border-t border-gray-100">
+                <p className="text-xs text-[#737373] font-medium">
+                  {t('auth.signup.form.dataConsent.title')}
+                </p>
+
+                {/* AI Service Consent */}
+                <div className="flex items-start gap-3">
+                  <input
+                    id="aiServiceConsent"
+                    name="aiServiceConsent"
+                    type="checkbox"
+                    checked={formData.aiServiceConsent}
+                    onChange={handleInputChange}
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-[#91C549] focus:ring-[#91C549]"
+                  />
+                  <label htmlFor="aiServiceConsent" className="text-sm text-[#737373]">
+                    <span className="font-medium text-[#525252]">
+                      {t('auth.signup.form.dataConsent.aiService.label')}
+                    </span>
+                    <br />
+                    <span className="text-xs">
+                      {t('auth.signup.form.dataConsent.aiService.description')}
+                    </span>
+                  </label>
+                </div>
+
+                {/* Data Transfer Consent */}
+                <div className="flex items-start gap-3">
+                  <input
+                    id="dataTransferConsent"
+                    name="dataTransferConsent"
+                    type="checkbox"
+                    checked={formData.dataTransferConsent}
+                    onChange={handleInputChange}
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-[#91C549] focus:ring-[#91C549]"
+                  />
+                  <label htmlFor="dataTransferConsent" className="text-sm text-[#737373]">
+                    <span className="font-medium text-[#525252]">
+                      {t('auth.signup.form.dataConsent.dataTransfer.label')}
+                    </span>
+                    <br />
+                    <span className="text-xs">
+                      {t('auth.signup.form.dataConsent.dataTransfer.description')}
+                    </span>
+                  </label>
+                </div>
+
+                <p className="text-xs text-[#737373] italic">
+                  {t('auth.signup.form.dataConsent.optionalNotice')}
+                </p>
+              </div>
 
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-3 pt-8">

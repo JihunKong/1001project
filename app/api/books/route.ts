@@ -112,6 +112,10 @@ export async function GET(request: NextRequest) {
 
     const params = validateQueryParams(rawParams);
 
+    // Library type and user language for split library feature
+    const libraryType = searchParams.get('libraryType') as 'english' | 'localized' | null;
+    const userLanguage = searchParams.get('userLanguage') || 'ko';
+
     // Set defaults for validated parameters
     const page = (params.page as number) || 1;
     const limit = Math.min((params.limit as number) || 20, 100);
@@ -226,7 +230,20 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (language) {
+    // Handle library type filtering
+    if (libraryType === 'english') {
+      // English library: only show books with language='en'
+      where.language = 'en';
+    } else if (libraryType === 'localized') {
+      // Localized library: only show books that have published translations in user's language
+      where.translations = {
+        some: {
+          toLanguage: userLanguage,
+          status: 'PUBLISHED'
+        }
+      };
+    } else if (language) {
+      // Legacy filter: direct language filter
       where.language = language;
     }
 
@@ -276,6 +293,70 @@ export async function GET(request: NextRequest) {
     // Calculate pagination
     const skip = (page - 1) * limit;
 
+    // Build select clause with optional translation inclusion
+    const selectClause: any = {
+      id: true,
+      title: true,
+      subtitle: true,
+      summary: true,
+      contentType: true,
+      authorName: true,
+      authorAlias: true,
+      illustratorName: true,
+      editorName: true,
+      country: true,
+      language: true,
+      ageRange: true,
+      readingLevel: true,
+      readingTime: true,
+      category: true,
+      genres: true,
+      tags: true,
+      educationalCategories: true,
+      difficultyScore: true,
+      vocabularyDistribution: true,
+      coverImage: true,
+      visibility: true,
+      isPremium: true,
+      isPublished: true,
+      featured: true,
+      price: true,
+      currency: true,
+      viewCount: true,
+      likeCount: true,
+      rating: true,
+      publishedAt: true,
+      createdAt: true,
+      updatedAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          role: true,
+        }
+      }
+    };
+
+    // Include translations for localized library
+    if (libraryType === 'localized') {
+      selectClause.translations = {
+        where: {
+          toLanguage: userLanguage,
+          status: 'PUBLISHED'
+        },
+        select: {
+          id: true,
+          title: true,
+          summary: true,
+          toLanguage: true,
+          isAIGenerated: true,
+          humanReviewed: true,
+          qualityScore: true
+        },
+        take: 1
+      };
+    }
+
     // Get books with pagination
     const [books, totalCount] = await Promise.all([
       prisma.book.findMany({
@@ -283,52 +364,32 @@ export async function GET(request: NextRequest) {
         orderBy: { [sortBy]: sortOrder },
         skip,
         take: limit,
-        select: {
-          id: true,
-          title: true,
-          subtitle: true,
-          summary: true,
-          contentType: true,
-          authorName: true,
-          authorAlias: true,
-          illustratorName: true,
-          editorName: true,
-          country: true,
-          language: true,
-          ageRange: true,
-          readingLevel: true,
-          readingTime: true,
-          category: true,
-          genres: true,
-          tags: true,
-          educationalCategories: true,
-          difficultyScore: true,
-          vocabularyDistribution: true,
-          coverImage: true,
-          visibility: true,
-          isPremium: true,
-          isPublished: true,
-          featured: true,
-          price: true,
-          currency: true,
-          viewCount: true,
-          likeCount: true,
-          rating: true,
-          publishedAt: true,
-          createdAt: true,
-          updatedAt: true,
-          // Include author info if available
-          author: {
-            select: {
-              id: true,
-              name: true,
-              role: true,
-            }
-          }
-        }
+        select: selectClause
       }),
       prisma.book.count({ where })
     ]);
+
+    // Transform books for localized library to use translated content
+    const transformedBooks = libraryType === 'localized'
+      ? books.map((book: any) => {
+          const translation = book.translations?.[0];
+          return {
+            ...book,
+            // Use translated title/summary if available
+            displayTitle: translation?.title || book.title,
+            displaySummary: translation?.summary || book.summary,
+            isTranslated: !!translation,
+            translationInfo: translation ? {
+              language: translation.toLanguage,
+              isAIGenerated: translation.isAIGenerated,
+              humanReviewed: translation.humanReviewed,
+              qualityScore: translation.qualityScore
+            } : null,
+            // Remove raw translations from response
+            translations: undefined
+          };
+        })
+      : books;
 
     // Calculate pagination info
     const totalPages = Math.ceil(totalCount / limit);
@@ -337,7 +398,7 @@ export async function GET(request: NextRequest) {
 
     // Create response with rate limit headers
     const response = NextResponse.json({
-      books,
+      books: transformedBooks,
       pagination: {
         page,
         limit,
@@ -359,7 +420,9 @@ export async function GET(request: NextRequest) {
         sortBy,
         sortOrder,
         published: isPublished,
-        premium: isPremium
+        premium: isPremium,
+        libraryType,
+        userLanguage: libraryType === 'localized' ? userLanguage : undefined
       }
     });
 
