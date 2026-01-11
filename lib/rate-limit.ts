@@ -206,6 +206,13 @@ export const RATE_LIMITS = {
     windowMs: 10 * 60 * 1000,  // 10 minutes
     maxRequests: 20,           // 20 content creations per 10 minutes
     message: 'Too many content creation requests, please try again later'
+  },
+
+  // CRON job endpoints (very restrictive to prevent DoS)
+  CRON_API: {
+    windowMs: 60 * 1000,       // 1 minute
+    maxRequests: 2,            // 2 requests per minute
+    message: 'Too many cron requests, please try again later'
   }
 };
 
