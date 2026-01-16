@@ -9,7 +9,7 @@ set -euo pipefail
 REMOTE_HOST="3.128.143.122"
 REMOTE_USER="ubuntu"
 REMOTE_PATH="/home/ubuntu/1001-stories"
-SSH_KEY="/Users/jihunkong/1001project/1001-stories/1001project.pem"
+SSH_KEY="/Users/jihunkong/Downloads/1001project.pem"
 DOMAIN="1001stories.seedsofempowerment.org"
 
 # Colors for output
