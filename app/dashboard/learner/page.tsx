@@ -38,6 +38,7 @@ interface Assignment {
   title: string;
   description: string;
   book: {
+    id: string;
     title: string;
     authorName: string;
   };
@@ -102,7 +103,7 @@ export default function LearnerDashboard() {
           id: '1',
           title: 'Read Chapter 5-7',
           description: 'Complete reading and answer discussion questions',
-          book: { title: 'The Amazing Journey', authorName: 'Young Author' },
+          book: { id: 'book1', title: 'The Amazing Journey', authorName: 'Young Author' },
           dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
           status: 'PENDING'
         }
@@ -315,7 +316,10 @@ export default function LearnerDashboard() {
                         <span className="text-xs text-gray-500">
                           {t('dashboard.learner.assignments.due', { date: new Date(assignment.dueDate).toLocaleDateString() })}
                         </span>
-                        <button className="text-soe-green-400 hover:text-soe-green-600 text-sm font-medium">
+                        <button
+                          onClick={() => window.location.href = `/dashboard/learner/read/${assignment.book.id}`}
+                          className="text-soe-green-400 hover:text-soe-green-600 text-sm font-medium"
+                        >
                           {t('dashboard.common.actions.viewDetails')}
                         </button>
                       </div>
@@ -388,7 +392,13 @@ export default function LearnerDashboard() {
           <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
               <ScrollAnimatedContainer animationType="slideUp" delay={1400}>
-                <button className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400 min-h-[var(--min-touch-target)]">
+                <button
+                  onClick={() => {
+                    const code = prompt('Enter class code:');
+                    if (code) window.location.href = `/api/classes/join/${code}`;
+                  }}
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400 min-h-[var(--min-touch-target)]"
+                >
                   <Users className="h-5 w-5 sm:h-6 sm:w-6 text-soe-green-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
                     <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.quickActions.joinBookClub')}</p>
@@ -398,7 +408,10 @@ export default function LearnerDashboard() {
               </ScrollAnimatedContainer>
 
               <ScrollAnimatedContainer animationType="slideUp" delay={1500}>
-                <button className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-success-500 min-h-[var(--min-touch-target)]">
+                <button
+                  onClick={() => window.location.href = '/library'}
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-success-500 min-h-[var(--min-touch-target)]"
+                >
                   <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-success-600 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
                     <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.quickActions.askAIHelper')}</p>
@@ -408,7 +421,10 @@ export default function LearnerDashboard() {
               </ScrollAnimatedContainer>
 
               <ScrollAnimatedContainer animationType="slideUp" delay={1600}>
-                <button className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-warning-500 min-h-[var(--min-touch-target)]">
+                <button
+                  onClick={() => window.location.href = '/library'}
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-warning-500 min-h-[var(--min-touch-target)]"
+                >
                   <Star className="h-5 w-5 sm:h-6 sm:w-6 text-warning-600 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
                     <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.quickActions.rateBooks')}</p>
