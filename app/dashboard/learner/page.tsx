@@ -16,7 +16,6 @@ import {
   Brain,
   GraduationCap
 } from 'lucide-react';
-import ScrollAnimatedContainer from '@/components/ui/ScrollAnimatedContainer';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface ReadingProgress {
@@ -233,13 +232,13 @@ export default function LearnerDashboard() {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <ScrollAnimatedContainer animationType="slideInLeft" className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">{t('dashboard.learner.title')}</h1>
               <p className="mt-1 text-sm text-gray-500">
                 {t('dashboard.learner.welcome', { name: session?.user?.name })}
               </p>
-            </ScrollAnimatedContainer>
-            <ScrollAnimatedContainer animationType="slideInRight" delay={200} className="w-full sm:w-auto">
+            </div>
+            <div className="w-full sm:w-auto">
               <button
                 onClick={() => {
                   const booksSection = document.getElementById('my-assigned-books');
@@ -252,7 +251,7 @@ export default function LearnerDashboard() {
                 <BookOpen className="h-5 w-5" />
                 {t('dashboard.learner.browseLibrary')}
               </button>
-            </ScrollAnimatedContainer>
+            </div>
           </div>
         </div>
       </div>
@@ -261,7 +260,7 @@ export default function LearnerDashboard() {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
-            <ScrollAnimatedContainer animationType="slideUp" delay={300}>
+            <div>
               <div className="bg-white rounded-lg shadow p-3 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 min-h-[100px] sm:min-h-auto">
                 <div className="flex flex-col sm:flex-row items-center text-center sm:text-left">
                   <BookOpen className="h-6 w-6 sm:h-8 sm:w-8 text-soe-green-400 mb-2 sm:mb-0" />
@@ -271,9 +270,9 @@ export default function LearnerDashboard() {
                   </div>
                 </div>
               </div>
-            </ScrollAnimatedContainer>
+            </div>
 
-            <ScrollAnimatedContainer animationType="slideUp" delay={400}>
+            <div>
               <div className="bg-white rounded-lg shadow p-3 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 min-h-[100px] sm:min-h-auto">
                 <div className="flex flex-col sm:flex-row items-center text-center sm:text-left">
                   <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-success-600 mb-2 sm:mb-0" />
@@ -283,9 +282,9 @@ export default function LearnerDashboard() {
                   </div>
                 </div>
               </div>
-            </ScrollAnimatedContainer>
+            </div>
 
-            <ScrollAnimatedContainer animationType="slideUp" delay={500}>
+            <div>
               <div className="bg-white rounded-lg shadow p-3 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 min-h-[100px] sm:min-h-auto">
                 <div className="flex flex-col sm:flex-row items-center text-center sm:text-left">
                   <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-soe-green-400 mb-2 sm:mb-0" />
@@ -295,9 +294,9 @@ export default function LearnerDashboard() {
                   </div>
                 </div>
               </div>
-            </ScrollAnimatedContainer>
+            </div>
 
-            <ScrollAnimatedContainer animationType="slideUp" delay={600}>
+            <div>
               <div className="bg-white rounded-lg shadow p-3 sm:p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 min-h-[100px] sm:min-h-auto">
                 <div className="flex flex-col sm:flex-row items-center text-center sm:text-left">
                   <Award className="h-6 w-6 sm:h-8 sm:w-8 text-warning-600 mb-2 sm:mb-0" />
@@ -307,13 +306,13 @@ export default function LearnerDashboard() {
                   </div>
                 </div>
               </div>
-            </ScrollAnimatedContainer>
+            </div>
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Continue Reading */}
-          <ScrollAnimatedContainer animationType="slideInLeft" delay={700}>
+          <div>
             <div className="bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
               <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
                 <h2 className="text-base sm:text-lg font-medium text-gray-900">{t('dashboard.learner.continueReading.title')}</h2>
@@ -358,10 +357,10 @@ export default function LearnerDashboard() {
               )}
             </div>
             </div>
-          </ScrollAnimatedContainer>
+          </div>
 
           {/* Assignments */}
-          <ScrollAnimatedContainer animationType="slideInRight" delay={800}>
+          <div>
             <div className="bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
               <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
                 <h2 className="text-base sm:text-lg font-medium text-gray-900">{t('dashboard.learner.assignments.title')}</h2>
@@ -413,12 +412,12 @@ export default function LearnerDashboard() {
               )}
             </div>
             </div>
-          </ScrollAnimatedContainer>
+          </div>
         </div>
 
         {/* My Assigned Books - BookAssignment based */}
         {bookAssignments.length > 0 && (
-          <ScrollAnimatedContainer animationType="slideUp" delay={850}>
+          <div>
             <div id="my-assigned-books" className="mt-6 sm:mt-8 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
               <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
                 <h2 className="text-base sm:text-lg font-medium text-gray-900">{t('dashboard.learner.myBooks.title')}</h2>
@@ -463,21 +462,21 @@ export default function LearnerDashboard() {
                 </div>
               </div>
             </div>
-          </ScrollAnimatedContainer>
+          </div>
         )}
 
         {/* ESL Learning Features */}
-        <ScrollAnimatedContainer animationType="slideUp" delay={900}>
+        <div>
           <div className="mt-6 sm:mt-8 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
             <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
               <h2 className="text-base sm:text-lg font-medium text-gray-900">{t('dashboard.learner.learningTools.title')}</h2>
             </div>
           <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-              <ScrollAnimatedContainer animationType="slideUp" delay={1000}>
+              <div>
                 <button
                   onClick={() => window.location.href = '/dashboard/learner/vocabulary'}
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 min-h-[var(--min-touch-target)]"
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 min-h-[var(--min-touch-target)]"
                 >
                   <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
@@ -485,12 +484,12 @@ export default function LearnerDashboard() {
                     <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.learningTools.myVocabularyDesc')}</p>
                   </div>
                 </button>
-              </ScrollAnimatedContainer>
+              </div>
 
-              <ScrollAnimatedContainer animationType="slideUp" delay={1100}>
+              <div>
                 <button
                   onClick={() => window.location.href = '/dashboard/learner/achievements'}
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-yellow-50 hover:border-yellow-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 min-h-[var(--min-touch-target)]"
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-yellow-50 hover:border-yellow-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 min-h-[var(--min-touch-target)]"
                 >
                   <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
@@ -498,12 +497,12 @@ export default function LearnerDashboard() {
                     <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.learningTools.achievementsDesc')}</p>
                   </div>
                 </button>
-              </ScrollAnimatedContainer>
+              </div>
 
-              <ScrollAnimatedContainer animationType="slideUp" delay={1200}>
+              <div>
                 <button
                   disabled
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
                 >
                   <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
@@ -511,21 +510,21 @@ export default function LearnerDashboard() {
                     <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
                   </div>
                 </button>
-              </ScrollAnimatedContainer>
+              </div>
             </div>
           </div>
         </div>
-          </ScrollAnimatedContainer>
+        </div>
 
         {/* Quick Actions */}
-        <ScrollAnimatedContainer animationType="slideUp" delay={1300}>
+        <div>
           <div className="mt-6 sm:mt-8 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
             <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
               <h2 className="text-base sm:text-lg font-medium text-gray-900">{t('dashboard.learner.quickActions.title')}</h2>
             </div>
           <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-              <ScrollAnimatedContainer animationType="slideUp" delay={1400}>
+              <div>
                 <button
                   onClick={async () => {
                     const code = prompt(t('dashboard.learner.quickActions.enterClassCode'));
@@ -547,7 +546,7 @@ export default function LearnerDashboard() {
                       alert(t('dashboard.learner.quickActions.joinError'));
                     }
                   }}
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400 min-h-[var(--min-touch-target)]"
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400 min-h-[var(--min-touch-target)]"
                 >
                   <Users className="h-5 w-5 sm:h-6 sm:w-6 text-soe-green-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
@@ -555,12 +554,12 @@ export default function LearnerDashboard() {
                     <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.quickActions.joinBookClubDesc')}</p>
                   </div>
                 </button>
-              </ScrollAnimatedContainer>
+              </div>
 
-              <ScrollAnimatedContainer animationType="slideUp" delay={1500}>
+              <div>
                 <button
                   disabled
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
                 >
                   <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
@@ -568,12 +567,12 @@ export default function LearnerDashboard() {
                     <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
                   </div>
                 </button>
-              </ScrollAnimatedContainer>
+              </div>
 
-              <ScrollAnimatedContainer animationType="slideUp" delay={1600}>
+              <div>
                 <button
                   disabled
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
                 >
                   <Star className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
@@ -581,11 +580,11 @@ export default function LearnerDashboard() {
                     <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
                   </div>
                 </button>
-              </ScrollAnimatedContainer>
+              </div>
             </div>
           </div>
         </div>
-          </ScrollAnimatedContainer>
+        </div>
       </div>
     </div>
   );
