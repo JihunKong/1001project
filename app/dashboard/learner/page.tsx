@@ -60,11 +60,24 @@ interface Stats {
   totalClasses: number;
 }
 
+interface BookAssignmentItem {
+  id: string;
+  bookId: string;
+  bookTitle: string;
+  authorName: string;
+  coverImage?: string;
+  className: string;
+  dueDate?: string;
+  isRequired: boolean;
+  instructions?: string;
+}
+
 export default function LearnerDashboard() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [readingProgress, setReadingProgress] = useState<ReadingProgress[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [bookAssignments, setBookAssignments] = useState<BookAssignmentItem[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,9 +96,10 @@ export default function LearnerDashboard() {
   // Fetch dashboard data
   const fetchData = async () => {
     try {
-      const [progressRes, assignmentsRes] = await Promise.all([
+      const [progressRes, assignmentsRes, bookAssignmentsRes] = await Promise.all([
         fetch('/api/learner/reading-progress'),
         fetch('/api/learner/assignments'),
+        fetch('/api/book-assignments'),
       ]);
 
       // Process reading progress
@@ -143,6 +157,24 @@ export default function LearnerDashboard() {
               totalClasses: assignmentsData.classes.length,
             } : null);
           }
+        }
+      }
+
+      // Process book assignments (direct teacher assignments)
+      if (bookAssignmentsRes.ok) {
+        const bookAssignmentsData = await bookAssignmentsRes.json();
+        if (bookAssignmentsData.assignments && Array.isArray(bookAssignmentsData.assignments)) {
+          setBookAssignments(bookAssignmentsData.assignments.map((ba: any) => ({
+            id: ba.id,
+            bookId: ba.bookId,
+            bookTitle: ba.bookTitle,
+            authorName: ba.authorName,
+            coverImage: ba.coverImage,
+            className: ba.className,
+            dueDate: ba.dueDate,
+            isRequired: ba.isRequired,
+            instructions: ba.instructions,
+          })));
         }
       }
 
@@ -209,7 +241,12 @@ export default function LearnerDashboard() {
             </ScrollAnimatedContainer>
             <ScrollAnimatedContainer animationType="slideInRight" delay={200} className="w-full sm:w-auto">
               <button
-                onClick={() => window.location.href = '/library'}
+                onClick={() => {
+                  const booksSection = document.getElementById('my-assigned-books');
+                  if (booksSection) {
+                    booksSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
                 className="w-full sm:w-auto min-h-[var(--min-touch-target)] bg-soe-green-400 hover:bg-soe-green-500 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400"
               >
                 <BookOpen className="h-5 w-5" />
@@ -379,11 +416,61 @@ export default function LearnerDashboard() {
           </ScrollAnimatedContainer>
         </div>
 
+        {/* My Assigned Books - BookAssignment based */}
+        {bookAssignments.length > 0 && (
+          <ScrollAnimatedContainer animationType="slideUp" delay={850}>
+            <div id="my-assigned-books" className="mt-6 sm:mt-8 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                <h2 className="text-base sm:text-lg font-medium text-gray-900">{t('dashboard.learner.myBooks.title')}</h2>
+              </div>
+              <div className="p-4 sm:p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {bookAssignments.map((ba) => (
+                    <div key={ba.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200">
+                      <div className="flex items-start gap-3">
+                        {ba.coverImage && (
+                          <img
+                            src={ba.coverImage}
+                            alt={ba.bookTitle}
+                            className="w-16 h-20 object-cover rounded"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 truncate">{ba.bookTitle}</h3>
+                          <p className="text-sm text-gray-600 truncate">{ba.authorName}</p>
+                          <p className="text-xs text-gray-500 mt-1">{ba.className}</p>
+                          {ba.isRequired && (
+                            <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-red-100 text-red-800 rounded-full">
+                              {t('dashboard.learner.myBooks.required')}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {ba.dueDate && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          {t('dashboard.learner.assignments.due', { date: new Date(ba.dueDate).toLocaleDateString() })}
+                        </p>
+                      )}
+                      <button
+                        onClick={() => window.location.href = `/dashboard/learner/read/${ba.bookId}`}
+                        className="w-full mt-3 min-h-[var(--min-touch-target)] bg-soe-green-400 hover:bg-soe-green-500 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400"
+                      >
+                        <BookOpen className="h-4 w-4" />
+                        {t('dashboard.learner.myBooks.readBook')}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </ScrollAnimatedContainer>
+        )}
+
         {/* ESL Learning Features */}
         <ScrollAnimatedContainer animationType="slideUp" delay={900}>
           <div className="mt-6 sm:mt-8 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
             <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-              <h2 className="text-base sm:text-lg font-medium text-gray-900">Learning Tools</h2>
+              <h2 className="text-base sm:text-lg font-medium text-gray-900">{t('dashboard.learner.learningTools.title')}</h2>
             </div>
           <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
@@ -394,8 +481,8 @@ export default function LearnerDashboard() {
                 >
                   <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-sm sm:text-base">My Vocabulary</p>
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">Review saved words & flashcards</p>
+                    <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.learningTools.myVocabulary')}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.learningTools.myVocabularyDesc')}</p>
                   </div>
                 </button>
               </ScrollAnimatedContainer>
@@ -407,21 +494,21 @@ export default function LearnerDashboard() {
                 >
                   <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-sm sm:text-base">Achievements</p>
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">View badges & progress</p>
+                    <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.learningTools.achievements')}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.learningTools.achievementsDesc')}</p>
                   </div>
                 </button>
               </ScrollAnimatedContainer>
 
               <ScrollAnimatedContainer animationType="slideUp" delay={1200}>
                 <button
-                  onClick={() => window.location.href = '/library'}
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 min-h-[var(--min-touch-target)]"
+                  disabled
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
                 >
-                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-green-500 flex-shrink-0" />
+                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-sm sm:text-base">Take Quiz</p>
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">Test your comprehension</p>
+                    <p className="font-medium text-gray-500 text-sm sm:text-base">{t('dashboard.learner.learningTools.takeQuiz')}</p>
+                    <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
                   </div>
                 </button>
               </ScrollAnimatedContainer>
@@ -440,9 +527,25 @@ export default function LearnerDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
               <ScrollAnimatedContainer animationType="slideUp" delay={1400}>
                 <button
-                  onClick={() => {
-                    const code = prompt('Enter class code:');
-                    if (code) window.location.href = `/api/classes/join/${code}`;
+                  onClick={async () => {
+                    const code = prompt(t('dashboard.learner.quickActions.enterClassCode'));
+                    if (!code) return;
+
+                    try {
+                      const response = await fetch(`/api/classes/join/${code}`, {
+                        method: 'POST',
+                      });
+
+                      if (response.ok) {
+                        alert(t('dashboard.learner.quickActions.joinSuccess'));
+                        window.location.reload();
+                      } else {
+                        const error = await response.json();
+                        alert(error.error || t('dashboard.learner.quickActions.joinError'));
+                      }
+                    } catch {
+                      alert(t('dashboard.learner.quickActions.joinError'));
+                    }
                   }}
                   className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400 min-h-[var(--min-touch-target)]"
                 >
@@ -456,26 +559,26 @@ export default function LearnerDashboard() {
 
               <ScrollAnimatedContainer animationType="slideUp" delay={1500}>
                 <button
-                  onClick={() => window.location.href = '/library'}
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-success-500 min-h-[var(--min-touch-target)]"
+                  disabled
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
                 >
-                  <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-success-600 flex-shrink-0" />
+                  <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.quickActions.askAIHelper')}</p>
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.quickActions.askAIHelperDesc')}</p>
+                    <p className="font-medium text-gray-500 text-sm sm:text-base">{t('dashboard.learner.quickActions.askAIHelper')}</p>
+                    <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
                   </div>
                 </button>
               </ScrollAnimatedContainer>
 
               <ScrollAnimatedContainer animationType="slideUp" delay={1600}>
                 <button
-                  onClick={() => window.location.href = '/library'}
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-warning-500 min-h-[var(--min-touch-target)]"
+                  disabled
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
                 >
-                  <Star className="h-5 w-5 sm:h-6 sm:w-6 text-warning-600 flex-shrink-0" />
+                  <Star className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.quickActions.rateBooks')}</p>
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.quickActions.rateBooksDesc')}</p>
+                    <p className="font-medium text-gray-500 text-sm sm:text-base">{t('dashboard.learner.quickActions.rateBooks')}</p>
+                    <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
                   </div>
                 </button>
               </ScrollAnimatedContainer>

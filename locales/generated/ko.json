@@ -106,7 +106,25 @@
         "askAIHelper": "AI 도우미에게 질문",
         "askAIHelperDesc": "어려운 단어에 대한 도움을 받으세요",
         "rateBooks": "책 평가하기",
-        "rateBooksDesc": "생각을 공유하세요"
+        "rateBooksDesc": "생각을 공유하세요",
+        "enterClassCode": "수업 코드를 입력하세요:",
+        "joinSuccess": "수업에 성공적으로 가입했습니다!",
+        "joinError": "수업 가입에 실패했습니다. 코드를 확인하고 다시 시도해주세요.",
+        "comingSoon": "곧 출시 예정"
+      },
+      "learningTools": {
+        "title": "학습 도구",
+        "myVocabulary": "내 단어장",
+        "myVocabularyDesc": "저장된 단어 및 플래시카드 복습",
+        "achievements": "업적",
+        "achievementsDesc": "배지 및 진행 상황 보기",
+        "takeQuiz": "퀴즈 풀기",
+        "takeQuizDesc": "이해도 테스트"
+      },
+      "myBooks": {
+        "title": "내 할당된 책",
+        "readBook": "책 읽기",
+        "required": "필수"
       }
     },
     "teacher": {

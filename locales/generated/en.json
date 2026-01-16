@@ -106,7 +106,25 @@
         "askAIHelper": "Ask AI Helper",
         "askAIHelperDesc": "Get help with difficult words",
         "rateBooks": "Rate Books",
-        "rateBooksDesc": "Share your thoughts"
+        "rateBooksDesc": "Share your thoughts",
+        "enterClassCode": "Enter class code:",
+        "joinSuccess": "Successfully joined the class!",
+        "joinError": "Failed to join class. Please check the code and try again.",
+        "comingSoon": "Coming Soon"
+      },
+      "learningTools": {
+        "title": "Learning Tools",
+        "myVocabulary": "My Vocabulary",
+        "myVocabularyDesc": "Review saved words & flashcards",
+        "achievements": "Achievements",
+        "achievementsDesc": "View badges & progress",
+        "takeQuiz": "Take Quiz",
+        "takeQuizDesc": "Test your comprehension"
+      },
+      "myBooks": {
+        "title": "My Assigned Books",
+        "readBook": "Read Book",
+        "required": "Required"
       }
     },
     "teacher": {
