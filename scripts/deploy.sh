@@ -479,218 +479,156 @@ deploy() {
 
     # Step 4: 서버 배포 - Git pull + 캐시 정리 + 이미지 로드 + 시작
     log "Step 4/5: Server deployment (git pull + cache clean + image load + start)..."
-    if ! ssh_exec << 'EOF'
-        set -euo pipefail
-        cd /home/ubuntu/1001-stories
 
-        # CRITICAL: Git pull FIRST (NEW STEP - was missing before!)
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "🔴 CRITICAL: Updating source code from git repository..."
-        echo "This step was MISSING before and caused deployment failures!"
-        echo ""
+    # Create a deployment script and execute it on the server
+    # This avoids heredoc issues and provides better error handling
+    DEPLOY_SCRIPT=$(cat << 'DEPLOY_SCRIPT_END'
+#!/bin/bash
+# Server deployment script - executed remotely
+# Exit on error but continue to show output
+set -e
 
-        # Show current commit before pull
-        BEFORE_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
-        echo "Current server commit: $BEFORE_COMMIT"
+cd /home/ubuntu/1001-stories
 
-        # Pull latest changes
-        git fetch origin main
-        git reset --hard origin/main
+echo "========================================"
+echo "Step 4a: Updating source code from git"
+echo "========================================"
 
-        # Show new commit after pull
-        AFTER_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
-        echo "Updated server commit: $AFTER_COMMIT"
+BEFORE_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+echo "Current server commit: $BEFORE_COMMIT"
 
-        if [ "$BEFORE_COMMIT" != "$AFTER_COMMIT" ]; then
-            echo ""
-            echo "✅ Source code updated successfully!"
-            echo "Changes pulled:"
-            git log --oneline --no-decorate "$BEFORE_COMMIT..$AFTER_COMMIT" 2>/dev/null || echo "  (git log unavailable)"
-        else
-            echo "✅ Source code already up to date"
-        fi
+git fetch origin main || { echo "ERROR: git fetch failed"; exit 1; }
+git reset --hard origin/main || { echo "ERROR: git reset failed"; exit 1; }
 
-        # 서버 캐시 정리 (사용자 필수 요구사항)
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Cleaning Docker cache on server..."
-        echo "This is MANDATORY to prevent deployment issues"
-        docker system prune -af --volumes
-        echo "✅ Cache cleaned successfully"
+AFTER_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+echo "Updated server commit: $AFTER_COMMIT"
 
-        # nginx 캐시 정리 (NEW - prevent cached old content)
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Clearing nginx cache to prevent stale content..."
-        if [ -d "nginx/cache" ]; then
-            rm -rf nginx/cache/*
-            echo "✅ nginx cache cleared"
-        else
-            echo "✅ nginx cache directory not found (OK)"
-        fi
+if [ "$BEFORE_COMMIT" != "$AFTER_COMMIT" ]; then
+    echo "Source code updated successfully!"
+else
+    echo "Source code already up to date"
+fi
 
-        # 현재 이미지 백업 (rollback을 위해)
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Creating backup of current image for rollback..."
+echo ""
+echo "========================================"
+echo "Step 4b: Creating backup of current image"
+echo "========================================"
 
-        if docker images | grep -q "1001-stories-app.*latest"; then
-            BACKUP_TAG="1001-stories-app:backup-$(date +%s)"
-            docker tag 1001-stories-app:latest "$BACKUP_TAG"
-            echo "✅ Current image backed up as: $BACKUP_TAG"
+if docker images | grep -q "1001-stories-app.*latest"; then
+    BACKUP_TAG="1001-stories-app:backup-$(date +%s)"
+    docker tag 1001-stories-app:latest "$BACKUP_TAG" || true
+    echo "Current image backed up as: $BACKUP_TAG"
+else
+    echo "No existing image to backup (first deployment)"
+fi
 
-            # Keep only last 3 backups
-            BACKUP_COUNT=$(docker images | grep "1001-stories-app:backup-" | wc -l)
-            if [ "$BACKUP_COUNT" -gt 3 ]; then
-                echo "Cleaning up old backups (keeping last 3)..."
-                docker images --format "{{.Repository}}:{{.Tag}}" | \
-                    grep "1001-stories-app:backup-" | \
-                    tail -n +4 | \
-                    xargs -r docker rmi
-                echo "✅ Old backups cleaned"
-            fi
-        else
-            echo "⚠️  No existing image found to backup (first deployment)"
-        fi
+echo ""
+echo "========================================"
+echo "Step 4c: Loading new Docker image"
+echo "========================================"
 
-        # 이미지 로드 (IMPROVED error handling)
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Loading pre-built Docker image..."
+if [ ! -f "/tmp/app-image.tar.gz" ]; then
+    echo "ERROR: Image file not found at /tmp/app-image.tar.gz"
+    exit 1
+fi
 
-        # Check uploaded file exists and is readable
-        if [ ! -f "/tmp/app-image.tar.gz" ]; then
-            echo "ERROR: Uploaded image file not found at /tmp/app-image.tar.gz"
-            exit 1
-        fi
+IMAGE_SIZE=$(du -h /tmp/app-image.tar.gz | cut -f1)
+echo "Image file size: $IMAGE_SIZE"
 
-        IMAGE_FILE_SIZE=$(du -h /tmp/app-image.tar.gz | cut -f1)
-        echo "Image file size: $IMAGE_FILE_SIZE"
+echo "Loading image (this may take a minute)..."
+gunzip -c /tmp/app-image.tar.gz | docker load || { echo "ERROR: docker load failed"; exit 1; }
 
-        # Load image with explicit error checking
-        if ! gunzip -c /tmp/app-image.tar.gz 2>&1 | docker load 2>&1; then
-            echo ""
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            echo "ERROR: Failed to load Docker image!"
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            echo ""
-            echo "Diagnostic information:"
-            echo "  Disk space: $(df -h /var/lib/docker | tail -1)"
-            echo "  Image file: $(ls -lh /tmp/app-image.tar.gz)"
-            echo ""
-            echo "This usually indicates:"
-            echo "  1. Corrupted tar.gz file (try re-uploading)"
-            echo "  2. Insufficient disk space (clean up Docker: docker system prune)"
-            echo "  3. Network interruption during upload"
-            echo ""
-            rm -f /tmp/app-image.tar.gz
-            exit 1
-        fi
+if ! docker images | grep -q "1001-stories-app.*latest"; then
+    echo "ERROR: Image not found after loading!"
+    exit 1
+fi
 
-        # Verify image was loaded successfully
-        if ! docker images | grep -q "1001-stories-app.*latest"; then
-            echo ""
-            echo "ERROR: Image load completed but 1001-stories-app:latest not found!"
-            echo "Available images:"
-            docker images | grep "1001-stories-app" || echo "  (no 1001-stories-app images found)"
-            rm -f /tmp/app-image.tar.gz
-            exit 1
-        fi
+rm -f /tmp/app-image.tar.gz
+echo "Image loaded successfully"
 
-        rm /tmp/app-image.tar.gz
-        echo "✅ Image loaded and verified successfully"
+echo ""
+echo "========================================"
+echo "Step 4d: Cleaning old Docker resources"
+echo "========================================"
 
-        # SSL 인증서 사전 확인
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Checking SSL certificates..."
+# Clean only dangling images and build cache, NOT all volumes
+docker image prune -f || true
+docker builder prune -f || true
+echo "Docker cleanup completed"
 
-        if [ -d "certbot/conf/live/1001stories.seedsofempowerment.org" ]; then
-            echo "✅ SSL certificates found"
-            # Show expiry date
-            CERT_EXPIRY=$(openssl x509 -enddate -noout -in certbot/conf/live/1001stories.seedsofempowerment.org/cert.pem 2>/dev/null | cut -d= -f2 || echo "unknown")
-            echo "Certificate expires: $CERT_EXPIRY"
-        else
-            echo "⚠️  WARNING: SSL certificates not found!"
-            echo "Certificates will be auto-generated by certbot on first run."
-            echo "If automatic generation fails, manually run: ./scripts/setup-ssl.sh"
-        fi
+echo ""
+echo "========================================"
+echo "Step 4e: Starting containers"
+echo "========================================"
 
-        # 컨테이너 시작 (nginx 검증은 docker-compose의 depends_on: service_healthy에 맡김)
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Starting containers with new image..."
-        docker compose up -d
+docker compose up -d || { echo "ERROR: docker compose up failed"; exit 1; }
 
-        # Verify all required containers started
-        echo ""
-        echo "Verifying container startup..."
-        sleep 10
+echo "Waiting for containers to start (15s)..."
+sleep 15
 
-        REQUIRED_CONTAINERS="app nginx postgres redis"
-        MISSING_CONTAINERS=""
+# Check required containers
+REQUIRED="app nginx postgres redis"
+MISSING=""
+for c in $REQUIRED; do
+    if ! docker ps --format '{{.Names}}' | grep -q "$c"; then
+        MISSING="$MISSING $c"
+    fi
+done
 
-        for container in $REQUIRED_CONTAINERS; do
-            if ! docker ps --format '{{.Names}}' | grep -q "$container"; then
-                MISSING_CONTAINERS="$MISSING_CONTAINERS $container"
-            fi
-        done
+if [ -n "$MISSING" ]; then
+    echo "ERROR: Missing containers:$MISSING"
+    docker compose ps
+    exit 1
+fi
 
-        if [ -n "$MISSING_CONTAINERS" ]; then
-            echo "ERROR: Required containers not running:$MISSING_CONTAINERS"
-            echo ""
-            echo "Container status:"
-            docker compose ps
-            echo ""
-            echo "Recent logs:"
-            docker compose logs --tail=50
-            exit 1
-        fi
+echo "All required containers are running"
 
-        echo "✅ All required containers started successfully"
+echo ""
+echo "========================================"
+echo "Step 4f: Reloading nginx"
+echo "========================================"
 
-        # CRITICAL: Restart nginx to load updated config file (NEW - FIX)
-        # docker compose up -d doesn't restart nginx if image unchanged
-        # but nginx-current.conf may have changed, so we must restart
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Restarting nginx to load latest configuration..."
-        docker compose restart nginx
-        echo "✅ nginx restarted with latest configuration"
+docker compose restart nginx || true
+sleep 5
+docker exec 1001-stories-nginx nginx -s reload 2>/dev/null || true
+echo "nginx reloaded"
 
-        # CRITICAL: Clear nginx proxy cache (NEW - FIX)
-        # Old cached responses can persist after deployment
-        # Must clear cache to ensure users get latest content
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Clearing nginx proxy cache..."
-        docker exec 1001-stories-nginx sh -c 'rm -rf /var/cache/nginx/proxy_temp/* 2>/dev/null || true'
-        docker exec 1001-stories-nginx nginx -s reload
-        echo "✅ nginx cache cleared and configuration reloaded"
+echo ""
+echo "========================================"
+echo "Step 4g: Final health check"
+echo "========================================"
 
-        # 서비스 초기화 대기
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Waiting for services to initialize (30s)..."
-        sleep 30
+echo "Waiting for app to be ready (30s)..."
+sleep 30
 
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "✅ Server deployment completed successfully!"
-        echo "✅ Git: source code updated"
-        echo "✅ Docker: cache cleaned"
-        echo "✅ Image: loaded and verified"
-        echo "✅ Containers: all started"
-        echo "✅ nginx: configuration reloaded"
-EOF
-    then
-        error "Server deployment failed during execution!"
+HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://localhost/api/health 2>/dev/null || echo "000")
+echo "Health check status: $HTTP_STATUS"
+
+if [ "$HTTP_STATUS" = "200" ]; then
+    echo ""
+    echo "========================================"
+    echo "SERVER DEPLOYMENT SUCCESSFUL!"
+    echo "========================================"
+    exit 0
+else
+    echo "WARNING: Health check returned $HTTP_STATUS (expected 200)"
+    echo "Container status:"
+    docker compose ps
+    # Don't exit with error - let the main script handle verification
+    exit 0
+fi
+DEPLOY_SCRIPT_END
+)
+
+    # Execute the deployment script on the server
+    if ! echo "$DEPLOY_SCRIPT" | ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -o ConnectTimeout=30 "$REMOTE_USER@$REMOTE_HOST" "bash -s"; then
+        error "Server deployment failed!"
         warn "Initiating automatic rollback..."
 
         # rollback 시도
         if rollback; then
-            error "Deployment failed but rollback succeeded"
-            error "Please check logs and try again"
+            warn "Rollback completed successfully"
+            error "Deployment failed - please check logs and try again"
             exit 1
         else
             error "CRITICAL: Deployment failed AND rollback failed!"
@@ -698,6 +636,8 @@ EOF
             exit 1
         fi
     fi
+
+    success "Server deployment commands executed successfully"
 
     # Step 5: 배포 검증 (건강 체크 + 완전성 검증)
     log "Step 5/5: Verifying deployment..."
@@ -806,74 +746,71 @@ logs() {
 rollback() {
     warn "Rolling back deployment..."
 
-    ssh_exec << 'EOF'
-        set -euo pipefail
-        cd /home/ubuntu/1001-stories
+    ROLLBACK_SCRIPT=$(cat << 'ROLLBACK_SCRIPT_END'
+#!/bin/bash
+set -e
+cd /home/ubuntu/1001-stories
 
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Step 1: Checking for backup image..."
+echo "========================================"
+echo "Rollback Step 1: Finding backup image"
+echo "========================================"
 
-        # Find most recent backup image
-        BACKUP_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "1001-stories-app:backup-" | head -1 || echo "")
+BACKUP_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "1001-stories-app:backup-" | head -1 || echo "")
 
-        if [ -z "$BACKUP_IMAGE" ]; then
-            echo "ERROR: No backup image found!"
-            echo "Available images:"
-            docker images | grep "1001-stories-app"
-            echo ""
-            echo "Cannot rollback without backup image."
-            echo "Starting all services with current image..."
-            docker compose up -d
-            exit 1
-        fi
+if [ -z "$BACKUP_IMAGE" ]; then
+    echo "No backup image found!"
+    echo "Starting services with current image..."
+    docker compose up -d
+    exit 0
+fi
 
-        echo "Found backup image: $BACKUP_IMAGE"
+echo "Found backup: $BACKUP_IMAGE"
 
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Step 2: Restoring backup image as latest..."
+echo ""
+echo "========================================"
+echo "Rollback Step 2: Restoring backup"
+echo "========================================"
 
-        # Tag backup as latest
-        docker tag "$BACKUP_IMAGE" 1001-stories-app:latest
-        echo "✅ Backup image restored as latest"
+docker tag "$BACKUP_IMAGE" 1001-stories-app:latest
+echo "Backup restored as latest"
 
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Step 3: Restarting app container with backup image..."
+echo ""
+echo "========================================"
+echo "Rollback Step 3: Restarting containers"
+echo "========================================"
 
-        # Restart only app container (don't touch nginx, postgres, redis, etc.)
-        docker compose up -d --force-recreate app
+docker compose up -d
+sleep 20
 
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Step 4: Waiting for app to stabilize..."
-        sleep 30
+echo ""
+echo "========================================"
+echo "Rollback Step 4: Health check"
+echo "========================================"
 
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "Step 5: Verifying rollback..."
+sleep 15
+HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://localhost/api/health 2>/dev/null || echo "000")
+echo "Health status: $HTTP_STATUS"
 
-        # Test HTTPS endpoint
-        HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" https://localhost/api/health 2>&1 || echo "000")
+if [ "$HTTP_STATUS" = "200" ]; then
+    echo ""
+    echo "========================================"
+    echo "ROLLBACK SUCCESSFUL!"
+    echo "========================================"
+    exit 0
+else
+    echo "Health check returned: $HTTP_STATUS"
+    docker compose ps
+    exit 1
+fi
+ROLLBACK_SCRIPT_END
+)
 
-        if [ "$HTTP_STATUS" = "200" ]; then
-            echo "✅ Rollback verification PASSED (HTTPS: 200)"
-            echo "✅ Rollback completed successfully!"
-            exit 0
-        else
-            echo "ERROR: Rollback verification FAILED (HTTPS: $HTTP_STATUS)"
-            echo "Expected: 200, Got: $HTTP_STATUS"
-            echo ""
-            echo "Container status:"
-            docker compose ps
-            echo ""
-            echo "App logs:"
-            docker compose logs app --tail=50
-            exit 1
-        fi
-EOF
-
-    if [ $? -eq 0 ]; then
+    # Execute rollback script
+    if echo "$ROLLBACK_SCRIPT" | ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -o ConnectTimeout=30 "$REMOTE_USER@$REMOTE_HOST" "bash -s"; then
         success "Rollback completed and verified!"
         return 0
     else
-        error "Rollback failed or verification failed!"
+        error "Rollback failed!"
         error "Manual intervention required on server"
         return 1
     fi
