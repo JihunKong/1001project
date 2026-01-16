@@ -43,6 +43,7 @@ export default async function PDFReaderPage({ params }: PageProps) {
   }
 
   const hasFullAccess = await checkFullPdfAccess(session.user.id, session.user.role, bookId);
+  const canDownload = checkDownloadPermission(session.user.role);
 
   const readingProgress = await prisma.readingProgress.findFirst({
     where: {
@@ -61,10 +62,23 @@ export default async function PDFReaderPage({ params }: PageProps) {
       bookAuthor={book.authorName || 'Unknown Author'}
       coverImage={book.coverImage || undefined}
       hasFullAccess={hasFullAccess}
+      canDownload={canDownload}
       initialPage={readingProgress?.currentPage || 1}
       userId={session.user.id}
     />
   );
+}
+
+function checkDownloadPermission(userRole: string): boolean {
+  const downloadAllowedRoles = [
+    'TEACHER',
+    'INSTITUTION',
+    'STORY_MANAGER',
+    'BOOK_MANAGER',
+    'CONTENT_ADMIN',
+    'ADMIN',
+  ];
+  return downloadAllowedRoles.includes(userRole);
 }
 
 async function checkFullPdfAccess(userId: string, userRole: string, bookId: string): Promise<boolean> {

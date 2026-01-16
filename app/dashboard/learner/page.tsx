@@ -11,7 +11,10 @@ import {
   TrendingUp,
   Users,
   MessageCircle,
-  Star
+  Star,
+  Trophy,
+  Brain,
+  GraduationCap
 } from 'lucide-react';
 import ScrollAnimatedContainer from '@/components/ui/ScrollAnimatedContainer';
 import { useTranslation } from '@/lib/i18n/useTranslation';
@@ -325,15 +328,66 @@ export default function LearnerDashboard() {
           </ScrollAnimatedContainer>
         </div>
 
-        {/* Quick Actions */}
+        {/* ESL Learning Features */}
         <ScrollAnimatedContainer animationType="slideUp" delay={900}>
+          <div className="mt-6 sm:mt-8 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+              <h2 className="text-base sm:text-lg font-medium text-gray-900">Learning Tools</h2>
+            </div>
+          <div className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+              <ScrollAnimatedContainer animationType="slideUp" delay={1000}>
+                <button
+                  onClick={() => window.location.href = '/dashboard/learner/vocabulary'}
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 min-h-[var(--min-touch-target)]"
+                >
+                  <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500 flex-shrink-0" />
+                  <div className="text-left flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 text-sm sm:text-base">My Vocabulary</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">Review saved words & flashcards</p>
+                  </div>
+                </button>
+              </ScrollAnimatedContainer>
+
+              <ScrollAnimatedContainer animationType="slideUp" delay={1100}>
+                <button
+                  onClick={() => window.location.href = '/dashboard/learner/achievements'}
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-yellow-50 hover:border-yellow-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 min-h-[var(--min-touch-target)]"
+                >
+                  <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-500 flex-shrink-0" />
+                  <div className="text-left flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 text-sm sm:text-base">Achievements</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">View badges & progress</p>
+                  </div>
+                </button>
+              </ScrollAnimatedContainer>
+
+              <ScrollAnimatedContainer animationType="slideUp" delay={1200}>
+                <button
+                  onClick={() => window.location.href = '/library'}
+                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 min-h-[var(--min-touch-target)]"
+                >
+                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-green-500 flex-shrink-0" />
+                  <div className="text-left flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 text-sm sm:text-base">Take Quiz</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">Test your comprehension</p>
+                  </div>
+                </button>
+              </ScrollAnimatedContainer>
+            </div>
+          </div>
+        </div>
+          </ScrollAnimatedContainer>
+
+        {/* Quick Actions */}
+        <ScrollAnimatedContainer animationType="slideUp" delay={1300}>
           <div className="mt-6 sm:mt-8 bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
             <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
               <h2 className="text-base sm:text-lg font-medium text-gray-900">{t('dashboard.learner.quickActions.title')}</h2>
             </div>
           <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-              <ScrollAnimatedContainer animationType="slideUp" delay={1000}>
+              <ScrollAnimatedContainer animationType="slideUp" delay={1400}>
                 <button className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400 min-h-[var(--min-touch-target)]">
                   <Users className="h-5 w-5 sm:h-6 sm:w-6 text-soe-green-400 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
@@ -343,7 +397,7 @@ export default function LearnerDashboard() {
                 </button>
               </ScrollAnimatedContainer>
 
-              <ScrollAnimatedContainer animationType="slideUp" delay={1100}>
+              <ScrollAnimatedContainer animationType="slideUp" delay={1500}>
                 <button className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-success-500 min-h-[var(--min-touch-target)]">
                   <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-success-600 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
@@ -353,7 +407,7 @@ export default function LearnerDashboard() {
                 </button>
               </ScrollAnimatedContainer>
 
-              <ScrollAnimatedContainer animationType="slideUp" delay={1200}>
+              <ScrollAnimatedContainer animationType="slideUp" delay={1600}>
                 <button className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-warning-500 min-h-[var(--min-touch-target)]">
                   <Star className="h-5 w-5 sm:h-6 sm:w-6 text-warning-600 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">

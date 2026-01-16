@@ -19,7 +19,9 @@ import {
   PanelLeft,
   Grid,
   X,
+  Download,
 } from 'lucide-react';
+import PDFDownloadButton from './PDFDownloadButton';
 import Link from 'next/link';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
@@ -30,6 +32,7 @@ interface PDFReaderPageProps {
   bookAuthor: string;
   coverImage?: string;
   hasFullAccess: boolean;
+  canDownload?: boolean;
   initialPage?: number;
   onProgressUpdate?: (page: number, totalPages: number) => void;
 }
@@ -40,6 +43,7 @@ export default function PDFReaderPage({
   bookAuthor,
   coverImage,
   hasFullAccess,
+  canDownload = false,
   initialPage = 1,
   onProgressUpdate,
 }: PDFReaderPageProps) {
@@ -241,8 +245,17 @@ export default function PDFReaderPage({
             </button>
           </div>
 
-          {/* Right: Thumbnails, Zoom & Fullscreen */}
+          {/* Right: Download, Thumbnails, Zoom & Fullscreen */}
           <div className="flex items-center gap-2">
+            {canDownload && (
+              <PDFDownloadButton
+                bookId={bookId}
+                bookTitle={bookTitle}
+                canDownload={canDownload}
+                variant="icon"
+                className="text-gray-300 hover:text-white hover:bg-gray-700"
+              />
+            )}
             <button
               onClick={toggleThumbnails}
               className={`hidden md:flex p-2 rounded-lg transition-colors ${

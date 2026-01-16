@@ -9,6 +9,7 @@ interface PDFReaderClientProps {
   bookAuthor: string;
   coverImage?: string;
   hasFullAccess: boolean;
+  canDownload?: boolean;
   initialPage: number;
   userId: string;
 }
@@ -19,6 +20,7 @@ export default function PDFReaderClient({
   bookAuthor,
   coverImage,
   hasFullAccess,
+  canDownload = false,
   initialPage,
 }: PDFReaderClientProps) {
   const handleProgressUpdate = useCallback(async (currentPage: number, totalPages: number) => {
@@ -49,6 +51,7 @@ export default function PDFReaderClient({
       bookAuthor={bookAuthor}
       coverImage={coverImage}
       hasFullAccess={hasFullAccess}
+      canDownload={canDownload}
       initialPage={initialPage}
       onProgressUpdate={handleProgressUpdate}
     />
