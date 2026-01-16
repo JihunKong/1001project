@@ -123,6 +123,9 @@ model User {
   // Vocabulary learning
   vocabularyWords VocabularyWord[]
 
+  // Reading streak
+  readingStreak ReadingStreak?
+
   @@index([email])
   @@index([role])
   @@map("users")
@@ -867,6 +870,23 @@ model VocabularyWord {
   @@index([masteryLevel])
   @@index([nextReviewAt])
   @@map("vocabulary_words")
+}
+
+// Reading streak tracking for gamification
+model ReadingStreak {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  currentStreak Int       @default(0)
+  longestStreak Int       @default(0)
+  lastReadDate  DateTime?
+  totalReadDays Int       @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reading_streaks")
 }
 
 // ==========================================

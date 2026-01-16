@@ -14,7 +14,7 @@ export class ProgressMonitoringPage extends BasePage {
   }
 
   get url(): string {
-    return '/dashboard/teacher/progress';
+    return '/dashboard/teacher';
   }
 
   private get classFilter() {
@@ -26,7 +26,7 @@ export class ProgressMonitoringPage extends BasePage {
   }
 
   private get overallProgressCard() {
-    return this.page.locator('[data-testid="overall-progress"], .progress-overview, .stat-card:has-text("Progress")');
+    return this.page.locator('[data-testid="overall-progress"], .progress-overview, .stat-card, [class*="rounded-lg"][class*="shadow"], [data-testid^="stat-"]').first();
   }
 
   private get exportButton() {

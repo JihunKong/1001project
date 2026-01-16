@@ -53,11 +53,11 @@ export class StoryReviewPage extends BasePage {
   }
 
   private get approveButton() {
-    return this.page.locator('button:has-text("Approve"), button:has-text("Accept")');
+    return this.page.getByRole('button', { name: 'Approve', exact: true });
   }
 
   private get rejectButton() {
-    return this.page.locator('button:has-text("Reject"), button:has-text("Decline")');
+    return this.page.getByRole('button', { name: 'Reject', exact: true });
   }
 
   private get requestRevisionButton() {

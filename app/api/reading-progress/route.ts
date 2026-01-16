@@ -3,6 +3,63 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+function isSameDay(date1: Date, date2: Date): boolean {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
+
+function isYesterday(date: Date): boolean {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return isSameDay(date, yesterday);
+}
+
+async function updateReadingStreak(userId: string) {
+  const now = new Date();
+  const existingStreak = await prisma.readingStreak.findUnique({
+    where: { userId },
+  });
+
+  if (!existingStreak) {
+    await prisma.readingStreak.create({
+      data: {
+        userId,
+        currentStreak: 1,
+        longestStreak: 1,
+        totalReadDays: 1,
+        lastReadDate: now,
+      },
+    });
+    return;
+  }
+
+  if (existingStreak.lastReadDate && isSameDay(new Date(existingStreak.lastReadDate), now)) {
+    return;
+  }
+
+  let newCurrentStreak: number;
+  if (existingStreak.lastReadDate && isYesterday(new Date(existingStreak.lastReadDate))) {
+    newCurrentStreak = existingStreak.currentStreak + 1;
+  } else {
+    newCurrentStreak = 1;
+  }
+
+  const newLongestStreak = Math.max(newCurrentStreak, existingStreak.longestStreak);
+
+  await prisma.readingStreak.update({
+    where: { userId },
+    data: {
+      currentStreak: newCurrentStreak,
+      longestStreak: newLongestStreak,
+      totalReadDays: existingStreak.totalReadDays + 1,
+      lastReadDate: now,
+    },
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -72,6 +129,8 @@ export async function POST(request: NextRequest) {
         }
       });
     }
+
+    await updateReadingStreak(session.user.id);
 
     return NextResponse.json({
       success: true,

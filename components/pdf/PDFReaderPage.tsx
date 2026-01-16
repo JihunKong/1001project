@@ -15,6 +15,10 @@ import {
   Book,
   FileText,
   Loader2,
+  PanelLeftClose,
+  PanelLeft,
+  Grid,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -47,7 +51,12 @@ export default function PDFReaderPage({
   const [error, setError] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [containerWidth, setContainerWidth] = useState(800);
+  const [showThumbnails, setShowThumbnails] = useState(false);
+  const [showMobileThumbnails, setShowMobileThumbnails] = useState(false);
+  const [thumbnailsLoaded, setThumbnailsLoaded] = useState<Set<number>>(new Set());
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null);
   const progressSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const pdfUrl = `/api/books/${bookId}/pdf?type=${pdfType}`;
@@ -107,6 +116,52 @@ export default function PDFReaderPage({
       document.exitFullscreen();
       setIsFullscreen(false);
     }
+  };
+
+  const toggleThumbnails = () => setShowThumbnails((prev) => !prev);
+
+  const scrollThumbnailIntoView = useCallback((page: number) => {
+    if (thumbnailContainerRef.current) {
+      const thumbnail = thumbnailContainerRef.current.querySelector(`[data-page="${page}"]`);
+      thumbnail?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (showThumbnails) {
+      scrollThumbnailIntoView(pageNumber);
+    }
+  }, [pageNumber, showThumbnails, scrollThumbnailIntoView]);
+
+  const goToPage = (page: number) => {
+    setPageNumber(page);
+  };
+
+  const onThumbnailLoadSuccess = (page: number) => {
+    setThumbnailsLoaded((prev) => new Set(prev).add(page));
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    setTouchStart({ x: touch.clientX, y: touch.clientY });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStart.x;
+    const deltaY = touch.clientY - touchStart.y;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0 && pageNumber > 1) {
+        goToPrevPage();
+      } else if (deltaX < 0 && pageNumber < (numPages || 1)) {
+        goToNextPage();
+      }
+    }
+
+    setTouchStart(null);
   };
 
   const handlePageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,8 +241,19 @@ export default function PDFReaderPage({
             </button>
           </div>
 
-          {/* Right: Zoom & Fullscreen */}
+          {/* Right: Thumbnails, Zoom & Fullscreen */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={toggleThumbnails}
+              className={`hidden md:flex p-2 rounded-lg transition-colors ${
+                showThumbnails
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-300 hover:text-white hover:bg-gray-700'
+              }`}
+              title="Toggle Thumbnails"
+            >
+              {showThumbnails ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeft className="w-5 h-5" />}
+            </button>
             <div className="hidden sm:flex items-center gap-1 bg-gray-700 rounded-lg px-2 py-1">
               <button
                 onClick={zoomOut}
@@ -218,83 +284,164 @@ export default function PDFReaderPage({
         </div>
       </header>
 
-      {/* PDF Content */}
-      <main className="flex-1 overflow-auto flex justify-center items-start p-4 sm:p-6">
-        {error ? (
-          <div className="flex flex-col items-center justify-center text-center p-8">
-            <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
-              <FileText className="w-8 h-8 text-red-400" />
+      {/* PDF Content with Sidebar */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Thumbnail Sidebar */}
+        {showThumbnails && numPages && (
+          <aside className="hidden md:flex w-48 bg-gray-800 border-r border-gray-700 flex-col">
+            <div className="p-3 border-b border-gray-700">
+              <h3 className="text-sm font-medium text-gray-300">Pages</h3>
             </div>
-            <h2 className="text-white text-xl font-semibold mb-2">Failed to Load PDF</h2>
-            <p className="text-gray-400 mb-4">{error}</p>
-            <button
-              onClick={() => {
-                setLoading(true);
-                setError(null);
-              }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            <div
+              ref={thumbnailContainerRef}
+              className="flex-1 overflow-y-auto p-2 space-y-2"
             >
-              Try Again
-            </button>
-          </div>
-        ) : (
-          <Document
-            file={pdfUrl}
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={onDocumentLoadError}
-            loading={
-              <div className="flex flex-col items-center justify-center py-20">
-                <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
-                <p className="text-gray-400">Loading PDF...</p>
-              </div>
-            }
-            className="shadow-2xl rounded-lg overflow-hidden"
-          >
-            <Page
-              pageNumber={pageNumber}
-              scale={scale}
-              width={containerWidth / scale}
-              className="bg-white"
-              renderTextLayer={true}
-              renderAnnotationLayer={true}
-            />
-          </Document>
+              <Document file={pdfUrl} loading={null}>
+                {Array.from({ length: numPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    data-page={page}
+                    onClick={() => goToPage(page)}
+                    className={`w-full p-1 rounded-lg transition-all ${
+                      pageNumber === page
+                        ? 'ring-2 ring-blue-500 bg-blue-500/10'
+                        : 'hover:bg-gray-700'
+                    }`}
+                  >
+                    <div className="relative bg-gray-800 rounded overflow-hidden">
+                      {!thumbnailsLoaded.has(page) && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                          <Loader2 className="w-4 h-4 text-gray-500 animate-spin" />
+                        </div>
+                      )}
+                      <Page
+                        pageNumber={page}
+                        width={150}
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
+                        onLoadSuccess={() => onThumbnailLoadSuccess(page)}
+                        className="pointer-events-none"
+                      />
+                    </div>
+                    <span className={`text-xs mt-1 block ${
+                      pageNumber === page ? 'text-blue-400 font-medium' : 'text-gray-400'
+                    }`}>
+                      {page}
+                    </span>
+                  </button>
+                ))}
+              </Document>
+            </div>
+          </aside>
         )}
-      </main>
+
+        {/* Main PDF Content */}
+        <main
+          className="flex-1 overflow-auto flex justify-center items-start p-4 sm:p-6"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {error ? (
+            <div className="flex flex-col items-center justify-center text-center p-8">
+              <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
+                <FileText className="w-8 h-8 text-red-400" />
+              </div>
+              <h2 className="text-white text-xl font-semibold mb-2">Failed to Load PDF</h2>
+              <p className="text-gray-400 mb-4">{error}</p>
+              <button
+                onClick={() => {
+                  setLoading(true);
+                  setError(null);
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <Document
+              file={pdfUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
+              loading={
+                <div className="flex flex-col items-center justify-center py-20">
+                  <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
+                  <p className="text-gray-400">Loading PDF...</p>
+                </div>
+              }
+              className="shadow-2xl rounded-lg overflow-hidden"
+            >
+              <Page
+                pageNumber={pageNumber}
+                scale={scale}
+                width={containerWidth / scale}
+                className="bg-white"
+                renderTextLayer={true}
+                renderAnnotationLayer={true}
+              />
+            </Document>
+          )}
+        </main>
+      </div>
 
       {/* Bottom Navigation */}
       <footer className="bg-gray-800 border-t border-gray-700 px-4 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 sm:gap-4">
+          {/* Mobile: Thumbnails Button */}
+          <button
+            onClick={() => setShowMobileThumbnails(true)}
+            className="md:hidden p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white transition-colors"
+            title="View All Pages"
+          >
+            <Grid className="w-5 h-5" />
+          </button>
+
           <button
             onClick={goToPrevPage}
             disabled={pageNumber <= 1 || loading}
-            className="flex items-center gap-1 px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
             <span className="hidden sm:inline">Previous</span>
           </button>
 
-          <div className="flex items-center gap-2 text-gray-300">
-            <span>Page</span>
+          <div className="flex items-center gap-1 sm:gap-2 text-gray-300">
+            <span className="hidden sm:inline">Page</span>
             <input
               type="number"
               value={pageNumber}
               onChange={handlePageInput}
               min={1}
               max={numPages || 1}
-              className="w-16 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-center text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-12 sm:w-16 px-1 sm:px-2 py-1 bg-gray-700 border border-gray-600 rounded text-center text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <span>of {loading ? '...' : numPages}</span>
+            <span className="text-sm sm:text-base">/ {loading ? '...' : numPages}</span>
           </div>
 
           <button
             onClick={goToNextPage}
             disabled={pageNumber >= (numPages || 1) || loading}
-            className="flex items-center gap-1 px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <span className="hidden sm:inline">Next</span>
             <ChevronRight className="w-5 h-5" />
           </button>
+
+          {/* Mobile: Zoom Controls */}
+          <div className="sm:hidden flex items-center gap-1">
+            <button
+              onClick={zoomOut}
+              className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+            >
+              <ZoomOut className="w-4 h-4" />
+            </button>
+            <button
+              onClick={zoomIn}
+              className="p-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600"
+            >
+              <ZoomIn className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -308,7 +455,62 @@ export default function PDFReaderPage({
             </div>
           </div>
         )}
+
+        {/* Swipe hint for mobile */}
+        <p className="md:hidden text-center text-gray-500 text-xs mt-2">
+          Swipe left/right to navigate pages
+        </p>
       </footer>
+
+      {/* Mobile Thumbnail Bottom Sheet */}
+      {showMobileThumbnails && numPages && (
+        <div className="md:hidden fixed inset-0 bg-black/80 z-50 flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800">
+            <h3 className="text-white font-medium">All Pages ({numPages})</h3>
+            <button
+              onClick={() => setShowMobileThumbnails(false)}
+              className="p-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 bg-gray-900">
+            <Document file={pdfUrl} loading={null}>
+              <div className="grid grid-cols-3 gap-3">
+                {Array.from({ length: numPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => {
+                      goToPage(page);
+                      setShowMobileThumbnails(false);
+                    }}
+                    className={`p-1 rounded-lg transition-all ${
+                      pageNumber === page
+                        ? 'ring-2 ring-blue-500 bg-blue-500/20'
+                        : 'hover:bg-gray-700'
+                    }`}
+                  >
+                    <div className="relative bg-gray-800 rounded overflow-hidden aspect-[3/4]">
+                      <Page
+                        pageNumber={page}
+                        width={100}
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
+                        className="pointer-events-none"
+                      />
+                    </div>
+                    <span className={`text-xs mt-1 block ${
+                      pageNumber === page ? 'text-blue-400 font-medium' : 'text-gray-400'
+                    }`}>
+                      {page}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </Document>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -32,7 +32,25 @@ async function loginWithRole(page: Page, role: UserRole, baseURL: string): Promi
       const submitButton = page.locator('button[type="submit"]');
       await submitButton.click();
 
-      await page.waitForURL(/\/dashboard\/|\/admin/, { timeout: 45000, waitUntil: 'domcontentloaded' });
+      // Wait for authentication to complete (check session API)
+      await page.waitForTimeout(2000);
+
+      // Check if still on login page - if so, manually navigate to dashboard
+      if (page.url().includes('/login')) {
+        // Verify session is authenticated before navigating (30s timeout for server load)
+        const sessionResponse = await page.request.get(`${baseURL}/api/auth/session`, {
+          timeout: 30000
+        });
+        const sessionData = await sessionResponse.json();
+
+        if (sessionData?.authenticated || sessionData?.user) {
+          console.log(`[Multi-Context] Session authenticated, manually navigating to dashboard for ${role}`);
+          await page.goto(`${baseURL}${account.dashboardPath}`, { waitUntil: 'domcontentloaded', timeout: 15000 });
+        } else {
+          // Wait for redirect if not authenticated
+          await page.waitForURL(/\/dashboard\/|\/admin/, { timeout: 30000, waitUntil: 'domcontentloaded' });
+        }
+      }
 
       const finalUrl = page.url();
       if (!finalUrl.includes(account.dashboardPath)) {
@@ -89,7 +107,7 @@ export const test = base.extend<MultiContextFixtures>({
       return page;
     };
 
-    const roles: UserRole[] = ['writer', 'storyManager', 'bookManager', 'contentAdmin'];
+    const roles: UserRole[] = ['writer', 'teacher', 'learner', 'storyManager', 'bookManager', 'contentAdmin'];
 
     console.log(`[Multi-Context] Logging in ${roles.length} roles in parallel...`);
     const startTime = Date.now();
@@ -126,7 +144,7 @@ export const test = base.extend<MultiContextFixtures>({
       return context;
     };
 
-    const roles: UserRole[] = ['writer', 'storyManager', 'bookManager', 'contentAdmin'];
+    const roles: UserRole[] = ['writer', 'teacher', 'learner', 'storyManager', 'bookManager', 'contentAdmin'];
     await Promise.all(roles.map(role => createRoleContext(role)));
 
     await use(contexts);

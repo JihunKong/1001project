@@ -141,7 +141,7 @@ test.describe('Publishing Workflow - Rejection Flow Tests', () => {
 
       const writerPage = rolePages.writer!;
       const storyManagerPage = rolePages.storyManager!;
-      const baseURL = process.env.BASE_URL || 'https://1001stories.seedsofempowerment.org';
+      const baseURL = process.env.BASE_URL || 'http://localhost:8001';
 
       const submitStoryPage = new SubmitStoryPage(writerPage);
       const myStoriesPage = new MyStoriesPage(writerPage);
@@ -306,7 +306,7 @@ test.describe('Publishing Workflow - Rejection Flow Tests', () => {
         await bookManagerPage.screenshot({ path: 'test-results/2.2-no-stories.png' });
       }
 
-      const baseURL = process.env.BASE_URL || 'https://1001stories.seedsofempowerment.org';
+      const baseURL = process.env.BASE_URL || 'http://localhost:8001';
       await writerPage.goto(`${baseURL}/dashboard/writer/stories`, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => null);
       await myStoriesPage.verifyPageLoaded();
       await myStoriesPage.clickStatusTab('Needs Revision');
@@ -400,7 +400,7 @@ test.describe('Publishing Workflow - Rejection Flow Tests', () => {
         await contentAdminPage.screenshot({ path: 'test-results/2.3-no-books.png' });
       }
 
-      const baseURL = process.env.BASE_URL || 'https://1001stories.seedsofempowerment.org';
+      const baseURL = process.env.BASE_URL || 'http://localhost:8001';
       await writerPage.goto(`${baseURL}/dashboard/writer/stories`, { waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => null);
       await myStoriesPage.verifyPageLoaded();
       await myStoriesPage.clickStatusTab('Needs Revision');
@@ -454,7 +454,7 @@ test.describe('Publishing Workflow - Rejection Flow Tests', () => {
       test.setTimeout(60000);
 
       const storyManagerPage = rolePages.storyManager!;
-      const baseURL = process.env.BASE_URL || 'https://1001stories.seedsofempowerment.org';
+      const baseURL = process.env.BASE_URL || 'http://localhost:8001';
 
       const currentUrl = storyManagerPage.url();
       if (!currentUrl.includes('/dashboard/story-manager')) {

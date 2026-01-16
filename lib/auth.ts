@@ -22,64 +22,78 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return await bcrypt.compare(password, hash);
 }
 
+// Use secure cookies only when NEXTAUTH_URL uses HTTPS (runtime check)
+// This works at runtime unlike NODE_ENV which is evaluated at build time
+const getSecureCookieSettings = () => {
+  const url = process.env.NEXTAUTH_URL || '';
+  const isHttps = url.startsWith('https://');
+  return {
+    useSecureCookies: isHttps,
+    cookiePrefix: isHttps ? '__Secure-' : '',
+    hostCookiePrefix: isHttps ? '__Host-' : ''
+  };
+};
+
+const { useSecureCookies, cookiePrefix, hostCookiePrefix } = getSecureCookieSettings();
+
 export const authOptions: NextAuthOptions = {
   adapter: createSecureAuthAdapter(),
 
   cookies: {
     sessionToken: {
-      name: `__Secure-next-auth.session-token`,
+      name: `${cookiePrefix}next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: 'strict',
         path: '/',
-        secure: true
+        secure: useSecureCookies
       }
     },
     callbackUrl: {
-      name: `__Secure-next-auth.callback-url`,
+      name: `${cookiePrefix}next-auth.callback-url`,
       options: {
         httpOnly: true,
         sameSite: 'strict',
         path: '/',
-        secure: true
+        secure: useSecureCookies
       }
     },
     csrfToken: {
-      name: `__Host-next-auth.csrf-token`,
+      name: `${hostCookiePrefix}next-auth.csrf-token`,
       options: {
         httpOnly: true,
         sameSite: 'strict',
         path: '/',
-        secure: true
+        secure: useSecureCookies
       }
     },
     pkceCodeVerifier: {
-      name: `__Secure-next-auth.pkce.code_verifier`,
+      name: `${cookiePrefix}next-auth.pkce.code_verifier`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true,
+        secure: useSecureCookies,
         maxAge: 900
       }
     },
     state: {
-      name: `__Secure-next-auth.state`,
+      name: `${cookiePrefix}next-auth.state`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true,
+        secure: useSecureCookies,
         maxAge: 900
       }
     },
     nonce: {
-      name: `__Host-next-auth.nonce`,
+      name: `${hostCookiePrefix}next-auth.nonce`,
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: true
+        secure: useSecureCookies
       }
     }
   },

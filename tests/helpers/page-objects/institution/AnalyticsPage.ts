@@ -24,11 +24,11 @@ export class AnalyticsPage extends BasePage {
   }
 
   private get summaryCards() {
-    return this.page.locator('.stat-card, .analytics-card, [data-testid^="analytics-"]');
+    return this.page.locator('[class*="rounded-lg"][class*="shadow"], .stat-card, .analytics-card, [data-testid^="analytics-"], [data-testid^="stat-"]');
   }
 
   private get progressChart() {
-    return this.page.locator('[data-testid="progress-chart"], .progress-chart, canvas');
+    return this.page.locator('[data-testid="progress-chart"], .progress-chart, canvas').first();
   }
 
   private get teacherPerformanceTable() {

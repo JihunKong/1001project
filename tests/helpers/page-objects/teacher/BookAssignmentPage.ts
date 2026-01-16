@@ -24,7 +24,7 @@ export class BookAssignmentPage extends BasePage {
   }
 
   private get assignBookButton() {
-    return this.page.locator('button:has-text("Assign Book"), button:has-text("New Assignment"), a:has-text("Assign")');
+    return this.page.locator('button:has-text("Assign Book"), button:has-text("New Assignment"), a:has-text("Assign")').first();
   }
 
   private get bookSelect() {

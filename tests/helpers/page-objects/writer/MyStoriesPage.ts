@@ -52,7 +52,7 @@ export class MyStoriesPage extends BasePage {
   }
 
   private get newStoryButton() {
-    return this.page.locator('a:has-text("New Story"), button:has-text("Create Story")');
+    return this.page.locator('a:has-text("Write New Story"), button:has-text("Write New Story"), a:has-text("New Story"), button:has-text("Create Story")');
   }
 
   private get paginationNext() {
@@ -143,11 +143,46 @@ export class MyStoriesPage extends BasePage {
 
   async getStoryStatus(title: string): Promise<StoryStatus | null> {
     const storyCard = await this.getStoryByTitle(title);
-    const statusBadge = storyCard.locator('.status-badge, [data-status], .badge');
-    const statusText = await statusBadge.textContent();
 
-    if (!statusText) return null;
+    // 1. Try existing status badge selectors (backward compatibility)
+    const statusBadge = storyCard.locator('.status-badge, [data-status], .badge').first();
+    if (await statusBadge.isVisible({ timeout: 1000 }).catch(() => false)) {
+      const statusText = await statusBadge.textContent();
+      if (statusText) {
+        return this.parseStatusText(statusText);
+      }
+    }
 
+    // 2. Infer status from action buttons (fallback for cards without status badge)
+    const editButton = storyCard.locator('button:has-text("Edit"), [aria-label="Edit"]').first();
+    const withdrawButton = storyCard.locator('button:has-text("Withdraw")').first();
+    const moreMenuButton = storyCard.locator('button[aria-label*="menu" i], button:has-text("⋮"), button:has-text("...")').first();
+
+    if (await editButton.isVisible({ timeout: 500 }).catch(() => false)) {
+      return 'DRAFT';
+    }
+    if (await moreMenuButton.isVisible({ timeout: 500 }).catch(() => false)) {
+      return 'DRAFT';
+    }
+    if (await withdrawButton.isVisible({ timeout: 500 }).catch(() => false)) {
+      return 'PENDING';
+    }
+
+    // 3. Infer status from active tab (final fallback)
+    const activeTab = this.page.locator('[role="tab"][aria-selected="true"], button[data-state="active"]').first();
+    const tabText = await activeTab.textContent().catch(() => '');
+
+    if (tabText?.toLowerCase().includes('draft')) return 'DRAFT';
+    if (tabText?.toLowerCase().includes('pending')) return 'PENDING';
+    if (tabText?.toLowerCase().includes('review')) return 'STORY_REVIEW';
+    if (tabText?.toLowerCase().includes('published')) return 'PUBLISHED';
+    if (tabText?.toLowerCase().includes('revision')) return 'NEEDS_REVISION';
+    if (tabText?.toLowerCase().includes('rejected')) return 'REJECTED';
+
+    return null;
+  }
+
+  private parseStatusText(text: string): StoryStatus | null {
     const statusMap: Record<string, StoryStatus> = {
       'draft': 'DRAFT',
       'pending': 'PENDING',
@@ -161,9 +196,7 @@ export class MyStoriesPage extends BasePage {
       'rejected': 'REJECTED',
       'published': 'PUBLISHED',
     };
-
-    const normalizedStatus = statusText.toLowerCase().trim();
-    return statusMap[normalizedStatus] || null;
+    return statusMap[text.toLowerCase().trim()] || null;
   }
 
   async filterByStatus(status: StoryStatus | 'all'): Promise<void> {

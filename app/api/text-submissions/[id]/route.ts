@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { TextSubmissionStatus, UserRole } from '@prisma/client';
+import { NotificationType, TextSubmissionStatus, UserRole } from '@prisma/client';
 import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 import { NotificationService } from '@/lib/notifications/NotificationService';
@@ -346,8 +346,34 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
       if (submission.status !== TextSubmissionStatus.REJECTED) {
         return NextResponse.json({ error: 'Can only undo rejection for rejected submissions' }, { status: 400 });
       }
+
+      const rejectionHistory = await prisma.workflowHistory.findFirst({
+        where: {
+          textSubmissionId: submission.id,
+          toStatus: TextSubmissionStatus.REJECTED
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
       updates.finalNotes = null;
-      newStatus = TextSubmissionStatus.DRAFT;
+
+      const reviewStages: TextSubmissionStatus[] = [
+        TextSubmissionStatus.STORY_REVIEW,
+        TextSubmissionStatus.FORMAT_REVIEW,
+        TextSubmissionStatus.CONTENT_REVIEW
+      ];
+
+      if (rejectionHistory?.fromStatus && reviewStages.includes(rejectionHistory.fromStatus as TextSubmissionStatus)) {
+        newStatus = TextSubmissionStatus.NEEDS_REVISION;
+      } else {
+        newStatus = TextSubmissionStatus.DRAFT;
+      }
+
+      logger.info('undo_reject smart routing', {
+        submissionId: submission.id,
+        fromStatus: rejectionHistory?.fromStatus,
+        newStatus
+      });
       break;
 
     case 'resubmit':
@@ -375,7 +401,7 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
           }
         });
 
-        console.log('[Resubmit Debug]', {
+        logger.info('Resubmit debug', {
           submissionId: submission.id,
           authorId: submission.authorId,
           lastRevisionRequest: lastRevisionRequest ? {
@@ -450,6 +476,38 @@ async function handleWorkflowAction(submission: any, user: any, action: string, 
 
     default:
       return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+  }
+
+  if (action === 'update_revision_feedback') {
+    try {
+      const notificationService = new NotificationService();
+
+      await notificationService.createNotification(
+        submission.authorId,
+        NotificationType.WRITER,
+        'Feedback Updated',
+        `${user.name || 'A reviewer'} has updated the feedback on "${submission.title}"`,
+        {
+          submissionId: submission.id,
+          submissionTitle: submission.title,
+          feedback: data.feedback?.substring(0, 100),
+          reviewerName: user.name || 'Reviewer',
+          nextSteps: ['Review the updated feedback', 'Make necessary changes', 'Resubmit when ready']
+        }
+      );
+
+      await notifyFeedbackReceived(submission.id, user.role, submission.authorId);
+
+      logger.info('Sent update_revision_feedback notification', {
+        submissionId: submission.id,
+        authorId: submission.authorId,
+        reviewerRole: user.role
+      });
+    } catch (notificationError) {
+      logger.error('Error sending update_revision_feedback notification', notificationError, {
+        submissionId: submission.id
+      });
+    }
   }
 
   if (newStatus) {
