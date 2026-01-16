@@ -91,37 +91,80 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
-    const assignments = await prisma.$queryRaw`
-      SELECT
-        ba.id,
-        ba."bookId",
-        ba."classId",
-        ba."assignedAt",
-        ba."dueDate",
-        ba.instructions,
-        ba."isRequired",
-        ba.points,
-        b.title as "bookTitle",
-        b."authorName",
-        b."coverImage",
-        b.summary,
-        b."ageRange",
-        b.language,
-        c.name as "className",
-        c.subject,
-        c."gradeLevel",
-        COUNT(CASE WHEN rp."isCompleted" = true THEN 1 END) as "completedCount",
-        COUNT(ce.id) as "totalStudents"
-      FROM "BookAssignment" ba
-      JOIN "Book" b ON ba."bookId" = b.id
-      JOIN "Class" c ON ba."classId" = c.id
-      LEFT JOIN "ClassEnrollment" ce ON c.id = ce."classId" AND ce.status = 'ACTIVE'
-      LEFT JOIN "ReadingProgress" rp ON b.id = rp."bookId" AND rp."userId" = ce."studentId"
-      WHERE (${classId ? `ba."classId" = '${classId}'` : '1=1'})
-        AND ba."classId" = ANY(${where.classId?.in || [where.classId] || ['']})
-      GROUP BY ba.id, b.id, c.id
-      ORDER BY ba."assignedAt" DESC
-    `;
+    // Get the list of allowed class IDs
+    let allowedClassIds: string[] = [];
+    if (where.classId?.in) {
+      allowedClassIds = where.classId.in;
+    } else if (typeof where.classId === 'string') {
+      allowedClassIds = [where.classId];
+    }
+
+    // If no classes allowed (e.g., student not enrolled anywhere), return empty
+    if (allowedClassIds.length === 0 && session.user.role === UserRole.LEARNER) {
+      return NextResponse.json({ assignments: [] });
+    }
+
+    // Use Prisma ORM for type-safe querying
+    const bookAssignments = await prisma.bookAssignment.findMany({
+      where: allowedClassIds.length > 0 ? {
+        classId: { in: allowedClassIds }
+      } : {},
+      include: {
+        book: {
+          select: {
+            id: true,
+            title: true,
+            authorName: true,
+            coverImage: true,
+            summary: true,
+            ageRange: true,
+            language: true,
+            contentType: true,
+            pdfKey: true
+          }
+        },
+        class: {
+          select: {
+            id: true,
+            name: true,
+            subject: true,
+            gradeLevel: true,
+            _count: {
+              select: {
+                enrollments: {
+                  where: { status: 'ACTIVE' }
+                }
+              }
+            }
+          }
+        }
+      },
+      orderBy: { assignedAt: 'desc' }
+    });
+
+    // Transform data for frontend
+    const assignments = bookAssignments.map(ba => ({
+      id: ba.id,
+      bookId: ba.bookId,
+      classId: ba.classId,
+      assignedAt: ba.assignedAt,
+      dueDate: ba.dueDate,
+      instructions: ba.instructions,
+      isRequired: ba.isRequired,
+      points: ba.points,
+      bookTitle: ba.book.title,
+      authorName: ba.book.authorName,
+      coverImage: ba.book.coverImage,
+      summary: ba.book.summary,
+      ageRange: ba.book.ageRange,
+      language: ba.book.language,
+      contentType: ba.book.contentType,
+      pdfKey: ba.book.pdfKey,
+      className: ba.class.name,
+      subject: ba.class.subject,
+      gradeLevel: ba.class.gradeLevel,
+      totalStudents: ba.class._count.enrollments
+    }));
 
     const response = NextResponse.json({ assignments });
     response.headers.set('X-RateLimit-Limit', RATE_LIMITS.GENERAL_API.maxRequests.toString());

@@ -734,6 +734,9 @@ model Book {
   // Vocabulary learning
   vocabularyWords VocabularyWord[]
 
+  // Book assignments to classes
+  bookAssignments BookAssignment[]
+
   // Comprehension quizzes
   comprehensionQuiz ComprehensionQuiz?
 
@@ -960,13 +963,14 @@ model Class {
   isActive      Boolean  @default(true)
   settings      Json // Class settings
 
-  teacher       User                @relation("TeacherClasses", fields: [teacherId], references: [id])
-  institution   Institution?        @relation("InstitutionClasses", fields: [institutionId], references: [id])
-  enrollments   ClassEnrollment[]
-  assignments   Assignment[]
-  lessons       Lesson[]
-  resources     ClassResource[]
-  announcements ClassAnnouncement[]
+  teacher         User                @relation("TeacherClasses", fields: [teacherId], references: [id])
+  institution     Institution?        @relation("InstitutionClasses", fields: [institutionId], references: [id])
+  enrollments     ClassEnrollment[]
+  assignments     Assignment[]
+  lessons         Lesson[]
+  resources       ClassResource[]
+  announcements   ClassAnnouncement[]
+  bookAssignments BookAssignment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1001,6 +1005,26 @@ enum EnrollmentStatus {
   COMPLETED
   DROPPED
   SUSPENDED
+}
+
+// Book-Class assignment (teacher assigns book to class)
+model BookAssignment {
+  id           String    @id @default(cuid())
+  bookId       String
+  classId      String
+  assignedAt   DateTime  @default(now())
+  dueDate      DateTime?
+  instructions String?   @db.Text
+  isRequired   Boolean   @default(true)
+  points       Int?
+
+  book  Book  @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, classId])
+  @@index([classId])
+  @@index([bookId])
+  @@map("BookAssignment")
 }
 
 // Class assignments and homework
