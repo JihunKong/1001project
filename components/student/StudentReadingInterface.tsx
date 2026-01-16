@@ -201,7 +201,7 @@ export default function StudentReadingInterface({
 
             {/* Book Content */}
             {book.content ? (
-              <BookContentViewer content={book.content} language={language} />
+              <BookContentViewer content={book.content} language={language} bookId={book.id} />
             ) : (
               <div className="text-center py-12 text-gray-700">
                 <p>No content available for this book.</p>

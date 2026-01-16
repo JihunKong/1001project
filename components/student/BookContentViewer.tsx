@@ -7,6 +7,7 @@ interface BookContentViewerProps {
   content: string;
   language: string;
   enableVocabularyPopup?: boolean;
+  bookId?: string;
 }
 
 interface SelectedWord {
@@ -18,7 +19,8 @@ interface SelectedWord {
 export default function BookContentViewer({
   content,
   language,
-  enableVocabularyPopup = true
+  enableVocabularyPopup = true,
+  bookId
 }: BookContentViewerProps) {
   const [selectedWord, setSelectedWord] = useState<SelectedWord | null>(null);
 
@@ -125,6 +127,7 @@ export default function BookContentViewer({
           language={language}
           position={selectedWord.position}
           onClose={closePopover}
+          bookId={bookId}
         />
       )}
     </>

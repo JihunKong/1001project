@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Loader2, BookOpen, GripHorizontal } from 'lucide-react';
+import { X, Loader2, BookOpen, GripHorizontal, BookmarkPlus, Check, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 interface VocabularyPopoverProps {
@@ -10,6 +10,7 @@ interface VocabularyPopoverProps {
   language: string;
   position: { x: number; y: number };
   onClose: () => void;
+  bookId?: string;
 }
 
 interface WordExplanation {
@@ -77,12 +78,14 @@ export default function VocabularyPopover({
   context,
   language,
   position,
-  onClose
+  onClose,
+  bookId
 }: VocabularyPopoverProps) {
   const [explanation, setExplanation] = useState<WordExplanation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'duplicate' | 'error'>('idle');
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [currentPosition, setCurrentPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
@@ -180,6 +183,41 @@ export default function VocabularyPopover({
     }
   };
 
+  const handleSaveToVocabulary = async () => {
+    if (!explanation || saveStatus === 'saving' || saveStatus === 'saved') return;
+
+    setSaveStatus('saving');
+
+    try {
+      const response = await fetch('/api/vocabulary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          word: word,
+          definition: explanation.explanation,
+          context: context,
+          sourceBookId: bookId,
+        }),
+      });
+
+      if (response.status === 409) {
+        setSaveStatus('duplicate');
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to save word');
+      }
+
+      setSaveStatus('saved');
+    } catch (err) {
+      console.error('Error saving word to vocabulary:', err);
+      setSaveStatus('error');
+    }
+  };
+
   if (!isPositionInitialized) {
     return null;
   }
@@ -259,7 +297,53 @@ export default function VocabularyPopover({
         </div>
       </div>
 
-      <div className="bg-gray-50 p-4 rounded-b-lg border-t border-gray-200 flex-shrink-0">
+      <div className="bg-gray-50 p-4 rounded-b-lg border-t border-gray-200 flex-shrink-0 space-y-2">
+        {!loading && !error && explanation && (
+          <button
+            onClick={handleSaveToVocabulary}
+            disabled={saveStatus === 'saving' || saveStatus === 'saved'}
+            className={`w-full py-2 px-4 font-medium rounded-md transition-colors flex items-center justify-center gap-2 ${
+              saveStatus === 'saved'
+                ? 'bg-green-500 text-white cursor-default'
+                : saveStatus === 'duplicate'
+                ? 'bg-yellow-500 text-white cursor-default'
+                : saveStatus === 'error'
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-purple-500 hover:bg-purple-600 text-white'
+            }`}
+          >
+            {saveStatus === 'saving' && (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving...
+              </>
+            )}
+            {saveStatus === 'saved' && (
+              <>
+                <Check className="w-4 h-4" />
+                Saved to Vocabulary!
+              </>
+            )}
+            {saveStatus === 'duplicate' && (
+              <>
+                <AlertCircle className="w-4 h-4" />
+                Already in Vocabulary
+              </>
+            )}
+            {saveStatus === 'error' && (
+              <>
+                <AlertCircle className="w-4 h-4" />
+                Try Again
+              </>
+            )}
+            {saveStatus === 'idle' && (
+              <>
+                <BookmarkPlus className="w-4 h-4" />
+                Save to Vocabulary
+              </>
+            )}
+          </button>
+        )}
         <button
           onClick={onClose}
           className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md transition-colors"

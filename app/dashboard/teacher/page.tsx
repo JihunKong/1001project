@@ -16,7 +16,10 @@ import {
   MessageSquare,
   BarChart3,
   GraduationCap,
-  Target
+  Target,
+  BookMarked,
+  Star,
+  Sparkles,
 } from 'lucide-react';
 import {
   DashboardLoadingState,
@@ -76,6 +79,29 @@ interface Stats {
   completedAssignments: number;
 }
 
+interface VocabularyStudentStats {
+  id: string;
+  name: string;
+  email: string;
+  totalWords: number;
+  avgMasteryLevel: number;
+  masteredWords: number;
+  wordsThisWeek: number;
+}
+
+interface VocabularySummary {
+  totalStudents: number;
+  totalWords: number;
+  avgWordsPerStudent: number;
+  avgMasteryLevel: number;
+  topLearners: {
+    id: string;
+    name: string;
+    totalWords: number;
+    masteredWords: number;
+  }[];
+}
+
 export default function TeacherDashboard() {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
@@ -83,6 +109,8 @@ export default function TeacherDashboard() {
   const [recentProgress, setRecentProgress] = useState<StudentProgress[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [vocabularyStats, setVocabularyStats] = useState<VocabularyStudentStats[]>([]);
+  const [vocabularySummary, setVocabularySummary] = useState<VocabularySummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -169,6 +197,17 @@ export default function TeacherDashboard() {
         totalReadingHours: 2840,
         completedAssignments: 127
       });
+
+      try {
+        const vocabRes = await fetch('/api/teacher/vocabulary-stats');
+        if (vocabRes.ok) {
+          const vocabData = await vocabRes.json();
+          setVocabularyStats(vocabData.students || []);
+          setVocabularySummary(vocabData.summary || null);
+        }
+      } catch (vocabError) {
+        console.error('Error fetching vocabulary stats:', vocabError);
+      }
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -414,6 +453,145 @@ export default function TeacherDashboard() {
               )}
           </DashboardSection>
         </div>
+
+        {/* Vocabulary Learning Stats */}
+        <DashboardSection
+          title="Student Vocabulary Progress"
+          icon={BookMarked}
+          badge={
+            vocabularySummary && (
+              <span className="ml-auto bg-indigo-100 text-indigo-700 px-2 py-1 text-xs font-medium rounded-full">
+                {vocabularySummary.totalWords} words learned
+              </span>
+            )
+          }
+          headerBgColor="bg-gradient-to-r from-indigo-50 to-purple-50"
+          className="rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-100 mb-8"
+        >
+          {vocabularySummary && (
+            <div className="mb-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-4 text-center">
+                  <BookMarked className="w-6 h-6 text-indigo-600 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-indigo-900">{vocabularySummary.avgWordsPerStudent}</p>
+                  <p className="text-xs text-indigo-600">Avg Words/Student</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center">
+                  <Star className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-purple-900">{vocabularySummary.avgMasteryLevel}</p>
+                  <p className="text-xs text-purple-600">Avg Mastery Level</p>
+                </div>
+                <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-4 text-center">
+                  <Users className="w-6 h-6 text-pink-600 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-pink-900">{vocabularySummary.totalStudents}</p>
+                  <p className="text-xs text-pink-600">Active Learners</p>
+                </div>
+                <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-4 text-center">
+                  <Sparkles className="w-6 h-6 text-amber-600 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-amber-900">{vocabularySummary.totalWords}</p>
+                  <p className="text-xs text-amber-600">Total Words</p>
+                </div>
+              </div>
+
+              {vocabularySummary.topLearners.length > 0 && (
+                <div className="bg-gradient-to-r from-gray-50 to-indigo-50 rounded-xl p-4">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <Award className="w-4 h-4 text-amber-500" />
+                    Top Vocabulary Learners
+                  </h4>
+                  <div className="space-y-2">
+                    {vocabularySummary.topLearners.map((learner, index) => (
+                      <div
+                        key={learner.id}
+                        className="flex items-center justify-between bg-white rounded-lg p-3 border border-gray-100"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                            index === 0 ? 'bg-amber-100 text-amber-700' :
+                            index === 1 ? 'bg-gray-200 text-gray-700' :
+                            index === 2 ? 'bg-orange-100 text-orange-700' :
+                            'bg-gray-100 text-gray-600'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          <span className="font-medium text-gray-900">{learner.name}</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm">
+                          <div className="text-right">
+                            <span className="font-bold text-indigo-600">{learner.totalWords}</span>
+                            <span className="text-gray-500 ml-1">words</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="font-bold text-green-600">{learner.masteredWords}</span>
+                            <span className="text-gray-500 ml-1">mastered</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {vocabularyStats.length === 0 ? (
+            <DashboardEmptyState
+              icon={BookMarked}
+              iconColor="from-indigo-100 to-indigo-200"
+              title="No vocabulary data yet"
+              description="Students will appear here once they start learning words from their readings."
+            />
+          ) : (
+            <div className="space-y-3">
+              {vocabularyStats.slice(0, 10).map((student) => (
+                <div
+                  key={student.id}
+                  className="group bg-white border border-gray-200 hover:border-indigo-300 rounded-xl p-4 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        {student.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                          {student.name}
+                        </h4>
+                        <p className="text-xs text-gray-500">{student.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <p className="text-lg font-bold text-indigo-600">{student.totalWords}</p>
+                        <p className="text-xs text-gray-500">Total</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-bold text-green-600">{student.masteredWords}</p>
+                        <p className="text-xs text-gray-500">Mastered</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-bold text-purple-600">{student.wordsThisWeek}</p>
+                        <p className="text-xs text-gray-500">This Week</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${
+                              i < Math.round(student.avgMasteryLevel)
+                                ? 'text-amber-400 fill-amber-400'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </DashboardSection>
 
         <DashboardSection
           title={t('dashboard.teacher.assignments.title')}
