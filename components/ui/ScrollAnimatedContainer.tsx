@@ -64,17 +64,17 @@ const ScrollAnimatedContainer = forwardRef<HTMLDivElement, ScrollAnimatedContain
       if (!isVisible) {
         switch (animationType) {
           case 'slideUp':
-            return `${baseClasses} opacity-70 translate-y-4`;
+            return `${baseClasses} opacity-0 translate-y-4`;
           case 'fadeIn':
-            return `${baseClasses} opacity-70`;
+            return `${baseClasses} opacity-0`;
           case 'scaleIn':
-            return `${baseClasses} opacity-70 scale-98`;
+            return `${baseClasses} opacity-0 scale-95`;
           case 'slideInLeft':
-            return `${baseClasses} opacity-70 -translate-x-4`;
+            return `${baseClasses} opacity-0 -translate-x-4`;
           case 'slideInRight':
-            return `${baseClasses} opacity-70 translate-x-4`;
+            return `${baseClasses} opacity-0 translate-x-4`;
           default:
-            return `${baseClasses} opacity-70 translate-y-4`;
+            return `${baseClasses} opacity-0 translate-y-4`;
         }
       }
 
