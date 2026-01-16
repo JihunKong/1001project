@@ -23,6 +23,7 @@ interface ReadingProgress {
   id: string;
   bookId: string;
   book: {
+    id: string;
     title: string;
     authorName: string;
     coverImage?: string;
@@ -30,18 +31,22 @@ interface ReadingProgress {
   };
   percentComplete: number;
   currentPage?: number;
+  totalPages?: number;
   lastReadAt: string;
+}
+
+interface AssignmentBook {
+  id: string;
+  title: string;
+  authorName: string;
+  coverImage?: string;
 }
 
 interface Assignment {
   id: string;
   title: string;
   description: string;
-  book: {
-    id: string;
-    title: string;
-    authorName: string;
-  };
+  books: AssignmentBook[];
   dueDate: string;
   status: string;
 }
@@ -78,44 +83,77 @@ export default function LearnerDashboard() {
   // Fetch dashboard data
   const fetchData = async () => {
     try {
-      // These APIs would need to be implemented
-      // For now, the API calls are not used - mock data is used instead
-      await Promise.all([
+      const [progressRes, assignmentsRes] = await Promise.all([
         fetch('/api/learner/reading-progress'),
         fetch('/api/learner/assignments'),
-        fetch('/api/learner/stats')
       ]);
 
-      // For now, using mock data since APIs don't exist yet
-      setReadingProgress([
-        {
-          id: '1',
-          bookId: 'book1',
-          book: { title: 'The Amazing Journey', authorName: 'Young Author', pageCount: 120 },
-          percentComplete: 65,
-          currentPage: 78,
-          lastReadAt: new Date().toISOString()
+      // Process reading progress
+      if (progressRes.ok) {
+        const progressData = await progressRes.json();
+        if (progressData.progress && Array.isArray(progressData.progress)) {
+          setReadingProgress(progressData.progress.map((p: any) => ({
+            id: p.id,
+            bookId: p.bookId,
+            book: {
+              id: p.book?.id || p.bookId,
+              title: p.book?.title || 'Unknown Book',
+              authorName: p.book?.authorName || 'Unknown Author',
+              coverImage: p.book?.coverImage,
+              pageCount: p.book?.pageCount || p.totalPages,
+            },
+            percentComplete: p.percentComplete || 0,
+            currentPage: p.currentPage,
+            totalPages: p.totalPages,
+            lastReadAt: p.lastReadAt,
+          })));
+
+          // Update stats from progress summary
+          if (progressData.summary) {
+            setStats(prev => ({
+              ...prev,
+              booksRead: progressData.summary.completedBooks || 0,
+              totalReadingTime: progressData.summary.totalReadingTime || 0,
+              currentStreak: 0,
+              averageRating: 0,
+              classRanking: 0,
+              totalClasses: 0,
+            } as Stats));
+          }
         }
-      ]);
+      }
 
-      setAssignments([
-        {
-          id: '1',
-          title: 'Read Chapter 5-7',
-          description: 'Complete reading and answer discussion questions',
-          book: { id: 'book1', title: 'The Amazing Journey', authorName: 'Young Author' },
-          dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-          status: 'PENDING'
+      // Process assignments
+      if (assignmentsRes.ok) {
+        const assignmentsData = await assignmentsRes.json();
+        if (assignmentsData.assignments && Array.isArray(assignmentsData.assignments)) {
+          setAssignments(assignmentsData.assignments.map((a: any) => ({
+            id: a.id,
+            title: a.title,
+            description: a.description || '',
+            books: a.books || [],
+            dueDate: a.dueDate,
+            status: a.status?.toUpperCase() || 'PENDING',
+          })));
+
+          // Update class count
+          if (assignmentsData.classes) {
+            setStats(prev => prev ? {
+              ...prev,
+              totalClasses: assignmentsData.classes.length,
+            } : null);
+          }
         }
-      ]);
+      }
 
-      setStats({
-        booksRead: 12,
-        totalReadingTime: 1440, // minutes
-        currentStreak: 7,
-        averageRating: 4.2,
-        classRanking: 3,
-        totalClasses: 2
+      // Set default stats if not already set
+      setStats(prev => prev || {
+        booksRead: 0,
+        totalReadingTime: 0,
+        currentStreak: 0,
+        averageRating: 0,
+        classRanking: 0,
+        totalClasses: 0,
       });
 
     } catch (err) {
@@ -300,31 +338,40 @@ export default function LearnerDashboard() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {assignments.map((assignment) => (
-                    <div key={assignment.id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium text-gray-900">{assignment.title}</h3>
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                          assignment.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
-                        }`}>
-                          {assignment.status}
-                        </span>
+                  {assignments.map((assignment) => {
+                    const firstBook = assignment.books?.[0];
+                    return (
+                      <div key={assignment.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-medium text-gray-900">{assignment.title}</h3>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            assignment.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+                          }`}>
+                            {assignment.status}
+                          </span>
+                        </div>
+                        {firstBook && (
+                          <p className="text-sm text-gray-600 mb-2">{firstBook.title}</p>
+                        )}
+                        <p className="text-sm text-gray-500 mb-3">{assignment.description}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">
+                            {t('dashboard.learner.assignments.due', { date: new Date(assignment.dueDate).toLocaleDateString() })}
+                          </span>
+                          {firstBook ? (
+                            <button
+                              onClick={() => window.location.href = `/dashboard/learner/read/${firstBook.id}`}
+                              className="text-soe-green-400 hover:text-soe-green-600 text-sm font-medium"
+                            >
+                              {t('dashboard.common.actions.viewDetails')}
+                            </button>
+                          ) : (
+                            <span className="text-gray-400 text-sm">{t('dashboard.learner.assignments.noBook')}</span>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{assignment.book.title}</p>
-                      <p className="text-sm text-gray-500 mb-3">{assignment.description}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">
-                          {t('dashboard.learner.assignments.due', { date: new Date(assignment.dueDate).toLocaleDateString() })}
-                        </span>
-                        <button
-                          onClick={() => window.location.href = `/dashboard/learner/read/${assignment.book.id}`}
-                          className="text-soe-green-400 hover:text-soe-green-600 text-sm font-medium"
-                        >
-                          {t('dashboard.common.actions.viewDetails')}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

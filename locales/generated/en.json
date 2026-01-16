@@ -96,7 +96,8 @@
         "title": "Upcoming Assignments",
         "empty": "No assignments",
         "emptySubtitle": "Your teacher will assign reading tasks here",
-        "due": "Due: {date}"
+        "due": "Due: {date}",
+        "noBook": "No book assigned"
       },
       "quickActions": {
         "title": "Quick Actions",

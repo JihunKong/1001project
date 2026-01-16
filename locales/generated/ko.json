@@ -96,7 +96,8 @@
         "title": "다가오는 과제",
         "empty": "과제가 없습니다",
         "emptySubtitle": "선생님이 여기에 독서 과제를 할당할 것입니다",
-        "due": "마감: {date}"
+        "due": "마감: {date}",
+        "noBook": "할당된 책이 없습니다"
       },
       "quickActions": {
         "title": "빠른 작업",
