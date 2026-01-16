@@ -47,16 +47,21 @@ export default async function StudentReadingPage({ params }: PageProps) {
     redirect('/dashboard/learner');
   }
 
-  // Only support TEXT books for now
+  // Redirect PDF books to PDF reader
+  if (book.contentType === 'PDF') {
+    redirect(`/dashboard/learner/read/${bookId}/pdf`);
+  }
+
+  // For other non-TEXT content types, show appropriate message
   if (book.contentType !== 'TEXT') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            PDF Reading Coming Soon
+            Content Type Not Supported
           </h1>
           <p className="text-gray-600 mb-4">
-            This feature is currently available for text-based books only.
+            This content type ({book.contentType}) is not yet supported.
           </p>
           <a
             href="/dashboard/learner"

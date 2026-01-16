@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { bookId, readingTime, currentPosition } = body;
+    const { bookId, readingTime, currentPosition, currentPage, totalPages, percentComplete } = body;
 
     if (!bookId || typeof bookId !== 'string') {
       return NextResponse.json(
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find existing progress
+    // Upsert progress - create if not exists, update if exists
     const existingProgress = await prisma.readingProgress.findFirst({
       where: {
         userId: session.user.id,
@@ -32,22 +32,46 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    if (!existingProgress) {
-      return NextResponse.json(
-        { error: 'Reading progress not found' },
-        { status: 404 }
-      );
+    const updateData: Record<string, unknown> = {
+      lastReadAt: new Date(),
+    };
+
+    if (currentPosition !== undefined) {
+      updateData.currentPosition = currentPosition?.toString();
+    }
+    if (currentPage !== undefined) {
+      updateData.currentPage = currentPage;
+    }
+    if (totalPages !== undefined) {
+      updateData.totalPages = totalPages;
+    }
+    if (percentComplete !== undefined) {
+      updateData.percentComplete = percentComplete;
     }
 
-    // Update progress
-    const updatedProgress = await prisma.readingProgress.update({
-      where: { id: existingProgress.id },
-      data: {
-        currentPosition: currentPosition?.toString(),
-        totalReadingTime: existingProgress.totalReadingTime + (readingTime || 0),
-        lastReadAt: new Date(),
+    let updatedProgress;
+    if (existingProgress) {
+      if (readingTime) {
+        updateData.totalReadingTime = existingProgress.totalReadingTime + readingTime;
       }
-    });
+      updatedProgress = await prisma.readingProgress.update({
+        where: { id: existingProgress.id },
+        data: updateData
+      });
+    } else {
+      updatedProgress = await prisma.readingProgress.create({
+        data: {
+          userId: session.user.id,
+          bookId,
+          currentPosition: currentPosition?.toString() || '0',
+          currentPage: currentPage || 1,
+          totalPages: totalPages || null,
+          percentComplete: percentComplete || 0,
+          totalReadingTime: readingTime || 0,
+          lastReadAt: new Date(),
+        }
+      });
+    }
 
     return NextResponse.json({
       success: true,
