@@ -78,8 +78,8 @@ async function loginWithPassword(
   console.log('✓ Password filled');
 
   const submitButton = page.locator(
-    'button[type="submit"]:has-text("Sign in"), button[type="submit"]:has-text("Log in"), button:has-text("Sign in"), button:has-text("Log in")'
-  );
+    'button[type="submit"]:has-text("Log In"), button[type="submit"]:has-text("Sign in")'
+  ).first();
   await submitButton.click();
   console.log('✓ Submit button clicked');
 

@@ -95,10 +95,12 @@ export default function LearnerDashboard() {
   // Fetch dashboard data
   const fetchData = async () => {
     try {
-      const [progressRes, assignmentsRes, bookAssignmentsRes] = await Promise.all([
+      const [progressRes, assignmentsRes, bookAssignmentsRes, streakRes, rankingRes] = await Promise.all([
         fetch('/api/learner/reading-progress'),
         fetch('/api/learner/assignments'),
         fetch('/api/book-assignments'),
+        fetch('/api/reading-streak'),
+        fetch('/api/learner/class-ranking'),
       ]);
 
       // Process reading progress
@@ -127,13 +129,32 @@ export default function LearnerDashboard() {
               ...prev,
               booksRead: progressData.summary.completedBooks || 0,
               totalReadingTime: progressData.summary.totalReadingTime || 0,
-              currentStreak: 0,
-              averageRating: 0,
-              classRanking: 0,
-              totalClasses: 0,
+              currentStreak: prev?.currentStreak || 0,
+              averageRating: prev?.averageRating || 0,
+              classRanking: prev?.classRanking || 0,
+              totalClasses: prev?.totalClasses || 0,
             } as Stats));
           }
         }
+      }
+
+      // Process reading streak
+      if (streakRes.ok) {
+        const streakData = await streakRes.json();
+        setStats(prev => prev ? {
+          ...prev,
+          currentStreak: streakData.currentStreak || 0,
+        } : null);
+      }
+
+      // Process class ranking
+      if (rankingRes.ok) {
+        const rankingData = await rankingRes.json();
+        setStats(prev => prev ? {
+          ...prev,
+          classRanking: rankingData.ranking || 0,
+          totalClasses: rankingData.totalStudents || 0,
+        } : null);
       }
 
       // Process assignments
@@ -501,13 +522,13 @@ export default function LearnerDashboard() {
 
               <div>
                 <button
-                  disabled
-                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
+                  onClick={() => window.location.href = '/dashboard/learner/quizzes'}
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 min-h-[var(--min-touch-target)]"
                 >
-                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
+                  <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-purple-500 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
-                    <p className="font-medium text-gray-500 text-sm sm:text-base">{t('dashboard.learner.learningTools.takeQuiz')}</p>
-                    <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
+                    <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.learningTools.takeQuiz')}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.learningTools.takeQuizDesc')}</p>
                   </div>
                 </button>
               </div>
@@ -558,26 +579,26 @@ export default function LearnerDashboard() {
 
               <div>
                 <button
-                  disabled
-                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
+                  onClick={() => window.location.href = '/dashboard/learner/ai-helper'}
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 min-h-[var(--min-touch-target)]"
                 >
-                  <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
+                  <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-500 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
-                    <p className="font-medium text-gray-500 text-sm sm:text-base">{t('dashboard.learner.quickActions.askAIHelper')}</p>
-                    <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
+                    <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.quickActions.askAIHelper')}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.quickActions.askAIHelperDesc')}</p>
                   </div>
                 </button>
               </div>
 
               <div>
                 <button
-                  disabled
-                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed flex items-center gap-3 min-h-[var(--min-touch-target)]"
+                  onClick={() => window.location.href = '/dashboard/learner/rate-books'}
+                  className="w-full p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-amber-50 hover:border-amber-300 flex items-center gap-3 transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 min-h-[var(--min-touch-target)]"
                 >
-                  <Star className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400 flex-shrink-0" />
+                  <Star className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500 flex-shrink-0" />
                   <div className="text-left flex-1 min-w-0">
-                    <p className="font-medium text-gray-500 text-sm sm:text-base">{t('dashboard.learner.quickActions.rateBooks')}</p>
-                    <p className="text-xs sm:text-sm text-gray-400 truncate">{t('dashboard.learner.quickActions.comingSoon')}</p>
+                    <p className="font-medium text-gray-900 text-sm sm:text-base">{t('dashboard.learner.quickActions.rateBooks')}</p>
+                    <p className="text-xs sm:text-sm text-gray-500 truncate">{t('dashboard.learner.quickActions.rateBooksDesc')}</p>
                   </div>
                 </button>
               </div>
