@@ -44,10 +44,11 @@ model User {
   reviews Review[]
 
   // Educational
-  enrollments     ClassEnrollment[]
-  submissions     Submission[]
-  lessonProgress  LessonProgress[]
-  teachingClasses Class[]           @relation("TeacherClasses")
+  enrollments        ClassEnrollment[]
+  submissions        Submission[]
+  lessonProgress     LessonProgress[]
+  teachingClasses    Class[]             @relation("TeacherClasses")
+  assignmentComments AssignmentComment[] @relation("TeacherComments")
 
   // Content
   books         Book[]
@@ -1018,13 +1019,31 @@ model BookAssignment {
   isRequired   Boolean   @default(true)
   points       Int?
 
-  book  Book  @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  book     Book                  @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  class    Class                 @relation(fields: [classId], references: [id], onDelete: Cascade)
+  comments AssignmentComment[]
 
   @@unique([bookId, classId])
   @@index([classId])
   @@index([bookId])
   @@map("BookAssignment")
+}
+
+// Teacher comments/announcements for book assignments
+model AssignmentComment {
+  id           String   @id @default(cuid())
+  assignmentId String
+  teacherId    String
+  content      String   @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  assignment BookAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  teacher    User           @relation("TeacherComments", fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([assignmentId])
+  @@index([teacherId])
+  @@map("assignment_comments")
 }
 
 // Class assignments and homework

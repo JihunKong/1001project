@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import {
   Users,
   BookOpen,
@@ -10,7 +10,6 @@ import {
   Calendar,
   TrendingUp,
   CheckCircle,
-  Clock,
   Award,
   Settings,
   MessageSquare,
@@ -33,6 +32,9 @@ import {
   type Column
 } from '@/components/dashboard';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import CreateClassModal from '@/components/teacher/CreateClassModal';
+import AssignReadingModal from '@/components/teacher/AssignReadingModal';
+import AssignmentCommentModal from '@/components/teacher/AssignmentCommentModal';
 
 interface Class {
   id: string;
@@ -41,6 +43,7 @@ interface Class {
   subject: string;
   gradeLevel: string;
   studentCount: number;
+  enrollmentCount: number;
   startDate: string;
   endDate: string;
   isActive: boolean;
@@ -104,6 +107,7 @@ interface VocabularySummary {
 
 export default function TeacherDashboard() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { data: session, status } = useSession();
   const [classes, setClasses] = useState<Class[]>([]);
   const [recentProgress, setRecentProgress] = useState<StudentProgress[]>([]);
@@ -113,6 +117,14 @@ export default function TeacherDashboard() {
   const [vocabularySummary, setVocabularySummary] = useState<VocabularySummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [showCreateClassModal, setShowCreateClassModal] = useState(false);
+  const [showAssignReadingModal, setShowAssignReadingModal] = useState(false);
+  const [selectedClassId, setSelectedClassId] = useState<string | undefined>(undefined);
+  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const [showAssignmentDetails, setShowAssignmentDetails] = useState(false);
+  const [showCommentModal, setShowCommentModal] = useState(false);
+  const [commentAssignment, setCommentAssignment] = useState<Assignment | null>(null);
 
   // Redirect if not authenticated or not a teacher
   useEffect(() => {
@@ -128,85 +140,86 @@ export default function TeacherDashboard() {
   // Fetch dashboard data
   const fetchData = async () => {
     try {
-      // These APIs would need to be implemented
-      // For now, using mock data since APIs don't exist yet
-      setClasses([
-        {
-          id: '1',
-          code: 'ENG5A1',
-          name: 'English Literature 5A',
-          subject: 'English',
-          gradeLevel: '5th Grade',
-          studentCount: 28,
-          startDate: new Date().toISOString(),
-          endDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
-          isActive: true
-        },
-        {
-          id: '2',
-          code: 'ENG5B2',
-          name: 'English Literature 5B',
-          subject: 'English',
-          gradeLevel: '5th Grade',
-          studentCount: 25,
-          startDate: new Date().toISOString(),
-          endDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString(),
-          isActive: true
-        }
+      const [classesRes, assignmentsRes, vocabRes] = await Promise.all([
+        fetch('/api/classes'),
+        fetch('/api/books/assign'),
+        fetch('/api/teacher/vocabulary-stats'),
       ]);
 
-      setRecentProgress([
-        {
-          id: '1',
-          name: 'Alice Johnson',
-          booksAssigned: 5,
-          booksCompleted: 3,
-          averageProgress: 78,
-          lastActivity: new Date().toISOString(),
-          readingStreak: 12
-        },
-        {
-          id: '2',
-          name: 'Bob Smith',
-          booksAssigned: 5,
-          booksCompleted: 4,
-          averageProgress: 92,
-          lastActivity: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          readingStreak: 8
-        }
-      ]);
+      if (classesRes.ok) {
+        const classesData = await classesRes.json();
+        const classesWithStudentCount = (classesData.classes || []).map((cls: Class) => ({
+          ...cls,
+          studentCount: cls.enrollmentCount || 0,
+          isActive: new Date(cls.endDate) > new Date(),
+        }));
+        setClasses(classesWithStudentCount);
 
-      setAssignments([
-        {
-          id: '1',
-          title: 'Read Chapters 1-3',
-          book: { title: 'The Amazing Journey', authorName: 'Young Author' },
-          className: 'English Literature 5A',
-          dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-          completionRate: 75,
-          studentsCompleted: 21,
-          totalStudents: 28
-        }
-      ]);
+        const totalStudents = classesWithStudentCount.reduce((sum: number, cls: Class) => sum + (cls.studentCount || 0), 0);
+        const activeClasses = classesWithStudentCount.filter((cls: Class) => cls.isActive).length;
 
-      setStats({
-        totalStudents: 53,
-        activeClasses: 2,
-        booksAssigned: 15,
-        averageClassProgress: 82,
-        totalReadingHours: 2840,
-        completedAssignments: 127
-      });
+        setStats(prev => ({
+          totalStudents,
+          activeClasses,
+          booksAssigned: prev?.booksAssigned || 0,
+          averageClassProgress: prev?.averageClassProgress || 0,
+          totalReadingHours: prev?.totalReadingHours || 0,
+          completedAssignments: prev?.completedAssignments || 0,
+        }));
+      }
+
+      if (assignmentsRes.ok) {
+        const assignmentsData = await assignmentsRes.json();
+        const mappedAssignments = (assignmentsData.assignments || []).map((a: {
+          id: string;
+          title: string;
+          book?: { title: string; authorName: string };
+          bookTitle?: string;
+          authorName?: string;
+          className: string;
+          dueDate: string;
+          submissions?: { status: string }[];
+          totalStudents?: number;
+        }) => ({
+          id: a.id,
+          title: a.title,
+          book: a.book || { title: a.bookTitle || '', authorName: a.authorName || '' },
+          className: a.className,
+          dueDate: a.dueDate,
+          studentsCompleted: a.submissions?.filter((s: { status: string }) => s.status === 'COMPLETED').length || 0,
+          totalStudents: a.totalStudents || a.submissions?.length || 0,
+          completionRate: a.totalStudents
+            ? Math.round((a.submissions?.filter((s: { status: string }) => s.status === 'COMPLETED').length || 0) / a.totalStudents * 100)
+            : 0,
+        }));
+        setAssignments(mappedAssignments);
+
+        setStats(prev => ({
+          totalStudents: prev?.totalStudents || 0,
+          activeClasses: prev?.activeClasses || 0,
+          booksAssigned: mappedAssignments.length,
+          averageClassProgress: mappedAssignments.length > 0
+            ? Math.round(mappedAssignments.reduce((sum: number, a: { completionRate: number }) => sum + a.completionRate, 0) / mappedAssignments.length)
+            : 0,
+          totalReadingHours: prev?.totalReadingHours || 0,
+          completedAssignments: mappedAssignments.filter((a: { completionRate: number }) => a.completionRate === 100).length,
+        }));
+      }
+
+      if (vocabRes.ok) {
+        const vocabData = await vocabRes.json();
+        setVocabularyStats(vocabData.students || []);
+        setVocabularySummary(vocabData.summary || null);
+      }
 
       try {
-        const vocabRes = await fetch('/api/teacher/vocabulary-stats');
-        if (vocabRes.ok) {
-          const vocabData = await vocabRes.json();
-          setVocabularyStats(vocabData.students || []);
-          setVocabularySummary(vocabData.summary || null);
+        const progressRes = await fetch('/api/teacher/student-progress');
+        if (progressRes.ok) {
+          const progressData = await progressRes.json();
+          setRecentProgress(progressData.students || []);
         }
-      } catch (vocabError) {
-        console.error('Error fetching vocabulary stats:', vocabError);
+      } catch {
+        setRecentProgress([]);
       }
 
     } catch (err) {
@@ -230,13 +243,34 @@ export default function TeacherDashboard() {
     return <DashboardErrorState error={error} onRetry={() => window.location.reload()} />;
   }
 
+  const handleOpenAssignModal = (classId?: string) => {
+    setSelectedClassId(classId);
+    setShowAssignReadingModal(true);
+  };
+
+  const handleViewAssignmentDetails = (assignment: Assignment) => {
+    setSelectedAssignment(assignment);
+    setShowAssignmentDetails(true);
+  };
+
+  const handleOpenCommentModal = (assignment: Assignment) => {
+    setCommentAssignment(assignment);
+    setShowCommentModal(true);
+  };
+
   const headerActions = (
     <>
-      <button className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+      <button
+        onClick={() => setShowCreateClassModal(true)}
+        className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+      >
         <Plus className="h-5 w-5" />
         {t('dashboard.teacher.createClass')}
       </button>
-      <button className="w-full sm:w-auto bg-gradient-to-r from-soe-green-400 to-soe-green-500 hover:from-soe-green-500 hover:to-soe-green-600 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400">
+      <button
+        onClick={() => handleOpenAssignModal()}
+        className="w-full sm:w-auto bg-gradient-to-r from-soe-green-400 to-soe-green-500 hover:from-soe-green-500 hover:to-soe-green-600 text-white px-6 py-3 rounded-lg flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-soe-green-400"
+      >
         <BookOpen className="h-5 w-5" />
         {t('dashboard.teacher.assignReading')}
       </button>
@@ -310,7 +344,10 @@ export default function TeacherDashboard() {
                 title={t('dashboard.teacher.myClasses.empty')}
                 description={t('dashboard.teacher.myClasses.emptyDesc')}
                 action={
-                  <button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 mx-auto shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                  <button
+                    onClick={() => setShowCreateClassModal(true)}
+                    className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 mx-auto shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
+                  >
                     <Plus className="h-4 w-4" />
                     {t('dashboard.teacher.myClasses.createFirst')}
                   </button>
@@ -360,13 +397,22 @@ export default function TeacherDashboard() {
                       </div>
 
                       <div className="flex gap-2 pt-3 border-t border-gray-100">
-                        <button className="flex-1 bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2">
+                        <button
+                          onClick={() => router.push(`/dashboard/teacher/class/${classItem.id}/students`)}
+                          className="flex-1 bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2"
+                        >
                           {t('dashboard.teacher.myClasses.viewStudents')}
                         </button>
-                        <button className="flex-1 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                        <button
+                          onClick={() => handleOpenAssignModal(classItem.id)}
+                          className="flex-1 bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                        >
                           {t('dashboard.teacher.myClasses.assignBooks')}
                         </button>
-                        <button className="bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                        <button
+                          onClick={() => router.push(`/dashboard/teacher/class/${classItem.id}/settings`)}
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-600 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                        >
                           <Settings className="h-4 w-4" />
                         </button>
                       </div>
@@ -602,7 +648,10 @@ export default function TeacherDashboard() {
             </span>
           }
           actions={
-            <button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm hover:shadow-md transition-all duration-200">
+            <button
+              onClick={() => handleOpenAssignModal()}
+              className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-1 shadow-sm hover:shadow-md transition-all duration-200"
+            >
               <Plus className="h-3 w-3" />
               {t('dashboard.teacher.assignments.newAssignment')}
             </button>
@@ -633,10 +682,17 @@ export default function TeacherDashboard() {
                         <p className="text-xs text-gray-500">by {assignment.book.authorName}</p>
                       </div>
                       <div className="flex space-x-2 ml-3">
-                        <button className="bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2">
+                        <button
+                          onClick={() => handleViewAssignmentDetails(assignment)}
+                          className="bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2"
+                        >
                           {t('dashboard.common.actions.viewDetails')}
                         </button>
-                        <button className="bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+                        <button
+                          onClick={() => handleOpenCommentModal(assignment)}
+                          className="bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                          title={t('dashboard.teacher.comments.title')}
+                        >
                           <MessageSquare className="h-4 w-4" />
                         </button>
                       </div>
@@ -714,7 +770,10 @@ export default function TeacherDashboard() {
                         title={t('dashboard.teacher.assignments.tableEmpty')}
                         description={t('dashboard.teacher.assignments.tableEmptyDesc')}
                         action={
-                          <button className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 mx-auto">
+                          <button
+                            onClick={() => handleOpenAssignModal()}
+                            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 mx-auto"
+                          >
                             <Plus className="h-4 w-4" />
                             {t('dashboard.teacher.assignments.createFirst')}
                           </button>
@@ -775,10 +834,17 @@ export default function TeacherDashboard() {
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="flex space-x-2">
-                          <button className="bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2">
+                          <button
+                            onClick={() => handleViewAssignmentDetails(assignment)}
+                            className="bg-gradient-to-r from-soe-green-50 to-soe-green-100 hover:from-soe-green-100 hover:to-soe-green-200 text-soe-green-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:ring-2 focus:ring-soe-green-400 focus:ring-offset-2"
+                          >
                             {t('dashboard.common.actions.viewDetails')}
                           </button>
-                          <button className="bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
+                          <button
+                            onClick={() => handleOpenCommentModal(assignment)}
+                            className="bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 text-emerald-700 p-2 rounded-lg transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                            title={t('dashboard.teacher.comments.title')}
+                          >
                             <MessageSquare className="h-4 w-4" />
                           </button>
                         </div>
@@ -791,6 +857,140 @@ export default function TeacherDashboard() {
           </div>
         </DashboardSection>
       </div>
+
+      <CreateClassModal
+        isOpen={showCreateClassModal}
+        onClose={() => setShowCreateClassModal(false)}
+        onSuccess={() => {
+          setShowCreateClassModal(false);
+          fetchData();
+        }}
+      />
+
+      <AssignReadingModal
+        isOpen={showAssignReadingModal}
+        onClose={() => {
+          setShowAssignReadingModal(false);
+          setSelectedClassId(undefined);
+        }}
+        onSuccess={() => {
+          setShowAssignReadingModal(false);
+          setSelectedClassId(undefined);
+          fetchData();
+        }}
+        classes={classes.map(c => ({
+          id: c.id,
+          name: c.name,
+          code: c.code,
+          enrollmentCount: c.studentCount,
+        }))}
+        preSelectedClassId={selectedClassId}
+      />
+
+      {commentAssignment && (
+        <AssignmentCommentModal
+          isOpen={showCommentModal}
+          onClose={() => {
+            setShowCommentModal(false);
+            setCommentAssignment(null);
+          }}
+          assignmentId={commentAssignment.id}
+          assignmentTitle={commentAssignment.title}
+          currentUserId={session?.user?.id}
+        />
+      )}
+
+      {showAssignmentDetails && selectedAssignment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-soe-green-50">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">{selectedAssignment.title}</h2>
+                  <p className="text-sm text-gray-600 mt-1">{selectedAssignment.book.title}</p>
+                  <p className="text-xs text-gray-500">by {selectedAssignment.book.authorName}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowAssignmentDetails(false);
+                    setSelectedAssignment(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 p-1"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-500 mb-1">{t('dashboard.common.table.class')}</p>
+                  <p className="font-semibold text-gray-900">{selectedAssignment.className}</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-500 mb-1">{t('dashboard.common.table.dueDate')}</p>
+                  <p className="font-semibold text-gray-900">
+                    {new Date(selectedAssignment.dueDate).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl p-6">
+                <h3 className="text-sm font-semibold text-purple-800 mb-4">{t('dashboard.teacher.assignments.completionRate')}</h3>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <div className="h-4 bg-purple-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-500"
+                        style={{ width: `${selectedAssignment.completionRate}%` }}
+                      />
+                    </div>
+                  </div>
+                  <span className="text-2xl font-bold text-purple-900">{selectedAssignment.completionRate}%</span>
+                </div>
+                <p className="text-sm text-purple-700 mt-2">
+                  {selectedAssignment.studentsCompleted} of {selectedAssignment.totalStudents} students completed
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-green-900">{selectedAssignment.studentsCompleted}</p>
+                  <p className="text-xs text-green-600">Completed</p>
+                </div>
+                <div className="text-center p-4 bg-amber-50 rounded-lg">
+                  <TrendingUp className="h-8 w-8 text-amber-600 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-amber-900">
+                    {selectedAssignment.totalStudents - selectedAssignment.studentsCompleted}
+                  </p>
+                  <p className="text-xs text-amber-600">In Progress</p>
+                </div>
+                <div className="text-center p-4 bg-soe-green-50 rounded-lg">
+                  <Users className="h-8 w-8 text-soe-green-600 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-soe-green-900">{selectedAssignment.totalStudents}</p>
+                  <p className="text-xs text-soe-green-600">Total Students</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3 rounded-b-xl">
+              <button
+                onClick={() => {
+                  setShowAssignmentDetails(false);
+                  setSelectedAssignment(null);
+                }}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {t('dashboard.common.close')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

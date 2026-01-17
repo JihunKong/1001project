@@ -18,6 +18,7 @@ import {
   X,
   Check,
 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/useTranslation';
 
 interface VocabularyWord {
   id: string;
@@ -54,6 +55,7 @@ interface PaginationInfo {
 }
 
 export default function VocabularyPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [words, setWords] = useState<VocabularyWord[]>([]);
   const [stats, setStats] = useState<VocabularyStats>({ total: 0, learning: 0, reviewing: 0, mastered: 0 });
@@ -155,7 +157,7 @@ export default function VocabularyPage() {
   };
 
   const deleteWord = async (wordId: string) => {
-    if (!confirm('Are you sure you want to delete this word?')) return;
+    if (!confirm(t('dashboard.learner.vocabulary.deleteConfirm'))) return;
 
     try {
       const res = await fetch(`/api/vocabulary/${wordId}`, { method: 'DELETE' });
