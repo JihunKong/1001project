@@ -12,7 +12,7 @@ const ratingSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ bookId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -21,7 +21,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { bookId } = await params;
+    const { id: bookId } = await params;
 
     const review = await prisma.review.findUnique({
       where: {
@@ -81,7 +81,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ bookId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -90,7 +90,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { bookId } = await params;
+    const { id: bookId } = await params;
 
     const book = await prisma.book.findUnique({
       where: { id: bookId },
