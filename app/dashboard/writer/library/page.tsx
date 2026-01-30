@@ -40,7 +40,7 @@ export default function WriterLibraryPage() {
     sortBy: 'createdAt',
     sortOrder: 'desc'
   });
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [showFilters, setShowFilters] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
