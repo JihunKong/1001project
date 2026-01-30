@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { BookOpen } from 'lucide-react';
 import { Card } from '@/components/figma/ui';
 import { useTranslation } from '@/lib/i18n/useTranslation';
@@ -26,6 +26,7 @@ import {
 export default function WriterLibraryPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t, language } = useTranslation();
 
   const [books, setBooks] = useState<Book[]>([]);
@@ -143,6 +144,14 @@ export default function WriterLibraryPage() {
     }
   }, [status, router, fetchBooks, fetchFavorites, fetchTranslatedBookCount]);
 
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setFilters(prev => ({ ...prev, educationalCategory: categoryParam }));
+      setViewMode('list');
+    }
+  }, [searchParams]);
+
   const handleLibraryModeChange = (mode: LibraryMode) => {
     setLibraryMode(mode);
     setPage(1);
@@ -164,32 +173,39 @@ export default function WriterLibraryPage() {
     setPage(1);
   };
 
+  const handleViewAllCategory = useCallback((category: string) => {
+    setFilters(prev => ({ ...prev, educationalCategory: category }));
+    setViewMode('list');
+    setPage(1);
+  }, []);
+
   const hasActiveFilters = Object.keys(filters).length > 0 || searchTerm.length > 0;
 
   const booksByCategory = useMemo(() => {
     const categoryMap: { [key: string]: Book[] } = {};
     const featuredBooks: Book[] = [];
+    const featuredBookIds = new Set<string>();
 
     booksWithFavorites.forEach((book) => {
       if (book.featured) {
         featuredBooks.push(book);
+        featuredBookIds.add(book.id);
       }
+    });
 
-      if (book.category && book.category.length > 0) {
-        book.category.forEach((cat: string) => {
-          if (!categoryMap[cat]) {
-            categoryMap[cat] = [];
-          }
-          categoryMap[cat].push(book);
-        });
-      } else if (book.educationalCategories && book.educationalCategories.length > 0) {
-        book.educationalCategories.forEach((cat: string) => {
-          if (!categoryMap[cat]) {
-            categoryMap[cat] = [];
-          }
-          categoryMap[cat].push(book);
-        });
-      }
+    booksWithFavorites.forEach((book) => {
+      if (featuredBookIds.has(book.id)) return;
+
+      const categories = book.category?.length > 0
+        ? book.category
+        : book.educationalCategories || [];
+
+      categories.forEach((cat: string) => {
+        if (!categoryMap[cat]) {
+          categoryMap[cat] = [];
+        }
+        categoryMap[cat].push(book);
+      });
     });
 
     return { categories: categoryMap, featured: featuredBooks };
@@ -293,8 +309,12 @@ export default function WriterLibraryPage() {
                     type="text"
                     value={searchTerm}
                     onChange={(e) => {
-                      setSearchTerm(e.target.value);
+                      const newSearchTerm = e.target.value;
+                      setSearchTerm(newSearchTerm);
                       setPage(1);
+                      if (newSearchTerm.length > 0 && viewMode === 'grid') {
+                        setViewMode('list');
+                      }
                     }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder={t('common.search') || 'Search stories...'}
@@ -361,9 +381,9 @@ export default function WriterLibraryPage() {
                         key={category}
                         title={category}
                         books={categoryBooks}
-                        viewAllHref={`/dashboard/writer/library?category=${encodeURIComponent(category)}`}
                         getBookHref={(bookId) => `/dashboard/writer/read/${bookId}`}
                         onFavoriteToggle={handleFavoriteToggle}
+                        onViewAll={handleViewAllCategory}
                       />
                     ))}
 
@@ -398,8 +418,8 @@ export default function WriterLibraryPage() {
               </>
             )}
 
-            {/* Pagination */}
-            {totalCount > limit && (
+            {/* Pagination - Only show in list view */}
+            {viewMode === 'list' && totalCount > limit && (
               <div className="mt-8 flex justify-center gap-2">
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}

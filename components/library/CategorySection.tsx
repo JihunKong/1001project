@@ -17,8 +17,10 @@ interface CategorySectionProps {
   books: Book[];
   viewAllHref?: string;
   showViewAll?: boolean;
+  maxBooks?: number;
   getBookHref?: (bookId: string) => string;
   onFavoriteToggle?: (bookId: string, isFavorited: boolean) => void;
+  onViewAll?: (category: string) => void;
 }
 
 export default function CategorySection({
@@ -26,8 +28,10 @@ export default function CategorySection({
   books,
   viewAllHref,
   showViewAll = true,
+  maxBooks = 4,
   getBookHref,
-  onFavoriteToggle
+  onFavoriteToggle,
+  onViewAll
 }: CategorySectionProps) {
   const { t } = useTranslation();
 
@@ -48,25 +52,40 @@ export default function CategorySection({
         >
           {title}
         </h2>
-        {showViewAll && viewAllHref && (
-          <Link
-            href={viewAllHref}
-            className="text-[#141414] hover:text-[#141414]/70 transition-colors"
-            style={{
-              fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
-              fontSize: '20px',
-              fontWeight: 400,
-              lineHeight: '1.193em'
-            }}
-          >
-            {t('library.viewAll') || 'View all'}
-          </Link>
+        {showViewAll && (onViewAll || viewAllHref) && (
+          onViewAll ? (
+            <button
+              onClick={() => onViewAll(title)}
+              className="text-[#141414] hover:text-[#141414]/70 transition-colors"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '20px',
+                fontWeight: 400,
+                lineHeight: '1.193em'
+              }}
+            >
+              {t('library.viewAll') || 'View all'}
+            </button>
+          ) : viewAllHref ? (
+            <Link
+              href={viewAllHref}
+              className="text-[#141414] hover:text-[#141414]/70 transition-colors"
+              style={{
+                fontFamily: '"Helvetica Neue", -apple-system, system-ui, sans-serif',
+                fontSize: '20px',
+                fontWeight: 400,
+                lineHeight: '1.193em'
+              }}
+            >
+              {t('library.viewAll') || 'View all'}
+            </Link>
+          ) : null
         )}
       </div>
 
       {/* Books Grid - 4 columns with 12px gap */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {books.slice(0, 4).map((book) => (
+        {books.slice(0, maxBooks).map((book) => (
           <LibraryGridCard
             key={book.id}
             id={book.id}
