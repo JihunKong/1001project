@@ -1,0 +1,398 @@
+[
+  {
+    "folder": "01_ Neema_01",
+    "slug": "neema-01",
+    "title": "Neema Part One",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/neema-01/main.pdf",
+      "front": "/books/neema-01/front.pdf",
+      "back": "/books/neema-01/back.pdf"
+    }
+  },
+  {
+    "folder": "02_ Neema_02",
+    "slug": "neema-02",
+    "title": "Neema Part Two",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/neema-02/main.pdf",
+      "front": "/books/neema-02/front.pdf",
+      "back": "/books/neema-02/back.pdf"
+    }
+  },
+  {
+    "folder": "03_ Neema_03",
+    "slug": "neema-03",
+    "title": "Neema Part Three",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/neema-03/main.pdf",
+      "front": "/books/neema-03/front.pdf",
+      "back": "/books/neema-03/back.pdf"
+    }
+  },
+  {
+    "folder": "04_ Second chance",
+    "slug": "second-chance",
+    "title": "The Second Chance",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/second-chance/main.pdf",
+      "front": "/books/second-chance/front.pdf",
+      "back": "/books/second-chance/back.pdf"
+    }
+  },
+  {
+    "folder": "05_ Angel prayer",
+    "slug": "angel-prayer",
+    "title": "Angel's Prayer",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/angel-prayer/main.pdf",
+      "front": "/books/angel-prayer/front.pdf",
+      "back": "/books/angel-prayer/back.pdf"
+    }
+  },
+  {
+    "folder": "06_ Martha_01",
+    "slug": "martha-01",
+    "title": "Martha Story Part One",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/martha-01/main.pdf",
+      "front": "/books/martha-01/front.pdf",
+      "back": "/books/martha-01/back.pdf"
+    }
+  },
+  {
+    "folder": "07_ Martha_02",
+    "slug": "martha-02",
+    "title": "Martha Story Part Two",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/martha-02/main.pdf",
+      "front": "/books/martha-02/front.pdf",
+      "back": "/books/martha-02/back.pdf"
+    }
+  },
+  {
+    "folder": "08_ Martha_03",
+    "slug": "martha-03",
+    "title": "Martha Story Part Three",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/martha-03/main.pdf",
+      "front": "/books/martha-03/front.pdf",
+      "back": "/books/martha-03/back.pdf"
+    }
+  },
+  {
+    "folder": "09_ Never give up",
+    "slug": "never-give-up",
+    "title": "Never Give Up",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/never-give-up/main.pdf",
+      "front": "/books/never-give-up/front.pdf",
+      "back": "/books/never-give-up/back.pdf"
+    }
+  },
+  {
+    "folder": "10_ Appreciation",
+    "slug": "appreciation",
+    "title": "Appreciation",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/appreciation/main.pdf",
+      "front": "/books/appreciation/front.pdf",
+      "back": "/books/appreciation/back.pdf"
+    }
+  },
+  {
+    "folder": "11_ The eyes of the sun",
+    "slug": "eyes-of-the-sun",
+    "title": "The Eyes of the Sun",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/eyes-of-the-sun/main.pdf",
+      "front": "/books/eyes-of-the-sun/front.pdf",
+      "back": "/books/eyes-of-the-sun/back.pdf"
+    }
+  },
+  {
+    "folder": "12_ Who is real",
+    "slug": "who-is-real",
+    "title": "Who is Real Hero",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/who-is-real/main.pdf",
+      "front": "/books/who-is-real/front.pdf",
+      "back": "/books/who-is-real/back.pdf"
+    }
+  },
+  {
+    "folder": "13 _ Kakama _01",
+    "slug": "kakama-01",
+    "title": "Kakama and Rebels Part One",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/kakama-01/main.pdf",
+      "front": "/books/kakama-01/front.pdf",
+      "back": "/books/kakama-01/back.pdf"
+    }
+  },
+  {
+    "folder": "14 _ Kakama_02",
+    "slug": "kakama-02",
+    "title": "Kakama and Rebels Part Two",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/kakama-02/main.pdf",
+      "front": "/books/kakama-02/front.pdf",
+      "back": "/books/kakama-02/back.pdf"
+    }
+  },
+  {
+    "folder": "15_ My life _Span",
+    "slug": "my-life-span",
+    "title": "Mi Vida (My Life)",
+    "language": "es",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/my-life-span/main.pdf",
+      "front": null,
+      "back": "/books/my-life-span/back.pdf"
+    }
+  },
+  {
+    "folder": "16_ My Life_ P'urhépecha",
+    "slug": "my-life-purhepecha",
+    "title": "Mi Vida (P'urhépecha)",
+    "language": "es",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/my-life-purhepecha/main.pdf",
+      "front": "/books/my-life-purhepecha/front.pdf",
+      "back": "/books/my-life-purhepecha/back.pdf"
+    }
+  },
+  {
+    "folder": "17_ My life_Eng",
+    "slug": "my-life-eng",
+    "title": "My Life",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/my-life-eng/main.pdf",
+      "front": "/books/my-life-eng/front.pdf",
+      "back": "/books/my-life-eng/back.pdf"
+    }
+  },
+  {
+    "folder": "18_ Check point_ Span",
+    "slug": "checkpoint-span",
+    "title": "Punto de Control (Checkpoint)",
+    "language": "es",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/checkpoint-span/main.pdf",
+      "front": "/books/checkpoint-span/front.pdf",
+      "back": "/books/checkpoint-span/back.pdf"
+    }
+  },
+  {
+    "folder": "19_ Check point_ Eng",
+    "slug": "checkpoint-eng",
+    "title": "Checkpoint",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/checkpoint-eng/main.pdf",
+      "front": "/books/checkpoint-eng/front.pdf",
+      "back": "/books/checkpoint-eng/back.pdf"
+    }
+  },
+  {
+    "folder": "20_ Steet boy_part01_Span",
+    "slug": "street-boy-01-span",
+    "title": "El Chico de la Calle Parte 1",
+    "language": "es",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/street-boy-01-span/main.pdf",
+      "front": "/books/street-boy-01-span/front.pdf",
+      "back": "/books/street-boy-01-span/back.pdf"
+    }
+  },
+  {
+    "folder": "21. Street boy_part 02_Span Folder",
+    "slug": "street-boy-02-span",
+    "title": "El Chico de la Calle Parte 2",
+    "language": "es",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/street-boy-02-span/main.pdf",
+      "front": null,
+      "back": null
+    }
+  },
+  {
+    "folder": "22_ Street boy_part02_Eng",
+    "slug": "street-boy-02-eng",
+    "title": "The Street Boy Part Two",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/street-boy-02-eng/main.pdf",
+      "front": "/books/street-boy-02-eng/front.pdf",
+      "back": "/books/street-boy-02-eng/back.pdf"
+    }
+  },
+  {
+    "folder": "23_ The three boys_ Eng",
+    "slug": "three-boys-eng",
+    "title": "The Three Boys",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/three-boys-eng/main.pdf",
+      "front": "/books/three-boys-eng/front.pdf",
+      "back": "/books/three-boys-eng/back.pdf"
+    }
+  },
+  {
+    "folder": "24_ The story of a thief_ Eng",
+    "slug": "story-of-thief",
+    "title": "The Story of a Thief",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/story-of-thief/main.pdf",
+      "front": "/books/story-of-thief/front.pdf",
+      "back": "/books/story-of-thief/back.pdf"
+    }
+  },
+  {
+    "folder": "25_ The Three Boys_ Span",
+    "slug": "three-boys-span",
+    "title": "Los Tres Chicos",
+    "language": "es",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/three-boys-span/main.pdf",
+      "front": null,
+      "back": "/books/three-boys-span/back.pdf"
+    }
+  },
+  {
+    "folder": "26_ The indian boy's",
+    "slug": "indian-boys-petition",
+    "title": "The Indian Boy's Last Petition",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/indian-boys-petition/main.pdf",
+      "front": "/books/indian-boys-petition/front.pdf",
+      "back": "/books/indian-boys-petition/back.pdf"
+    }
+  },
+  {
+    "folder": "27_ Fatuma",
+    "slug": "fatuma",
+    "title": "Fatuma Story",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/fatuma/main.pdf",
+      "front": "/books/fatuma/front.pdf",
+      "back": "/books/fatuma/back.pdf"
+    }
+  },
+  {
+    "folder": "28_ Greedy Fisherman",
+    "slug": "greedy-fisherman",
+    "title": "The Greedy Fisherman",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/greedy-fisherman/main.pdf",
+      "front": "/books/greedy-fisherman/front.pdf",
+      "back": "/books/greedy-fisherman/back.pdf"
+    }
+  },
+  {
+    "folder": "29. Street boy_part 01_ENG Folder",
+    "slug": "street-boy-01-eng",
+    "title": "The Street Boy Part One",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/street-boy-01-eng/main.pdf",
+      "front": null,
+      "back": null
+    }
+  },
+  {
+    "folder": "29_ Girl with a hope_ Eng",
+    "slug": "girl-with-hope",
+    "title": "Girl with a Hope",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/girl-with-hope/main.pdf",
+      "front": "/books/girl-with-hope/front.pdf",
+      "back": "/books/girl-with-hope/back.pdf"
+    }
+  },
+  {
+    "folder": "30_ Mirror",
+    "slug": "mirror",
+    "title": "The Mirror Story",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/mirror/main.pdf",
+      "front": "/books/mirror/front.pdf",
+      "back": "/books/mirror/back.pdf"
+    }
+  },
+  {
+    "folder": "31. A gril come to stanford",
+    "slug": "girl-to-stanford",
+    "title": "A Girl Goes to Stanford",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/girl-to-stanford/main.pdf",
+      "front": "/books/girl-to-stanford/front.pdf",
+      "back": "/books/girl-to-stanford/back.pdf"
+    }
+  },
+  {
+    "folder": "32_The indian girl helping father",
+    "slug": "indian-girl-helping-father",
+    "title": "The Indian Girl Helping Father",
+    "language": "en",
+    "ageRange": "9-12",
+    "pdfPaths": {
+      "main": "/books/indian-girl-helping-father/main.pdf",
+      "front": "/books/indian-girl-helping-father/front.pdf",
+      "back": "/books/indian-girl-helping-father/back.pdf"
+    }
+  }
+]

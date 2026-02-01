@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 
 const PDF_BASE_PATH = '/Users/jihunkong/1001project/processed-books';
+const PUBLIC_BOOKS_PATH = path.join(process.cwd(), 'public', 'books');
 
 type PdfType = 'main' | 'sample' | 'front' | 'back';
 
@@ -17,14 +18,78 @@ interface BookPdfPaths {
   back: string | null;
 }
 
+interface BookWithPdfFields {
+  id: string;
+  title: string;
+  pdfKey: string | null;
+  samplePdf: string | null;
+  pdfFrontCover: string | null;
+  pdfBackCover: string | null;
+}
+
+function findPdfInPublicBooks(bookId: string, pdfType: PdfType): string | null {
+  const possibleSlugs = [bookId];
+
+  for (const slug of possibleSlugs) {
+    const pdfPath = path.join(PUBLIC_BOOKS_PATH, slug, `${pdfType}.pdf`);
+    if (fs.existsSync(pdfPath)) {
+      return pdfPath;
+    }
+  }
+
+  return null;
+}
+
+function resolvePdfPath(book: BookWithPdfFields, pdfType: PdfType): string | null {
+  const pdfFieldMap: Record<PdfType, keyof BookWithPdfFields> = {
+    main: 'pdfKey',
+    sample: 'samplePdf',
+    front: 'pdfFrontCover',
+    back: 'pdfBackCover',
+  };
+
+  const dbPath = book[pdfFieldMap[pdfType]] as string | null;
+
+  if (dbPath) {
+    if (dbPath.startsWith('/books/')) {
+      const fullPath = path.join(process.cwd(), 'public', dbPath);
+      if (fs.existsSync(fullPath)) {
+        return fullPath;
+      }
+    }
+
+    if (dbPath.startsWith('/') && fs.existsSync(dbPath)) {
+      return dbPath;
+    }
+
+    const processedPath = path.join(PDF_BASE_PATH, dbPath);
+    if (fs.existsSync(processedPath)) {
+      return processedPath;
+    }
+  }
+
+  const publicPath = findPdfInPublicBooks(book.id, pdfType);
+  if (publicPath) {
+    return publicPath;
+  }
+
+  return null;
+}
+
 function getBookPdfPaths(bookSlug: string): BookPdfPaths {
-  const bookDir = path.join(PDF_BASE_PATH, bookSlug);
+  const publicDir = path.join(PUBLIC_BOOKS_PATH, bookSlug);
+  const legacyDir = path.join(PDF_BASE_PATH, bookSlug);
+
+  const checkPath = (dir: string, filename: string): string | null => {
+    const fullPath = path.join(dir, filename);
+    return fs.existsSync(fullPath) ? fullPath : null;
+  };
 
   return {
-    main: fs.existsSync(path.join(bookDir, 'main.pdf')) ? path.join(bookDir, 'main.pdf') : null,
-    sample: fs.existsSync(path.join(bookDir, 'sample.pdf')) ? path.join(bookDir, 'sample.pdf') : null,
-    front: fs.existsSync(path.join(bookDir, 'front.pdf')) ? path.join(bookDir, 'front.pdf') : null,
-    back: fs.existsSync(path.join(bookDir, 'back.pdf')) ? path.join(bookDir, 'back.pdf') : null,
+    main: checkPath(publicDir, 'main.pdf') || checkPath(legacyDir, 'main.pdf'),
+    sample: checkPath(publicDir, 'sample.pdf') || checkPath(legacyDir, 'sample.pdf'),
+    front: checkPath(publicDir, 'front.pdf') || checkPath(legacyDir, 'front.pdf'),
+    back: checkPath(publicDir, 'back.pdf') || checkPath(legacyDir, 'back.pdf'),
   };
 }
 
@@ -108,41 +173,14 @@ export async function GET(
       return NextResponse.json({ error: accessCheck.reason }, { status: 403 });
     }
 
-    let pdfPath: string | null = null;
+    let pdfPath: string | null = resolvePdfPath(book, pdfType);
 
-    if (book.pdfKey) {
+    if (!pdfPath && book.pdfKey) {
       const bookFolder = book.pdfKey.includes('/') ? path.dirname(book.pdfKey) : book.pdfKey;
-      const fullBookFolder = bookFolder.startsWith('/') ? bookFolder : path.join(PDF_BASE_PATH, bookFolder);
+      const folderName = path.basename(bookFolder);
 
-      if (fs.existsSync(fullBookFolder)) {
-        const paths = getBookPdfPaths(path.basename(fullBookFolder));
-        pdfPath = paths[pdfType];
-      }
-    }
-
-    if (!pdfPath && pdfType === 'main' && book.pdfKey) {
-      const fullPath = book.pdfKey.startsWith('/') ? book.pdfKey : path.join(PDF_BASE_PATH, book.pdfKey);
-      if (fs.existsSync(fullPath)) {
-        pdfPath = fullPath;
-      }
-    }
-    if (!pdfPath && pdfType === 'sample' && book.samplePdf) {
-      const fullPath = book.samplePdf.startsWith('/') ? book.samplePdf : path.join(PDF_BASE_PATH, book.samplePdf);
-      if (fs.existsSync(fullPath)) {
-        pdfPath = fullPath;
-      }
-    }
-    if (!pdfPath && pdfType === 'front' && book.pdfFrontCover) {
-      const fullPath = book.pdfFrontCover.startsWith('/') ? book.pdfFrontCover : path.join(PDF_BASE_PATH, book.pdfFrontCover);
-      if (fs.existsSync(fullPath)) {
-        pdfPath = fullPath;
-      }
-    }
-    if (!pdfPath && pdfType === 'back' && book.pdfBackCover) {
-      const fullPath = book.pdfBackCover.startsWith('/') ? book.pdfBackCover : path.join(PDF_BASE_PATH, book.pdfBackCover);
-      if (fs.existsSync(fullPath)) {
-        pdfPath = fullPath;
-      }
+      const paths = getBookPdfPaths(folderName);
+      pdfPath = paths[pdfType];
     }
 
     if (!pdfPath || !fs.existsSync(pdfPath)) {
@@ -213,26 +251,30 @@ export async function HEAD(
 
     const book = await prisma.book.findUnique({
       where: { id: bookId },
-      select: { pdfKey: true, samplePdf: true }
+      select: {
+        id: true,
+        title: true,
+        pdfKey: true,
+        samplePdf: true,
+        pdfFrontCover: true,
+        pdfBackCover: true,
+      }
     });
 
     if (!book) {
       return new NextResponse(null, { status: 404 });
     }
 
-    let pdfPath: string | null = null;
+    let pdfPath: string | null = resolvePdfPath(book, pdfType);
 
-    if (book.pdfKey) {
+    if (!pdfPath && book.pdfKey) {
       const bookFolder = book.pdfKey.includes('/') ? path.dirname(book.pdfKey) : book.pdfKey;
-      const fullBookFolder = bookFolder.startsWith('/') ? bookFolder : path.join(PDF_BASE_PATH, bookFolder);
-
-      if (fs.existsSync(fullBookFolder)) {
-        const paths = getBookPdfPaths(path.basename(fullBookFolder));
-        pdfPath = paths[pdfType];
-      }
+      const folderName = path.basename(bookFolder);
+      const paths = getBookPdfPaths(folderName);
+      pdfPath = paths[pdfType];
     }
 
-    if (!pdfPath) {
+    if (!pdfPath || !fs.existsSync(pdfPath)) {
       return new NextResponse(null, { status: 404 });
     }
 
