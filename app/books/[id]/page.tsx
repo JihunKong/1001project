@@ -233,14 +233,35 @@ export default function BookDetailPage() {
           </div>
         )}
 
-        {book.contentType === 'PDF' && (book.pdfKey || book.coverImage) && (
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <iframe
-              src={book.pdfKey || book.coverImage}
-              className="w-full"
-              style={{ height: '800px', border: 'none' }}
-              title={`PDF viewer for ${book.title}`}
-            />
+        {book.contentType === 'PDF' && (
+          <div className="bg-white rounded-lg shadow-sm p-8">
+            <div className="text-center">
+              {book.coverImage && (
+                <div className="mb-6">
+                  <img
+                    src={book.coverImage}
+                    alt={`Cover of ${book.title}`}
+                    className="max-w-xs mx-auto rounded-lg shadow-md"
+                  />
+                </div>
+              )}
+              <div className="bg-blue-50 rounded-lg p-6 max-w-md mx-auto">
+                <BookOpen className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  PDF Book Available
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  This is a PDF book. Sign in to read the full content with our interactive PDF reader.
+                </p>
+                <Link
+                  href={`/login?callbackUrl=/dashboard/learner/read/${bookId}`}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  <BookOpen className="w-5 h-5" />
+                  Sign in to Read
+                </Link>
+              </div>
+            </div>
           </div>
         )}
 
