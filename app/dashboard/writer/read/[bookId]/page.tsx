@@ -47,16 +47,19 @@ export default async function WriterReadingPage({ params }: PageProps) {
     redirect('/dashboard/writer');
   }
 
-  // Only support TEXT books for now
+  if (book.contentType === 'PDF') {
+    redirect(`/dashboard/writer/read/${bookId}/pdf`);
+  }
+
   if (book.contentType !== 'TEXT') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            PDF Reading Coming Soon
+            Content Type Not Supported
           </h1>
           <p className="text-gray-600 mb-4">
-            This feature is currently available for text-based books only.
+            This content type is not currently supported.
           </p>
           <a
             href="/dashboard/writer"
