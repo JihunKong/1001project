@@ -2854,3 +2854,154 @@ model CleanupLog {
   @@index([tableName, executedAt])
   @@map("cleanup_logs")
 }
+
+// ==========================================
+// PII COMPLIANCE MODELS (COPPA, FERPA, PIPA)
+// ==========================================
+
+// Access Audit Log for FERPA compliance
+model AccessAuditLog {
+  id             String   @id @default(cuid())
+  userId         String
+  entityType     String // "ReadingProgress", "QuizAttempt", "Profile", etc.
+  entityId       String
+  action         String // "READ", "UPDATE", "DELETE", "EXPORT"
+  accessedBy     String // User ID who accessed the data
+  accessedByRole String // Role of the accessor
+  purpose        String? // Reason for access (educational, administrative, etc.)
+  ipAddress      String?
+  userAgent      String?
+  metadata       Json? // Additional context
+  timestamp      DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([accessedBy])
+  @@index([timestamp])
+  @@map("access_audit_logs")
+}
+
+// Enhanced Parental Consent Record for COPPA compliance
+model ParentalConsentRecord {
+  id                 String                    @id @default(cuid())
+  childUserId        String
+  parentEmail        String
+  parentName         String?
+  verificationMethod ParentalVerificationMethod
+  kbaAnswers         Json? // Encrypted KBA answers (hashed)
+  kbaScore           Int? // Score from KBA verification (0-100)
+  paymentVerified    Boolean                   @default(false)
+  paymentReference   String? // Reference for payment verification
+  consentGranted     Boolean
+  consentScope       String[] // What data/features consent covers
+  consentDate        DateTime?
+  expiresAt          DateTime? // Consent expiration (1 year from grant)
+  revokedAt          DateTime?
+  revokedReason      String?
+  ipAddress          String?
+  userAgent          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([childUserId])
+  @@index([parentEmail])
+  @@index([consentGranted])
+  @@map("parental_consent_records")
+}
+
+// Parental consent verification methods
+enum ParentalVerificationMethod {
+  EMAIL // Basic email verification (not COPPA compliant alone)
+  KBA // Knowledge-Based Authentication
+  PAYMENT // Credit card or payment verification
+  SIGNED_FORM // Signed consent form uploaded
+  VIDEO_CALL // Video verification (highest assurance)
+  GOVERNMENT_ID // Government ID verification
+}
+
+// Data Retention Schedule for automated cleanup
+model DataRetentionSchedule {
+  id               String                  @id @default(cuid())
+  tableName        String
+  recordId         String
+  dataType         String // "reading_progress", "quiz_attempt", etc.
+  userId           String
+  deleteAfter      DateTime
+  legalBasis       String // "consent", "legitimate_interest", "legal_obligation"
+  retentionPolicy  String // Policy name that applies
+  deletedAt        DateTime?
+  deletionVerified Boolean                 @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([deleteAfter])
+  @@index([userId])
+  @@index([tableName, recordId])
+  @@index([deletedAt])
+  @@map("data_retention_schedule")
+}
+
+// Parent-Child Relationship for FERPA parent access
+model ParentChildRelation {
+  id             String                 @id @default(cuid())
+  parentUserId   String
+  childUserId    String
+  relationship   ParentChildRelationType
+  verified       Boolean                @default(false)
+  verifiedAt     DateTime?
+  verifiedBy     String? // Admin who verified
+  verificationDoc String? // Reference to verification document
+  isActive       Boolean                @default(true)
+  revokedAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([parentUserId, childUserId])
+  @@index([parentUserId])
+  @@index([childUserId])
+  @@map("parent_child_relations")
+}
+
+enum ParentChildRelationType {
+  PARENT
+  LEGAL_GUARDIAN
+  CUSTODIAL_PARENT
+  NON_CUSTODIAL_PARENT
+}
+
+// Education Record Amendment Request for FERPA
+model AmendmentRequest {
+  id             String                @id @default(cuid())
+  requesterId    String // Parent or eligible student
+  studentId      String
+  recordType     String // Type of record to amend
+  recordId       String
+  currentValue   Json // Current record content
+  requestedValue Json // Requested changes
+  reason         String @db.Text
+  status         AmendmentRequestStatus @default(PENDING)
+  reviewedBy     String?
+  reviewedAt     DateTime?
+  reviewNotes    String? @db.Text
+  appealDeadline DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([requesterId])
+  @@index([studentId])
+  @@index([status])
+  @@map("amendment_requests")
+}
+
+enum AmendmentRequestStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  PARTIALLY_APPROVED
+  DENIED
+  APPEALED
+  APPEAL_DENIED
+}

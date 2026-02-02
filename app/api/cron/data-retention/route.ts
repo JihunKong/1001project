@@ -40,11 +40,11 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const results = await retentionService.runAllCleanupTasks();
+    const results = await retentionService.runAllCleanupTasksExtended();
 
     return NextResponse.json({
       success: true,
-      message: 'Data retention cron job completed',
+      message: 'Data retention cron job completed (extended)',
       results,
       executedAt: new Date().toISOString(),
     });
@@ -110,6 +110,26 @@ export async function POST(request: NextRequest) {
       case 'inactive_users':
         result = await retentionService.notifyInactiveUsers(body.daysInactive || 365);
         taskName = 'Inactive user notifications';
+        break;
+      case 'reading_progress':
+        result = await retentionService.cleanupOldReadingProgress(body.daysOld || 730);
+        taskName = 'Old reading progress anonymization';
+        break;
+      case 'quiz_attempts':
+        result = await retentionService.cleanupOldQuizAttempts(body.daysOld || 730);
+        taskName = 'Old quiz attempts anonymization';
+        break;
+      case 'vocabulary':
+        result = await retentionService.cleanupOldVocabulary(body.daysOld || 730);
+        taskName = 'Old vocabulary cleanup';
+        break;
+      case 'parental_consent':
+        result = await retentionService.cleanupExpiredParentalConsent();
+        taskName = 'Expired parental consent cleanup';
+        break;
+      case 'scheduled_deletions':
+        result = await retentionService.processScheduledDeletions();
+        taskName = 'Scheduled deletions processing';
         break;
       default:
         return NextResponse.json({ error: 'Invalid task specified' }, { status: 400 });

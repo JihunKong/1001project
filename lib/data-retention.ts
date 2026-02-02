@@ -20,9 +20,9 @@ export const RETENTION_POLICIES: RetentionPolicy[] = [
   {
     table: 'ActivityLog',
     recordType: 'old_activity',
-    retentionDays: 90,
+    retentionDays: 365,
     action: 'DELETE',
-    legalBasis: 'Audit purposes - 90 days sufficient for security review',
+    legalBasis: 'FERPA/PIPA compliance - Activity logs retained for 12 months',
   },
   {
     table: 'Notification',
@@ -37,6 +37,41 @@ export const RETENTION_POLICIES: RetentionPolicy[] = [
     retentionDays: 30,
     action: 'DELETE',
     legalBasis: 'Security - NextAuth handles session expiration',
+  },
+  {
+    table: 'ReadingProgress',
+    recordType: 'old_reading_progress',
+    retentionDays: 730,
+    action: 'ANONYMIZE',
+    legalBasis: 'Educational purpose - Reading progress retained for 24 months then anonymized',
+  },
+  {
+    table: 'QuizAttempt',
+    recordType: 'old_quiz_attempt',
+    retentionDays: 730,
+    action: 'ANONYMIZE',
+    legalBasis: 'Educational purpose - Quiz records retained for 24 months then anonymized',
+  },
+  {
+    table: 'ParentalConsentRecord',
+    recordType: 'consent_record',
+    retentionDays: 1095,
+    action: 'ARCHIVE',
+    legalBasis: 'COPPA legal requirement - Consent records must be retained for 3 years',
+  },
+  {
+    table: 'AccessAuditLog',
+    recordType: 'access_log',
+    retentionDays: 1095,
+    action: 'ARCHIVE',
+    legalBasis: 'FERPA compliance - Access logs retained for 3 years',
+  },
+  {
+    table: 'VocabularyWord',
+    recordType: 'vocabulary',
+    retentionDays: 730,
+    action: 'DELETE',
+    legalBasis: 'Educational purpose - Vocabulary data retained for 24 months',
   },
 ];
 
@@ -294,5 +329,208 @@ export class DataRetentionService {
 
   getRetentionPolicies(): RetentionPolicy[] {
     return RETENTION_POLICIES;
+  }
+
+  async cleanupOldReadingProgress(daysOld: number = 730): Promise<number> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    const oldProgress = await prisma.readingProgress.findMany({
+      where: {
+        lastReadAt: { lt: cutoffDate },
+      },
+      select: { id: true, userId: true, bookId: true },
+    });
+
+    let anonymizedCount = 0;
+
+    for (const progress of oldProgress) {
+      await prisma.readingProgress.update({
+        where: { id: progress.id },
+        data: {
+          notes: [],
+        },
+      });
+      anonymizedCount++;
+    }
+
+    if (anonymizedCount > 0) {
+      await this.logCleanup('ReadingProgress', 'old_reading_progress', anonymizedCount, `Anonymized notes older than ${daysOld} days`);
+    }
+
+    return anonymizedCount;
+  }
+
+  async cleanupOldQuizAttempts(daysOld: number = 730): Promise<number> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    const result = await prisma.quizAttempt.updateMany({
+      where: {
+        completedAt: { lt: cutoffDate },
+      },
+      data: {
+        answers: {},
+      },
+    });
+
+    if (result.count > 0) {
+      await this.logCleanup('QuizAttempt', 'old_quiz_attempt', result.count, `Anonymized answers older than ${daysOld} days`);
+    }
+
+    return result.count;
+  }
+
+  async cleanupOldVocabulary(daysOld: number = 730): Promise<number> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    const result = await prisma.vocabularyWord.deleteMany({
+      where: {
+        updatedAt: { lt: cutoffDate },
+      },
+    });
+
+    if (result.count > 0) {
+      await this.logCleanup('VocabularyWord', 'vocabulary', result.count, `Deleted vocabulary older than ${daysOld} days`);
+    }
+
+    return result.count;
+  }
+
+  async cleanupExpiredParentalConsent(): Promise<number> {
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 3);
+
+    const result = await prisma.parentalConsentRecord.deleteMany({
+      where: {
+        OR: [
+          {
+            consentGranted: false,
+            createdAt: { lt: threeYearsAgo },
+          },
+          {
+            AND: [
+              { revokedAt: { not: null } },
+              { revokedAt: { lt: threeYearsAgo } },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (result.count > 0) {
+      await this.logCleanup('ParentalConsentRecord', 'consent_record', result.count, 'Deleted consent records older than 3 years (COPPA)');
+    }
+
+    return result.count;
+  }
+
+  async processScheduledDeletions(): Promise<number> {
+    const now = new Date();
+
+    const scheduledDeletions = await prisma.dataRetentionSchedule.findMany({
+      where: {
+        deleteAfter: { lte: now },
+        deletedAt: null,
+      },
+      take: 100,
+    });
+
+    let deletedCount = 0;
+
+    for (const schedule of scheduledDeletions) {
+      try {
+        switch (schedule.tableName) {
+          case 'ReadingProgress':
+            await prisma.readingProgress.delete({
+              where: { id: schedule.recordId },
+            });
+            break;
+          case 'QuizAttempt':
+            await prisma.quizAttempt.delete({
+              where: { id: schedule.recordId },
+            });
+            break;
+          case 'ActivityLog':
+            await prisma.activityLog.delete({
+              where: { id: schedule.recordId },
+            });
+            break;
+          case 'VocabularyWord':
+            await prisma.vocabularyWord.delete({
+              where: { id: schedule.recordId },
+            });
+            break;
+        }
+
+        await prisma.dataRetentionSchedule.update({
+          where: { id: schedule.id },
+          data: {
+            deletedAt: now,
+            deletionVerified: true,
+          },
+        });
+
+        deletedCount++;
+      } catch (error) {
+        console.error(`Failed to delete scheduled record ${schedule.id}:`, error);
+      }
+    }
+
+    if (deletedCount > 0) {
+      await this.logCleanup('DataRetentionSchedule', 'scheduled_deletion', deletedCount, 'Processed scheduled deletions');
+    }
+
+    return deletedCount;
+  }
+
+  async runAllCleanupTasksExtended(): Promise<{
+    verificationTokens: number;
+    activityLogs: number;
+    notifications: number;
+    sessions: number;
+    hardDeletes: number;
+    expiredExports: number;
+    inactiveNotifications: number;
+    readingProgress: number;
+    quizAttempts: number;
+    vocabulary: number;
+    parentalConsent: number;
+    scheduledDeletions: number;
+    total: number;
+  }> {
+    const verificationTokens = await this.cleanupExpiredVerificationTokens();
+    const activityLogs = await this.cleanupOldActivityLogs(365);
+    const notifications = await this.cleanupOldNotifications();
+    const sessions = await this.cleanupExpiredSessions();
+    const hardDeletes = await this.executeHardDeletesForExpiredRecoveryPeriod();
+    const expiredExports = await this.cleanupExpiredDataExports();
+    const inactiveNotifications = await this.notifyInactiveUsers();
+    const readingProgress = await this.cleanupOldReadingProgress();
+    const quizAttempts = await this.cleanupOldQuizAttempts();
+    const vocabulary = await this.cleanupOldVocabulary();
+    const parentalConsent = await this.cleanupExpiredParentalConsent();
+    const scheduledDeletions = await this.processScheduledDeletions();
+
+    const total = verificationTokens + activityLogs + notifications + sessions +
+      hardDeletes + expiredExports + inactiveNotifications + readingProgress +
+      quizAttempts + vocabulary + parentalConsent + scheduledDeletions;
+
+    return {
+      verificationTokens,
+      activityLogs,
+      notifications,
+      sessions,
+      hardDeletes,
+      expiredExports,
+      inactiveNotifications,
+      readingProgress,
+      quizAttempts,
+      vocabulary,
+      parentalConsent,
+      scheduledDeletions,
+      total,
+    };
   }
 }

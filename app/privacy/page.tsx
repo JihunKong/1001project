@@ -209,7 +209,7 @@ export default function PrivacyPage() {
             </div>
           </section>
 
-          <section>
+          <section className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.section8.title')}</h2>
             <p className="text-gray-600 mb-4">
               {t('privacy.section8.intro')}
@@ -220,6 +220,138 @@ export default function PrivacyPage() {
               <li>{t('privacy.section8.item3')}</li>
               <li>{t('privacy.section8.item4')}</li>
             </ul>
+          </section>
+
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.aiServices.title')}</h2>
+            <p className="text-gray-600 mb-4">{t('privacy.aiServices.intro')}</p>
+
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-6">
+              <h3 className="font-semibold text-gray-900 mb-2">{t('privacy.aiServices.openai.title')}</h3>
+              <p className="text-sm text-gray-600 mb-2">{t('privacy.aiServices.openai.description')}</p>
+              <p className="text-sm text-gray-600 mb-2"><strong>Data processed:</strong> {t('privacy.aiServices.openai.dataProcessed')}</p>
+              <p className="text-sm text-gray-600"><strong>Retention:</strong> {t('privacy.aiServices.openai.retention')}</p>
+            </div>
+
+            <p className="text-gray-600 mb-4">{t('privacy.aiServices.purpose')}</p>
+            <ul className="list-disc list-inside text-gray-600 space-y-2 mb-4">
+              <li>{t('privacy.aiServices.purpose1')}</li>
+              <li>{t('privacy.aiServices.purpose2')}</li>
+              <li>{t('privacy.aiServices.purpose3')}</li>
+              <li>{t('privacy.aiServices.purpose4')}</li>
+            </ul>
+            <p className="text-sm text-gray-500 italic">{t('privacy.aiServices.optOut')}</p>
+          </section>
+
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.dataRetention.title')}</h2>
+            <p className="text-gray-600 mb-4">{t('privacy.dataRetention.intro')}</p>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-4">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-2 pr-4 font-semibold text-gray-900">{t('privacy.dataRetention.table.dataType')}</th>
+                      <th className="text-left py-2 font-semibold text-gray-900">{t('privacy.dataRetention.table.retentionPeriod')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-600">
+                    <tr className="border-b border-gray-100">
+                      <td className="py-2 pr-4">Reading Progress</td>
+                      <td className="py-2">24 months</td>
+                    </tr>
+                    <tr className="border-b border-gray-100">
+                      <td className="py-2 pr-4">Activity Logs</td>
+                      <td className="py-2">12 months</td>
+                    </tr>
+                    <tr className="border-b border-gray-100">
+                      <td className="py-2 pr-4">Account Information</td>
+                      <td className="py-2">Until deletion</td>
+                    </tr>
+                    <tr className="border-b border-gray-100">
+                      <td className="py-2 pr-4">Quiz Results</td>
+                      <td className="py-2">24 months</td>
+                    </tr>
+                    <tr className="border-b border-gray-100">
+                      <td className="py-2 pr-4">Parental Consent Records</td>
+                      <td className="py-2">36 months (COPPA)</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-4">Access Audit Logs</td>
+                      <td className="py-2">36 months (FERPA)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <p className="text-sm text-gray-500">{t('privacy.dataRetention.deletion')}</p>
+          </section>
+
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.regulatoryCompliance.title')}</h2>
+            <p className="text-gray-600 mb-6">{t('privacy.regulatoryCompliance.intro')}</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('privacy.regulatoryCompliance.coppa.title')}</h3>
+                <p className="text-sm text-gray-600">{t('privacy.regulatoryCompliance.coppa.description')}</p>
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('privacy.regulatoryCompliance.ferpa.title')}</h3>
+                <p className="text-sm text-gray-600">{t('privacy.regulatoryCompliance.ferpa.description')}</p>
+              </div>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('privacy.regulatoryCompliance.pipa.title')}</h3>
+                <p className="text-sm text-gray-600">{t('privacy.regulatoryCompliance.pipa.description')}</p>
+              </div>
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-5">
+                <h3 className="font-semibold text-gray-900 mb-2">{t('privacy.regulatoryCompliance.gdpr.title')}</h3>
+                <p className="text-sm text-gray-600">{t('privacy.regulatoryCompliance.gdpr.description')}</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.parentalRights.title')}</h2>
+            <p className="text-gray-600 mb-4">{t('privacy.parentalRights.intro')}</p>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-4">
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-start gap-2">
+                  <Shield className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span>{t('privacy.parentalRights.items.review')}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Shield className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span>{t('privacy.parentalRights.items.consent')}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Shield className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span>{t('privacy.parentalRights.items.delete')}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Shield className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span>{t('privacy.parentalRights.items.amend')}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Shield className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span>{t('privacy.parentalRights.items.access')}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Shield className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span>{t('privacy.parentalRights.items.export')}</span>
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-gray-600 mb-3">{t('privacy.parentalRights.dashboard')}</p>
+            <Link
+              href="/dashboard/parent"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {t('privacy.parentalRights.dashboardLink')}
+            </Link>
           </section>
         </div>
 

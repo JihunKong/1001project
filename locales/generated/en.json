@@ -3324,6 +3324,74 @@
       "item3": "We will provide a summary of key changes",
       "item4": "Continued use after changes constitutes acceptance"
     },
+    "aiServices": {
+      "title": "9. AI Services and Third-Party Processing",
+      "intro": "We use artificial intelligence services to enhance your educational experience:",
+      "openai": {
+        "title": "OpenAI Services",
+        "description": "Used for image generation, text-to-speech, and AI writing assistance",
+        "dataProcessed": "Text content you submit for review or image generation",
+        "retention": "OpenAI may retain data for up to 30 days for abuse monitoring"
+      },
+      "purpose": "AI services are used exclusively for:",
+      "purpose1": "Generating illustrations for text-only stories",
+      "purpose2": "Providing grammar and structure review feedback",
+      "purpose3": "Enabling text-to-speech functionality for accessibility",
+      "purpose4": "Answering educational questions about reading content",
+      "optOut": "You can opt out of AI features in your account settings. Basic platform functionality remains available without AI features."
+    },
+    "dataRetention": {
+      "title": "10. Data Retention Policy",
+      "intro": "We retain your data only as long as necessary:",
+      "table": {
+        "dataType": "Data Type",
+        "retentionPeriod": "Retention Period",
+        "basis": "Legal Basis"
+      },
+      "items": {
+        "readingProgress": "Reading progress: 24 months (Educational purpose)",
+        "activityLogs": "Activity logs: 12 months (Service improvement)",
+        "accountInfo": "Account information: Until account deletion",
+        "quizResults": "Quiz results: 24 months (Educational assessment)",
+        "parentalConsent": "Parental consent records: 36 months (COPPA legal requirement)",
+        "accessLogs": "Access audit logs: 36 months (FERPA compliance)"
+      },
+      "deletion": "After the retention period, data is automatically deleted or anonymized. You can request earlier deletion at any time."
+    },
+    "regulatoryCompliance": {
+      "title": "11. Regulatory Compliance",
+      "intro": "We comply with the following privacy regulations:",
+      "coppa": {
+        "title": "COPPA (Children's Online Privacy Protection Act)",
+        "description": "For users under 13 in the United States, we obtain verifiable parental consent before collecting personal information."
+      },
+      "ferpa": {
+        "title": "FERPA (Family Educational Rights and Privacy Act)",
+        "description": "We protect student education records and provide parents/eligible students with access rights."
+      },
+      "pipa": {
+        "title": "Korea PIPA (Personal Information Protection Act)",
+        "description": "For users under 14 in Korea, we require legal guardian consent and provide data protection officer contact."
+      },
+      "gdpr": {
+        "title": "GDPR (General Data Protection Regulation)",
+        "description": "For users in the European Union, we ensure data portability, right to erasure, and clear consent mechanisms."
+      }
+    },
+    "parentalRights": {
+      "title": "12. Parental Rights and Controls",
+      "intro": "Parents and legal guardians of minor users have the following rights:",
+      "items": {
+        "review": "Review all personal information collected about their child",
+        "consent": "Provide or revoke consent for data collection",
+        "delete": "Request deletion of their child's account and data",
+        "amend": "Request amendments to inaccurate records",
+        "access": "View who has accessed their child's educational records",
+        "export": "Export their child's data in a portable format"
+      },
+      "dashboard": "Access the Parent Dashboard to exercise these rights:",
+      "dashboardLink": "Go to Parent Dashboard"
+    },
     "footer": {
       "contactPrivacyTeam": "Contact Privacy Team",
       "viewTerms": "View Terms of Service"
