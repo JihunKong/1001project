@@ -261,6 +261,6 @@ export default withAuth(
 
 export const config = {
   matcher: [
-    '/((?!api/health|_next/static|_next/image|favicon|manifest.json|site.webmanifest|build-info.json|android-chrome-|apple-touch-icon).*)',
+    '/((?!api/health|_next/static|_next/image|favicon|manifest.json|site.webmanifest|build-info.json|android-chrome-|apple-touch-icon|pdf\\.worker).*)',
   ],
 };
