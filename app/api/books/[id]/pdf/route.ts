@@ -108,7 +108,9 @@ async function checkPdfAccess(
   }
 
   if (userRole === UserRole.ADMIN || userRole === UserRole.TEACHER ||
-      userRole === UserRole.CONTENT_ADMIN || userRole === UserRole.BOOK_MANAGER) {
+      userRole === UserRole.CONTENT_ADMIN || userRole === UserRole.BOOK_MANAGER ||
+      userRole === UserRole.WRITER || userRole === UserRole.STORY_MANAGER ||
+      userRole === UserRole.INSTITUTION) {
     return { allowed: true };
   }
 
