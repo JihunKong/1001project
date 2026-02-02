@@ -55,6 +55,8 @@ export default function PDFReaderPage({
   const [error, setError] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [containerWidth, setContainerWidth] = useState(800);
+  const [containerHeight, setContainerHeight] = useState(600);
+  const [fitMode, setFitMode] = useState<'height' | 'width'>('height');
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [showMobileThumbnails, setShowMobileThumbnails] = useState(false);
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState<Set<number>>(new Set());
@@ -66,16 +68,18 @@ export default function PDFReaderPage({
   const pdfUrl = `/api/books/${bookId}/pdf?type=${pdfType}`;
 
   useEffect(() => {
-    const updateWidth = () => {
+    const updateDimensions = () => {
       if (containerRef.current) {
         const width = containerRef.current.clientWidth - 48;
+        const height = containerRef.current.clientHeight - 48;
         setContainerWidth(Math.min(width, 1200));
+        setContainerHeight(Math.max(height, 400));
       }
     };
 
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   useEffect(() => {
@@ -267,6 +271,26 @@ export default function PDFReaderPage({
             >
               {showThumbnails ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeft className="w-5 h-5" />}
             </button>
+            <div className="hidden sm:flex items-center gap-1 bg-gray-700 rounded-lg px-1 py-1">
+              <button
+                onClick={() => setFitMode('height')}
+                className={`p-1.5 rounded transition-colors ${
+                  fitMode === 'height' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
+                }`}
+                title="Fit to Page"
+              >
+                <Maximize className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setFitMode('width')}
+                className={`p-1.5 rounded transition-colors ${
+                  fitMode === 'width' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
+                }`}
+                title="Fit to Width"
+              >
+                <ArrowLeft className="w-4 h-4 rotate-90" />
+              </button>
+            </div>
             <div className="hidden sm:flex items-center gap-1 bg-gray-700 rounded-lg px-2 py-1">
               <button
                 onClick={zoomOut}
@@ -387,7 +411,10 @@ export default function PDFReaderPage({
               <Page
                 pageNumber={pageNumber}
                 scale={scale}
-                width={containerWidth / scale}
+                {...(fitMode === 'height'
+                  ? { height: containerHeight / scale }
+                  : { width: containerWidth / scale }
+                )}
                 className="bg-white"
                 renderTextLayer={true}
                 renderAnnotationLayer={true}
