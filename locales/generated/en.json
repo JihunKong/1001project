@@ -3392,6 +3392,18 @@
       "dashboard": "Access the Parent Dashboard to exercise these rights:",
       "dashboardLink": "Go to Parent Dashboard"
     },
+    "koreaSpecific": {
+      "title": "Information for Users in Republic of Korea",
+      "intro": "For users in the Republic of Korea, the following additional rights are guaranteed under the Personal Information Protection Act (PIPA):",
+      "rights": {
+        "access": "You can view how your personal information is being processed",
+        "correction": "You can request correction of inaccurate personal information",
+        "deletion": "You can request deletion of your personal information",
+        "suspension": "You can request suspension of processing your personal information"
+      },
+      "processingTime": "We will notify you of the results within 10 days of receiving your request.",
+      "minor": "For children under 14, legal guardian consent is required, and legal guardians may exercise the above rights on behalf of the child."
+    },
     "footer": {
       "contactPrivacyTeam": "Contact Privacy Team",
       "viewTerms": "View Terms of Service"

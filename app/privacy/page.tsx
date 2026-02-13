@@ -353,6 +353,35 @@ export default function PrivacyPage() {
               {t('privacy.parentalRights.dashboardLink')}
             </Link>
           </section>
+
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('privacy.koreaSpecific.title')}</h2>
+            <p className="text-gray-600 mb-4">{t('privacy.koreaSpecific.intro')}</p>
+
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-4">
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-start gap-2">
+                  <Eye className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>{t('privacy.section6.item1')}:</strong> {t('privacy.koreaSpecific.rights.access')}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Eye className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>{t('privacy.section6.item2')}:</strong> {t('privacy.koreaSpecific.rights.correction')}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Eye className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>{t('privacy.section6.item3')}:</strong> {t('privacy.koreaSpecific.rights.deletion')}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Eye className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>{t('privacy.section6.item6')}:</strong> {t('privacy.koreaSpecific.rights.suspension')}</span>
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-2">{t('privacy.koreaSpecific.processingTime')}</p>
+            <p className="text-sm text-gray-500 italic">{t('privacy.koreaSpecific.minor')}</p>
+          </section>
         </div>
 
         {/* Footer Actions */}
