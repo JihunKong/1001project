@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Eye, Lock, Users, Database, Mail } from 'lucide-react';
+import { Shield, Eye, Lock, Users, Database, Mail, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
@@ -11,6 +11,13 @@ export default function PrivacyPage() {
       {/* Header */}
       <div className="bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>{t('common.backToHome')}</span>
+          </Link>
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-6">
               <Shield className="h-8 w-8 text-white" />
