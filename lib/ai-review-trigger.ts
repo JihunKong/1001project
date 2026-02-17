@@ -397,11 +397,45 @@ export async function triggerAutoAIReviews(
   language?: SupportedLanguage
 ): Promise<void> {
   const submission = await prisma.textSubmission.findUnique({
-    where: { id: submissionId }
+    where: { id: submissionId },
+    include: {
+      author: {
+        include: {
+          profile: {
+            select: {
+              isMinor: true,
+              parentalConsentStatus: true,
+              aiServiceConsent: true,
+              dataTransferConsent: true,
+            }
+          }
+        }
+      }
+    }
   });
 
   if (!submission) {
     logger.error(`Submission ${submissionId} not found for auto AI review`);
+    return;
+  }
+
+  const profile = submission.author?.profile;
+  if (profile?.isMinor) {
+    const hasParentalConsent = profile.parentalConsentStatus === 'GRANTED';
+    const hasAIConsent = profile.aiServiceConsent === true;
+    if (!hasParentalConsent || !hasAIConsent) {
+      logger.info(`[AI Review] Skipping AI review for minor without consent`, {
+        submissionId,
+        isMinor: true,
+        parentalConsentStatus: profile.parentalConsentStatus,
+        aiServiceConsent: profile.aiServiceConsent,
+      });
+      return;
+    }
+  }
+
+  if (profile && profile.aiServiceConsent === false) {
+    logger.info(`[AI Review] Skipping AI review - user opted out of AI services`, { submissionId });
     return;
   }
 

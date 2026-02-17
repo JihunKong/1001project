@@ -339,7 +339,7 @@ export async function sendVerificationEmail(email: string, url: string) {
   const transporter = createTransporter();
 
   if (!transporter) {
-    logger.info(`[Email Service Disabled] Magic link for ${email}`, { url });
+    logger.info(`[Email Service Disabled] Magic link generated but not sent`, { email });
     logger.info('To enable email sending, configure SMTP settings in .env.local');
     return { success: false, message: 'Email service not configured' };
   }
@@ -356,7 +356,7 @@ export async function sendVerificationEmail(email: string, url: string) {
     return { success: true, messageId: info.messageId }
   } catch (error) {
     logger.error("Error sending verification email", error)
-    logger.info(`Fallback - Magic link for ${email}`, { url });
+    logger.info(`Fallback - Magic link email failed`, { email });
     throw new Error("Failed to send verification email")
   }
 }

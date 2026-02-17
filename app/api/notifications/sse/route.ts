@@ -81,7 +81,8 @@ export async function GET(request: NextRequest) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': process.env.NEXTAUTH_URL || 'https://1001stories.seedsofempowerment.org',
+        'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Allow-Headers': 'Cache-Control'
       }
     });

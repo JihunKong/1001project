@@ -73,6 +73,7 @@ Thumbs.db
 
 # PDF files - not used in this project
 *.pdf
+!public/documents/*.pdf
 
 # Large PDF files (>50MB)
 public/pdfs/*.pdf

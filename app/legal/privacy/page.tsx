@@ -139,12 +139,18 @@ export default function PrivacyPolicyPage() {
             </section>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-gray-200">
+          <div className="mt-12 pt-8 border-t border-gray-200 flex flex-wrap gap-4">
             <Link
               href="/"
               className="inline-flex items-center justify-center px-6 py-3 bg-soe-green-600 text-white rounded-lg hover:bg-soe-green-700 transition-colors"
             >
               {t('legal.privacy.footer.backToHome')}
+            </Link>
+            <Link
+              href="/privacy-policy"
+              className="inline-flex items-center justify-center px-6 py-3 border border-soe-green-600 text-soe-green-600 rounded-lg hover:bg-soe-green-50 transition-colors"
+            >
+              한국어 개인정보처리방침 전문
             </Link>
           </div>
         </div>

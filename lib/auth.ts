@@ -230,7 +230,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (!isEmailServiceConfigured()) {
-          logger.warn('Email service not configured', { email, magicLink: url });
+          logger.warn('Email service not configured - magic link generated but not sent', { email });
           return;
         }
         

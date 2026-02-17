@@ -9,6 +9,11 @@ import {
 } from '@/lib/validation/book-registration.schema';
 import { uploadCoverImage } from '@/lib/file-upload';
 import { safeParseJSONArray } from '@/lib/security-middleware';
+import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
+
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
 
 const getStringOrUndefined = (value: FormDataEntryValue | null): string | undefined => {
   if (value === null || value === '') return undefined;
@@ -111,7 +116,11 @@ export async function POST(req: NextRequest) {
         authorAge: data.authorAge,
         authorLocation: data.authorLocation,
         contentType: 'TEXT',
-        content: data.content,
+        content: data.content ? purify.sanitize(data.content, {
+          ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'em', 'u', 's',
+                         'ul', 'ol', 'li', 'blockquote', 'br', 'hr', 'span', 'div'],
+          ALLOWED_ATTR: ['class', 'style'],
+        }) : data.content,
         coverImage: coverImage,
         language: data.language,
         ageRange: data.ageRange,
@@ -155,7 +164,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: 'Failed to register book',
-        message: error instanceof Error ? error.message : 'Unknown error occurred',
+        message: 'An unexpected error occurred during book registration',
       },
       { status: 500 }
     );

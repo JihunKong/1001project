@@ -229,6 +229,7 @@ export default withAuth(
           pathname.startsWith('/contact') ||
           pathname.startsWith('/help') ||
           pathname.startsWith('/privacy') ||
+          pathname.startsWith('/privacy-policy') ||
           pathname.startsWith('/terms') ||
           pathname.startsWith('/verify-email') ||
           pathname.startsWith('/demo') ||
@@ -247,7 +248,22 @@ export default withAuth(
           pathname.startsWith('/images/') ||
           pathname.startsWith('/covers/') ||
           pathname.startsWith('/books/') ||
-          pathname.startsWith('/figma-assets/')
+          pathname.startsWith('/figma-assets/') ||
+          pathname.endsWith('.png') ||
+          pathname.endsWith('.jpg') ||
+          pathname.endsWith('.jpeg') ||
+          pathname.endsWith('.gif') ||
+          pathname.endsWith('.svg') ||
+          pathname.endsWith('.ico') ||
+          pathname.endsWith('.webp') ||
+          pathname.endsWith('.mp3') ||
+          pathname.endsWith('.mp4') ||
+          pathname.endsWith('.woff') ||
+          pathname.endsWith('.woff2') ||
+          pathname.endsWith('.ttf') ||
+          pathname.endsWith('.css') ||
+          pathname.endsWith('.js') ||
+          pathname.endsWith('.mjs')
         ) {
           return true;
         }
