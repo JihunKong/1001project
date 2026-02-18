@@ -300,7 +300,7 @@ export default function KoreanPrivacyPolicyPage() {
               <h3 className="text-xl font-semibold text-gray-800 mb-3">권리 행사 방법</h3>
               <div className="bg-gray-50 rounded-lg p-4">
                 <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                  <li><strong>이메일:</strong> privacy@1001stories.org 로 요청서 발송</li>
+                  <li><strong>이메일:</strong> info@seedsofempowerment.org 로 요청서 발송</li>
                   <li><strong>온라인:</strong> 로그인 후 계정 설정 &gt; 개인정보 관리에서 직접 처리</li>
                   <li><strong>처리 기간:</strong> 요청일로부터 10일 이내 (「개인정보 보호법」 제38조)</li>
                   <li><strong>필요 정보:</strong> 본인 확인을 위한 이름, 이메일 주소, 요청 내용</li>
@@ -319,7 +319,7 @@ export default function KoreanPrivacyPolicyPage() {
                 <ul className="text-gray-700 space-y-1">
                   <li><strong>단체명:</strong> Seeds of Empowerment</li>
                   <li><strong>직위:</strong> 개인정보보호책임자 (Data Protection Officer)</li>
-                  <li><strong>이메일:</strong> privacy@1001stories.org</li>
+                  <li><strong>이메일:</strong> info@seedsofempowerment.org</li>
                 </ul>
               </div>
               <p className="text-gray-700 leading-relaxed mb-4">
