@@ -3480,5 +3480,59 @@
       "title": "마케팅 쿠키",
       "description": "이 쿠키는 관련 광고를 표시하기 위해 여러 웹사이트에서 방문자를 추적하는 데 사용됩니다."
     }
+  },
+  "contact": {
+    "header": {
+      "title": "문의하기",
+      "description": "1001 Stories에 대해 궁금한 점이 있으신가요? 지원, 파트너십 또는 일반 문의 사항이 있으시면 언제든 연락해 주세요."
+    },
+    "info": {
+      "title": "연락처 정보",
+      "email": {
+        "title": "이메일",
+        "description": "일반 문의 및 지원"
+      },
+      "phone": {
+        "title": "전화",
+        "description": "영업 시간 중 이용 가능"
+      },
+      "address": {
+        "title": "주소",
+        "line1": "Seeds of Empowerment",
+        "line2": "글로벌 교육 이니셔티브",
+        "line3": "미국 캘리포니아주 샌프란시스코"
+      },
+      "hours": {
+        "title": "영업 시간",
+        "weekdays": "월요일 - 금요일: 오전 9시 - 오후 6시 (태평양 표준시)",
+        "weekend": "토요일 - 일요일: 휴무"
+      }
+    },
+    "actions": {
+      "title": "바로가기",
+      "joinEducator": "교육자로 참여하기",
+      "becomeWriter": "작가로 참여하기",
+      "exploreStories": "스토리 둘러보기"
+    },
+    "form": {
+      "title": "메시지 보내기",
+      "firstName": "이름",
+      "firstNamePlaceholder": "이름을 입력하세요",
+      "lastName": "성",
+      "lastNamePlaceholder": "성을 입력하세요",
+      "email": "이메일 주소",
+      "emailPlaceholder": "이메일 주소를 입력하세요",
+      "subject": "문의 주제",
+      "selectTopic": "주제를 선택하세요",
+      "topicGeneral": "일반 문의",
+      "topicTeacher": "교사 / 교육자",
+      "topicWriter": "작가 / 저자",
+      "topicPartnership": "파트너십",
+      "topicTechnical": "기술 지원",
+      "topicOther": "기타",
+      "message": "메시지",
+      "messagePlaceholder": "어떻게 도움을 드릴 수 있는지 알려주세요...",
+      "sendButton": "메시지 보내기"
+    }
   }
 }

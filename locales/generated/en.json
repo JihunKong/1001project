@@ -1855,6 +1855,7 @@
     "filter": "Filter",
     "sort": "Sort",
     "close": "Close",
+    "closeWindow": "Close Window",
     "back": "Back",
     "backToHome": "Back to Home",
     "next": "Next",
@@ -2565,6 +2566,27 @@
           "validation": {
             "required": "Full name is required",
             "minLength": "Name must be at least 2 characters"
+          }
+        },
+        "dateOfBirth": {
+          "label": "Date of Birth",
+          "placeholder": "Select your date of birth",
+          "validation": {
+            "required": "Date of birth is required",
+            "invalid": "Please enter a valid date of birth",
+            "tooYoung": "You must be at least 3 years old to register"
+          }
+        },
+        "parentalConsent": {
+          "notice": "Since you are under 14 years old, parental consent is required to create an account. Please provide your parent or guardian's information below.",
+          "parentName": "Parent/Guardian Name",
+          "parentNamePlaceholder": "Enter parent or guardian's full name",
+          "parentEmail": "Parent/Guardian Email",
+          "parentEmailPlaceholder": "Enter parent or guardian's email",
+          "validation": {
+            "parentNameRequired": "Parent or guardian name is required",
+            "parentEmailRequired": "Parent or guardian email is required",
+            "parentEmailInvalid": "Please enter a valid parent or guardian email"
           }
         },
         "terms": {
@@ -3430,6 +3452,60 @@
     "marketing": {
       "title": "Marketing Cookies",
       "description": "These cookies are used to track visitors across websites to display relevant advertisements."
+    }
+  },
+  "contact": {
+    "header": {
+      "title": "Contact Us",
+      "description": "Have questions about 1001 Stories? We'd love to hear from you. Reach out to our team for support, partnerships, or general inquiries."
+    },
+    "info": {
+      "title": "Contact Information",
+      "email": {
+        "title": "Email",
+        "description": "For general inquiries and support"
+      },
+      "phone": {
+        "title": "Phone",
+        "description": "Available during business hours"
+      },
+      "address": {
+        "title": "Address",
+        "line1": "Seeds of Empowerment",
+        "line2": "Global Education Initiative",
+        "line3": "San Francisco, CA, USA"
+      },
+      "hours": {
+        "title": "Business Hours",
+        "weekdays": "Monday - Friday: 9:00 AM - 6:00 PM (PST)",
+        "weekend": "Saturday - Sunday: Closed"
+      }
+    },
+    "actions": {
+      "title": "Quick Actions",
+      "joinEducator": "Join as an Educator",
+      "becomeWriter": "Become a Writer",
+      "exploreStories": "Explore Stories"
+    },
+    "form": {
+      "title": "Send Us a Message",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "subject": "Subject",
+      "selectTopic": "Select a topic",
+      "topicGeneral": "General Inquiry",
+      "topicTeacher": "Teacher / Educator",
+      "topicWriter": "Writer / Author",
+      "topicPartnership": "Partnership",
+      "topicTechnical": "Technical Support",
+      "topicOther": "Other",
+      "message": "Message",
+      "messagePlaceholder": "Tell us how we can help you...",
+      "sendButton": "Send Message"
     }
   }
 }
