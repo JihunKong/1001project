@@ -55,7 +55,7 @@ RUN apk add --no-cache libc6-compat python3 make g++
 
 # Build arguments for API keys and URLs (required for build)
 ARG OPENAI_API_KEY
-ARG NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
+ARG NEXTAUTH_URL=http://localhost:3000
 
 # Set build environment
 ENV NODE_ENV=production
@@ -148,7 +148,7 @@ ENV NODE_ENV=production \
     PORT=3000 \
     NEXT_TELEMETRY_DISABLED=1 \
     NPM_CONFIG_CACHE=/tmp/.npm \
-    NEXTAUTH_URL=https://1001stories.seedsofempowerment.org
+    NEXTAUTH_URL=http://localhost:3000
 
 # Security: Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
