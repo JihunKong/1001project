@@ -24,7 +24,9 @@ import {
 import PDFDownloadButton from './PDFDownloadButton';
 import Link from 'next/link';
 
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+if (typeof window !== 'undefined') {
+  pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+}
 
 interface PDFReaderPageProps {
   bookId: string;
