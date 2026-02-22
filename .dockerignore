@@ -35,11 +35,19 @@ out/
 ehthumbs.db
 Thumbs.db
 
-# Testing
+# Testing and dev artifacts
 coverage/
 test-results/
 playwright-report/
 lib/test-utils.tsx
+tests/
+__tests__/
+*.spec.ts
+*.test.ts
+playwright.config.ts
+jest.config.*
+jest.setup.*
+screenshots/
 
 # Documentation and configs
 *.md
@@ -64,24 +72,32 @@ scripts/
 !scripts/data/
 !scripts/import-text-stories-from-json.ts
 
-# Infrastructure
+# Infrastructure (not needed in app image)
 infrastructure/
+nginx/
+postgres/
 
 # Uploads (will be mounted as volume)
 uploads/
 
-# Large PDF files in public (will be mounted as volume)
+# Runtime-generated directories (volume-mounted in production)
 public/books/
 public/pdfs/
+public/covers/
+public/generated-images/
+
+# Large media files (not needed in app image)
+public/1001StoriesWinner.mov
+public/DSC_0846.JPG
+public/IMG_8809.JPG
+public/IMG_0720.JPG
+public/hero-classroom-original.jpg
 
 # Large tar.gz files
 *.tar.gz
 
 # Backup files
 backups/
-
-# Infrastructure files
-infrastructure/
 
 # Build info
 tsconfig.tsbuildinfo

@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { BookOpenIcon, UserGroupIcon, LightBulbIcon, SparklesIcon } from '@heroicons/react/24/solid'
+import { ChevronLeft, ChevronRight, X, BookOpen, Users, Lightbulb, Sparkles } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface OnboardingStep {
@@ -36,12 +35,12 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
         id: 'welcome',
         title: t('onboarding.welcome.title'),
         description: t('onboarding.welcome.description'),
-        icon: SparklesIcon,
+        icon: Sparkles,
         skipable: false,
         content: (
           <div className="text-center space-y-4">
             <div className="mx-auto w-16 h-16 bg-gradient-to-br from-soe-green-400 to-soe-green-600 rounded-full flex items-center justify-center">
-              <SparklesIcon className="w-8 h-8 text-white" />
+              <Sparkles className="w-8 h-8 text-white" />
             </div>
             <p className="text-gray-600 leading-relaxed">
               {t('onboarding.welcome.content')}
@@ -59,7 +58,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             id: 'find-books',
             title: t('onboarding.learner.findBooks.title'),
             description: t('onboarding.learner.findBooks.description'),
-            icon: BookOpenIcon,
+            icon: BookOpen,
             skipable: true,
             content: (
               <div className="space-y-4">
@@ -82,7 +81,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             id: 'reading-tools',
             title: t('onboarding.learner.readingTools.title'),
             description: t('onboarding.learner.readingTools.description'),
-            icon: LightBulbIcon,
+            icon: Lightbulb,
             skipable: true,
             content: (
               <div className="space-y-4">
@@ -110,7 +109,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             id: 'progress-tracking',
             title: t('onboarding.learner.progressTracking.title'),
             description: t('onboarding.learner.progressTracking.description'),
-            icon: UserGroupIcon,
+            icon: Users,
             skipable: true,
             content: (
               <div className="space-y-4">
@@ -138,7 +137,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             id: 'create-class',
             title: t('onboarding.teacher.createClass.title'),
             description: t('onboarding.teacher.createClass.description'),
-            icon: UserGroupIcon,
+            icon: Users,
             skipable: true,
             content: (
               <div className="space-y-4">
@@ -159,7 +158,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             id: 'assign-books',
             title: t('onboarding.teacher.assignBooks.title'),
             description: t('onboarding.teacher.assignBooks.description'),
-            icon: BookOpenIcon,
+            icon: BookOpen,
             skipable: true,
             content: (
               <div className="space-y-4">
@@ -183,7 +182,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             id: 'monitor-progress',
             title: t('onboarding.teacher.monitorProgress.title'),
             description: t('onboarding.teacher.monitorProgress.description'),
-            icon: LightBulbIcon,
+            icon: Lightbulb,
             skipable: true,
             content: (
               <div className="space-y-4">
@@ -222,7 +221,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             id: 'story-guidelines',
             title: t('onboarding.writer.storyGuidelines.title'),
             description: t('onboarding.writer.storyGuidelines.description'),
-            icon: BookOpenIcon,
+            icon: BookOpen,
             skipable: true,
             content: (
               <div className="space-y-4">
@@ -247,7 +246,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             id: 'submission-process',
             title: t('onboarding.writer.submissionProcess.title'),
             description: t('onboarding.writer.submissionProcess.description'),
-            icon: LightBulbIcon,
+            icon: Lightbulb,
             skipable: true,
             content: (
               <div className="space-y-4">
@@ -388,7 +387,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
                 className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
                 aria-label={t('onboarding.skipOnboarding')}
               >
-                <XMarkIcon className="w-6 h-6" />
+                <X className="w-6 h-6" />
               </button>
             )}
           </div>
@@ -434,7 +433,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
             `}
             aria-label={t('onboarding.previousStep')}
           >
-            <ChevronLeftIcon className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5" />
             <span>{t('onboarding.previous')}</span>
           </button>
 
@@ -461,7 +460,7 @@ export default function OnboardingFlow({ userRole, onComplete, onSkip }: Onboard
               aria-label={isLastStep ? t('onboarding.finish') : t('onboarding.next')}
             >
               <span>{isLastStep ? t('onboarding.start') : t('onboarding.next')}</span>
-              {!isLastStep && <ChevronRightIcon className="w-5 h-5" />}
+              {!isLastStep && <ChevronRight className="w-5 h-5" />}
             </button>
           </div>
         </div>

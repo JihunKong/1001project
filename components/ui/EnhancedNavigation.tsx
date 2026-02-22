@@ -7,21 +7,21 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import {
-  Bars3Icon,
-  XMarkIcon,
-  BookOpenIcon,
-  HomeIcon,
-  UserGroupIcon,
-  DocumentTextIcon,
-  Cog6ToothIcon,
-  ArrowRightOnRectangleIcon,
-  QuestionMarkCircleIcon,
-  BellIcon,
-  ChevronDownIcon,
-  AcademicCapIcon,
-  SparklesIcon
-} from '@heroicons/react/24/outline'
-import { UserIcon } from '@heroicons/react/24/solid'
+  Menu,
+  X,
+  BookOpen,
+  Home,
+  Users,
+  FileText,
+  Settings,
+  LogOut,
+  HelpCircle,
+  Bell,
+  ChevronDown,
+  GraduationCap,
+  Sparkles,
+  User
+} from 'lucide-react'
 
 interface NavigationItem {
   name: string
@@ -126,7 +126,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
       >
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-to-br from-soe-green-400 to-soe-green-600 rounded-full flex items-center justify-center">
-            <UserIcon className="w-5 h-5 text-white" />
+            <User className="w-5 h-5 text-white" />
           </div>
           <div className="hidden md:block text-left">
             <div className="text-sm font-medium text-gray-700">
@@ -136,7 +136,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
               {getRoleDisplayName(session.user?.role)}
             </div>
           </div>
-          <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </button>
 
@@ -166,7 +166,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
               role="menuitem"
               onClick={() => setIsOpen(false)}
             >
-              <UserIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+              <User className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
               {t('nav.myPage')}
             </Link>
 
@@ -179,7 +179,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
                   setIsOpen(false)
                 }}
               >
-                <QuestionMarkCircleIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+                <HelpCircle className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
                 {t('nav.showTutorial')}
               </button>
             )}
@@ -190,7 +190,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
               role="menuitem"
               onClick={() => setIsOpen(false)}
             >
-              <QuestionMarkCircleIcon className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+              <HelpCircle className="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
               {t('nav.help')}
             </Link>
 
@@ -204,7 +204,7 @@ const UserMenu = ({ session, onSignOut, onTriggerOnboarding }: UserMenuProps) =>
                 setIsOpen(false)
               }}
             >
-              <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5 text-red-400 group-hover:text-red-500" />
+              <LogOut className="mr-3 h-5 w-5 text-red-400 group-hover:text-red-500" />
               {t('nav.logout')}
             </button>
           </div>
@@ -255,14 +255,14 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
       {
         name: t('nav.home'),
         href: '/',
-        icon: HomeIcon,
+        icon: Home,
         current: pathname === '/',
         description: t('nav.homeDetailed.description')
       },
       {
         name: t('nav.library'),
         href: '/library',
-        icon: BookOpenIcon,
+        icon: BookOpen,
         current: pathname.startsWith('/library'),
         description: t('nav.libraryDetailed.description')
       }
@@ -275,14 +275,14 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
           {
             name: t('nav.learner.myBookshelf.label'),
             href: '/dashboard/learner',
-            icon: AcademicCapIcon,
+            icon: GraduationCap,
             current: pathname.startsWith('/dashboard/learner'),
             description: t('nav.learner.myBookshelf.description')
           },
           {
             name: t('nav.learner.bookClub.label'),
             href: '/dashboard/bookclub',
-            icon: UserGroupIcon,
+            icon: Users,
             current: pathname.startsWith('/dashboard/bookclub'),
             description: t('nav.learner.bookClub.description')
           }
@@ -294,21 +294,21 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
           {
             name: t('nav.teacher.dashboard.label'),
             href: '/dashboard/teacher',
-            icon: AcademicCapIcon,
+            icon: GraduationCap,
             current: pathname.startsWith('/dashboard/teacher'),
             description: t('nav.teacher.dashboard.description')
           },
           {
             name: t('nav.teacher.classes.label'),
             href: '/dashboard/teacher/classes',
-            icon: UserGroupIcon,
+            icon: Users,
             current: pathname.startsWith('/dashboard/teacher/classes'),
             description: t('nav.teacher.classes.description')
           },
           {
             name: t('nav.teacher.assignments.label'),
             href: '/dashboard/teacher/assignments',
-            icon: BookOpenIcon,
+            icon: BookOpen,
             current: pathname.startsWith('/dashboard/teacher/assignments'),
             description: t('nav.teacher.assignments.description')
           }
@@ -320,14 +320,14 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
           {
             name: t('nav.writer.contribute.label'),
             href: '/dashboard/writer',
-            icon: SparklesIcon,
+            icon: Sparkles,
             current: pathname.startsWith('/dashboard/writer'),
             description: t('nav.writer.contribute.description')
           },
           {
             name: t('nav.writer.submit.label'),
             href: '/dashboard/writer/submit',
-            icon: DocumentTextIcon,
+            icon: FileText,
             current: pathname.startsWith('/dashboard/writer/submit'),
             description: t('nav.writer.submit.description')
           }
@@ -341,14 +341,14 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
           {
             name: t('nav.manager.dashboard.label'),
             href: '/dashboard/manager',
-            icon: Cog6ToothIcon,
+            icon: Settings,
             current: pathname.startsWith('/dashboard/manager'),
             description: t('nav.manager.dashboard.description')
           },
           {
             name: t('nav.manager.reviews.label'),
             href: '/dashboard/manager/reviews',
-            icon: DocumentTextIcon,
+            icon: FileText,
             current: pathname.startsWith('/dashboard/manager/reviews'),
             badge: 5, // Mock pending reviews
             description: t('nav.manager.reviews.description')
@@ -361,7 +361,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
           {
             name: t('nav.admin.panel.label'),
             href: '/admin',
-            icon: Cog6ToothIcon,
+            icon: Settings,
             current: pathname.startsWith('/admin'),
             description: t('nav.admin.panel.description')
           }
@@ -426,7 +426,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                 aria-label={t('nav.homePageLabel')}
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-soe-green-400 to-soe-green-600 rounded-lg flex items-center justify-center">
-                  <BookOpenIcon className="w-5 h-5 text-white" />
+                  <BookOpen className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xl font-bold text-gray-900">1001 Stories</span>
@@ -469,7 +469,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-soe-green-400"
                     aria-label={t('nav.notifications', { count: notifications })}
                   >
-                    <BellIcon className="w-5 h-5" />
+                    <Bell className="w-5 h-5" />
                     {notifications > 0 && (
                       <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
                         {notifications}
@@ -516,7 +516,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                   className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-soe-green-400"
                   aria-label={t('nav.notifications', { count: notifications })}
                 >
-                  <BellIcon className="w-5 h-5" />
+                  <Bell className="w-5 h-5" />
                   <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
                     {notifications}
                   </span>
@@ -533,9 +533,9 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                 aria-label={t('nav.menu.ariaLabel', { action: isMobileMenuOpen ? t('common.close') : t('common.open') })}
               >
                 {isMobileMenuOpen ? (
-                  <XMarkIcon className="block h-6 w-6" />
+                  <X className="block h-6 w-6" />
                 ) : (
-                  <Bars3Icon className="block h-6 w-6" />
+                  <Menu className="block h-6 w-6" />
                 )}
               </button>
             </div>
@@ -557,7 +557,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                   <div className="px-3 py-3 bg-gray-50 rounded-lg mb-2">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-br from-soe-green-400 to-soe-green-600 rounded-full flex items-center justify-center">
-                        <UserIcon className="w-6 h-6 text-white" />
+                        <User className="w-6 h-6 text-white" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">
@@ -601,7 +601,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     className="flex items-center px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                     role="menuitem"
                   >
-                    <UserIcon className="w-5 h-5 mr-3" />
+                    <User className="w-5 h-5 mr-3" />
                     {t('nav.myPage')}
                   </Link>
 
@@ -614,7 +614,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                         setIsMobileMenuOpen(false)
                       }}
                     >
-                      <QuestionMarkCircleIcon className="w-5 h-5 mr-3" />
+                      <HelpCircle className="w-5 h-5 mr-3" />
                       {t('nav.showTutorial')}
                     </button>
                   )}
@@ -627,7 +627,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                       setIsMobileMenuOpen(false)
                     }}
                   >
-                    <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
+                    <LogOut className="w-5 h-5 mr-3" />
                     {t('nav.logout')}
                   </button>
                 </>
@@ -639,7 +639,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     className="flex items-center px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                     role="menuitem"
                   >
-                    <BookOpenIcon className="w-5 h-5 mr-3" />
+                    <BookOpen className="w-5 h-5 mr-3" />
                     {t('nav.library')}
                   </Link>
                   <Link
@@ -647,7 +647,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     className="flex items-center px-3 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
                     role="menuitem"
                   >
-                    <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
+                    <LogOut className="w-5 h-5 mr-3" />
                     {t('nav.signIn')}
                   </Link>
                   <Link
@@ -655,7 +655,7 @@ export default function EnhancedNavigation({ onTriggerOnboarding }: EnhancedNavi
                     className="flex items-center px-3 py-3 rounded-lg text-base font-medium bg-soe-green-400 text-white hover:bg-soe-green-500 transition-colors"
                     role="menuitem"
                   >
-                    <SparklesIcon className="w-5 h-5 mr-3" />
+                    <Sparkles className="w-5 h-5 mr-3" />
                     {t('nav.getStarted')}
                   </Link>
                 </>

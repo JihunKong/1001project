@@ -51,7 +51,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Security: Update and install build essentials
-RUN apk add --no-cache libc6-compat python3 make g++
+RUN apk add --no-cache libc6-compat
 
 # Build arguments for API keys and URLs (required for build)
 ARG OPENAI_API_KEY
@@ -120,10 +120,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/locales ./locales
 # Create necessary directories with proper permissions
 RUN mkdir -p uploads tmp public/generated-images public/covers public/books
 
-# Security: Remove write permissions from application files (before setting writable dirs)
-RUN find /app -type f -exec chmod 644 {} + && \
-    find /app -type d -exec chmod 755 {} + && \
-    chmod +x /app/server.js && \
+# Ensure executable permissions on required binaries only (skip full-tree chmod)
+RUN chmod +x /app/server.js && \
     chmod +x /app/node_modules/@prisma/engines/schema-engine-* 2>/dev/null || true && \
     chmod +x /app/node_modules/@prisma/engines/query-engine-* 2>/dev/null || true
 
