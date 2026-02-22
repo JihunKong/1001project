@@ -61,32 +61,40 @@ async function processAIReview(job: Job<AIReviewJobData>) {
   }
 }
 
-export const aiReviewWorker = new Worker<AIReviewJobData>(
-  'ai-review',
-  processAIReview,
-  workerOptions
-);
+let _worker: Worker<AIReviewJobData> | null = null;
 
-aiReviewWorker.on('completed', (job) => {
-  logger.info('AI Review Worker: Job completed successfully', { jobId: job.id });
-});
+export function initAIReviewWorker(): Worker<AIReviewJobData> {
+  if (_worker) return _worker;
 
-aiReviewWorker.on('failed', (job, err) => {
-  logger.error('AI Review Worker: Job failed', { jobId: job?.id, error: err });
-});
+  _worker = new Worker<AIReviewJobData>(
+    'ai-review',
+    processAIReview,
+    workerOptions
+  );
 
-aiReviewWorker.on('error', (err) => {
-  logger.error('AI Review Worker: Worker error', err);
-});
+  _worker.on('completed', (job) => {
+    logger.info('AI Review Worker: Job completed successfully', { jobId: job.id });
+  });
 
-process.on('SIGTERM', async () => {
-  logger.info('AI Review Worker: Received SIGTERM, closing worker');
-  await aiReviewWorker.close();
-  process.exit(0);
-});
+  _worker.on('failed', (job, err) => {
+    logger.error('AI Review Worker: Job failed', { jobId: job?.id, error: err });
+  });
 
-process.on('SIGINT', async () => {
-  logger.info('AI Review Worker: Received SIGINT, closing worker');
-  await aiReviewWorker.close();
-  process.exit(0);
-});
+  _worker.on('error', (err) => {
+    logger.error('AI Review Worker: Worker error', err);
+  });
+
+  process.on('SIGTERM', async () => {
+    logger.info('AI Review Worker: Received SIGTERM, closing worker');
+    await _worker?.close();
+    process.exit(0);
+  });
+
+  process.on('SIGINT', async () => {
+    logger.info('AI Review Worker: Received SIGINT, closing worker');
+    await _worker?.close();
+    process.exit(0);
+  });
+
+  return _worker;
+}
