@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Frontend:** Next.js 15.4.6 with React 19, TailwindCSS
 - **Backend:** Next.js API Routes with NextAuth.js
 - **Database:** PostgreSQL with Prisma ORM
-- **Deployment:** Docker Compose (Local Development Priority)
+- **Deployment:** GCP Compute Engine + Docker Compose (nginx, PostgreSQL, Redis)
 - **Authentication:** NextAuth.js with email magic links
 - **AI Integration:**
   - OpenAI GPT - Image generation for text-only stories, TTS functionality, AI Review
@@ -349,33 +349,27 @@ All 5 public pages fully internationalized:
 
 ## Development Workflow
 
-**⚠️ CRITICAL NEW WORKFLOW (2025-09-19) - MANDATORY**
+**⚠️ CRITICAL WORKFLOW - MANDATORY**
 
-**Local Docker Test → Build Success → Then Git/Server Upload**
+**Local Build → Git Push → Server Deploy**
 
-Never deploy or upload to server without first confirming local Docker build success. This prevents claiming server is running when it's actually broken.
+Never deploy without first confirming local Docker build success.
 
 ### Mandatory Development Process
 ```bash
-# 1. FIRST: Test locally in Docker
-docker-compose -f docker-compose.local.yml up -d --build
-
-# 2. Verify all services are running
-docker-compose -f docker-compose.local.yml ps
-docker-compose -f docker-compose.local.yml logs app
-
-# 3. Test key functionality
-curl http://localhost:3000/api/health
+# 1. FIRST: Test locally
 npm run lint
 npm run build
 
-# 4. ONLY AFTER SUCCESS: Git operations
+# 2. ONLY AFTER SUCCESS: Git operations
 git add .
 git commit -m "Description"
 git push
 
-# 5. ONLY AFTER GIT SUCCESS: Server deployment
-./scripts/deploy.sh deploy
+# 3. ONLY AFTER GIT SUCCESS: Server deployment
+ssh -i ~/.ssh/google_compute_engine jihunkong_pknic_club@34.121.45.14
+cd /home/jihunkong_pknic_club/1001-stories
+git pull && docker compose up -d --build
 ```
 
 ### Local Development
@@ -413,171 +407,114 @@ npx playwright test tests/landing-page.spec.ts
 # Build for production
 npm run build
 
-# Deploy to AWS EC2
-./scripts/deploy.sh deploy
+# Deploy to GCE (SSH into server)
+ssh -i ~/.ssh/google_compute_engine jihunkong_pknic_club@34.121.45.14
+cd /home/jihunkong_pknic_club/1001-stories
+git pull && docker compose up -d --build
 
-# Check deployment logs
-./scripts/deploy.sh logs
+# Check deployment
+docker compose ps
+curl https://1001stories.seedsofempowerment.org/api/health
 
-# Rollback if needed
-./scripts/deploy.sh rollback
+# View logs
+docker compose logs app --tail=50
+
+# Rollback (revert git and rebuild)
+git log --oneline -5
+git revert <commit>
+docker compose up -d --build
 ```
 
-## ⚠️ MANDATORY DEPLOYMENT WORKFLOW (2025-11-04)
+## GCE Docker Compose Deployment (2026-02-22)
 
-**CRITICAL: This is the ONLY correct deployment method. No exceptions.**
+### Architecture
 
-User emphasis (2025-11-04): "강제재부팅을 실행했습니다. 반드시 제가 말씀드린 방법으로 해야 오류가 발생하지 않을 것입니다. 기록해놓고 잊지 마십시오."
-(Translation: "I executed a forced reboot. It MUST be done the way I told you or errors will occur. Record this and don't forget.")
+- **Platform**: GCP Compute Engine (Docker Compose)
+- **Instance**: the1001stories (e2-medium, 4GB RAM, us-central1-c)
+- **External IP**: 34.121.45.14
+- **Database**: PostgreSQL (Docker container)
+- **Cache**: Redis (Docker container)
+- **Reverse Proxy**: nginx (Docker container)
+- **SSL**: Let's Encrypt (certbot container, auto-renewal)
+- **Monitoring**: Prometheus + Node Exporter (Docker containers)
 
-### The MANDATORY 3-Step Workflow
+### GCP Configuration
+
+| Resource | Value |
+|----------|-------|
+| Project | smile-the-ultimate |
+| Instance | the1001stories |
+| Zone | us-central1-c |
+| Machine Type | e2-medium (4GB RAM) |
+| External IP | 34.121.45.14 (static) |
+| Domain | 1001stories.seedsofempowerment.org |
+| gcloud Account | jihunkong@pknic.club |
+
+### SSH Access
 
 ```bash
-# Step 1: Build Docker image LOCALLY
-docker compose build app
+# Direct SSH
+ssh -i ~/.ssh/google_compute_engine jihunkong_pknic_club@34.121.45.14
 
-# Step 2: Save image as tar.gz and upload to server
-IMAGE_FILE="/tmp/1001-stories-app-$(date +%Y%m%d_%H%M%S).tar.gz"
-docker save 1001-stories-app:latest | gzip > "$IMAGE_FILE"
-scp -i /Users/jihunkong/Downloads/1001project.pem "$IMAGE_FILE" ubuntu@3.128.143.122:/tmp/app-image.tar.gz
-rm "$IMAGE_FILE"
-
-# Step 3: On server - Clean cache, load image, start containers
-ssh ubuntu@3.128.143.122 << 'EOF'
-  cd /home/ubuntu/1001-stories
-
-  # MANDATORY: Clean Docker cache (user requirement)
-  docker system prune -af --volumes
-
-  # Load pre-built image
-  gunzip -c /tmp/app-image.tar.gz | docker load
-  rm /tmp/app-image.tar.gz
-
-  # Start all containers
-  docker compose up -d
-EOF
+# Or via gcloud (ensure correct account is active)
+gcloud config set account jihunkong@pknic.club
+gcloud compute ssh the1001stories --project=smile-the-ultimate --zone=us-central1-c
 ```
 
-### Automated Deployment
+### Docker Containers (7)
 
-The `scripts/deploy.sh deploy` command now automatically performs all 3 steps:
+| Container | Purpose | Health Check |
+|-----------|---------|-------------|
+| app | Next.js application | Port 3000 |
+| postgres | PostgreSQL database | Port 5432 |
+| redis | Session/cache store | Port 6379 |
+| nginx | Reverse proxy + SSL | Port 80/443 |
+| certbot | SSL certificate renewal | - |
+| prometheus | Metrics collection | Port 9090 |
+| node-exporter | System metrics | Port 9100 |
+
+### Server File Structure
+
+```
+/home/jihunkong_pknic_club/1001-stories/
+├── docker-compose.yml      # Container orchestration
+├── nginx-current.conf      # Active nginx config (symlink to ssl or http)
+├── nginx/
+│   ├── nginx-ssl.conf      # HTTPS config (production)
+│   └── nginx-http.conf     # HTTP-only config (for initial setup)
+├── certbot/
+│   ├── conf/               # Let's Encrypt certificates
+│   ├── www/                # ACME challenge files
+│   └── logs/               # Certbot logs
+├── .env.production         # Environment variables (on server only)
+└── ...                     # Application source code
+```
+
+### Common Server Commands
 
 ```bash
-# Recommended: Use the automated script
-./scripts/deploy.sh deploy
+# Check all containers
+docker compose ps
+
+# View app logs
+docker compose logs app --tail=50 -f
+
+# Restart a specific service
+docker compose restart nginx
+
+# Full rebuild (after code changes)
+git pull && docker compose up -d --build
+
+# Database backup
+docker exec 1001-stories-postgres pg_dump -U stories_user -d stories_db -Fc > backup.dump
+
+# Database restore
+cat backup.dump | docker exec -i 1001-stories-postgres pg_restore -U stories_user -d stories_db --clean --if-exists
+
+# Disk space management (30GB disk - watch usage!)
+df -h
+docker system prune -af  # WARNING: removes all unused images/containers
 ```
-
-The script includes:
-- Local Docker image build
-- Image save to tar.gz
-- Upload to server via SCP
-- **MANDATORY** server cache clean (`docker system prune -af --volumes`)
-- Image load from tar.gz
-- Container startup
-- Deployment verification with automatic rollback on failure
-
-### Why This Is MANDATORY
-
-**Complete Server Outage Incident (2025-11-04)**:
-- Previous method: rsync source → rebuild on server
-- **Problem**: `docker compose build --no-cache` hung for 10+ minutes on server
-- **Result**: ALL 7 containers stopped, never restarted
-- **Impact**: Complete service outage, HTTPS completely inaccessible
-- **Recovery**: Required forced server reboot by user
-
-**Root Cause Analysis**:
-1. Server-side Docker build consumed excessive resources
-2. Build process hung or failed silently
-3. Containers remained stopped after failed build
-4. No automatic recovery mechanism
-5. Service completely inaccessible until manual intervention
-
-**Why Image-Based Deployment Prevents This**:
-- ✅ Build happens locally (no server resource exhaustion)
-- ✅ Build verified before upload (catches errors early)
-- ✅ Server only loads image (fast, reliable operation)
-- ✅ No building on server (eliminates primary failure mode)
-- ✅ Cache cleaning prevents deployment issues
-- ✅ Faster deployments (~3 min vs 10-20 min)
-- ✅ Automatic verification and rollback
-
-### What NOT to Do (FORBIDDEN)
-
-```bash
-# ❌ NEVER rsync source code and build on server
-rsync -avz ./ ubuntu@3.128.143.122:/home/ubuntu/1001-stories/
-ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker compose build --no-cache && docker compose up -d"
-
-# ❌ NEVER use partial service restart
-docker compose up -d --force-recreate app  # Missing: nginx, certbot, etc.
-
-# ❌ NEVER skip cache cleaning
-# User explicitly requires: docker system prune -af --volumes
-
-# ❌ NEVER skip deployment verification
-# Always verify containers are running and HTTPS returns 200
-```
-
-### Deployment Verification (Automated)
-
-The deploy script automatically performs these checks:
-
-```bash
-# 1. Container Status Check
-# Verifies: nginx, app, postgres, redis, certbot all running
-
-# 2. nginx Verification (CRITICAL)
-# nginx MUST be running for HTTPS to work
-
-# 3. Unhealthy Container Detection
-# Checks for any unhealthy or exited containers
-
-# 4. HTTPS Endpoint Test
-# Tests: curl https://localhost/api/health
-# Must return: 200
-
-# 5. Automatic Rollback
-# If any check fails: automatic rollback to previous state
-```
-
-### Files Modified for This Workflow
-
-**docker-compose.yml** - Added image priority:
-```yaml
-services:
-  app:
-    image: ${APP_IMAGE:-1001-stories-app:latest}  # Takes priority
-    build:
-      context: .
-      dockerfile: Dockerfile
-```
-
-**scripts/deploy.sh** - Complete deploy() function rewrite:
-- Removed: rsync source code upload
-- Removed: Server-side Docker builds
-- Added: Local image build
-- Added: Docker save/load via tar.gz
-- Added: **MANDATORY** cache cleaning
-- Added: Deployment verification
-- Added: Automatic rollback
-
-### Key Points to Remember
-
-1. **MANDATORY**: Build locally, NOT on server
-2. **MANDATORY**: Clean server cache before loading image
-3. **MANDATORY**: Verify deployment with automated checks
-4. **FORBIDDEN**: Source code rsync + server builds
-5. **FORBIDDEN**: Partial container restarts (always use `docker compose up -d`)
-6. **FORBIDDEN**: Skipping cache cleaning (user requirement)
-
-### Historical Context
-
-- **2025-10-31**: Partial service restart issue (missing nginx)
-- **2025-11-04**: Complete server outage (all containers down)
-- **2025-11-04**: User-mandated workflow implemented
-- **Current**: Image-based deployment is ONLY correct method
-
-**User Accountability Warning**: "반드시 제가 말씀드린 방법으로 해야 오류가 발생하지 않을 것입니다. 기록해놓고 잊지 마십시오."
 
 ## Environment Variables
 
@@ -650,15 +587,17 @@ npm run dev              # Start dev server
 npm run build           # Build production
 npm run lint            # Check code quality
 
-# Docker
+# Docker (local)
 docker-compose up -d     # Start services
 docker-compose down      # Stop services
 docker-compose logs app  # View logs
 
-# Deployment
-./scripts/deploy.sh deploy    # Deploy to production
-./scripts/test-docker-local.sh # Test Docker locally
-./scripts/setup-server.sh     # Initial server setup
+# Deployment (GCE server)
+ssh -i ~/.ssh/google_compute_engine jihunkong_pknic_club@34.121.45.14
+cd /home/jihunkong_pknic_club/1001-stories
+git pull && docker compose up -d --build   # Deploy
+docker compose ps                          # Check status
+docker compose logs app --tail=50          # View logs
 ```
 
 ## Important Files
@@ -666,9 +605,12 @@ docker-compose logs app  # View logs
 - `middleware.ts` - Authentication and routing logic
 - `lib/auth.ts` - NextAuth configuration
 - `prisma/schema.prisma` - Database schema
-- `docker-compose.yml` - Production deployment config
-- `scripts/deploy.sh` - Main deployment script
-- `.env.production` - Production environment variables
+- `docker-compose.yml` - Production container orchestration
+- `Dockerfile` - Multi-stage production build
+- `nginx-current.conf` - Active nginx config (on server, not in git)
+- `nginx/nginx-ssl.conf` - HTTPS nginx config template
+- `nginx/nginx-http.conf` - HTTP-only nginx config template
+- `.env.production` - Production env vars (on server only, not in git)
 - `.env.local` - Local development variables
 
 ## Troubleshooting
@@ -718,11 +660,15 @@ docker-compose logs app  # View logs
 
 ## Production Server
 
-- **IP**: 13.209.14.175
-- **Platform**: AWS EC2
-- **OS**: Ubuntu 22.04 LTS
-- **Docker**: Compose with nginx, PostgreSQL, app containers
-- **SSL**: Configured via nginx
+- **Platform**: GCP Compute Engine (Docker Compose)
+- **Project**: smile-the-ultimate
+- **Instance**: the1001stories (e2-medium, us-central1-c)
+- **External IP**: 34.121.45.14
+- **Domain**: https://1001stories.seedsofempowerment.org
+- **SSH**: `ssh -i ~/.ssh/google_compute_engine jihunkong_pknic_club@34.121.45.14`
+- **Database**: PostgreSQL (Docker container, port 5432)
+- **SSL**: Let's Encrypt via certbot (auto-renewal, expires May 2026)
+- **Containers**: 7 (app, postgres, redis, nginx, certbot, prometheus, node-exporter)
 
 ## User Roles & Permissions
 
@@ -905,485 +851,103 @@ When working with books and PDFs:
 
 **Recent incident**: Replacing dummy data with real PDFs broke PDF reading and parsing functionality. Always test thoroughly after data changes.
 
-## ⚠️ CRITICAL DEPLOYMENT FAILURE PATTERNS (2025-11-11)
+## Deployment Best Practices
 
-**🔴 MANDATORY READING: These are ACTUAL failures that occurred and MUST be prevented.**
+### Pre-Deployment Checklist
 
-### The Git Pull Deployment Failure (2025-11-11)
+1. `npm run lint` passes locally
+2. `npm run build` succeeds locally
+3. Git status clean, all changes pushed
+4. SSH access to server verified
 
-**What Happened**: Complete deployment failure where NO code changes were reflected in production, despite successful Docker image deployment.
-
-**Root Causes**:
-1. ❌ **deploy.sh was missing git pull step** - Server source code NEVER updated
-2. ❌ **No pre-deployment git state validation** - Allowed deploying wrong code
-3. ❌ **No post-deployment completeness check** - Didn't catch git mismatch
-4. ❌ **Overly strict error handling** - Script died prematurely on warnings
-
-**Symptoms**:
-- Docker containers running and healthy ✅
-- Build timestamp updated ✅
-- **BUT**: Server git at old commit (f733c68) ❌
-- **BUT**: New features not accessible (profile pages missing) ❌
-- **BUT**: Wrong code deployed ❌
-
-**Impact**: User correctly reported "수정사항이 전혀 반영되지 않았습니다" (NO changes reflected)
-
-**The Fix** (Now implemented in deploy.sh):
+### Rollback
 
 ```bash
-# CRITICAL: Must pull git BEFORE loading Docker image
-echo "🔴 CRITICAL: Updating source code from git repository..."
-git fetch origin main
-git reset --hard origin/main
+# SSH into server
+ssh -i ~/.ssh/google_compute_engine jihunkong_pknic_club@34.121.45.14
+cd /home/jihunkong_pknic_club/1001-stories
 
-# Then proceed with Docker operations
-docker system prune -af --volumes  # Cache clean
-gunzip -c /tmp/app-image.tar.gz | docker load  # Image load
-docker compose up -d  # Start containers
-```
+# Check recent commits
+git log --oneline -5
 
-### MANDATORY Pre-Deployment Checklist
-
-**Before running `./scripts/deploy.sh deploy`, you MUST verify:**
-
-1. ✅ **Git Status Clean**
-   ```bash
-   git status
-   # Should show: "nothing to commit, working tree clean"
-   ```
-
-2. ✅ **All Commits Pushed**
-   ```bash
-   git log origin/main..HEAD
-   # Should show: nothing (no unpushed commits)
-   ```
-
-3. ✅ **Local Build Successful**
-   ```bash
-   docker compose build app
-   # OR
-   npm run build
-   ```
-
-4. ✅ **Docker Daemon Running**
-   ```bash
-   docker info
-   # Should not error
-   ```
-
-**If ANY check fails**: Fix it BEFORE deploying. The deploy script now enforces these checks automatically.
-
-### FORBIDDEN Deployment Anti-Patterns
-
-❌ **NEVER deploy with uncommitted changes**
-   - deploy.sh now BLOCKS this
-   - Error message: "DEPLOYMENT BLOCKED: Uncommitted changes detected!"
-
-❌ **NEVER deploy with unpushed commits**
-   - deploy.sh now BLOCKS this
-   - Error message: "DEPLOYMENT BLOCKED: Unpushed commits detected!"
-
-❌ **NEVER skip local Docker build**
-   - deploy.sh now BLOCKS this
-   - Error message: "DEPLOYMENT BLOCKED: No local build found!"
-
-❌ **NEVER assume containers running = deployment succeeded**
-   - deploy.sh now validates git commit match
-   - deploy.sh now validates build timestamp match
-   - deploy.sh now validates critical files exist
-
-### Deployment Script Improvements (2025-11-11)
-
-**New deploy.sh workflow**:
-```
-Step 0: Pre-deployment validation (NEW)
-  ↓ Check: Git uncommitted changes
-  ↓ Check: Git unpushed commits
-  ↓ Check: Local build exists
-  ↓ Check: Docker daemon running
-
-Step 1: Local Docker build
-  ↓ Build with error messages
-
-Step 2: Save image to tar.gz
-  ↓ With disk space checks
-
-Step 3: Upload to server
-  ↓ With retry logic
-
-Step 4: Server deployment (COMPLETELY REWRITTEN)
-  ↓ 🔴 Git pull (NEW - was missing!)
-  ↓ Docker cache clean (mandatory)
-  ↓ nginx cache clean (NEW)
-  ↓ Backup current image
-  ↓ Load new image (improved error handling)
-  ↓ Verify image loaded correctly (NEW)
-  ↓ Start containers
-  ↓ Verify containers started (NEW)
-  ↓ Reload nginx config (NEW)
-
-Step 5: Deployment verification (ENHANCED)
-  ↓ Health check (containers, HTTPS)
-  ↓ Completeness check (NEW):
-     - Git commit match (local vs server)
-     - Build timestamp match
-     - Critical files exist
-```
-
-### Error Messages to Watch For
-
-**If you see these, deployment is BLOCKED (intentionally)**:
-```
-DEPLOYMENT BLOCKED: Uncommitted changes detected!
-DEPLOYMENT BLOCKED: Unpushed commits detected!
-DEPLOYMENT BLOCKED: No local build found!
-DEPLOYMENT BLOCKED: Docker not running!
-```
-
-**If you see these, deployment FAILED (investigate)**:
-```
-DEPLOYMENT INCOMPLETE: Git commit mismatch!
-ERROR: Image load completed but 1001-stories-app:latest not found!
-ERROR: Required containers not running: [list]
+# Revert to previous commit
+git revert <commit-hash>
+docker compose up -d --build
 ```
 
 ### Recovery from Failed Deployment
 
-The deploy script now has **automatic rollback**:
-1. Detects deployment failure
-2. Finds most recent backup image
-3. Restores backup as latest
-4. Restarts app container
-5. Verifies HTTPS returns 200
-
-**Manual recovery** (if automatic rollback fails):
 ```bash
-# 1. Check container status
-ssh ubuntu@3.128.143.122 "docker ps -a"
+# Check container status
+docker compose ps
 
-# 2. Check git state
-ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && git status && git log -1"
+# View app logs
+docker compose logs app --tail=100
 
-# 3. Manually restore backup
-ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker images | grep backup"
-ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker tag 1001-stories-app:backup-XXXXX 1001-stories-app:latest"
-ssh ubuntu@3.128.143.122 "cd /home/ubuntu/1001-stories && docker compose up -d"
+# If app won't start, check disk space
+df -h
 
-# 4. Verify recovery
-curl https://1001stories.seedsofempowerment.org/api/health
+# If disk full, prune Docker (WARNING: removes all unused data)
+docker compose down
+docker system prune -af
+docker compose up -d --build
+
+# If VM network is down (can't SSH), reset via gcloud
+gcloud config set account jihunkong@pknic.club
+gcloud compute instances reset the1001stories --project=smile-the-ultimate --zone=us-central1-c
 ```
 
-### Why This Matters
+### Important Deployment Notes
 
-**User's Exact Words**: "디플로이에 실패했습니다. 수정사항이 전혀 반영되지 않았습니다."
-Translation: "Deployment failed. NO changes were reflected at all."
+- **nginx-current.conf**: This is the ACTIVE config nginx reads. It's NOT tracked in git. After `git pull`, you may need to re-copy from `nginx/nginx-ssl.conf`
+- **After container recreation**: Always restart nginx (`docker compose restart nginx`) to refresh upstream DNS resolution
+- **Disk space**: 30GB disk fills quickly with Docker builds. Monitor with `df -h` and prune regularly
+- **CSP/HSTS headers**: Managed by nginx, NOT by next.config.js (Next.js headers() is build-time only)
+- **Dockerfile NEXTAUTH_URL**: Default is `http://localhost:3000`. Runtime value comes from `.env.production` via docker-compose env_file
 
-**User was 100% correct**. The deployment technically succeeded (containers running) but deployed the WRONG code (old git commit).
+## CRITICAL MISTAKES TO AVOID
 
-### Key Lessons Learned
+### 1. SMTP Settings
+- Use app-specific passwords for Gmail, not regular passwords
 
-1. **Container Status ≠ Correct Deployment**
-   - Containers can be healthy but running old code
-   - MUST verify git commits match (local vs server)
-
-2. **Docker Image ≠ Source Code**
-   - Docker image can be new but filesystem has old code
-   - MUST git pull on server BEFORE loading image
-
-3. **Build Timestamp ≠ Deployment Success**
-   - Timestamp can update but features still missing
-   - MUST verify critical files exist
-
-4. **Automated Checks > Manual Verification**
-   - Humans forget steps (proven by this incident)
-   - Scripts enforce mandatory procedures
-
-## CRITICAL MISTAKES TO AVOID (2025-09-19)
-
-**⚠️ These mistakes have been repeatedly made. Each repetition wastes significant time and damages the project.**
-
-### 1. Infrastructure Mistakes (STOP REPEATING)
-- **nginx Configuration**: Always uncomment HTTPS server blocks, check SSL paths
-- **Redis Service**: Ensure Redis is included in docker-compose.yml with proper password
-- **SSL/HTTPS**: Use Let's Encrypt certificates, verify certificate paths exist
-- **SMTP Settings**: Use app-specific passwords for Gmail, not regular passwords
-- **Environment Variables**: Use relative paths in docker-compose, absolute paths in code
-- **Docker Version**: NEVER specify version: "3.9" in docker-compose.yml (use v2 syntax)
-
-### 2. Server Deployment Lies (CRITICAL)
+### 2. Deployment Verification
 - **NEVER claim server is running without testing**
 - **ALWAYS test with `curl` commands and check actual responses**
-- **Container status != working application**
-- **Use new workflow: Local Docker → Build Success → Git → Server**
 
-### 3. File Path Confusion (REPEATED ERROR)
+### 3. File Path Confusion
 - **Correct Path**: `/Users/jihunkong/1001project/1001-stories/`
 - **Wrong Path**: `/Users/jihunkong/1001project/1001-stories/1001project/` (NEVER USE)
-- **Server Symlink**: `/opt/1001-stories` → `/home/ubuntu/1001project`
-- **Always verify paths before claiming files don't exist**
 
-### 4. Publishing Workflow Issues
+### 4. Publishing Workflow
 - **WRITER SUBMISSIONS**: PDF upload must NOT be required
 - **Text Editor Only**: Writers should submit via rich text editor
 - **PDF Generation**: AI should generate images for text-only stories
-- **Never add PDF upload requirement to writer forms**
 
-### 5. File Management Chaos
-- **Stop creating duplicate docker-compose files** (test.yml, test-edu.yml, etc.)
-- **Stop creating duplicate documentation** (PRD.md, PRD copy.md, etc.)
-- **Archive old files instead of duplicating**
+### 5. File Management
 - **Use single source of truth for configurations**
+- **Archive old files instead of duplicating**
 
-### 6. Agent and Tool Usage
-- **Always use appropriate agents for tasks** (serena mcp, etc.)
-- **Use docker-playwright-tester for containerized testing**
-- **Use security-auditor for security reviews**
-- **Don't ignore available tools and agents**
+## SSL/HTTPS
 
-### 7. Docker Compose Partial Service Restart (CRITICAL)
+- **Provider**: Let's Encrypt (certbot container)
+- **Certificate Path**: `/certbot/conf/live/1001stories.seedsofempowerment.org/`
+- **Auto-Renewal**: certbot container handles renewal automatically
+- **nginx Config**: `nginx/nginx-ssl.conf` → copied to `nginx-current.conf` on server
+- **HTTP→HTTPS**: Automatic 301 redirect via nginx
 
-**⚠️ ALL Containers Down - Complete Server Failure (2025-11-04)**
-
-**Most Recent Incident (2025-11-04 - SSR Language Deployment)**:
-- **Problem**: After deploying SSR language changes, server was completely inaccessible
-- **Discovery**: ALL Docker containers were DOWN (not a single container running)
-- **Root Cause**: Previous deployment operations likely ran `docker compose down` but never completed `docker compose up -d`
-- **Impact**: Complete service outage - HTTPS returned SSL_ERROR_SYSCALL
-
-**Symptoms**:
+### SSL Setup (for fresh server)
 ```bash
-# Server shows NO containers running
-ssh ubuntu@3.128.143.122 "docker ps"
-# CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-# (empty - no containers running at all)
-
-# HTTPS health check fails completely
-curl https://1001stories.seedsofempowerment.org/api/health
-# curl: (35) error:02FFF036:system library:func(4095):Connection reset by peer
-```
-
-**Solution Applied**:
-```bash
-# Simply start all services
-cd /home/ubuntu/1001-stories
+# 1. Start with HTTP-only nginx config
+cp nginx/nginx-http.conf nginx-current.conf
 docker compose up -d
 
-# Verify all 7 containers started
-docker ps
-# Should show: nginx, app, postgres, redis, certbot, prometheus, node-exporter (7 containers)
+# 2. Run certbot to get certificate (domain must point to this server)
+docker compose run --rm --entrypoint "certbot certonly --webroot -w /var/www/certbot -d 1001stories.seedsofempowerment.org --email noreply@1001stories.org --agree-tos --non-interactive" certbot
 
-# Test HTTPS endpoint
-curl https://1001stories.seedsofempowerment.org/api/health
-# Should return: 200
-```
-
-**Prevention Implemented (2025-11-04)**:
-1. **Enhanced deploy.sh with verification**:
-   - Added `verify_deployment()` function
-   - Checks all required containers are running
-   - Specifically verifies nginx (critical for HTTPS)
-   - Tests HTTPS endpoint for 200 response
-   - Automatic rollback on verification failure
-
-2. **Mandatory verification checklist**:
-   - ✅ Container status: All 5 required containers running
-   - ✅ nginx check: CRITICAL for HTTPS access
-   - ✅ No unhealthy/exited containers
-   - ✅ HTTPS endpoint test: Must return 200
-
-**⚠️ nginx 컨테이너 미실행 문제 - 반복적으로 발생 (2025-10-31)**
-
-**문제**:
-- 배포 시 `docker compose up -d --force-recreate app` 사용
-- app 서비스만 재시작되어 nginx, certbot, prometheus, node-exporter가 시작되지 않음
-- HTTPS 접속 불가 (curl 응답: 000)
-- App 컨테이너는 정상이지만 외부 접속 차단됨
-
-**증상**:
-```bash
-# 컨테이너 확인 시 nginx가 없음
-docker ps
-# Only shows: app, postgres, redis
-# Missing: nginx, certbot, prometheus, node-exporter
-```
-
-**근본 원인**:
-특정 서비스만 지정하면 다른 서비스는 시작되지 않음
-
-**해결 방법**:
-```bash
-# ❌ 잘못된 방법
-docker compose up -d --force-recreate app
-
-# ✅ 올바른 방법 - 모든 서비스 시작
-docker compose up -d
-
-# 또는 특정 서비스만 재빌드하고 모든 서비스 시작
-docker compose build app
-docker compose up -d
-```
-
-**MANDATORY Deployment Verification (Updated 2025-11-04)**:
-```bash
-# Improved deploy.sh now automatically performs these checks:
-
-# 1. Container Status Check
-# - Verifies nginx, app, postgres, redis, certbot are all running
-# - Fails if any required container is missing
-
-# 2. nginx Verification (CRITICAL)
-# - Specifically checks nginx container is running
-# - HTTPS will not work without nginx
-
-# 3. Unhealthy Container Detection
-# - Checks for any unhealthy or exited containers
-
-# 4. HTTPS Endpoint Test
-# - Tests https://localhost/api/health
-# - Must return 200 status code
-
-# 5. Automatic Rollback
-# - If any check fails, initiates automatic rollback
-# - Prevents broken deployments from staying live
-```
-
-**Manual Verification Commands** (if needed):
-```bash
-# 1. 모든 컨테이너 상태 확인
-docker ps --format 'table {{.Names}}\t{{.Status}}'
-
-# 2. nginx 포함 여부 확인
-docker ps | grep nginx
-
-# 3. HTTPS 접속 테스트
-curl -s -o /dev/null -w "%{http_code}" https://1001stories.seedsofempowerment.org/api/health
-# 200 응답 확인
-
-# 4. 필요시 전체 서비스 재시작
-docker compose up -d
-```
-
-**Key Lessons Learned**:
-1. **NEVER assume containers are running** - Always verify after deployment
-2. **nginx is CRITICAL** - Service is inaccessible without it
-3. **Automated verification is essential** - Manual checks are error-prone
-4. **Rollback capability required** - Must be able to recover quickly
-5. **Complete outages possible** - Not just partial service failures
-
-### Accountability Warning
-- **Repeated mistakes are not accidents - they indicate systematic problems**
-- **Each mistake costs significant time and delays the project**
-- **Follow the documented processes and learn from previous failures**
-- **Use Local Docker → Build Success → Git → Server workflow ALWAYS**
-
-## SSL Certificate Setup (CRITICAL - 2025-11-04)
-
-**⚠️ SSL Restoration Procedures - Documented from Production Incident**
-
-### Initial SSL Certificate Generation
-
-If SSL certificates are missing or need regeneration, use:
-
-```bash
-# Method 1: Automated script (Recommended)
-./scripts/setup-ssl.sh
-
-# Method 2: Manual generation
-docker compose run --rm --entrypoint /bin/sh certbot -c "certbot certonly \
-  --webroot -w /var/www/certbot \
-  -d 1001stories.seedsofempowerment.org \
-  --email noreply@1001stories.org \
-  --agree-tos --non-interactive"
-
-# Restart services to apply certificates
+# 3. Switch to SSL nginx config
+cp nginx/nginx-ssl.conf nginx-current.conf
 docker compose restart nginx
-docker compose up -d --force-recreate certbot
 ```
-
-### Improved docker-compose.yml Certbot Service
-
-**Problem Solved (2025-11-04)**:
-- Original certbot entrypoint was infinite renewal loop
-- Caused `docker compose run certbot [command]` to hang indefinitely
-- Made initial certificate generation impossible
-
-**Solution Applied**:
-Modified certbot service entrypoint to check for existing certificates before starting renewal daemon:
-
-```yaml
-certbot:
-  entrypoint: |
-    /bin/sh -c '
-      # Check if SSL certificates exist
-      if [ ! -d "/etc/letsencrypt/live/1001stories.seedsofempowerment.org" ]; then
-        echo "⚠️  No SSL certificates found!"
-        echo "Please run initial certificate generation first."
-        exit 1
-      fi
-
-      echo "✅ SSL certificates found. Starting renewal daemon..."
-      trap exit TERM
-      while :; do
-        certbot renew --webroot -w /var/www/certbot --quiet
-        sleep 12h & wait ${!}
-      done
-    '
-```
-
-### SSL Certificate Verification
-
-```bash
-# Test HTTPS endpoint
-curl -s -o /dev/null -w "%{http_code}" https://1001stories.seedsofempowerment.org/api/health
-# Should return: 200
-
-# Check certificate expiry
-openssl x509 -enddate -noout -in certbot/conf/live/1001stories.seedsofempowerment.org/cert.pem
-# Example: notAfter=Feb  2 03:15:33 2026 GMT
-
-# View certbot logs
-docker compose logs certbot --tail=30
-# Should show: "✅ SSL certificates found. Starting renewal daemon..."
-```
-
-### Troubleshooting SSL Issues
-
-**Issue**: HTTPS not working / nginx crash loop
-```bash
-# 1. Check certificate files exist
-ls -la certbot/conf/live/1001stories.seedsofempowerment.org/
-# Should have: fullchain.pem, privkey.pem, cert.pem, chain.pem
-
-# 2. Verify nginx config
-docker exec 1001-stories-nginx nginx -t
-# Should show: "syntax is ok" and "test is successful"
-
-# 3. Check nginx logs
-docker compose logs nginx --tail=50
-```
-
-**Issue**: Certbot renewal failing
-```bash
-# Check certbot can reach Let's Encrypt
-docker exec 1001-stories-certbot wget -O- https://acme-v02.api.letsencrypt.org/directory
-# Should return JSON response
-
-# Verify ACME challenge path accessible
-curl http://1001stories.seedsofempowerment.org/.well-known/acme-challenge/test
-# nginx should serve this path
-```
-
-**Issue**: Deploy script deleted SSL certificates
-- **Root Cause**: `rsync --delete` removed certbot directory not in git
-- **Prevention**: Deploy script updated with `--exclude=certbot` and `--exclude=public/generated-images`
-- **Recovery**: Run `./scripts/setup-ssl.sh` to regenerate certificates
-
-### Certificate Auto-Renewal
-
-- Certificates valid for 90 days
-- Auto-renewal runs every 12 hours (certbot container)
-- Renewal triggers when <30 days remaining
-- No manual intervention required for renewals
 
 ## Korean Annotations Success Factors (2025-11-12)
 
@@ -1442,13 +1006,11 @@ const { text, mapping } = convertHTMLToPlainText(normalizedHTML);
 ## Support & Resources
 
 - **GitHub Issues**: Report bugs and features
-- **Deployment Logs**: `./scripts/deploy.sh logs`
+- **Production URL**: https://1001stories.seedsofempowerment.org
+- **Server SSH**: `ssh -i ~/.ssh/google_compute_engine jihunkong_pknic_club@34.121.45.14`
+- **Server Logs**: `docker compose logs app --tail=50`
+- **Container Status**: `docker compose ps`
 - **Database GUI**: `npx prisma studio`
-- **Local Testing**: `./scripts/test-docker-local.sh`
-- **SSL Setup**: `./scripts/setup-ssl.sh`
 - 항상 적절한 agent, mcp를 불러와서 사용하세요.
 - ultra think를 하세요
 - ultra think, 적절한 agent를 배치하세요. mcp에서 최신 코드들을 확인하세요.
-3.128.143.122
-  /Users/jihunkong/Downloads/1001project.pem
-https://1001stories.seedsofempowerment.org
