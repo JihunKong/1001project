@@ -185,6 +185,16 @@ export async function GET(
       pdfPath = paths[pdfType];
     }
 
+    if (!pdfPath && pdfType === 'sample') {
+      pdfPath = resolvePdfPath(book, 'main');
+      if (!pdfPath && book.pdfKey) {
+        const bookFolder = book.pdfKey.includes('/') ? path.dirname(book.pdfKey) : book.pdfKey;
+        const folderName = path.basename(bookFolder);
+        const paths = getBookPdfPaths(folderName);
+        pdfPath = paths['main'];
+      }
+    }
+
     if (!pdfPath || !fs.existsSync(pdfPath)) {
       return NextResponse.json({
         error: `PDF file not found for type: ${pdfType}`,
@@ -274,6 +284,16 @@ export async function HEAD(
       const folderName = path.basename(bookFolder);
       const paths = getBookPdfPaths(folderName);
       pdfPath = paths[pdfType];
+    }
+
+    if (!pdfPath && pdfType === 'sample') {
+      pdfPath = resolvePdfPath(book, 'main');
+      if (!pdfPath && book.pdfKey) {
+        const bookFolder = book.pdfKey.includes('/') ? path.dirname(book.pdfKey) : book.pdfKey;
+        const folderName = path.basename(bookFolder);
+        const paths = getBookPdfPaths(folderName);
+        pdfPath = paths['main'];
+      }
     }
 
     if (!pdfPath || !fs.existsSync(pdfPath)) {
