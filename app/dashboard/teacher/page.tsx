@@ -140,10 +140,11 @@ export default function TeacherDashboard() {
   // Fetch dashboard data
   const fetchData = async () => {
     try {
-      const [classesRes, assignmentsRes, vocabRes] = await Promise.all([
+      const [classesRes, assignmentsRes, vocabRes, progressRes] = await Promise.all([
         fetch('/api/classes'),
         fetch('/api/books/assign'),
         fetch('/api/teacher/vocabulary-stats'),
+        fetch('/api/teacher/student-progress'),
       ]);
 
       if (classesRes.ok) {
@@ -212,14 +213,9 @@ export default function TeacherDashboard() {
         setVocabularySummary(vocabData.summary || null);
       }
 
-      try {
-        const progressRes = await fetch('/api/teacher/student-progress');
-        if (progressRes.ok) {
-          const progressData = await progressRes.json();
-          setRecentProgress(progressData.students || []);
-        }
-      } catch {
-        setRecentProgress([]);
+      if (progressRes.ok) {
+        const progressData = await progressRes.json();
+        setRecentProgress(progressData.students || []);
       }
 
     } catch (err) {

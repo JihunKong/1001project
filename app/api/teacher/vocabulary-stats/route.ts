@@ -67,33 +67,32 @@ export async function GET() {
       });
     }
 
-    const vocabularyStats = await prisma.vocabularyWord.groupBy({
-      by: ['userId'],
-      where: { userId: { in: studentIds } },
-      _count: { id: true },
-      _avg: { masteryLevel: true },
-    });
-
-    const masteredWords = await prisma.vocabularyWord.groupBy({
-      by: ['userId'],
-      where: {
-        userId: { in: studentIds },
-        masteryLevel: { gte: 4 },
-      },
-      _count: { id: true },
-    });
+    const [vocabularyStats, masteredWords, recentActivity] = await Promise.all([
+      prisma.vocabularyWord.groupBy({
+        by: ['userId'],
+        where: { userId: { in: studentIds } },
+        _count: { id: true },
+        _avg: { masteryLevel: true },
+      }),
+      prisma.vocabularyWord.groupBy({
+        by: ['userId'],
+        where: {
+          userId: { in: studentIds },
+          masteryLevel: { gte: 4 },
+        },
+        _count: { id: true },
+      }),
+      prisma.vocabularyWord.groupBy({
+        by: ['userId'],
+        where: {
+          userId: { in: studentIds },
+          createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+        },
+        _count: { id: true },
+      }),
+    ]);
 
     const masteredMap = new Map(masteredWords.map(m => [m.userId, m._count.id]));
-
-    const recentActivity = await prisma.vocabularyWord.groupBy({
-      by: ['userId'],
-      where: {
-        userId: { in: studentIds },
-        createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
-      },
-      _count: { id: true },
-    });
-
     const recentMap = new Map(recentActivity.map(r => [r.userId, r._count.id]));
 
     const studentMap = new Map(enrollments.map(e => [e.studentId, e.student]));

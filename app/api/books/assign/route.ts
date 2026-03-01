@@ -348,37 +348,48 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Enhance assignments with book information
-    const enhancedAssignments = await Promise.all(
-      assignments.map(async (assignment) => {
-        const bookIds = assignment.resources.filter(r => r.length > 0);
-        const books = await prisma.book.findMany({
-          where: { id: { in: bookIds } },
+    // Collect all unique book IDs across assignments
+    const allBookIds = [...new Set(
+      assignments.flatMap(a => a.resources.filter(r => r.length > 0))
+    )];
+
+    // Single batch query for all books
+    const allBooks = allBookIds.length > 0
+      ? await prisma.book.findMany({
+          where: { id: { in: allBookIds } },
           select: {
             id: true,
             title: true,
             authorName: true,
             coverImage: true,
           }
-        });
+        })
+      : [];
 
-        // Calculate submission statistics
-        const totalSubmissions = assignment.submissions.length;
-        const submittedCount = assignment.submissions.filter(s => s.status === 'SUBMITTED' || s.status === 'GRADED').length;
-        const gradedCount = assignment.submissions.filter(s => s.status === 'GRADED').length;
+    const bookMap = new Map(allBooks.map(b => [b.id, b]));
 
-        return {
-          ...assignment,
-          books,
-          stats: {
-            totalStudents: totalSubmissions,
-            submitted: submittedCount,
-            graded: gradedCount,
-            pending: totalSubmissions - submittedCount,
-          }
-        };
-      })
-    );
+    // Enhance assignments with book information (no more N+1)
+    const enhancedAssignments = assignments.map((assignment) => {
+      const bookIds = assignment.resources.filter(r => r.length > 0);
+      const books = bookIds
+        .map(id => bookMap.get(id))
+        .filter((b): b is NonNullable<typeof b> => b !== null && b !== undefined);
+
+      const totalSubmissions = assignment.submissions.length;
+      const submittedCount = assignment.submissions.filter(s => s.status === 'SUBMITTED' || s.status === 'GRADED').length;
+      const gradedCount = assignment.submissions.filter(s => s.status === 'GRADED').length;
+
+      return {
+        ...assignment,
+        books,
+        stats: {
+          totalStudents: totalSubmissions,
+          submitted: submittedCount,
+          graded: gradedCount,
+          pending: totalSubmissions - submittedCount,
+        }
+      };
+    });
 
     return NextResponse.json({
       assignments: enhancedAssignments

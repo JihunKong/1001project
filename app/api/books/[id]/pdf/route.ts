@@ -212,16 +212,19 @@ export async function GET(
       const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
       const chunkSize = end - start + 1;
 
-      const fileStream = fs.createReadStream(pdfPath, { start, end });
-      const chunks: Buffer[] = [];
+      const nodeStream = fs.createReadStream(pdfPath, { start, end });
+      const readableStream = new ReadableStream({
+        start(controller) {
+          nodeStream.on('data', (chunk) => controller.enqueue(new Uint8Array(Buffer.from(chunk))));
+          nodeStream.on('end', () => controller.close());
+          nodeStream.on('error', (err) => controller.error(err));
+        },
+        cancel() {
+          nodeStream.destroy();
+        },
+      });
 
-      for await (const chunk of fileStream) {
-        chunks.push(Buffer.from(chunk));
-      }
-
-      const buffer = Buffer.concat(chunks);
-
-      return new NextResponse(buffer, {
+      return new NextResponse(readableStream, {
         status: 206,
         headers: {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -233,9 +236,19 @@ export async function GET(
       });
     }
 
-    const fileBuffer = fs.readFileSync(pdfPath);
+    const nodeStream = fs.createReadStream(pdfPath);
+    const readableStream = new ReadableStream({
+      start(controller) {
+        nodeStream.on('data', (chunk) => controller.enqueue(new Uint8Array(Buffer.from(chunk))));
+        nodeStream.on('end', () => controller.close());
+        nodeStream.on('error', (err) => controller.error(err));
+      },
+      cancel() {
+        nodeStream.destroy();
+      },
+    });
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(readableStream, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

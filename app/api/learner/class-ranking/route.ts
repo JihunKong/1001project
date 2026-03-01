@@ -57,39 +57,52 @@ export async function GET() {
 
     const studentIds = classStudents.map((s) => s.studentId);
 
-    const studentStats = await Promise.all(
-      studentIds.map(async (studentId) => {
-        const readingProgress = await prisma.readingProgress.findMany({
-          where: { userId: studentId },
-        });
+    const [progressStats, completedBooks, submissionStats] = await Promise.all([
+      prisma.readingProgress.groupBy({
+        by: ['userId'],
+        where: { userId: { in: studentIds } },
+        _sum: { totalReadingTime: true },
+      }),
+      prisma.readingProgress.groupBy({
+        by: ['userId'],
+        where: { userId: { in: studentIds }, isCompleted: true },
+        _count: { id: true },
+      }),
+      prisma.submission.groupBy({
+        by: ['studentId'],
+        where: { studentId: { in: studentIds }, status: 'GRADED' },
+        _count: { id: true },
+      }),
+    ]);
 
-        const booksRead = readingProgress.filter((p) => p.isCompleted).length;
-        const totalReadingTime = readingProgress.reduce(
-          (sum, p) => sum + (p.totalReadingTime || 0),
-          0
-        );
-
-        const completedAssignments = await prisma.submission.count({
-          where: {
-            studentId,
-            status: 'GRADED',
-          },
-        });
-
-        const score =
-          booksRead * 10 +
-          Math.floor(totalReadingTime / 60) * 5 +
-          completedAssignments * 15;
-
-        return {
-          studentId,
-          booksRead,
-          readingTime: totalReadingTime,
-          assignmentsCompleted: completedAssignments,
-          score,
-        };
-      })
+    const readingTimeMap = new Map(
+      progressStats.map((p) => [p.userId, p._sum.totalReadingTime || 0])
     );
+    const booksReadMap = new Map(
+      completedBooks.map((b) => [b.userId, b._count.id])
+    );
+    const assignmentsMap = new Map(
+      submissionStats.map((s) => [s.studentId, s._count.id])
+    );
+
+    const studentStats = studentIds.map((studentId) => {
+      const booksRead = booksReadMap.get(studentId) || 0;
+      const totalReadingTime = readingTimeMap.get(studentId) || 0;
+      const completedAssignments = assignmentsMap.get(studentId) || 0;
+
+      const score =
+        booksRead * 10 +
+        Math.floor(totalReadingTime / 60) * 5 +
+        completedAssignments * 15;
+
+      return {
+        studentId,
+        booksRead,
+        readingTime: totalReadingTime,
+        assignmentsCompleted: completedAssignments,
+        score,
+      };
+    });
 
     studentStats.sort((a, b) => b.score - a.score);
 
