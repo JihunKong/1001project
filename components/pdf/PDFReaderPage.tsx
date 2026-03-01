@@ -13,6 +13,7 @@ import {
   Minimize,
   ArrowLeft,
   Book,
+  BookOpen,
   FileText,
   Loader2,
   PanelLeftClose,
@@ -27,6 +28,8 @@ import Link from 'next/link';
 if (typeof window !== 'undefined') {
   pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 }
+
+type ViewMode = 'single' | 'dual-odd' | 'dual-even';
 
 interface PDFReaderPageProps {
   bookId: string;
@@ -59,6 +62,7 @@ export default function PDFReaderPage({
   const [containerWidth, setContainerWidth] = useState(800);
   const [containerHeight, setContainerHeight] = useState(600);
   const [fitMode, setFitMode] = useState<'height' | 'width'>('height');
+  const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [showMobileThumbnails, setShowMobileThumbnails] = useState(false);
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState<Set<number>>(new Set());
@@ -121,8 +125,39 @@ export default function PDFReaderPage({
     setLoading(false);
   }, []);
 
-  const goToPrevPage = () => setPageNumber((prev) => Math.max(1, prev - 1));
-  const goToNextPage = () => setPageNumber((prev) => Math.min(numPages || 1, prev + 1));
+  const getSpreadPages = (): [number, number | null] => {
+    if (viewMode === 'single') return [pageNumber, null];
+
+    if (viewMode === 'dual-odd') {
+      if (pageNumber === 1) return [1, null];
+      const left = pageNumber % 2 === 0 ? pageNumber : pageNumber - 1;
+      const right = left + 1;
+      return [left, right <= (numPages || 1) ? right : null];
+    }
+
+    const left = pageNumber % 2 === 1 ? pageNumber : pageNumber - 1;
+    const right = left + 1;
+    return [left, right <= (numPages || 1) ? right : null];
+  };
+
+  const goToPrevPage = () => {
+    if (viewMode === 'single') {
+      setPageNumber((prev) => Math.max(1, prev - 1));
+    } else {
+      const [left] = getSpreadPages();
+      setPageNumber(Math.max(1, left - 2));
+    }
+  };
+
+  const goToNextPage = () => {
+    if (viewMode === 'single') {
+      setPageNumber((prev) => Math.min(numPages || 1, prev + 1));
+    } else {
+      const [left, right] = getSpreadPages();
+      const next = (right || left) + 1;
+      setPageNumber(Math.min(numPages || 1, next));
+    }
+  };
   const zoomIn = () => setScale((prev) => Math.min(2.0, prev + 0.25));
   const zoomOut = () => setScale((prev) => Math.max(0.5, prev - 0.25));
 
@@ -182,10 +217,32 @@ export default function PDFReaderPage({
     setTouchStart(null);
   };
 
+  const alignToSpread = (page: number): number => {
+    if (viewMode === 'single') return page;
+    if (viewMode === 'dual-odd') {
+      if (page === 1) return 1;
+      return page % 2 === 0 ? page : page - 1;
+    }
+    return page % 2 === 1 ? page : page - 1;
+  };
+
   const handlePageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value) && value >= 1 && value <= (numPages || 1)) {
-      setPageNumber(value);
+      setPageNumber(alignToSpread(value));
+    }
+  };
+
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    if (mode !== 'single') {
+      setPageNumber((prev) => {
+        if (mode === 'dual-odd') {
+          if (prev === 1) return 1;
+          return prev % 2 === 0 ? prev : prev - 1;
+        }
+        return prev % 2 === 1 ? prev : prev - 1;
+      });
     }
   };
 
@@ -301,6 +358,35 @@ export default function PDFReaderPage({
                 <ArrowLeft className="w-4 h-4 rotate-90" />
               </button>
             </div>
+            <div className="hidden md:flex items-center gap-1 bg-gray-700 rounded-lg px-1 py-1">
+              <button
+                onClick={() => handleViewModeChange('single')}
+                className={`p-1.5 rounded transition-colors text-xs ${
+                  viewMode === 'single' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
+                }`}
+                title="한쪽보기"
+              >
+                <FileText className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleViewModeChange('dual-odd')}
+                className={`p-1.5 rounded transition-colors text-xs ${
+                  viewMode === 'dual-odd' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
+                }`}
+                title="두쪽보기 (홀수시작)"
+              >
+                <BookOpen className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleViewModeChange('dual-even')}
+                className={`p-1.5 rounded transition-colors text-xs ${
+                  viewMode === 'dual-even' ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
+                }`}
+                title="두쪽보기 (짝수시작)"
+              >
+                <BookOpen className="w-4 h-4 scale-x-[-1]" />
+              </button>
+            </div>
             <div className="hidden sm:flex items-center gap-1 bg-gray-700 rounded-lg px-2 py-1">
               <button
                 onClick={zoomOut}
@@ -407,30 +493,55 @@ export default function PDFReaderPage({
               </button>
             </div>
           ) : (
-            <Document
-              file={pdfUrl}
-              onLoadSuccess={onDocumentLoadSuccess}
-              onLoadError={onDocumentLoadError}
-              loading={
-                <div className="flex flex-col items-center justify-center py-20">
-                  <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
-                  <p className="text-gray-400">Loading PDF...</p>
-                </div>
-              }
-              className="shadow-2xl rounded-lg overflow-hidden"
-            >
-              <Page
-                pageNumber={pageNumber}
-                scale={scale}
-                {...(fitMode === 'height'
-                  ? { height: containerHeight / scale }
-                  : { width: containerWidth / scale }
-                )}
-                className="bg-white"
-                renderTextLayer={true}
-                renderAnnotationLayer={true}
-              />
-            </Document>
+            (() => {
+              const [leftPage, rightPage] = getSpreadPages();
+              const isDual = viewMode !== 'single';
+              const pageWidth = isDual
+                ? (containerWidth - 8) / 2
+                : containerWidth;
+
+              return (
+                <Document
+                  file={pdfUrl}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  onLoadError={onDocumentLoadError}
+                  loading={
+                    <div className="flex flex-col items-center justify-center py-20">
+                      <Loader2 className="w-12 h-12 text-blue-400 animate-spin mb-4" />
+                      <p className="text-gray-400">Loading PDF...</p>
+                    </div>
+                  }
+                  className="shadow-2xl rounded-lg overflow-hidden"
+                >
+                  <div className={isDual ? 'flex gap-2 items-start' : ''}>
+                    <Page
+                      pageNumber={leftPage}
+                      scale={scale}
+                      {...(fitMode === 'height'
+                        ? { height: containerHeight / scale }
+                        : { width: pageWidth / scale }
+                      )}
+                      className="bg-white"
+                      renderTextLayer={true}
+                      renderAnnotationLayer={true}
+                    />
+                    {rightPage && (
+                      <Page
+                        pageNumber={rightPage}
+                        scale={scale}
+                        {...(fitMode === 'height'
+                          ? { height: containerHeight / scale }
+                          : { width: pageWidth / scale }
+                        )}
+                        className="bg-white"
+                        renderTextLayer={true}
+                        renderAnnotationLayer={true}
+                      />
+                    )}
+                  </div>
+                </Document>
+              );
+            })()
           )}
         </main>
       </div>
@@ -447,36 +558,55 @@ export default function PDFReaderPage({
             <Grid className="w-5 h-5" />
           </button>
 
-          <button
-            onClick={goToPrevPage}
-            disabled={pageNumber <= 1 || loading}
-            className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            <span className="hidden sm:inline">Previous</span>
-          </button>
+          {(() => {
+            const [leftPage, rightPage] = getSpreadPages();
+            const isFirst = leftPage <= 1;
+            const isLast = (rightPage || leftPage) >= (numPages || 1);
+            const pageDisplay = rightPage
+              ? `${leftPage}-${rightPage}`
+              : `${leftPage}`;
 
-          <div className="flex items-center gap-1 sm:gap-2 text-gray-300">
-            <span className="hidden sm:inline">Page</span>
-            <input
-              type="number"
-              value={pageNumber}
-              onChange={handlePageInput}
-              min={1}
-              max={numPages || 1}
-              className="w-12 sm:w-16 px-1 sm:px-2 py-1 bg-gray-700 border border-gray-600 rounded text-center text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="text-sm sm:text-base">/ {loading ? '...' : numPages}</span>
-          </div>
+            return (
+              <>
+                <button
+                  onClick={goToPrevPage}
+                  disabled={isFirst || loading}
+                  className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                  <span className="hidden sm:inline">Previous</span>
+                </button>
 
-          <button
-            onClick={goToNextPage}
-            disabled={pageNumber >= (numPages || 1) || loading}
-            className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <span className="hidden sm:inline">Next</span>
-            <ChevronRight className="w-5 h-5" />
-          </button>
+                <div className="flex items-center gap-1 sm:gap-2 text-gray-300">
+                  <span className="hidden sm:inline">Page</span>
+                  {viewMode === 'single' ? (
+                    <input
+                      type="number"
+                      value={pageNumber}
+                      onChange={handlePageInput}
+                      min={1}
+                      max={numPages || 1}
+                      className="w-12 sm:w-16 px-1 sm:px-2 py-1 bg-gray-700 border border-gray-600 rounded text-center text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <span className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-center text-white text-sm min-w-[3rem]">
+                      {pageDisplay}
+                    </span>
+                  )}
+                  <span className="text-sm sm:text-base">/ {loading ? '...' : numPages}</span>
+                </div>
+
+                <button
+                  onClick={goToNextPage}
+                  disabled={isLast || loading}
+                  className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </>
+            );
+          })()}
 
           {/* Mobile: Zoom Controls */}
           <div className="sm:hidden flex items-center gap-1">
@@ -501,7 +631,7 @@ export default function PDFReaderPage({
             <div className="h-1 bg-gray-700 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300"
-                style={{ width: `${(pageNumber / numPages) * 100}%` }}
+                style={{ width: `${(Math.min(getSpreadPages()[1] || getSpreadPages()[0], numPages) / numPages) * 100}%` }}
               />
             </div>
           </div>
