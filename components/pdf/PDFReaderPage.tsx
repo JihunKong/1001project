@@ -64,6 +64,7 @@ export default function PDFReaderPage({
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState<Set<number>>(new Set());
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
   const progressSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -71,9 +72,11 @@ export default function PDFReaderPage({
 
   useEffect(() => {
     const updateDimensions = () => {
-      if (containerRef.current) {
-        const width = containerRef.current.clientWidth - 48;
-        const height = containerRef.current.clientHeight - 48;
+      const el = contentRef.current;
+      if (el) {
+        const padding = 32;
+        const width = el.clientWidth - padding;
+        const height = el.clientHeight - padding;
         setContainerWidth(Math.min(width, 1200));
         setContainerHeight(Math.max(height, 400));
       }
@@ -81,8 +84,13 @@ export default function PDFReaderPage({
 
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
+
+    const frameId = requestAnimationFrame(updateDimensions);
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      cancelAnimationFrame(frameId);
+    };
+  }, [showThumbnails]);
 
   useEffect(() => {
     if (progressSaveTimeoutRef.current) {
@@ -191,7 +199,7 @@ export default function PDFReaderPage({
   return (
     <div
       ref={containerRef}
-      className={`min-h-screen bg-gray-900 flex flex-col ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}
+      className={`h-screen bg-gray-900 flex flex-col overflow-hidden ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}
     >
       {/* Header */}
       <header className="bg-gray-800 border-b border-gray-700 px-4 py-3">
@@ -376,7 +384,8 @@ export default function PDFReaderPage({
 
         {/* Main PDF Content */}
         <main
-          className="flex-1 overflow-auto flex justify-center items-start p-4 sm:p-6"
+          ref={contentRef}
+          className="flex-1 overflow-auto flex justify-center items-start p-4"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
