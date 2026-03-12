@@ -97,7 +97,18 @@ export async function POST(request: NextRequest) {
 
     const verificationUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${token}`;
 
-    await sendLocalizedVerificationEmail(normalizedEmail, verificationUrl, language);
+    const emailResult = await sendLocalizedVerificationEmail(normalizedEmail, verificationUrl, language);
+
+    if (!emailResult.success) {
+      logger.error('Failed to resend verification email', {
+        email: normalizedEmail,
+        reason: emailResult.message
+      });
+      return NextResponse.json(
+        { error: 'Email service is currently unavailable. Please try again later.' },
+        { status: 503 }
+      );
+    }
 
     logger.info('Verification email resent', { email: normalizedEmail, language });
 

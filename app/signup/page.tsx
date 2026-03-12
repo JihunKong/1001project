@@ -6,6 +6,8 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import AuthLegalFooter from '@/components/AuthLegalFooter';
+import LegalModal from '@/components/LegalModal';
 import PasswordRequirements from '@/components/auth/PasswordRequirements';
 
 interface ValidationError {
@@ -24,16 +26,23 @@ export default function SignupPage() {
     email: '',
     password: '',
     passwordConfirm: '',
+    dateOfBirth: '',
+    parentName: '',
+    parentEmail: '',
     termsAccepted: false,
     aiServiceConsent: false,
     dataTransferConsent: false,
   });
+
+  // COPPA/PIPA compliance state
+  const [requiresParentalConsent, setRequiresParentalConsent] = useState(false);
 
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [legalModalType, setLegalModalType] = useState<'terms' | 'privacy' | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordRequirements, setPasswordRequirements] = useState({
     minLength: false,
@@ -147,6 +156,48 @@ export default function SignupPage() {
       });
     }
 
+    // Date of birth validation (optional but if provided must be valid)
+    if (formData.dateOfBirth) {
+      const age = calculateAge(formData.dateOfBirth);
+      if (age < 3) {
+        errors.push({
+          field: 'dateOfBirth',
+          message: t('auth.signup.form.dateOfBirth.validation.tooYoung'),
+          code: 'TOO_YOUNG'
+        });
+      } else if (age > 120) {
+        errors.push({
+          field: 'dateOfBirth',
+          message: t('auth.signup.form.dateOfBirth.validation.invalid'),
+          code: 'INVALID'
+        });
+      }
+    }
+
+    // Parental consent validation (required if under 14)
+    if (requiresParentalConsent) {
+      if (!formData.parentName.trim()) {
+        errors.push({
+          field: 'parentName',
+          message: t('auth.signup.form.parentalConsent.validation.parentNameRequired'),
+          code: 'REQUIRED'
+        });
+      }
+      if (!formData.parentEmail) {
+        errors.push({
+          field: 'parentEmail',
+          message: t('auth.signup.form.parentalConsent.validation.parentEmailRequired'),
+          code: 'REQUIRED'
+        });
+      } else if (!isValidEmail(formData.parentEmail)) {
+        errors.push({
+          field: 'parentEmail',
+          message: t('auth.signup.form.parentalConsent.validation.parentEmailInvalid'),
+          code: 'INVALID_FORMAT'
+        });
+      }
+    }
+
     // Terms validation
     if (!formData.termsAccepted) {
       errors.push({
@@ -185,17 +236,29 @@ export default function SignupPage() {
     setMessage('');
 
     try {
+      const signupData = {
+        ...formData,
+        dateOfBirth: formData.dateOfBirth || undefined,
+        parentName: requiresParentalConsent ? formData.parentName : undefined,
+        parentEmail: requiresParentalConsent ? formData.parentEmail : undefined,
+      };
+
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(signupData),
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        if (data.requiresParentalConsent) {
+          router.push('/consent-required');
+          return;
+        }
+
         setMessage(t('auth.signup.messages.accountCreated'));
 
         await signIn('credentials', {
@@ -235,6 +298,29 @@ export default function SignupPage() {
   const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  const calculateAge = (dateOfBirth: string): number => {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const handleDateOfBirthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData(prev => ({ ...prev, dateOfBirth: value }));
+
+    if (value) {
+      const age = calculateAge(value);
+      setRequiresParentalConsent(age < 14);
+    } else {
+      setRequiresParentalConsent(false);
+    }
   };
 
   const getFieldError = (field: string): ValidationError | undefined => {
@@ -322,6 +408,121 @@ export default function SignupPage() {
                   </p>
                 )}
               </div>
+
+              <div>
+                <label
+                  htmlFor="dateOfBirth"
+                  className="block text-sm font-normal text-[#737373] mb-2"
+                >
+                  {t('auth.signup.form.dateOfBirth.label')}
+                  <span className="ml-1 text-xs text-[#A3A3A3]">({t('common.optional')})</span>
+                </label>
+                <input
+                  id="dateOfBirth"
+                  name="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={handleDateOfBirthChange}
+                  onFocus={() => setFocusedField('dateOfBirth')}
+                  onBlur={() => setFocusedField(null)}
+                  max={new Date().toISOString().split('T')[0]}
+                  className={`
+                    w-full px-3 py-3 border-b bg-transparent text-gray-900
+                    placeholder-[#ADAEBC] focus:outline-none focus:border-[#91C549]
+                    transition-colors duration-200
+                    ${getFieldError('dateOfBirth') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
+                  `}
+                  aria-invalid={!!getFieldError('dateOfBirth')}
+                  aria-describedby={getFieldError('dateOfBirth') ? 'dateOfBirth-error' : undefined}
+                />
+                {getFieldError('dateOfBirth') && (
+                  <p
+                    id="dateOfBirth-error"
+                    role="alert"
+                    className="mt-1 text-sm text-red-600"
+                  >
+                    {getFieldError('dateOfBirth')?.message}
+                  </p>
+                )}
+              </div>
+
+              {requiresParentalConsent && (
+                <div className="space-y-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-sm text-yellow-800">
+                    {t('auth.signup.form.parentalConsent.notice')}
+                  </p>
+                  <div>
+                    <label
+                      htmlFor="parentName"
+                      className="block text-sm font-normal text-[#737373] mb-2"
+                    >
+                      {t('auth.signup.form.parentalConsent.parentName')}
+                    </label>
+                    <input
+                      id="parentName"
+                      name="parentName"
+                      type="text"
+                      value={formData.parentName}
+                      onChange={handleInputChange}
+                      onFocus={() => setFocusedField('parentName')}
+                      onBlur={() => setFocusedField(null)}
+                      className={`
+                        w-full px-3 py-3 border rounded-lg bg-white text-gray-900
+                        placeholder-[#ADAEBC] focus:outline-none focus:ring-2 focus:ring-[#91C549]
+                        transition-colors duration-200
+                        ${getFieldError('parentName') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
+                      `}
+                      placeholder={t('auth.signup.form.parentalConsent.parentNamePlaceholder')}
+                      aria-invalid={!!getFieldError('parentName')}
+                      aria-describedby={getFieldError('parentName') ? 'parentName-error' : undefined}
+                    />
+                    {getFieldError('parentName') && (
+                      <p
+                        id="parentName-error"
+                        role="alert"
+                        className="mt-1 text-sm text-red-600"
+                      >
+                        {getFieldError('parentName')?.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="parentEmail"
+                      className="block text-sm font-normal text-[#737373] mb-2"
+                    >
+                      {t('auth.signup.form.parentalConsent.parentEmail')}
+                    </label>
+                    <input
+                      id="parentEmail"
+                      name="parentEmail"
+                      type="email"
+                      value={formData.parentEmail}
+                      onChange={handleInputChange}
+                      onFocus={() => setFocusedField('parentEmail')}
+                      onBlur={() => setFocusedField(null)}
+                      className={`
+                        w-full px-3 py-3 border rounded-lg bg-white text-gray-900
+                        placeholder-[#ADAEBC] focus:outline-none focus:ring-2 focus:ring-[#91C549]
+                        transition-colors duration-200
+                        ${getFieldError('parentEmail') ? 'border-red-300 bg-red-50' : 'border-[#D4D4D4]'}
+                      `}
+                      placeholder={t('auth.signup.form.parentalConsent.parentEmailPlaceholder')}
+                      aria-invalid={!!getFieldError('parentEmail')}
+                      aria-describedby={getFieldError('parentEmail') ? 'parentEmail-error' : undefined}
+                    />
+                    {getFieldError('parentEmail') && (
+                      <p
+                        id="parentEmail-error"
+                        role="alert"
+                        className="mt-1 text-sm text-red-600"
+                      >
+                        {getFieldError('parentEmail')?.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label
@@ -466,13 +667,21 @@ export default function SignupPage() {
                 />
                 <label htmlFor="termsAccepted" className="text-sm text-[#737373]">
                   {t('auth.signup.form.terms.label')}
-                  <Link href="/terms" className="underline hover:text-[#2B2B2B]">
+                  <button
+                    type="button"
+                    onClick={() => setLegalModalType('terms')}
+                    className="underline hover:text-[#2B2B2B]"
+                  >
                     {t('auth.common.footer.termsLink')}
-                  </Link>
+                  </button>
                   {' '}{t('auth.common.footer.termsConnector')}{' '}
-                  <Link href="/privacy" className="underline hover:text-[#2B2B2B]">
+                  <button
+                    type="button"
+                    onClick={() => setLegalModalType('privacy')}
+                    className="underline hover:text-[#2B2B2B]"
+                  >
                     {t('auth.common.footer.privacyLink')}
-                  </Link>
+                  </button>
                   {t('auth.signup.form.terms.suffix')}
                 </label>
               </div>
@@ -625,19 +834,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* Terms & Privacy */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-[#737373]">
-              {t('auth.common.footer.termsPrefix')}{' '}
-              <Link href="/terms" className="text-[#737373] hover:text-[#2B2B2B] underline">
-                {t('auth.common.footer.termsLink')}
-              </Link>
-              {' '}{t('auth.common.footer.termsConnector')}{' '}
-              <Link href="/privacy" className="text-[#737373] hover:text-[#2B2B2B] underline">
-                {t('auth.common.footer.privacyLink')}
-              </Link>
-            </p>
-          </div>
+          <AuthLegalFooter />
         </div>
       </div>
 
@@ -661,6 +858,11 @@ export default function SignupPage() {
           </p>
         </div>
       </div>
+      <LegalModal
+        isOpen={legalModalType !== null}
+        onClose={() => setLegalModalType(null)}
+        type={legalModalType || 'terms'}
+      />
     </div>
   );
 }

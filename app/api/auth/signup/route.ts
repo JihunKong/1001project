@@ -373,17 +373,21 @@ export async function POST(request: NextRequest) {
 
     const verificationUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${verificationToken}`;
 
-    try {
-      await sendLocalizedVerificationEmail(validatedData.email, verificationUrl, language);
+    const emailResult = await sendLocalizedVerificationEmail(validatedData.email, verificationUrl, language);
+    if (emailResult.success) {
       logger.info('Verification email sent during signup', { email: validatedData.email, language });
-    } catch (emailError) {
-      logger.error('Failed to send verification email during signup', emailError);
+    } else {
+      logger.error('Failed to send verification email during signup', {
+        email: validatedData.email,
+        reason: emailResult.message
+      });
     }
 
     return NextResponse.json({
       message: 'User registration successful',
       user: result,
       requiresEmailVerification: true,
+      emailSent: emailResult.success,
       nextStep: 'email_verification'
     }, { status: 201 });
 

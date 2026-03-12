@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n/useTranslation';
+import AuthLegalFooter from '@/components/AuthLegalFooter';
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
@@ -146,19 +147,7 @@ export default function ForgotPasswordPage() {
             </div>
           </div>
 
-          {/* Terms & Privacy */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-[#737373]">
-              {t('auth.common.footer.termsPrefix')}{' '}
-              <Link href="/terms" className="text-[#737373] hover:text-[#2B2B2B] underline">
-                {t('auth.common.footer.termsLink')}
-              </Link>
-              {' '}{t('auth.common.footer.termsConnector')}{' '}
-              <Link href="/privacy" className="text-[#737373] hover:text-[#2B2B2B] underline">
-                {t('auth.common.footer.privacyLink')}
-              </Link>
-            </p>
-          </div>
+          <AuthLegalFooter />
         </div>
       </div>
 

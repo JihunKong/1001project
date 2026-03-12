@@ -3505,7 +3505,9 @@
       "topicOther": "Other",
       "message": "Message",
       "messagePlaceholder": "Tell us how we can help you...",
-      "sendButton": "Send Message"
+      "sendButton": "Send Message",
+      "sending": "Sending...",
+      "successMessage": "Your message has been sent successfully! We'll get back to you soon."
     }
   }
 }

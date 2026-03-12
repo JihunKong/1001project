@@ -3532,7 +3532,9 @@
       "topicOther": "기타",
       "message": "메시지",
       "messagePlaceholder": "어떻게 도움을 드릴 수 있는지 알려주세요...",
-      "sendButton": "메시지 보내기"
+      "sendButton": "메시지 보내기",
+      "sending": "전송 중...",
+      "successMessage": "메시지가 성공적으로 전송되었습니다! 곧 답변 드리겠습니다."
     }
   }
 }

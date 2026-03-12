@@ -1,11 +1,49 @@
 'use client';
 
-import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
-import Link from 'next/link';
+import { useState } from 'react';
+import { Mail, MapPin, Clock, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function ContactPage() {
   const { t } = useTranslation();
+  const [formState, setFormState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setFormState('sending');
+    setErrorMessage('');
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const data = {
+      firstName: formData.get('firstName') as string,
+      lastName: formData.get('lastName') as string,
+      email: formData.get('email') as string,
+      subject: formData.get('subject') as string,
+      message: formData.get('message') as string,
+    };
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Failed to send message');
+      }
+
+      setFormState('sent');
+      form.reset();
+    } catch (err) {
+      setFormState('error');
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to send message');
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
@@ -42,19 +80,6 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-emerald-100 rounded-lg">
-                    <Phone className="h-6 w-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{t('contact.info.phone.title')}</h3>
-                    <p className="text-gray-600 mb-2">{t('contact.info.phone.description')}</p>
-                    <a href="tel:+1-555-1001-STORY" className="text-blue-600 hover:text-blue-700 font-medium">
-                      +1 (555) 1001-STORY
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
                   <div className="p-3 bg-purple-100 rounded-lg">
                     <MapPin className="h-6 w-6 text-purple-600" />
                   </div>
@@ -83,37 +108,27 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 mt-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-6">{t('contact.actions.title')}</h3>
-              <div className="space-y-4">
-                <Link
-                  href="/signup?role=teacher"
-                  className="block w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium text-center hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
-                >
-                  {t('contact.actions.joinEducator')}
-                </Link>
-                <Link
-                  href="/signup?role=writer"
-                  className="block w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-lg font-medium text-center hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200"
-                >
-                  {t('contact.actions.becomeWriter')}
-                </Link>
-                <Link
-                  href="/library"
-                  className="block w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium text-center hover:from-purple-600 hover:to-purple-700 transition-all duration-200"
-                >
-                  {t('contact.actions.exploreStories')}
-                </Link>
-              </div>
-            </div>
           </div>
 
           {/* Contact Form */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('contact.form.title')}</h2>
 
-            <form className="space-y-6">
+            {formState === 'sent' && (
+              <div className="mb-6 flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                <p className="text-green-700">{t('contact.form.successMessage')}</p>
+              </div>
+            )}
+
+            {formState === 'error' && (
+              <div className="mb-6 flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                <p className="text-red-700">{errorMessage}</p>
+              </div>
+            )}
+
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -188,10 +203,15 @@ export default function ContactPage() {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 flex items-center justify-center gap-2"
+                disabled={formState === 'sending'}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Send className="h-4 w-4" />
-                {t('contact.form.sendButton')}
+                {formState === 'sending' ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+                {formState === 'sending' ? t('contact.form.sending') : t('contact.form.sendButton')}
               </button>
             </form>
           </div>
