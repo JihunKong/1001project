@@ -3,7 +3,10 @@ const nextConfig = {
   output: 'standalone',
   serverExternalPackages: ['@prisma/client', 'prisma'],
   images: {
-    unoptimized: true,
+    formats: ['image/webp'],
+    deviceSizes: [640, 750, 828, 1080],
+    imageSizes: [64, 96, 128, 256],
+    minimumCacheTTL: 60 * 60 * 24 * 30,
   },
   eslint: {
     ignoreDuringBuilds: true,

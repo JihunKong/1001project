@@ -78,8 +78,12 @@ const AnimatedImage = forwardRef<HTMLDivElement, AnimatedImageProps>(
           <Image
             src={src}
             alt={alt}
-            fill
-            style={{ objectFit: 'cover' }}
+            width={256}
+            height={192}
+            quality={35}
+            sizes="(max-width: 640px) 50vw, 256px"
+            loading="lazy"
+            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
           />
         ) : (
           fallbackComponent

@@ -72,8 +72,12 @@ export default function BookListView({ books, getLinkHref, onFavoriteToggle }: B
               <Image
                 src={book.coverImage}
                 alt={book.title}
-                fill
-                className="object-cover"
+                width={128}
+                height={176}
+                quality={35}
+                className="object-cover w-full h-full"
+                sizes="128px"
+                loading="lazy"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
