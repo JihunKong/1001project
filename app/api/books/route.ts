@@ -219,13 +219,13 @@ export async function GET(request: NextRequest) {
       title: { startsWith: '[DELETED]' }
     };
 
-    // Apply secure search filter
+    // Apply secure search filter using AND to preserve role-based visibility
     if (search) {
       const searchQuery = buildSecureSearchQuery(search);
       if (searchQuery.OR) {
-        where.OR = [
-          ...(where.OR || []),
-          ...searchQuery.OR
+        where.AND = [
+          ...(where.AND || []),
+          { OR: searchQuery.OR }
         ];
       }
     }

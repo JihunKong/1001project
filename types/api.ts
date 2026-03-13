@@ -33,7 +33,7 @@ export interface SessionUser {
   email: string;
   name?: string | null;
   role: 'LEARNER' | 'TEACHER' | 'WRITER' | 'STORY_MANAGER' | 'BOOK_MANAGER' | 'CONTENT_ADMIN' | 'ADMIN' | 'INSTITUTION';
-  emailVerified?: Date | null;
+  emailVerified?: boolean | Date | null;
 }
 
 export interface ExtendedSession {

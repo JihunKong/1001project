@@ -32,6 +32,7 @@ export default function WriterLibraryPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [libraryMode, setLibraryMode] = useState<LibraryMode>('english');
   const [translatedBookCount, setTranslatedBookCount] = useState<number>(0);
@@ -62,6 +63,7 @@ export default function WriterLibraryPage() {
 
   const fetchBooks = useCallback(async () => {
     setLoading(true);
+    setFetchError(null);
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -86,13 +88,18 @@ export default function WriterLibraryPage() {
         const data = await response.json();
         setBooks(data.books || []);
         setTotalCount(data.pagination?.totalCount || 0);
+      } else if (response.status === 429) {
+        setFetchError(t('library.errors.rateLimited') || 'Too many requests. Please wait a moment and try again.');
+      } else {
+        setFetchError(t('library.errors.loadFailed') || 'Failed to load books. Please try again.');
       }
     } catch (error) {
       console.error('Error fetching books:', error);
+      setFetchError(t('library.errors.networkError') || 'Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
-  }, [page, currentSort, searchTerm, filters, libraryMode, language]);
+  }, [page, currentSort, searchTerm, filters, libraryMode, language, t]);
 
   const fetchTranslatedBookCount = useCallback(async () => {
     if (language === 'en') {
@@ -222,10 +229,28 @@ export default function WriterLibraryPage() {
 
   const stats = getLibraryStats();
 
-  if (status === 'loading' || (loading && books.length === 0)) {
+  if (status === 'loading' || (loading && books.length === 0 && !fetchError)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-soe-green-600"></div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex items-center justify-center min-h-screen px-4">
+        <div className="text-center max-w-md">
+          <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('library.errors.title') || 'Unable to load library'}</h2>
+          <p className="text-gray-500 mb-6">{fetchError}</p>
+          <button
+            onClick={() => { setFetchError(null); fetchBooks(); }}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {t('common.retry') || 'Try Again'}
+          </button>
+        </div>
       </div>
     );
   }

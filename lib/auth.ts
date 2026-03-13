@@ -345,7 +345,7 @@ export const authOptions: NextAuthOptions = {
           logger.debug('Creating session', { email: session.user.email, tokenId: token.id });
           session.user.id = token.id as string
           session.user.role = (token.role as UserRole) || UserRole.WRITER
-          session.user.emailVerified = token.emailVerified as Date | null
+          session.user.emailVerified = token.emailVerified as boolean | null
           session.user.isMinor = token.isMinor as boolean | undefined
           session.user.parentalConsentStatus = token.parentalConsentStatus as string | undefined
           session.user.coppaCompliant = token.coppaCompliant as boolean | undefined
@@ -358,13 +358,17 @@ export const authOptions: NextAuthOptions = {
       }
     },
     
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user, account, trigger }) {
       try {
         if (user) {
           logger.debug('Creating JWT token', { email: user.email, role: (user as { role?: UserRole }).role });
           token.id = user.id
           token.role = (user as { role?: UserRole }).role || UserRole.WRITER
-          token.emailVerified = (user as { emailVerified?: Date | null }).emailVerified
+          const rawEmailVerified = (user as { emailVerified?: Date | null }).emailVerified;
+          token.emailVerified = rawEmailVerified ? true : null;
+          if (account?.provider) {
+            token.authProvider = account.provider;
+          }
 
           const { prisma } = await import("@/lib/prisma");
           const profile = await prisma.profile.findUnique({
@@ -496,7 +500,7 @@ declare module "next-auth" {
       name?: string | null
       image?: string | null
       role: UserRole
-      emailVerified: Date | null
+      emailVerified: boolean | null
       // COPPA Compliance fields
       isMinor?: boolean
       parentalConsentStatus?: string
@@ -513,7 +517,8 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     role: UserRole
-    emailVerified?: Date | null
+    emailVerified?: boolean | null
+    authProvider?: string
     // COPPA Compliance fields
     isMinor?: boolean
     parentalConsentStatus?: string

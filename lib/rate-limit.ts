@@ -322,6 +322,45 @@ export function validateQueryParams(params: { [key: string]: string | null }): {
     }
   }
 
+  // Validate educational category
+  if (params.educationalCategory) {
+    const educationalCategory = params.educationalCategory.trim();
+    if (/^[a-zA-Z0-9\s\-_&,]{1,100}$/.test(educationalCategory)) {
+      validated.educationalCategory = educationalCategory;
+    }
+  }
+
+  // Validate country
+  if (params.country) {
+    const country = params.country.trim();
+    if (/^[a-zA-Z\s\-]{1,60}$/.test(country)) {
+      validated.country = country;
+    }
+  }
+
+  // Validate difficulty range
+  if (params.minDifficulty) {
+    const min = parseInt(params.minDifficulty);
+    if (!isNaN(min) && min >= 0 && min <= 100) {
+      validated.minDifficulty = min;
+    }
+  }
+
+  if (params.maxDifficulty) {
+    const max = parseInt(params.maxDifficulty);
+    if (!isNaN(max) && max >= 0 && max <= 100) {
+      validated.maxDifficulty = max;
+    }
+  }
+
+  // Validate vocabulary level
+  if (params.vocabularyLevel) {
+    const vocabularyLevel = params.vocabularyLevel.trim();
+    if (['Basic', 'Intermediate', 'Advanced'].includes(vocabularyLevel)) {
+      validated.vocabularyLevel = vocabularyLevel;
+    }
+  }
+
   // Validate sort parameters
   const allowedSortFields = ['createdAt', 'updatedAt', 'title', 'authorName', 'publishedAt'];
   if (params.sortBy && allowedSortFields.includes(params.sortBy)) {

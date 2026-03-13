@@ -83,17 +83,22 @@ export default withAuth(
         return NextResponse.redirect(loginUrl);
       }
 
-      // Check email verification for password-based users (non-OAuth)
-      // OAuth users (Google) have emailVerified set automatically
-      if (token && !token.emailVerified) {
-        // Check for redirect loop
+      // Check email verification for magic-link users only
+      // Credential (password) and OAuth (Google) logins already verify identity
+      const authProvider = (token as Record<string, unknown>).authProvider as string | undefined;
+      if (token && !token.emailVerified && authProvider !== 'credentials' && authProvider !== 'google' && authProvider !== 'demo') {
         const verifyTrackingKey = `${clientId}-verify-email`;
         if (!isRedirectLoop(verifyTrackingKey)) {
+          logger.warn('Email verification redirect triggered', {
+            email: token.email,
+            pathname,
+            authProvider,
+            emailVerified: token.emailVerified,
+          });
           const verifyUrl = new URL('/verify-email', req.url);
           verifyUrl.searchParams.set('email', token.email as string);
           return NextResponse.redirect(verifyUrl);
         }
-        // If redirect loop detected, allow access to prevent lockup
         logger.warn('Email verification redirect loop detected, allowing access', {
           email: token.email,
           pathname,
