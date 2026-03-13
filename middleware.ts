@@ -216,6 +216,7 @@ export default withAuth(
           pathname === '/' ||
           pathname.startsWith('/api/auth') ||
           pathname.startsWith('/api/health') ||
+          pathname.startsWith('/api/cron') ||
           pathname.startsWith('/api/books') ||
           pathname.startsWith('/api/translations') ||
           pathname.startsWith('/api/onboarding') ||
