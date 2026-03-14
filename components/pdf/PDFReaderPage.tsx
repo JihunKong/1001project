@@ -21,8 +21,11 @@ import {
   Grid,
   X,
   Download,
+  MessageCircle,
 } from 'lucide-react';
 import PDFDownloadButton from './PDFDownloadButton';
+import PDFChatPanel from './PDFChatPanel';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 import Link from 'next/link';
 
 if (typeof window !== 'undefined') {
@@ -65,8 +68,11 @@ export default function PDFReaderPage({
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [showMobileThumbnails, setShowMobileThumbnails] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [pdfText, setPdfText] = useState<string>('');
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState<Set<number>>(new Set());
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const { language } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
@@ -94,7 +100,7 @@ export default function PDFReaderPage({
       window.removeEventListener('resize', updateDimensions);
       cancelAnimationFrame(frameId);
     };
-  }, [showThumbnails]);
+  }, [showThumbnails, showChat]);
 
   useEffect(() => {
     if (progressSaveTimeoutRef.current) {
@@ -114,10 +120,22 @@ export default function PDFReaderPage({
     };
   }, [pageNumber, numPages, onProgressUpdate, pdfType]);
 
-  const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
+  const onDocumentLoadSuccess = useCallback(async (pdf: { numPages: number }) => {
+    setNumPages(pdf.numPages);
     setLoading(false);
     setError(null);
+    try {
+      const pdfDoc = pdf as any;
+      let fullText = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const tc = await page.getTextContent();
+        fullText += tc.items.map((item: { str: string }) => item.str).join(' ') + '\n';
+      }
+      setPdfText(fullText);
+    } catch {
+      // PDF text extraction failed silently - chat will work without extracted text
+    }
   }, []);
 
   const onDocumentLoadError = useCallback((err: Error) => {
@@ -216,6 +234,24 @@ export default function PDFReaderPage({
 
     setTouchStart(null);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPrevPage();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goToNextPage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [pageNumber, numPages, viewMode]);
 
   const alignToSpread = (page: number): number => {
     if (viewMode === 'single') return page;
@@ -337,6 +373,15 @@ export default function PDFReaderPage({
               title="Toggle Thumbnails"
             >
               {showThumbnails ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeft className="w-5 h-5" />}
+            </button>
+            <button
+              onClick={() => setShowChat(prev => !prev)}
+              className={`hidden md:flex p-2 rounded-lg transition-colors ${
+                showChat ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white hover:bg-gray-700'
+              }`}
+              title="AI Reading Assistant"
+            >
+              <MessageCircle className="w-5 h-5" />
             </button>
             <div className="hidden sm:flex items-center gap-1 bg-gray-700 rounded-lg px-1 py-1">
               <button
@@ -544,6 +589,18 @@ export default function PDFReaderPage({
             })()
           )}
         </main>
+
+        {showChat && (
+          <aside className="hidden md:flex w-[380px] border-l border-gray-700 flex-col flex-shrink-0">
+            <PDFChatPanel
+              bookId={bookId}
+              bookTitle={bookTitle}
+              pdfText={pdfText}
+              language={language}
+              onClose={() => setShowChat(false)}
+            />
+          </aside>
+        )}
       </div>
 
       {/* Bottom Navigation */}
