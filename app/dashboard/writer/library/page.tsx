@@ -1,20 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { BookOpen } from 'lucide-react';
 import { Card } from '@/components/figma/ui';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { LanguageSelector } from '@/components/i18n/LanguageSelector';
-import AnimatedBookCard from '@/components/ui/AnimatedBookCard';
 import {
-  AdvancedFilters,
   SortSelector,
   ViewModeToggle,
-  BookListView,
   EmptyState,
-  CategorySection,
   LibraryModeSelector,
   type Book,
   type FilterState,
@@ -22,6 +19,11 @@ import {
   type ViewMode,
   type LibraryMode
 } from '@/components/library';
+
+const AdvancedFilters = dynamic(() => import('@/components/library/AdvancedFilters'), { ssr: false });
+const BookListView = dynamic(() => import('@/components/library/BookListView'), { ssr: false });
+const CategorySection = dynamic(() => import('@/components/library/CategorySection'), { ssr: false });
+const AnimatedBookCard = dynamic(() => import('@/components/ui/AnimatedBookCard'), { ssr: false });
 
 export default function WriterLibraryPage() {
   const { data: session, status } = useSession();
@@ -99,7 +101,7 @@ export default function WriterLibraryPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, currentSort, searchTerm, filters, libraryMode, language, t]);
+  }, [page, currentSort, searchTerm, filters, libraryMode, language]);
 
   const fetchTranslatedBookCount = useCallback(async () => {
     if (language === 'en') {
@@ -231,8 +233,24 @@ export default function WriterLibraryPage() {
 
   if (status === 'loading' || (loading && books.length === 0 && !fetchError)) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-soe-green-600"></div>
+      <div className="pb-20 lg:pb-4">
+        <div className="max-w-[1440px] px-4 sm:px-8 lg:px-12 pt-6 pb-20 lg:pb-4">
+          <div className="h-9 w-48 bg-gray-200 rounded animate-pulse mb-6" />
+          <div className="h-20 bg-gray-100 rounded-lg animate-pulse mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-24 bg-gray-100 rounded-lg animate-pulse" />
+            ))}
+          </div>
+          <div className="flex gap-6">
+            <div className="hidden lg:block w-80 h-96 bg-gray-100 rounded-lg animate-pulse" />
+            <div className="flex-1 space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-44 bg-gray-100 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

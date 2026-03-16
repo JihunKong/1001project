@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { SupportedLanguage, isRTLLanguage } from './language-cookie';
 import { useLanguage } from './LanguageContext';
 import enTranslations from '@/locales/generated/en.json';
@@ -74,6 +74,11 @@ export function useTranslation(): UseTranslationReturn {
   const [translations, setTranslations] = useState<TranslationData>(enTranslations);
   const [isLoading, setIsLoading] = useState(true);
 
+  const translationsRef = useRef<TranslationData>(translations);
+  const languageRef = useRef(language);
+  translationsRef.current = translations;
+  languageRef.current = language;
+
   useEffect(() => {
     const abortController = new AbortController();
     setIsLoading(true);
@@ -81,7 +86,7 @@ export function useTranslation(): UseTranslationReturn {
     loadTranslations(language, abortController.signal)
       .then(data => {
         if (!abortController.signal.aborted) {
-          setTranslations({ ...data });
+          setTranslations(data);
           setIsLoading(false);
         }
       })
@@ -98,12 +103,12 @@ export function useTranslation(): UseTranslationReturn {
   }, [language]);
 
   const t = useCallback((key: string, params?: Record<string, any>): string => {
-    const value = getNestedValue(translations, key, enTranslations);
+    const value = getNestedValue(translationsRef.current, key, enTranslations);
     if (!value && value !== '') {
-      console.warn('[useTranslation] Missing translation key:', key, 'for language:', language);
+      console.warn('[useTranslation] Missing translation key:', key, 'for language:', languageRef.current);
     }
     return interpolate(value, params);
-  }, [translations, language]);
+  }, []);
 
   return {
     t,
