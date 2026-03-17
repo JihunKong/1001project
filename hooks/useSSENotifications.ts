@@ -85,7 +85,9 @@ export function useSSENotifications(options: UseSSENotificationsOptions = {}) {
 
         // Implement exponential backoff for reconnection
         if (retryCount.current < maxRetries) {
-          const delay = Math.min(1000 * Math.pow(2, retryCount.current), 30000);
+          const baseDelay = Math.min(1000 * Math.pow(2, retryCount.current), 30000);
+          const jitter = baseDelay * (0.75 + Math.random() * 0.5);
+          const delay = Math.round(jitter);
           retryTimeoutRef.current = setTimeout(() => {
             retryCount.current++;
             console.log(`Attempting SSE reconnection (${retryCount.current}/${maxRetries})`);

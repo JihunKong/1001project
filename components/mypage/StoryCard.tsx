@@ -86,6 +86,7 @@ export function StoryCard({
             alt={title}
             width={300}
             height={120}
+            quality={50}
             className="w-full h-full object-cover"
           />
         ) : (

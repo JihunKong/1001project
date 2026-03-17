@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
               timestamp: new Date().toISOString()
             }
           });
-        }, 30000); // 30 seconds
+        }, 45000);
 
         // Store connection
         connections.set(connectionId, {

@@ -89,6 +89,7 @@ export default function Avatar({
           src={src as string}
           alt={alt}
           fill
+          quality={50}
           className="object-cover"
           onError={() => setImageError(true)}
           sizes={

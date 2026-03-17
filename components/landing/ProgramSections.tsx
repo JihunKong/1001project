@@ -74,7 +74,7 @@ const ProgramSections: React.FC = () => {
             <div
               className="bg-cover bg-center"
               style={{
-                backgroundImage: 'url(/landing/kid-library-bg.png)',
+                backgroundImage: 'url(/landing/kid-library-bg.jpg)',
                 height: '367px'
               }}
             />
@@ -308,7 +308,7 @@ const ProgramSections: React.FC = () => {
             <div
               className="bg-cover bg-center"
               style={{
-                backgroundImage: 'url(/landing/elp-bg.png)',
+                backgroundImage: 'url(/landing/elp-bg.jpg)',
                 height: '367px'
               }}
             />

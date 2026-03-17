@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { Bell, X, Check, Clock, AlertCircle, Award, FileText } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
@@ -28,7 +28,6 @@ export default function NotificationDropdown() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const eventSourceRef = useRef<EventSource | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Fetch notifications
@@ -91,86 +90,20 @@ export default function NotificationDropdown() {
     }
   };
 
-  // Request notification permission
-  const requestNotificationPermission = async () => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      await Notification.requestPermission();
-    }
-  };
-
-  // Initialize SSE connection and notifications
-  useEffect(() => {
-    if (!session?.user?.id || eventSourceRef.current) return;
-
+  const fetchNotificationsCallback = useCallback(() => {
     fetchNotifications();
-    requestNotificationPermission();
-
-    const es = new EventSource('/api/notifications/sse');
-    eventSourceRef.current = es;
-
-    es.onopen = () => {
-      // Connection established
-    };
-
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-
-        switch (data.type) {
-          case 'connection':
-            // Connection confirmed
-            break;
-
-          case 'notification':
-            // Add new notification to the list
-            setNotifications(prev => [data.data, ...prev.slice(0, 19)]);
-            setUnreadCount(prev => prev + 1);
-
-            // Show browser notification if permission granted
-            if (Notification.permission === 'granted') {
-              new Notification('1001 Stories', {
-                body: data.data.title,
-                icon: '/favicon.ico',
-                tag: data.data.id
-              });
-            }
-            break;
-
-          case 'status_change':
-            // Handle real-time status changes
-            fetchNotifications();
-            break;
-
-          case 'heartbeat':
-            // Keep connection alive
-            break;
-        }
-      } catch (error) {
-        // Failed to parse SSE message - ignore and continue
-      }
-    };
-
-    es.onerror = (error) => {
-      // SSE connection error - close and cleanup
-      es.close();
-      eventSourceRef.current = null;
-
-      // Retry connection after 5 seconds
-      setTimeout(() => {
-        if (session?.user?.id) {
-          const retryEs = new EventSource('/api/notifications/sse');
-          eventSourceRef.current = retryEs;
-        }
-      }, 5000);
-    };
-
-    return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
-    };
   }, [session?.user?.id]);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    fetchNotificationsCallback();
+  }, [session?.user?.id, fetchNotificationsCallback]);
+
+  useEffect(() => {
+    if (isOpen && session?.user?.id) {
+      fetchNotificationsCallback();
+    }
+  }, [isOpen, session?.user?.id, fetchNotificationsCallback]);
 
   // Handle click outside to close dropdown
   useEffect(() => {

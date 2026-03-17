@@ -20,18 +20,44 @@ export async function GET(_request: NextRequest) {
 
     const userId = session.user.id;
 
-    // Get text submission statistics
-    const submissionStats = await prisma.textSubmission.groupBy({
-      by: ['status'],
-      where: {
-        authorId: userId,
-      },
-      _count: {
-        id: true,
-      },
-    });
+    const [submissionStats, recentSubmissions, publishedStories] = await Promise.all([
+      prisma.textSubmission.groupBy({
+        by: ['status'],
+        where: {
+          authorId: userId,
+        },
+        _count: {
+          id: true,
+        },
+      }),
+      prisma.textSubmission.findMany({
+        where: {
+          authorId: userId,
+          createdAt: {
+            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          }
+        },
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+          publishedAt: true
+        }
+      }),
+      prisma.textSubmission.findMany({
+        where: {
+          authorId: userId,
+          status: TextSubmissionStatus.PUBLISHED,
+          publishedAt: { not: null }
+        },
+        select: {
+          id: true,
+          publishedAt: true,
+          wordCount: true
+        }
+      })
+    ]);
 
-    // Calculate totals
     const totalSubmissions = submissionStats.reduce((sum, stat) => sum + stat._count.id, 0);
     const approvedSubmissions = submissionStats.find(stat => stat.status === TextSubmissionStatus.APPROVED)?._count.id || 0;
     const publishedSubmissions = submissionStats.find(stat => stat.status === TextSubmissionStatus.PUBLISHED)?._count.id || 0;
@@ -44,36 +70,6 @@ export async function GET(_request: NextRequest) {
     const inReviewSubmissions = submissionStats
       .filter(stat => reviewStatuses.includes(stat.status as any))
       .reduce((sum, stat) => sum + stat._count.id, 0);
-
-    // Get recent submissions for trend analysis
-    const recentSubmissions = await prisma.textSubmission.findMany({
-      where: {
-        authorId: userId,
-        createdAt: {
-          gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
-        }
-      },
-      select: {
-        id: true,
-        status: true,
-        createdAt: true,
-        publishedAt: true
-      }
-    });
-
-    // Calculate readers reached (estimate based on published stories)
-    const publishedStories = await prisma.textSubmission.findMany({
-      where: {
-        authorId: userId,
-        status: TextSubmissionStatus.PUBLISHED,
-        publishedAt: { not: null }
-      },
-      select: {
-        id: true,
-        publishedAt: true,
-        wordCount: true
-      }
-    });
 
     // Estimate readers reached based on published stories (simplified calculation)
     let readersReached = 0;

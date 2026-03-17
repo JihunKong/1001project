@@ -31,6 +31,7 @@ export function BookCard({
             alt={title}
             width={200}
             height={180}
+            quality={50}
             className="w-full h-full object-cover"
           />
         ) : (

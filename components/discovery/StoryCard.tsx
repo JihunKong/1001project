@@ -110,6 +110,8 @@ const StoryCard: React.FC<StoryCardProps> = ({
               src={primaryMedia.thumbnailUrl || primaryMedia.url}
               alt={primaryMedia.description || story.title}
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              quality={50}
               style={{ objectFit: 'cover' }}
               onLoad={() => trackEngagement('view', { mediaLoaded: true })}
             />
@@ -270,6 +272,8 @@ const StoryCard: React.FC<StoryCardProps> = ({
                 src={story.mediaAssets[0].thumbnailUrl || story.mediaAssets[0].url}
                 alt={story.title}
                 fill
+                sizes="80px"
+                quality={50}
                 style={{ objectFit: 'cover' }}
               />
             </div>
@@ -322,6 +326,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
                 alt={story.authorName}
                 width={32}
                 height={32}
+                quality={50}
                 className="story-card__author-avatar"
               />
             )}

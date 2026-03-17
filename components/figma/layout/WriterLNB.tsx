@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Bookmark, User, FileText, Users, Settings, BookOpen, PlusCircle, FileSearch } from 'lucide-react';
@@ -16,12 +17,12 @@ interface WriterLNBProps {
   role?: string;
 }
 
-export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
+function WriterLNB({ role = 'writer' }: WriterLNBProps) {
   const pathname = usePathname();
   const { t } = useTranslation();
 
-  const getNavItems = (userRole: string): NavItem[] => {
-    if (userRole === 'admin') {
+  const navItems = useMemo((): NavItem[] => {
+    if (role === 'admin') {
       return [
         {
           id: 'home',
@@ -44,7 +45,7 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
       ];
     }
 
-    if (userRole === 'story-manager') {
+    if (role === 'story-manager') {
       return [
         {
           id: 'home',
@@ -79,7 +80,7 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
       ];
     }
 
-    if (userRole === 'book-manager') {
+    if (role === 'book-manager') {
       return [
         {
           id: 'home',
@@ -114,7 +115,7 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
       ];
     }
 
-    if (userRole === 'content-admin') {
+    if (role === 'content-admin') {
       return [
         {
           id: 'home',
@@ -181,9 +182,7 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
         icon: Settings
       }
     ];
-  };
-
-  const navItems = getNavItems(role);
+  }, [role, t]);
   const basePath = `/dashboard/${role}`;
 
   const isActive = (item: NavItem) => {
@@ -274,3 +273,5 @@ export default function WriterLNB({ role = 'writer' }: WriterLNBProps) {
     </>
   );
 }
+
+export default React.memo(WriterLNB);

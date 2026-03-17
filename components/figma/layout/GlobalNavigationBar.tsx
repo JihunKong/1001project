@@ -1,8 +1,8 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { ChevronDown } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { LanguageSelector } from '@/components/i18n/LanguageSelector';
 import NotificationDropdown from '@/components/notifications/NotificationDropdown';
@@ -12,7 +12,7 @@ interface GlobalNavigationBarProps {
   className?: string;
 }
 
-export default function GlobalNavigationBar({ className = '' }: GlobalNavigationBarProps) {
+function GlobalNavigationBar({ className = '' }: GlobalNavigationBarProps) {
   const { data: session, status } = useSession();
   const { t } = useTranslation();
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -154,3 +154,5 @@ export default function GlobalNavigationBar({ className = '' }: GlobalNavigation
     </header>
   );
 }
+
+export default React.memo(GlobalNavigationBar);
